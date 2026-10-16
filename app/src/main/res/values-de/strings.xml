@@ -766,6 +766,8 @@
     <string name="devtools__debuglog__copied_to_clipboard">Debug Log wurde in die Zwischenablage kopiert</string>
     <string name="devtools__debuglog__copy_log">Log kopieren</string>
     <string name="devtools__debuglog__copy_for_github">Log kopieren (GitHub Formatierung)</string>
+    <string name="devtools__debuglog__share_log">Log teilen</string>
+    <string name="devtools__debuglog__copied_truncated">Log war zu lang für die Zwischenablage; Anfang und neueste Zeilen kopiert</string>
     <string name="devtools__debuglog__loading">Lädt…</string>
     <!-- Extension strings -->
     <string name="ext__home__title">Add-ons &amp; Erweiterungen</string>

@@ -19,4 +19,8 @@
     <cache-path
         name="sticker_converted"
         path="sticker-converted/"/>
+    <!-- The developer tools' debug log, shared as a text file (too large for the clipboard). -->
+    <cache-path
+        name="debug_log"
+        path="debug-log/"/>
 </paths>
