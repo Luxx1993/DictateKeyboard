@@ -42,6 +42,11 @@ val projectVersionNameSuffix = projectVersionName.substringAfter("-", "").let { 
     }
 }
 
+// Diktat-Edition (Fork Luxx1993): Die volle Tastatur, Rechtschreibprüfung, Wear OS und die
+// Offline-Übersetzung sind abgeschaltet; Diktat, Spracheingabe und schwebender Button bleiben.
+// Mit -PdictationOnly=false entsteht wieder die vollständige Original-App.
+val dictationOnly = providers.gradleProperty("dictationOnly").map { it.toBoolean() }.getOrElse(true)
+
 kotlin {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_11)
@@ -90,6 +95,8 @@ configure<ApplicationExtension> {
         buildConfigField("String", "BUILD_COMMIT_HASH", "\"${getGitCommitHash().get()}\"")
         buildConfigField("String", "FLADDONS_API_VERSION", "\"v~draft2\"")
         buildConfigField("String", "FLADDONS_STORE_URL", "\"beta.addons.florisboard.org\"")
+        buildConfigField("boolean", "DICTATION_ONLY", dictationOnly.toString())
+        manifestPlaceholders["fullKeyboard"] = (!dictationOnly).toString()
 
         sourceSets {
             maybeCreate("main").apply {
@@ -110,6 +117,13 @@ configure<ApplicationExtension> {
     buildFeatures {
         buildConfig = true
         compose = true
+    }
+
+    // Diktat-Edition: Texterkennung (ML Kit) und Übersetzung (Bergamot) gehören zu Tastatur-Funktionen.
+    if (dictationOnly) {
+        packaging {
+            jniLibs.excludes += listOf("**/libmlkit_google_ocr_pipeline.so", "**/libdictate_bergamot.so")
+        }
     }
 
     // Release signing. Credentials live in a local, untracked `keystore.properties` at the repo root
@@ -348,6 +362,7 @@ tasks.named("preBuild").configure { dependsOn(verifySherpaOnnxLibs) }
 // otherwise it ships a feature that cannot run on any phone at all.
 val verifyBergamotLib by tasks.registering {
     val library = layout.projectDirectory.file("src/main/jniLibs/arm64-v8a/libdictate_bergamot.so").asFile
+    onlyIf { !dictationOnly }
     doLast {
         if (!library.exists()) {
             throw GradleException("Missing libdictate_bergamot.so for arm64-v8a.\n\nRun:  tools/bergamot/build-android.sh")

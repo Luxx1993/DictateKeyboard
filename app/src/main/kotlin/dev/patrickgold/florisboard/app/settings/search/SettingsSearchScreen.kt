@@ -46,6 +46,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.LaunchedEffect
 import dev.patrickgold.florisboard.R
+import dev.patrickgold.florisboard.app.DictationOnly
 import dev.patrickgold.florisboard.app.FlorisPreferenceStore
 import dev.patrickgold.florisboard.app.LocalNavController
 import dev.patrickgold.florisboard.lib.compose.FlorisScreen
@@ -125,12 +126,12 @@ fun SettingsSearchScreen() = FlorisScreen {
                 emptyList()
             } else {
                 SettingsSearchIndex.entries.filter { e ->
-                    context.getString(e.titleRes).contains(q, ignoreCase = true) ||
+                    DictationOnly.isVisible(e.route) && (context.getString(e.titleRes).contains(q, ignoreCase = true) ||
                         context.getString(e.sectionRes).contains(q, ignoreCase = true) ||
                         (e.parentRes != null && context.getString(e.parentRes).contains(q, ignoreCase = true)) ||
                         // Synonyms for a setting whose own name nobody would guess (issue #333). Matched,
                         // never shown — the row still reads as the setting's real name.
-                        (e.keywordsRes != null && context.getString(e.keywordsRes).contains(q, ignoreCase = true))
+                        (e.keywordsRes != null && context.getString(e.keywordsRes).contains(q, ignoreCase = true)))
                 }
                     // Cluster the hits under their top-level section (the breadcrumb root).
                     .sortedBy { context.getString(it.parentRes ?: it.sectionRes) }
@@ -174,7 +175,7 @@ fun SettingsSearchScreen() = FlorisScreen {
             }
             // Popular shortcuts.
             SectionHeader(stringRes(R.string.settings__search__popular))
-            SettingsSearchIndex.entries.filter { it.titleRes in POPULAR_TITLES }.forEach { entry ->
+            SettingsSearchIndex.entries.filter { it.titleRes in POPULAR_TITLES && DictationOnly.isVisible(it.route) }.forEach { entry ->
                 ResultRow(entry, onClick = { open(entry) })
             }
         } else if (results.isEmpty()) {

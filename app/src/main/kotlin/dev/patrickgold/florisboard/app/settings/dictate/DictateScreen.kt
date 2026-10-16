@@ -87,6 +87,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import dev.patrickgold.florisboard.R
+import dev.patrickgold.florisboard.app.DictationOnly
 import dev.patrickgold.florisboard.app.settings.search.settingsSearchAnchor
 import dev.patrickgold.florisboard.app.FlorisPreferenceStore
 import dev.patrickgold.florisboard.app.LocalNavController
@@ -210,13 +211,15 @@ fun DictateScreen() = FlorisScreen {
         // Dictation layout: its own category (issue #199) — the classic keyboard-less layout toggle
         // today, with more layout options to follow. Kept out of Output, because it changes the whole
         // keyboard rather than how text is inserted.
-        Preference(
-            icon = Icons.Default.Dialpad,
-            modifier = Modifier.settingsSearchAnchor("dictate__layout_title"),
-            title = stringRes(R.string.dictate__layout_title),
-            summary = stringRes(R.string.dictate__layout_menu_summary),
-            onClick = { navController.navigate(Routes.Settings.DictateLayout) },
-        )
+        if (DictationOnly.isVisible(Routes.Settings.DictateLayout)) {
+            Preference(
+                icon = Icons.Default.Dialpad,
+                modifier = Modifier.settingsSearchAnchor("dictate__layout_title"),
+                title = stringRes(R.string.dictate__layout_title),
+                summary = stringRes(R.string.dictate__layout_menu_summary),
+                onClick = { navController.navigate(Routes.Settings.DictateLayout) },
+            )
+        }
 
         Preference(
             icon = Icons.Default.Spellcheck,
@@ -268,13 +271,15 @@ fun DictateScreen() = FlorisScreen {
             },
         )
 
-        Preference(
-            icon = Icons.Default.Watch,
-            modifier = Modifier.settingsSearchAnchor("dictate__wear_title"),
-            title = stringRes(R.string.dictate__wear_title),
-            summary = stringRes(R.string.dictate__wear_summary),
-            onClick = { navController.navigate(Routes.Settings.DictateWear) },
-        )
+        if (DictationOnly.isVisible(Routes.Settings.DictateWear)) {
+            Preference(
+                icon = Icons.Default.Watch,
+                modifier = Modifier.settingsSearchAnchor("dictate__wear_title"),
+                title = stringRes(R.string.dictate__wear_title),
+                summary = stringRes(R.string.dictate__wear_summary),
+                onClick = { navController.navigate(Routes.Settings.DictateWear) },
+            )
+        }
     }
 }
 

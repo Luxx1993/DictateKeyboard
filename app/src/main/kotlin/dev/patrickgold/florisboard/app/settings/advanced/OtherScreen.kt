@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import dev.patrickgold.florisboard.BuildConfig
 import dev.patrickgold.florisboard.R
+import dev.patrickgold.florisboard.app.DictationOnly
 import dev.patrickgold.florisboard.app.settings.search.settingsSearchAnchor
 import dev.patrickgold.florisboard.app.AppTheme
 import dev.patrickgold.florisboard.app.LocalNavController
@@ -187,12 +188,14 @@ fun OtherScreen() = FlorisScreen {
             },
             enabledIf = { AndroidVersion.ATMOST_API28_P },
         )
-        Preference(
-            icon = ImageVector.vectorResource(R.drawable.ic_keyboard_keys),
-            modifier = Modifier.settingsSearchAnchor("physical_keyboard__title"),
-            title = stringRes(R.string.physical_keyboard__title),
-            onClick = { navController.navigate(Routes.Settings.PhysicalKeyboard) },
-        )
+        if (DictationOnly.isVisible(Routes.Settings.PhysicalKeyboard)) {
+            Preference(
+                icon = ImageVector.vectorResource(R.drawable.ic_keyboard_keys),
+                modifier = Modifier.settingsSearchAnchor("physical_keyboard__title"),
+                title = stringRes(R.string.physical_keyboard__title),
+                onClick = { navController.navigate(Routes.Settings.PhysicalKeyboard) },
+            )
+        }
         // What the app made and can make again: a shared file on its way through, downloaded GIFs,
         // decoded images (issue #337). Emptied on every cold start anyway, so the row exists for the
         // hours in between — and it says how much there is, because a cleaning button that will not

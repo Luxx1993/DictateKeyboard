@@ -81,6 +81,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.ConfigurationCompat
 import androidx.navigation.NavController
 import dev.patrickgold.florisboard.R
+import dev.patrickgold.florisboard.app.DictationOnly
 import dev.patrickgold.florisboard.app.FlorisAppActivity
 import dev.patrickgold.florisboard.app.FlorisPreferenceModel
 import dev.patrickgold.florisboard.app.FlorisPreferenceStore
@@ -257,8 +258,9 @@ private fun FlorisScreenScope.content(
 ) {
 
     fun targetStep(): Int = when {
-        !isFlorisBoardEnabled -> Steps.EnableIme.id
-        !isFlorisBoardSelected -> Steps.SelectIme.id
+        // Diktat-Edition: there is no keyboard to enable or select.
+        !DictationOnly.enabled && !isFlorisBoardEnabled -> Steps.EnableIme.id
+        !DictationOnly.enabled && !isFlorisBoardSelected -> Steps.SelectIme.id
         !isMicGranted -> Steps.GrantMicPermission.id
         hasNotificationPermission == NotificationPermissionState.NOT_SET && AndroidVersion.ATLEAST_API33_T -> Steps.SelectNotification.id
         !isProviderConfigured && !providerSkipped -> Steps.SetUpProvider.id
@@ -395,7 +397,7 @@ private fun PreferenceUiScope<FlorisPreferenceModel>.steps(
     }
 
     return listOfNotNull(
-        FlorisStep(
+        if (DictationOnly.enabled) null else FlorisStep(
             id = Steps.EnableIme.id,
             title = stringRes(R.string.setup__enable_ime__title),
             // The app greets with its waveform rather than a keyboard glyph — the same animation the
@@ -407,7 +409,7 @@ private fun PreferenceUiScope<FlorisPreferenceModel>.steps(
                 InputMethodUtils.showImeEnablerActivity(context)
             }
         },
-        FlorisStep(
+        if (DictationOnly.enabled) null else FlorisStep(
             id = Steps.SelectIme.id,
             title = stringRes(R.string.setup__select_ime__title),
             icon = Icons.Default.SwapHoriz,
