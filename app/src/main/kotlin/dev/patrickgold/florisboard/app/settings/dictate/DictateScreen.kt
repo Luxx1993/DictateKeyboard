@@ -33,7 +33,7 @@ import java.text.DecimalFormat
 import kotlin.math.roundToInt
 import dev.patrickgold.jetpref.material.ui.JetPrefAlertDialog
 import dev.patrickgold.florisboard.dictate.DictateLongformMode
-import androidx.compose.material.icons.filled.Watch
+import dev.patrickgold.florisboard.dictate.DictateRecordMode
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.Bolt
@@ -87,14 +87,11 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import dev.patrickgold.florisboard.R
-import dev.patrickgold.florisboard.app.DictationOnly
 import dev.patrickgold.florisboard.app.settings.search.settingsSearchAnchor
 import dev.patrickgold.florisboard.app.FlorisPreferenceStore
 import dev.patrickgold.florisboard.app.LocalNavController
 import dev.patrickgold.florisboard.app.Routes
 import dev.patrickgold.florisboard.dictate.DictateLanguages
-import dev.patrickgold.florisboard.dictate.DictateLegacyLayout
-import dev.patrickgold.florisboard.dictate.DictateRecordingAnimation
 import dev.patrickgold.florisboard.dictate.audio.AudioSpeedUp
 import dev.patrickgold.florisboard.dictate.audio.DictateAudioSource
 import dev.patrickgold.florisboard.dictate.audio.SmartTurnModel
@@ -118,7 +115,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun DictateScreen() = FlorisScreen {
     title = stringRes(R.string.dictate__title)
-    previewFieldVisible = true
     iconSpaceReserved = true
 
     val prefs by FlorisPreferenceStore
@@ -208,19 +204,6 @@ fun DictateScreen() = FlorisScreen {
             onClick = { navController.navigate(Routes.Settings.DictateLanguages) },
         )
 
-        // Dictation layout: its own category (issue #199) — the classic keyboard-less layout toggle
-        // today, with more layout options to follow. Kept out of Output, because it changes the whole
-        // keyboard rather than how text is inserted.
-        if (DictationOnly.isVisible(Routes.Settings.DictateLayout)) {
-            Preference(
-                icon = Icons.Default.Dialpad,
-                modifier = Modifier.settingsSearchAnchor("dictate__layout_title"),
-                title = stringRes(R.string.dictate__layout_title),
-                summary = stringRes(R.string.dictate__layout_menu_summary),
-                onClick = { navController.navigate(Routes.Settings.DictateLayout) },
-            )
-        }
-
         Preference(
             icon = Icons.Default.Spellcheck,
             modifier = Modifier.settingsSearchAnchor("dictate__formatting_title"),
@@ -270,16 +253,6 @@ fun DictateScreen() = FlorisScreen {
                 null
             },
         )
-
-        if (DictationOnly.isVisible(Routes.Settings.DictateWear)) {
-            Preference(
-                icon = Icons.Default.Watch,
-                modifier = Modifier.settingsSearchAnchor("dictate__wear_title"),
-                title = stringRes(R.string.dictate__wear_title),
-                summary = stringRes(R.string.dictate__wear_summary),
-                onClick = { navController.navigate(Routes.Settings.DictateWear) },
-            )
-        }
     }
 }
 
@@ -290,7 +263,6 @@ fun DictateScreen() = FlorisScreen {
 @Composable
 fun DictateFormattingScreen() = FlorisScreen {
     title = stringRes(R.string.dictate__formatting_title)
-    previewFieldVisible = true
     iconSpaceReserved = true
 
     val prefs by FlorisPreferenceStore
@@ -331,21 +303,20 @@ fun DictateFormattingScreen() = FlorisScreen {
 @Composable
 fun DictateRecordingScreen() = FlorisScreen {
     title = stringRes(R.string.dictate__recording_group)
-    previewFieldVisible = true
     iconSpaceReserved = true
 
     val prefs by FlorisPreferenceStore
 
     content {
-        SwitchPreference(
-            prefs.dictate.pushToTalk,
+        ListPreference(
+            prefs.dictate.recordMode,
             icon = Icons.Default.TouchApp,
-            modifier = Modifier.settingsSearchAnchor("dictate__push_to_talk_title"),
-            title = stringRes(R.string.dictate__push_to_talk_title),
-            // Off, the row says what holding the mic does *instead* — otherwise the shortcut this
-            // setting would take away is nowhere to be found.
-            summaryOn = stringRes(R.string.dictate__push_to_talk_summary),
-            summaryOff = stringRes(R.string.dictate__push_to_talk_summary_off),
+            modifier = Modifier.settingsSearchAnchor("dictate__record_mode_title"),
+            title = stringRes(R.string.dictate__record_mode_title),
+            entries = listPrefEntries {
+                entry(DictateRecordMode.TAP, stringRes(R.string.dictate__record_mode_tap))
+                entry(DictateRecordMode.HOLD, stringRes(R.string.dictate__record_mode_hold))
+            },
         )
         // One row, three states: off, stream and show it live, stream and only show the result (#345).
         RealtimeTranscriptionPreference(
@@ -422,34 +393,6 @@ fun DictateRecordingScreen() = FlorisScreen {
             title = stringRes(R.string.dictate__keep_screen_awake_title),
             summary = stringRes(R.string.dictate__keep_screen_awake_summary),
         )
-        ListPreference(
-            prefs.dictate.recordingAnimation,
-            icon = Icons.Default.GraphicEq,
-            modifier = Modifier.settingsSearchAnchor("dictate__recording_animation_title"),
-            title = stringRes(R.string.dictate__recording_animation_title),
-            entries = listPrefEntries {
-                entry(
-                    key = DictateRecordingAnimation.STATIC,
-                    label = stringRes(R.string.dictate__recording_animation_static_label),
-                    description = stringRes(R.string.dictate__recording_animation_static_description),
-                )
-                entry(
-                    key = DictateRecordingAnimation.PULSE,
-                    label = stringRes(R.string.dictate__recording_animation_pulse_label),
-                    description = stringRes(R.string.dictate__recording_animation_pulse_description),
-                )
-                entry(
-                    key = DictateRecordingAnimation.LEVEL,
-                    label = stringRes(R.string.dictate__recording_animation_level_label),
-                    description = stringRes(R.string.dictate__recording_animation_level_description),
-                )
-                entry(
-                    key = DictateRecordingAnimation.WAVE,
-                    label = stringRes(R.string.dictate__recording_animation_wave_label),
-                    description = stringRes(R.string.dictate__recording_animation_wave_description),
-                )
-            },
-        )
         SwitchPreference(
             prefs.dictate.skipSilentRecordings,
             icon = Icons.Default.VolumeOff,
@@ -491,29 +434,6 @@ fun DictateRecordingScreen() = FlorisScreen {
             max = AudioSpeedUp.MAX_PERCENT,
             stepIncrement = 5,
         )
-        // One row, three states and a detail — see [InstantRecordingPreference] (issue #224).
-        var showInstantRecordingInfo by remember { mutableStateOf(false) }
-        InstantRecordingPreference(
-            enabled = prefs.dictate.instantRecording,
-            afterSwitchOnly = prefs.dictate.instantRecordingAfterSwitchOnly,
-            skipNumeric = prefs.dictate.instantRecordingSkipNumeric,
-            title = stringRes(R.string.dictate__instant_recording_title),
-            icon = Icons.Default.Bolt,
-            modifier = Modifier.settingsSearchAnchor("dictate__instant_recording_title"),
-            onTurnedOn = { showInstantRecordingInfo = true },
-        )
-        if (showInstantRecordingInfo) {
-            AlertDialog(
-                onDismissRequest = { showInstantRecordingInfo = false },
-                title = { Text(stringRes(R.string.dictate__instant_recording_info_title)) },
-                text = { Text(stringRes(R.string.dictate__instant_recording_info_message)) },
-                confirmButton = {
-                    TextButton(onClick = { showInstantRecordingInfo = false }) {
-                        Text(stringRes(R.string.action__ok))
-                    }
-                },
-            )
-        }
     }
 }
 
@@ -524,7 +444,6 @@ fun DictateRecordingScreen() = FlorisScreen {
 @Composable
 fun DictateOutputScreen() = FlorisScreen {
     title = stringRes(R.string.dictate__output_group)
-    previewFieldVisible = true
     iconSpaceReserved = true
 
     val prefs by FlorisPreferenceStore
@@ -593,62 +512,6 @@ fun DictateOutputScreen() = FlorisScreen {
 }
 
 /**
- * Sub-screen (issue #199): dictation layout — how the dictation keyboard itself looks. Starts with the
- * classic keyboard-less layout toggle; more layout options will be added here.
- */
-@Composable
-fun DictateLayoutScreen() = FlorisScreen {
-    title = stringRes(R.string.dictate__layout_title)
-    previewFieldVisible = true
-    iconSpaceReserved = true
-
-    val prefs by FlorisPreferenceStore
-
-    content {
-        val legacyMode by prefs.dictate.legacyLayout.collectAsState()
-
-        // Classic keyboard-less dictation layout (issue #125): a compact record-first UI, optionally
-        // with a swipe back to the modern typing keyboard.
-        ListPreference(
-            prefs.dictate.legacyLayout,
-            icon = Icons.Default.Dialpad,
-            modifier = Modifier.settingsSearchAnchor("dictate__legacy_layout_title"),
-            title = stringRes(R.string.dictate__legacy_layout_title),
-            entries = listPrefEntries {
-                entry(
-                    key = DictateLegacyLayout.OFF,
-                    label = stringRes(R.string.dictate__legacy_layout_off_label),
-                )
-                entry(
-                    key = DictateLegacyLayout.LOCKED,
-                    label = stringRes(R.string.dictate__legacy_layout_locked_label),
-                )
-                entry(
-                    key = DictateLegacyLayout.SWIPE,
-                    label = stringRes(R.string.dictate__legacy_layout_swipe_label),
-                )
-            },
-        )
-
-        // The layout customisation only makes sense once the classic layout is actually in use (#183/#194).
-        if (legacyMode != DictateLegacyLayout.OFF) {
-            ListPreference(
-                prefs.dictate.legacyPromptRows,
-                icon = Icons.Default.ViewAgenda,
-                modifier = Modifier.settingsSearchAnchor("dictate__legacy_prompt_rows_title"),
-                title = stringRes(R.string.dictate__legacy_prompt_rows_title),
-                entries = listPrefEntries {
-                    entry(key = 1, label = stringRes(R.string.dictate__legacy_prompt_rows_one))
-                    entry(key = 2, label = stringRes(R.string.dictate__legacy_prompt_rows_two))
-                },
-            )
-            LegacyActionRowSetting()
-            EnterLongPressCharsSetting()
-        }
-    }
-}
-
-/**
  * Resolves a provider id to a human-readable name for the providers-row summary: built-ins come from
  * the [ProviderRegistry], user-defined endpoints from their stored display name in the keyring, falling
  * back to the raw id if neither is available.
@@ -696,8 +559,8 @@ private fun speedUpSaving(percent: Int): String =
 @Composable
 private fun longformModeSummary(mode: DictateLongformMode, seconds: Int): String = when (mode) {
     DictateLongformMode.OFF -> stringRes(R.string.dictate__longform_mode_off)
-    DictateLongformMode.MANUAL -> stringRes(R.string.dictate__longform_mode_manual)
-    DictateLongformMode.AUTO -> stringRes(R.string.dictate__longform_autosplit_title) + " · " +
+    // No "Next" button without the keyboard: a manual choice from back then cuts at pauses like AUTO.
+    DictateLongformMode.MANUAL, DictateLongformMode.AUTO -> stringRes(R.string.dictate__longform_autosplit_title) + " · " +
         stringRes(R.string.dictate__longform_autosplit_value, "seconds" to "$seconds")
 }
 
@@ -722,23 +585,27 @@ private fun LongformDialog(
         dismissLabel = stringRes(android.R.string.ok),
         onDismiss = onDismiss,
     ) {
+        // The floating button has no "Next" button, so MANUAL is no choice of its own any more: it shows,
+        // and works, as AUTO (see DictateController.isSegmentedMode).
+        val shown = if (mode == DictateLongformMode.MANUAL) DictateLongformMode.AUTO else mode
         Column {
+            Text(
+                modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+                text = stringRes(R.string.dictate__longform_button_note),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             LongformModeRow(
-                value = DictateLongformMode.OFF, selected = mode,
+                value = DictateLongformMode.OFF, selected = shown,
                 titleRes = R.string.dictate__longform_mode_off,
                 summaryRes = R.string.dictate__longform_mode_off_summary,
             ) { scope.launch { prefs.dictate.longformMode.set(it) } }
             LongformModeRow(
-                value = DictateLongformMode.MANUAL, selected = mode,
-                titleRes = R.string.dictate__longform_mode_manual,
-                summaryRes = R.string.dictate__longform_mode_manual_summary,
-            ) { scope.launch { prefs.dictate.longformMode.set(it) } }
-            LongformModeRow(
-                value = DictateLongformMode.AUTO, selected = mode,
+                value = DictateLongformMode.AUTO, selected = shown,
                 titleRes = R.string.dictate__longform_autosplit_title,
                 summaryRes = R.string.dictate__longform_autosplit_summary,
             ) { scope.launch { prefs.dictate.longformMode.set(it) } }
-            if (mode == DictateLongformMode.AUTO) {
+            if (shown == DictateLongformMode.AUTO) {
                 var sliderValue by remember(seconds) { mutableStateOf(seconds.toFloat()) }
                 Text(
                     modifier = Modifier.padding(top = 12.dp, start = 8.dp),

@@ -18,12 +18,13 @@ package dev.patrickgold.florisboard.app.settings.advanced
 
 import android.text.format.Formatter
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Adb
+import dev.patrickgold.florisboard.app.AppIconColor
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.FormatColorFill
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Preview
 import androidx.compose.material.icons.filled.SettingsBackupRestore
 import androidx.compose.material3.Text
@@ -41,19 +42,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import dev.patrickgold.florisboard.BuildConfig
 import dev.patrickgold.florisboard.R
-import dev.patrickgold.florisboard.app.DictationOnly
 import dev.patrickgold.florisboard.app.settings.search.settingsSearchAnchor
 import dev.patrickgold.florisboard.app.AppTheme
 import dev.patrickgold.florisboard.app.LocalNavController
 import dev.patrickgold.florisboard.app.Routes
 import dev.patrickgold.florisboard.app.enumDisplayEntriesOf
-import dev.patrickgold.florisboard.ime.core.DisplayLanguageNamesIn
 import dev.patrickgold.florisboard.lib.FlorisLocale
 import dev.patrickgold.florisboard.lib.cache.AppCache
 import dev.patrickgold.florisboard.lib.compose.FlorisScreen
 import dev.patrickgold.jetpref.datastore.model.collectAsState
 import dev.patrickgold.jetpref.datastore.ui.ColorPickerPreference
 import dev.patrickgold.jetpref.datastore.ui.ListPreference
+import dev.patrickgold.jetpref.datastore.ui.TextFieldPreference
 import dev.patrickgold.jetpref.datastore.ui.Preference
 import dev.patrickgold.jetpref.datastore.ui.PreferenceGroup
 import dev.patrickgold.jetpref.datastore.ui.SwitchPreference
@@ -72,7 +72,6 @@ import org.florisboard.lib.compose.stringRes
 @Composable
 fun OtherScreen() = FlorisScreen {
     title = stringRes(R.string.settings__other__title)
-    previewFieldVisible = false
 
     val navController = LocalNavController.current
     val context = LocalContext.current
@@ -167,15 +166,27 @@ fun OtherScreen() = FlorisScreen {
                             label = stringRes(R.string.settings__system_default),
                         )
                     } else {
-                        val displayLanguageNamesIn by prefs.localization.displayLanguageNamesIn.collectAsState()
                         val locale = FlorisLocale.fromTag(languageTag)
-                        entry(locale.languageTag(), when (displayLanguageNamesIn) {
-                            DisplayLanguageNamesIn.SYSTEM_LOCALE -> locale.displayName()
-                            DisplayLanguageNamesIn.NATIVE_LOCALE -> locale.displayName(locale)
-                        })
+                        entry(locale.languageTag(), locale.displayName(locale))
                     }
                 }
             }
+        )
+        TextFieldPreference(
+            prefs.other.userName,
+            icon = Icons.Default.Person,
+            modifier = Modifier.settingsSearchAnchor("pref__other__user_name__label"),
+            title = stringRes(R.string.pref__other__user_name__label),
+        )
+        ListPreference(
+            prefs.other.appIconColor,
+            icon = ImageVector.vectorResource(R.drawable.ic_diktat_globe_notification),
+            modifier = Modifier.settingsSearchAnchor("pref__other__app_icon_color__label"),
+            title = stringRes(R.string.pref__other__app_icon_color__label),
+            entries = listPrefEntries {
+                entry(AppIconColor.WHITE, stringRes(R.string.pref__other__app_icon_color__white))
+                entry(AppIconColor.BLACK, stringRes(R.string.pref__other__app_icon_color__black))
+            },
         )
         SwitchPreference(
             prefs.other.showAppIcon,
@@ -188,16 +199,7 @@ fun OtherScreen() = FlorisScreen {
             },
             enabledIf = { AndroidVersion.ATMOST_API28_P },
         )
-        if (DictationOnly.isVisible(Routes.Settings.PhysicalKeyboard)) {
-            Preference(
-                icon = ImageVector.vectorResource(R.drawable.ic_keyboard_keys),
-                modifier = Modifier.settingsSearchAnchor("physical_keyboard__title"),
-                title = stringRes(R.string.physical_keyboard__title),
-                onClick = { navController.navigate(Routes.Settings.PhysicalKeyboard) },
-            )
-        }
-        // What the app made and can make again: a shared file on its way through, downloaded GIFs,
-        // decoded images (issue #337). Emptied on every cold start anyway, so the row exists for the
+        // What the app made and can make again, such as a shared file on its way through (issue #337). Emptied on every cold start anyway, so the row exists for the
         // hours in between — and it says how much there is, because a cleaning button that will not
         // tell you what it cleans is a button nobody trusts.
         Preference(
@@ -210,17 +212,6 @@ fun OtherScreen() = FlorisScreen {
             ),
             onClick = { confirmClearCache = true },
         )
-        // Developer tools (FlorisBoard debug overlays + debug-log export) are a development-only
-        // leftover and must not ship in beta/release builds for a consumer keyboard (roadmap 11.5).
-        if (BuildConfig.DEBUG) {
-            Preference(
-                icon = Icons.Default.Adb,
-                modifier = Modifier.settingsSearchAnchor("devtools__title"),
-                title = stringRes(R.string.devtools__title),
-                onClick = { navController.navigate(Routes.Devtools.Home) },
-            )
-        }
-
         PreferenceGroup(title = stringRes(R.string.backup_and_restore__title)) {
             Preference(
                 onClick = { navController.navigate(Routes.Settings.Backup) },

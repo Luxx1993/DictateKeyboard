@@ -29,22 +29,11 @@ import dev.patrickgold.florisboard.app.FlorisPreferenceModel
 import dev.patrickgold.florisboard.app.FlorisPreferenceStore
 import dev.patrickgold.florisboard.app.PreferenceRecovery
 import dev.patrickgold.florisboard.dictate.data.prefs.DictateLegacyMigrator
-import dev.patrickgold.florisboard.dictate.wear.DictateWearPublisher
-import dev.patrickgold.florisboard.ime.clipboard.ClipboardManager
-import dev.patrickgold.florisboard.ime.core.SubtypeManager
-import dev.patrickgold.florisboard.ime.dictionary.DictionaryManager
-import dev.patrickgold.florisboard.ime.editor.EditorInstance
-import dev.patrickgold.florisboard.ime.keyboard.KeyboardManager
-import dev.patrickgold.florisboard.ime.media.emoji.FlorisEmojiCompat
-import dev.patrickgold.florisboard.ime.nlp.NlpManager
-import dev.patrickgold.florisboard.ime.text.gestures.GlideTypingManager
-import dev.patrickgold.florisboard.ime.theme.ThemeManager
 import dev.patrickgold.florisboard.lib.cache.CacheManager
 import dev.patrickgold.florisboard.lib.crashutility.CrashUtility
 import dev.patrickgold.florisboard.lib.devtools.Flog
 import dev.patrickgold.florisboard.lib.devtools.LogTopic
 import dev.patrickgold.florisboard.lib.devtools.flogError
-import dev.patrickgold.florisboard.lib.ext.ExtensionManager
 import dev.patrickgold.jetpref.datastore.runtime.initAndroid
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -67,22 +56,10 @@ class FlorisApplication : Application() {
     val preferenceStoreLoaded = MutableStateFlow(false)
 
     val cacheManager = lazy { CacheManager(this) }
-    val clipboardManager = lazy { ClipboardManager(this) }
-    val editorInstance = lazy { EditorInstance(this) }
-    val extensionManager = lazy { ExtensionManager(this) }
-    val glideTypingManager = lazy { GlideTypingManager(this) }
-    val keyboardManager = lazy { KeyboardManager(this) }
-    val nlpManager = lazy { NlpManager(this) }
-    val subtypeManager = lazy { SubtypeManager(this) }
-    val themeManager = lazy { ThemeManager(this) }
 
     override fun onCreate() {
         super.onCreate()
         FlorisApplicationReference = WeakReference(this)
-        // The translation engine's process (issue #424) runs one service and touches none of this: the
-        // preference store, the dictionaries, the Wear publisher would all be a second copy of the
-        // keyboard in memory, in the process that exists precisely to keep memory out of the keyboard.
-        if (isTranslationEngineProcess()) return
         try {
             Flog.install(
                 context = this,
@@ -92,11 +69,9 @@ class FlorisApplication : Application() {
                 flogOutputs = Flog.OUTPUT_CONSOLE,
             )
             CrashUtility.install(this)
-            FlorisEmojiCompat.init(this)
 
             if (!UserManagerCompat.isUserUnlocked(this)) {
                 cacheDir?.deleteContentsRecursively()
-                extensionManager.value.init()
                 registerReceiver(BootComplete(), IntentFilter(Intent.ACTION_USER_UNLOCKED))
                 return
             }
@@ -106,15 +81,6 @@ class FlorisApplication : Application() {
             CrashUtility.stageException(e)
             return
         }
-    }
-
-    private fun isTranslationEngineProcess(): Boolean {
-        val name = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-            Application.getProcessName()
-        } else {
-            runCatching { java.io.File("/proc/self/cmdline").readText().trimEnd('\u0000') }.getOrNull()
-        }
-        return name?.endsWith(":translate") == true
     }
 
     override fun onTrimMemory(level: Int) {
@@ -142,24 +108,10 @@ class FlorisApplication : Application() {
             DictateLegacyMigrator.migrateIfNeeded(this@FlorisApplication)
             DictateLegacyMigrator.seedDeviceLanguageIfNeeded()
             DictateLegacyMigrator.migrateProviderKeyringIfNeeded()
-            DictateLegacyMigrator.removeLivePromptActionIfNeeded(this@FlorisApplication)
-            DictateLegacyMigrator.migratePromptsActionIfNeeded(this@FlorisApplication)
-            DictateLegacyMigrator.migratePromptsLayoutToRowIfNeeded()
-            DictateLegacyMigrator.migratePushToTalkDefaultIfNeeded()
             DictateLegacyMigrator.migrateTrustUserCertsToAccountsIfNeeded()
-            DictateLegacyMigrator.migrateWordLearningDefaultIfNeeded()
-            DictateLegacyMigrator.migrateHindiDefaultsIfNeeded()
-            DictateLegacyMigrator.migrateFrenchPunctuationRuleIfNeeded()
-            DictateLegacyMigrator.migrateDevanagariPunctuationRuleIfNeeded()
-            DictateLegacyMigrator.reofferRateAndDonateIfNeeded()
+            DictateLegacyMigrator.seedStylesIfNeeded(this@FlorisApplication)
             preferenceStoreLoaded.value = true
-            // Keep the Wear OS companion's settings snapshot fresh: re-publish whenever a watch-relevant
-            // phone setting changes (#106), so the watch reflects accent/provider/key/prompt automatically.
-            DictateWearPublisher.startPublishingOnChange(this@FlorisApplication, scope)
         }
-        extensionManager.value.init()
-        clipboardManager.value.initializeForContext(this)
-        DictionaryManager.init(this)
     }
 
     private inner class BootComplete : BroadcastReceiver() {
@@ -192,18 +144,3 @@ fun Context.appContext() = lazyOf(this.florisApplication())
 
 fun Context.cacheManager() = this.florisApplication().cacheManager
 
-fun Context.clipboardManager() = this.florisApplication().clipboardManager
-
-fun Context.editorInstance() = this.florisApplication().editorInstance
-
-fun Context.extensionManager() = this.florisApplication().extensionManager
-
-fun Context.glideTypingManager() = this.florisApplication().glideTypingManager
-
-fun Context.keyboardManager() = this.florisApplication().keyboardManager
-
-fun Context.nlpManager() = this.florisApplication().nlpManager
-
-fun Context.subtypeManager() = this.florisApplication().subtypeManager
-
-fun Context.themeManager() = this.florisApplication().themeManager

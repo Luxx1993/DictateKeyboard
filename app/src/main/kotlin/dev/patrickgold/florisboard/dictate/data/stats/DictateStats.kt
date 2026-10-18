@@ -29,16 +29,6 @@ object DictateStats {
     /** A single day's word count, for the activity chart. */
     data class DayBar(val epochDay: Long, val words: Long)
 
-    /** A once-only celebration: either a saved-time (minutes) or a dictation-count threshold. */
-    data class Milestone(val kind: Kind, val value: Long) {
-        enum class Kind { TIME_MINUTES, DICTATIONS }
-    }
-
-    // Milestones grow forever (no fixed list): saved time celebrates 1h, then every 5h (5h, 10h, 15h…);
-    // dictation count celebrates every 100 (100, 200, 300…). No streak milestones by design.
-    private const val TIME_FIRST_MIN = 60L   // 1h
-    private const val TIME_STEP_MIN = 300L   // 5h
-    private const val COUNT_STEP = 100L
 
     /** Estimated seconds saved versus typing the same words on a keyboard. */
     fun savedSeconds(words: Long, spokenSeconds: Long): Double =
@@ -65,50 +55,25 @@ object DictateStats {
         if (d.statsFirstUseEpochMs.get() == 0L) d.statsFirstUseEpochMs.set(nowMs)
         updateStreak(d, today)
         addDailyWords(d, today, words)
-        checkMilestones(d)
+        val month = monthIndex(today)
+        val before = if (d.statsMonthIndex.get() == month) d.statsMonthWords.get() else 0L
+        d.statsMonthIndex.set(month)
+        d.statsMonthWords.set(before + words)
     }
+
+    /** The calendar month of [epochDay] as year * 12 + month (0-based); see `statsMonthIndex`. */
+    fun monthIndex(epochDay: Long): Int = LocalDate.ofEpochDay(epochDay).let { it.year * 12 + it.monthValue - 1 }
+
+    /** Words dictated in the month of [today]: the stored count, or 0 once that month is over. */
+    fun wordsThisMonth(storedIndex: Int, storedWords: Long, today: Long = LocalDate.now().toEpochDay()): Long =
+        if (storedIndex == monthIndex(today)) storedWords else 0L
 
     /**
-     * Flags a newly-crossed saved-time or dictation-count milestone so the app can celebrate it once on
-     * next open (never on the keyboard). No-op when the user disabled milestone celebrations. Streaks are
-     * intentionally excluded.
+     * The streak as of [today]: the stored run only counts while it is still alive, that is when the last
+     * dictation was today or yesterday.
      */
-    private suspend fun checkMilestones(d: FlorisPreferenceModel.Dictate) {
-        if (!d.statsMilestonesEnabled.get()) return
-        val savedMin = (savedSeconds(d.statsWords.get(), d.statsSpokenSeconds.get()) / 60.0).toLong()
-        // Highest reached threshold: 1h, then the largest multiple of 5h at/below the saved time.
-        val timeMs = when {
-            savedMin >= TIME_STEP_MIN -> (savedMin / TIME_STEP_MIN) * TIME_STEP_MIN
-            savedMin >= TIME_FIRST_MIN -> TIME_FIRST_MIN
-            else -> 0L
-        }
-        val countMs = (d.statsDictations.get() / COUNT_STEP) * COUNT_STEP
-        if (timeMs > d.statsMilestoneTimeShown.get()) {
-            d.statsMilestoneTimeShown.set(timeMs)
-            d.statsPendingMilestone.set("time:$timeMs")
-        }
-        // Count is applied last so it wins the (rare) case where both cross on the same dictation.
-        if (countMs > d.statsMilestoneCountShown.get()) {
-            d.statsMilestoneCountShown.set(countMs)
-            d.statsPendingMilestone.set("count:$countMs")
-        }
-    }
-
-    /** Reads and clears the pending milestone (returns null when none / celebrations are off). */
-    suspend fun consumePendingMilestone(prefs: FlorisPreferenceModel): Milestone? {
-        val d = prefs.dictate
-        val raw = d.statsPendingMilestone.get()
-        if (raw.isNotEmpty()) d.statsPendingMilestone.set("")
-        if (!d.statsMilestonesEnabled.get() || raw.isBlank()) return null
-        val parts = raw.split(':')
-        val kind = when (parts.getOrNull(0)) {
-            "time" -> Milestone.Kind.TIME_MINUTES
-            "count" -> Milestone.Kind.DICTATIONS
-            else -> return null
-        }
-        val value = parts.getOrNull(1)?.toLongOrNull() ?: return null
-        return Milestone(kind, value)
-    }
+    fun currentStreak(lastDay: Long, stored: Int, today: Long = LocalDate.now().toEpochDay()): Int =
+        if (lastDay == today || lastDay == today - 1L) stored else 0
 
     /** Records that one AI rewording/prompt pass ran. */
     suspend fun recordRewording(prefs: FlorisPreferenceModel) {
@@ -129,10 +94,8 @@ object DictateStats {
         d.statsStreakCurrent.set(0)
         d.statsStreakBest.set(0)
         d.statsDaily.set("")
-        // Clear milestone progress so they can be celebrated again, but keep the user's on/off choice.
-        d.statsMilestoneTimeShown.set(0L)
-        d.statsMilestoneCountShown.set(0L)
-        d.statsPendingMilestone.set("")
+        d.statsMonthIndex.set(0)
+        d.statsMonthWords.set(0L)
     }
 
     /** Whitespace-delimited word count; CJK text (no spaces) collapses to a single token, which is fine. */

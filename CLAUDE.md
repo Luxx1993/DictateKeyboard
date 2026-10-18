@@ -13,16 +13,22 @@ Kernablauf: sprechen → KI räumt den Text auf → Text wird eingefügt. Lukas 
 
 ## Stand der Diktat-Edition
 
-- Schalter `dictationOnly` (Standard `true`, Gradle-Property): Tastatur (IME), Rechtschreibprüfung, Wear OS
-  und Offline-Übersetzung sind im Manifest abgeschaltet (`manifestPlaceholders["fullKeyboard"]`). Spracheingabe-Methode,
-  Erkennungsdienst und schwebender Button bleiben. Mit `-PdictationOnly=false` entsteht wieder die vollständige App.
-- Tastatur-Routen in den Einstellungen werden über `app/src/main/kotlin/dev/patrickgold/florisboard/app/DictationOnly.kt` ausgeblendet.
-- **Lukas' Vorgabe: Tastatur und alles Zugehörige soll so weit wie möglich raus.** Bisher nur ausgeblendet; das Entfernen
-  ist geplant (`docs/FUNKTIONEN.md` Abschnitt 13). Updates vom Original lassen sich danach kaum noch übernehmen, das ist gewollt.
-  Schrittweise vorgehen, nach jedem Schritt bauen.
-  Maßstab: Es bleibt nur, was die Diktierfunktion laut Screens und das Einrichten in Android als Eingabe-/Spracheingabe-Methode
-  technisch brauchen, so wenig wie möglich. Keine Tastaturfunktion bleibt um ihrer selbst willen. Im Zweifel entfernen, bauen,
-  prüfen; Behaltenes mit Grund in FUNKTIONEN.md Abschnitt 13 notieren.
+- **Tastatur und Zubehör sind entfernt** (Oktober 2026): Tastatur-IME, Rechtschreibprüfung, Wear OS, Dictate Cloud, GIF,
+  Sticker, Scan, Übersetzung, Erweiterungen, Theme-Engine, Tastatur-Einstellungen. Details, was blieb und warum, und offene
+  Punkte: `docs/FUNKTIONEN.md` Abschnitt 13. Den Gradle-Schalter `dictationOnly` gibt es nicht mehr.
+- Es bleiben: Diktat-Logik, schwebender Button, Spracheingabe-Methode (für SwiftKeys Mikrofon-Taste),
+  System-Erkennungsdienst, Datei transkribieren, Einstellungen, Verlauf, Statistik, Sichern/Wiederherstellen.
+- Maßstab für weitere Arbeit: Es bleibt nur, was die Diktierfunktion laut Screens und das Einrichten in Android als
+  Eingabe-/Spracheingabe-Methode technisch brauchen. Behaltenes mit Grund in FUNKTIONEN.md Abschnitt 13 notieren.
+
+## Repository
+
+- README, Datenschutz (`PRIVACY_POLICY.md`), `SECURITY.md` und die Links in der App gelten für diktat und zeigen auf
+  `Luxx1993/unisono-diktat`. Das Repository heißt `unisono-diktat` (vorher `DictateKeyboard`); die Fork-Verbindung zu `DevEmperor/DictateKeyboard` bleibt (Remote `upstream` zum Abgleich).
+- Herkunft bleibt genannt: README „Herkunft und Lizenz“, `NOTICE` (eigener Block oben, Originale unverändert), Über-Seite
+  „Basiert auf Dictate Keyboard“. Apache 2.0 verlangt das.
+- Noch an DevEmperor gebunden: Downloads der Offline- und Smart-Turn-Modelle (`LocalModelCatalog.REL`, Releases von
+  Dictate Keyboard) und die Paket-ID `net.devemperor.dictate` (Ändern hieße neue App, Einstellungen per Sicherung umziehen).
 
 ## Bauen
 
@@ -35,10 +41,13 @@ APK unter `app/build/outputs/apk/debug/`. Debug-Builds sind mit einem Debug-Schl
 
 - `app/src/main/kotlin/dev/patrickgold/florisboard/dictate/` – Diktat-Logik (Anbieter, Aufnahme, Overlay)
 - `dictate/overlay/` – schwebender Button (Accessibility-Service, Bubble-Controller)
-- `dictate/ui/AudioReactiveCloudOrbView.kt` – AGSL-Shader der Wolke
-- `app/settings/` – Compose-Einstellungen (`HomeScreen.kt`, `dictate/DictateProvidersScreen.kt` …)
-- `app/src/main/AndroidManifest.xml` – Launcher-Alias `dev.patrickgold.florisboard.SettingsLauncherAlias`, Splash-Theme `FlorisAppTheme.Splash`
-- `app/src/main/res/mipmap-anydpi-v26/app_icon.xml` – adaptives Icon (noch das alte Dictate-Icon)
+- `dictate/ui/AudioReactiveCloudOrbView.kt` – AGSL-Shader der Wolke (Ebenen wie der Prototyp), `CloudMotion.kt` (Keyframes), `CloudPalette.kt` (5 Paletten)
+- `dictate/ui/DiktatGlobe.kt` – Icon-Kugel als Compose-Komponente, Animation D
+- `app/main/` – Oberfläche Entwurf 3: `MainScreen.kt` (4 Tabs, Startbildschirm), `StartTab`, `DictionaryTab`, `StylesTab`, `SettingsTab`, Bausteine `UnisonoComponents.kt`, Icons `UnisonoIcons.kt`
+- `app/apptheme/Unisono.kt` – Farben, Schriften, Textstile des Unisono-Looks
+- `app/settings/` – Compose-Einstellungen (`HomeScreen.kt` = „Alle Einstellungen“, `dictate/DictateProvidersScreen.kt` …)
+- `app/src/main/AndroidManifest.xml` – Launcher-Aliase `dev.patrickgold.florisboard.SettingsLauncherAlias` (weiß) und `…AliasBlack` (schwarz), Splash-Theme `FlorisAppTheme.Splash`
+- `app/src/main/res/mipmap-anydpi-v26/app_icon.xml` / `app_icon_black.xml` – adaptives Icon „Welle um die Welt“ (weiß/schwarz), Umschalter in `app/AppIcon.kt`
 
 ## Design
 
@@ -54,10 +63,10 @@ Alle Design-Entscheidungen stehen in **`docs/design/diktat-design.md`**. Das ist
 
 ## Nächste Aufgaben
 
-0. Tastatur und Zubehör entfernen (`docs/FUNKTIONEN.md` Abschnitt 13).
-1. App-Icon einbauen (adaptives Icon, Themen-Icon, Umschalter weiß/schwarz), dann Splash-Animation A, dann In-App-Animation D.
-2. Entwurf 3 als neue Oberfläche umsetzen.
-3. Wolken-Shader an den Prototyp angleichen.
+1. App-Icon ist fertig (Icon, Themen-Icon, Umschalter, Animation A im Splash, Animation D als `DiktatGlobe` in „Datei transkribieren“).
+2. Entwurf 3 ist umgesetzt (`app/main/`: Start, Wörterbuch, Stile, Einstellungen); auf dem S24 ansehen und nachziehen.
+3. Wolken-Shader ist an den Prototyp angeglichen (`dictate/ui/`: Shader, `CloudMotion`, `CloudPalette`); auf dem S24 ansehen.
 4. Später: Anbieter Gladia, Preset Cerebras, AssemblyAI Sync API.
+5. Langdiktat ist am Button angebunden (automatisch an Pausen, nur beim Antippen); Halten/Antippen ist wählbar (Einstellungen › Aufnahme). Auf dem S24 testen.
 
 Details und Reihenfolge: Abschnitt 5 und 7 in `docs/design/diktat-design.md`.

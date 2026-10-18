@@ -47,6 +47,8 @@ import dev.patrickgold.florisboard.app.FlorisPreferenceStore
 import dev.patrickgold.florisboard.app.apptheme.FlorisAppTheme
 import dev.patrickgold.florisboard.dictate.DictateController
 import dev.patrickgold.florisboard.dictate.ui.AudioReactiveCloudOrbView
+import dev.patrickgold.florisboard.dictate.ui.CloudPalette
+import androidx.compose.ui.graphics.toArgb
 
 /**
  * The classic voice-input popup — `RecognizerIntent.ACTION_RECOGNIZE_SPEECH` (issue #67). Many keyboards
@@ -65,6 +67,11 @@ class RecognitionActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val cloud = AudioReactiveCloudOrbView(this)
         orb = cloud
+        // The same cloud as the floating button, in the palette chosen for it.
+        val orbPrefs by FlorisPreferenceStore
+        runCatching { orbPrefs.dictate.floatingButtonColor.get() }.getOrNull()?.let {
+            cloud.setColors(CloudPalette.forColor(it.toArgb()))
+        }
         session = RecognitionSession(applicationContext, host).also { it.start() }
 
         setContent {
@@ -72,7 +79,7 @@ class RecognitionActivity : ComponentActivity() {
             // Read once — theme/accent don't change during the few seconds this popup is open (and this
             // avoids the jetpref collectAsState clashing by name with the runtime one used for the flows).
             val theme = remember { prefs.other.settingsTheme.get() }
-            val accent = remember { prefs.theme.accentColor.get() }
+            val accent = remember { prefs.other.accentColor.get() }
             FlorisAppTheme(theme) {
                 RecognitionPopup(cloud, accent)
             }

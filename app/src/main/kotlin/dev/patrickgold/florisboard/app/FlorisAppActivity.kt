@@ -46,21 +46,14 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import dev.patrickgold.florisboard.R
 import dev.patrickgold.florisboard.app.apptheme.FlorisAppTheme
-import dev.patrickgold.florisboard.app.ext.ExtensionImportScreenType
 import dev.patrickgold.florisboard.app.setup.NotificationPermissionState
 import dev.patrickgold.florisboard.appContext
-import dev.patrickgold.florisboard.cacheManager
 import dev.patrickgold.florisboard.lib.FlorisLocale
-import dev.patrickgold.florisboard.lib.compose.LocalPreviewFieldController
-import dev.patrickgold.florisboard.lib.compose.PreviewKeyboardField
-import dev.patrickgold.florisboard.lib.compose.rememberPreviewFieldController
 import dev.patrickgold.florisboard.lib.util.AppVersionUtils
 import dev.patrickgold.jetpref.datastore.model.collectAsState
 import dev.patrickgold.jetpref.datastore.ui.ProvideDefaultDialogPrefStrings
 import java.util.concurrent.atomic.AtomicBoolean
 import org.florisboard.lib.android.AndroidVersion
-import org.florisboard.lib.android.hideAppIcon
-import org.florisboard.lib.android.showAppIcon
 import org.florisboard.lib.compose.ProvideLocalizedResources
 import org.florisboard.lib.compose.conditional
 import org.florisboard.lib.compose.stringRes
@@ -81,9 +74,9 @@ val LocalNavController = staticCompositionLocalOf<NavController> {
 class FlorisAppActivity : ComponentActivity() {
     private val prefs by FlorisPreferenceStore
     private val appContext by appContext()
-    private val cacheManager by cacheManager()
     private var appTheme by mutableStateOf(AppTheme.AUTO)
     private var showAppIcon = true
+    private var appIconColor = AppIconColor.WHITE
     private var resourcesContext by mutableStateOf(this as Context)
     private var intentToBeHandled by mutableStateOf<Intent?>(null)
 
@@ -107,6 +100,13 @@ class FlorisAppActivity : ComponentActivity() {
         if (AndroidVersion.ATMOST_API28_P) {
             prefs.other.showAppIcon.asFlow().collectIn(lifecycleScope) {
                 showAppIcon = it
+            }
+        }
+        // The colour switches right away, so the choice can be checked on the home screen.
+        prefs.other.appIconColor.asFlow().collectIn(lifecycleScope) {
+            if (it != appIconColor) {
+                appIconColor = it
+                AppIcon.apply(this, appIconColor, showAppIcon)
             }
         }
 
@@ -143,15 +143,9 @@ class FlorisAppActivity : ComponentActivity() {
     override fun onPause() {
         super.onPause()
 
-        // App icon visibility control was restricted in Android 10.
+        // App icon visibility control was restricted in Android 10, so showAppIcon only ever changes there.
         // See https://developer.android.com/reference/android/content/pm/LauncherApps#getActivityList(java.lang.String,%20android.os.UserHandle)
-        if (AndroidVersion.ATMOST_API28_P) {
-            if (showAppIcon) {
-                this.showAppIcon()
-            } else {
-                this.hideAppIcon()
-            }
-        }
+        AppIcon.apply(this, appIconColor, showAppIcon)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -162,21 +156,12 @@ class FlorisAppActivity : ComponentActivity() {
             intentToBeHandled = intent
             return
         }
-        if (intent.action == Intent.ACTION_VIEW && intent.data != null) {
-            intentToBeHandled = intent
-            return
-        }
-        if (intent.action == Intent.ACTION_SEND && intent.clipData != null) {
-            intentToBeHandled = intent
-            return
-        }
         intentToBeHandled = null
     }
 
     @Composable
     private fun AppContent() {
         val navController = rememberNavController()
-        val previewFieldController = rememberPreviewFieldController()
 
         val isImeSetUp by prefs.internal.isImeSetUp.collectAsState()
 
@@ -184,7 +169,7 @@ class FlorisAppActivity : ComponentActivity() {
         // would rebuild the graph and reset the back stack (which is why finishing setup used to drop
         // any onward navigation). Completing setup navigates explicitly instead.
         val startDestination = remember {
-            if (isImeSetUp) Routes.Settings.Home::class else Routes.Setup.Screen::class
+            if (isImeSetUp) Routes.Main::class else Routes.Setup.Screen::class
         }
 
         // After the onboarding's optional floating-button step finishes setup, jump on to the
@@ -199,7 +184,6 @@ class FlorisAppActivity : ComponentActivity() {
 
         CompositionLocalProvider(
             LocalNavController provides navController,
-            LocalPreviewFieldController provides previewFieldController,
         ) {
             ProvideDefaultDialogPrefStrings(
                 confirmLabel = stringRes(R.string.action__ok),
@@ -220,26 +204,6 @@ class FlorisAppActivity : ComponentActivity() {
                         navController = navController,
                         startDestination = startDestination,
                     )
-                    PreviewKeyboardField(previewFieldController)
-                }
-                // Show the "What's new" surface once after an update (only when setup is complete, so
-                // it never competes with the onboarding flow). For the 5.0 milestone this is the
-                // full-screen tour; for other updates it stays the compact changelog dialog. The tour
-                // and dialog are mutually exclusive per update so they never both appear.
-                if (isImeSetUp) {
-                    val whatsNewContext = LocalContext.current
-                    // Every "What's new" tour the user hasn't seen yet (e.g. 4.x → 5.1 gets both 5.0 and
-                    // 5.1); empty means fall back to the compact changelog dialog for this update.
-                    val autoQueue = remember {
-                        AppVersionUtils.pendingTourVersions(
-                            whatsNewContext, prefs, WHATS_NEW_TOURS.map { it.version },
-                        )
-                    }
-                    if (autoQueue.isEmpty()) {
-                        ChangelogDialog()
-                    }
-                    // Always composed so Settings › About can re-open any tour; only auto-shows when queued.
-                    WhatsNewTour(autoQueue = autoQueue)
                 }
             }
         }
@@ -247,17 +211,7 @@ class FlorisAppActivity : ComponentActivity() {
         LaunchedEffect(intentToBeHandled) {
             val intent = intentToBeHandled
             if (intent != null) {
-                if (intent.action == Intent.ACTION_VIEW && intent.categories?.contains(Intent.CATEGORY_BROWSABLE) == true) {
-                    navController.handleDeepLink(intent)
-                } else {
-                    val data = if (intent.action == Intent.ACTION_VIEW) {
-                        intent.data!!
-                    } else {
-                        intent.clipData!!.getItemAt(0).uri
-                    }
-                    val workspace = runCatching { cacheManager.readFromUriIntoCache(data) }.getOrNull()
-                    navController.navigate(Routes.Ext.Import(ExtensionImportScreenType.EXT_ANY, workspace?.uuid))
-                }
+                navController.handleDeepLink(intent)
             }
             intentToBeHandled = null
         }

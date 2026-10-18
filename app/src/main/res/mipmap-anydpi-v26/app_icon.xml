@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- App icon "Welle um die Welt", white (default). No background: the globe stands on the wallpaper.
+     Source: docs/design/icon/diktat_icon.py. The black variant is app_icon_black. -->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-    <background android:drawable="@color/ic_app_icon_background"/>
-    <foreground android:drawable="@drawable/ic_app_icon_foreground"/>
-    <monochrome android:drawable="@drawable/ic_app_icon_monochrome"/>
+    <background android:drawable="@android:color/transparent"/>
+    <foreground android:drawable="@drawable/ic_diktat_globe_white"/>
+    <monochrome android:drawable="@drawable/ic_diktat_globe_monochrome"/>
 </adaptive-icon>

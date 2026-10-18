@@ -30,7 +30,6 @@ import android.os.Bundle
 import android.os.Process
 import android.util.Log
 import dev.patrickgold.florisboard.BuildConfig
-import dev.patrickgold.florisboard.FlorisImeService
 import dev.patrickgold.florisboard.R
 import dev.patrickgold.florisboard.lib.devtools.LogTopic
 import dev.patrickgold.florisboard.lib.devtools.flogError
@@ -393,7 +392,6 @@ abstract class CrashUtility private constructor() {
                 setLastCrashTimestamp(application, timestamp)
                 if (timestamp - lastTimestamp < 5000) {
                     pushCrashMultipleNotification(application)
-                    FlorisImeService.switchToPrevInputMethod() || FlorisImeService.switchToNextInputMethod()
                 } else {
                     pushCrashOnceNotification(application)
                 }

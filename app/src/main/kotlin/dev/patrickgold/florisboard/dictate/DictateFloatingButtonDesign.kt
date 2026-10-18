@@ -19,8 +19,8 @@ package dev.patrickgold.florisboard.dictate
  *   waveform during recording and a labelled spinner while transcribing/rewording.
  * - [ORB]: a solid orb that glows and pulses with the voice amplitude while recording and breathes
  *   gently while transcribing/rewording.
- * - [CLOUD]: an orb-ui-inspired fluid cloud surface whose internal flow and scale react to microphone
- *   input; transcribing/rewording keeps the same calmer surface with a compact activity spinner.
+ * - [CLOUD]: diktat's cloud, a glass sphere with coloured smoke in the chosen palette that rises with the
+ *   voice; transcribing/rewording shows a thin spinner in it (see AudioReactiveCloudOrbView).
  */
 enum class DictateFloatingButtonDesign {
     RING,

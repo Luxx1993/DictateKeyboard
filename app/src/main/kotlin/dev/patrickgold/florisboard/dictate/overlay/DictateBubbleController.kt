@@ -65,6 +65,7 @@ import dev.patrickgold.florisboard.dictate.data.prompts.PromptModel
 import dev.patrickgold.florisboard.dictate.data.prompts.PromptsDatabaseHelper
 import dev.patrickgold.florisboard.dictate.data.prompts.snippetBody
 import dev.patrickgold.florisboard.dictate.ui.AudioReactiveCloudOrbView
+import dev.patrickgold.florisboard.dictate.ui.CloudPalette
 import dev.patrickgold.florisboard.dictate.ui.DictateAuroraOrbView
 import dev.patrickgold.florisboard.dictate.ui.DictateLatticeSphereView
 import dev.patrickgold.florisboard.lib.devtools.flogDebug
@@ -296,13 +297,12 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
                     accentColor = accent
                     rebuildSkin()
                 }
-                // The Dictate keyboard is on screen when it is the selected IME *and* an IME window is
-                // visible. While it is up it already has its own mic, so hide the bubble (unless the user
-                // opted in). Using the IME-visible signal (not the dictation state) means a keyboard-driven
-                // dictation keeps the bubble hidden, while a bubble-driven one — which opens no IME window —
-                // still keeps it shown.
+                // Dictate's own voice input is on screen when it is the selected IME *and* an IME window
+                // is visible. While it is up it already shows its own mic, so the bubble steps aside. Using
+                // the IME-visible signal (not the dictation state) means a bubble-driven dictation — which
+                // opens no IME window — still keeps it shown.
                 val dictateKeyboardShown = dictateKeyboard && imeVisible
-                val hiddenByOwnKeyboard = dictateKeyboardShown && !showWhen.besideDictateKeyboard
+                val hiddenByOwnKeyboard = dictateKeyboardShown
                 // The rule itself lives in [BubbleVisibility], where it can be asked without a phone. Note
                 // that a bubble is *removed* rather than faded: alpha or GONE is a request to a compositor
                 // we do not control, and that compositor is exactly the part behaving unexpectedly here.
@@ -577,9 +577,7 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
         }
         // Rewording only makes sense when not already recording/transcribing. A parked nudge is neither —
         // and used to make this menu open into nothing, the same way it blocked [applyPrompt] (#339).
-        if (state !is DictateController.UiState.Idle && state !is DictateController.UiState.Error &&
-            state !is DictateController.UiState.Promo
-        ) {
+        if (state !is DictateController.UiState.Idle && state !is DictateController.UiState.Error) {
             return
         }
         if (prefs.dictate.floatingButtonHaptic.get()) vibrateTap()
@@ -973,6 +971,21 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
                 onLongPress()
             }
         }
+        // Hold-to-record (Einstellungen › Aufnahme): decided per press, since a press that lands on a
+        // running dictation or on a failure waiting to be re-sent keeps the tap meaning it always had.
+        var holdMode = false
+        var holdStarted = false
+        var holdStartedAt = 0L
+        val holdStart = Runnable {
+            if (!moved) {
+                holdStarted = true
+                holdStartedAt = SystemClock.uptimeMillis()
+                if (prefs.dictate.floatingButtonHaptic.get()) vibrateTap()
+                startingDictation {
+                    DictateController.onPushToTalkDown(context, DictateController.OutputTarget.OVERLAY)
+                }
+            }
+        }
         view.setOnTouchListener { v, e ->
             val lp = params ?: return@setOnTouchListener false
             when (e.action) {
@@ -986,15 +999,24 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
                     snapAnim?.cancel()
                     cancelDim()
                     applyDim(false) // wake the bubble on touch
-                    v.postDelayed(longPress, longPressTimeout)
+                    holdStarted = false
+                    holdMode = holdModeApplies()
+                    if (holdMode) {
+                        v.postDelayed(holdStart, HOLD_START_MS)
+                    } else {
+                        v.postDelayed(longPress, longPressTimeout)
+                    }
                     true
                 }
                 MotionEvent.ACTION_MOVE -> {
                     val dx = e.rawX - downX
                     val dy = e.rawY - downY
+                    // A finger that slips while holding to record stays a recording, not a drag.
+                    if (holdStarted) return@setOnTouchListener true
                     if (!moved && hypot(dx, dy) > slop) {
                         moved = true
                         v.removeCallbacks(longPress) // a drag cancels the pending long-press
+                        v.removeCallbacks(holdStart) // and the pending hold-to-record
                     }
                     if (moved) {
                         val maxX = (screenWidth() - v.width).coerceAtLeast(0)
@@ -1015,8 +1037,16 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
                 }
                 MotionEvent.ACTION_UP -> {
                     v.removeCallbacks(longPress)
+                    v.removeCallbacks(holdStart)
                     when {
+                        // Let go: send, unless the hold was too short to have said anything.
+                        holdStarted -> DictateController.onPushToTalkUp(
+                            context,
+                            send = SystemClock.uptimeMillis() - holdStartedAt >= HOLD_MIN_SEND_MS,
+                        )
                         longPressFired -> Unit // handled by the long-press (prompt menu)
+                        // In hold mode a short tap does what holding does in tap mode: the prompt menu.
+                        !moved && holdMode -> onLongPress()
                         !moved -> onTap()
                         // When snapping is off the bubble stays where it was dropped (already clamped within
                         // the screen by ACTION_MOVE); otherwise it animates to the nearer side edge.
@@ -1028,6 +1058,9 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
                 }
                 MotionEvent.ACTION_CANCEL -> {
                     v.removeCallbacks(longPress)
+                    v.removeCallbacks(holdStart)
+                    if (holdStarted) DictateController.cancelPushToTalk()
+                    holdStarted = false
                     true
                 }
                 else -> false
@@ -1472,9 +1505,33 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
         }
     }
 
+    /**
+     * Whether this press records while held: hold mode is chosen and the press would start a fresh
+     * dictation. A press on a running dictation stops it, and one on a failure with a kept recording
+     * re-sends it, the same as in tap mode.
+     */
+    private fun holdModeApplies(): Boolean {
+        if (!DictateController.isPushToTalkActive(context)) return false
+        val current = DictateController.state.value
+        if (current is DictateController.UiState.Error &&
+            (current.action == DictateController.ErrorAction.RESEND ||
+                current.action == DictateController.ErrorAction.INSERT)
+        ) {
+            return false
+        }
+        return DictateController.canStartRecording()
+    }
+
     private fun onTap() {
         if (prefs.dictate.floatingButtonHaptic.get()) vibrateTap()
         val current = DictateController.state.value
+        // The field refused the last dictation: a tap puts it in now, rather than starting a new one.
+        if (current is DictateController.UiState.Error &&
+            current.action == DictateController.ErrorAction.INSERT &&
+            DictateController.retryPendingInsert(context, fromFocus = false)
+        ) {
+            return
+        }
         // Recovery (#160): if the previous floating-button dictation failed but its recording was kept
         // (e.g. a flaky signal dropped the upload), a tap re-sends that audio instead of starting a new
         // recording — so the dictation isn't lost just because the bubble has no resend chip of its own.
@@ -2531,11 +2588,13 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
     private inner class CloudSkin(context: Context) : BubbleSkin {
         private val viewSize = sdp(64)
         private val coreSize = sdp(48)
-        private val idleInset = sdp(13)
+        // The prototype's check is a third of the sphere (30 px on 90): 16 dp on the 48 dp core.
+        private val idleInset = sdp(16)
 
         override val visualInset: Int = (viewSize - coreSize) / 2
 
-        private val cloud = AudioReactiveCloudOrbView(context)
+        private val palette = CloudPalette.forColor(accentColor)
+        private val cloud = AudioReactiveCloudOrbView(context).apply { setColors(palette) }
         private val icon = ImageView(context).apply {
             elevation = sdpf(6f)
         }
@@ -2552,13 +2611,13 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
             minimumHeight = viewSize
         }
 
-        /** Cut from the same sky as the cloud, down to the dark glyph it puts on that surface. */
+        /** Cut from the same colours as the cloud, down to the dark glyph it puts on that surface. */
         override fun sideButtonBackground(): GradientDrawable = GradientDrawable(
             GradientDrawable.Orientation.TOP_BOTTOM,
-            AudioReactiveCloudOrbView.SURFACE_GRADIENT,
+            AudioReactiveCloudOrbView.surfaceGradient(palette),
         ).apply { shape = GradientDrawable.OVAL }
 
-        override val sideButtonForeground: Int = CLOUD_GLYPH_COLOR
+        override val sideButtonForeground: Int = palette.o2
 
         override fun applyState(state: DictateController.UiState) {
             when (state) {
@@ -2602,11 +2661,11 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
             cloud.stop()
         }
 
-        // Idle: the cloud itself is the button, with a mic hint so it reads as "tap to dictate".
+        // Idle: the cloud alone is the button, without a glyph, as in the prototype ("Bereit – Tippen startet").
         private fun showIdle() {
             cloud.setPaused(false)
             cloud.setMode(AudioReactiveCloudOrbView.Mode.IDLE)
-            showGlyph(R.drawable.ic_dictate_overlay_mic, idleInset, CLOUD_GLYPH_COLOR, 0.9f)
+            icon.visibility = View.INVISIBLE
         }
 
         private fun showGlyph(resId: Int, inset: Int, tint: Int, alpha: Float) {
@@ -2726,6 +2785,15 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
         private const val AUTO_DIM_DELAY_MS = 3500L
 
         /**
+         * Hold mode: how long the finger has to rest before recording starts. Short enough to feel instant,
+         * long enough that a drag or a tap never opens the microphone.
+         */
+        private const val HOLD_START_MS = 150L
+
+        /** Hold mode: a release sooner than this after the start is a hold given up on, not a dictation. */
+        private const val HOLD_MIN_SEND_MS = 400L
+
+        /**
          * How far the bubble's visible shape parks from the screen edge, in dp. The wider of the two gaps
          * the code used to produce by accident: pressed right up against the edge it read as something the
          * system had shoved aside rather than something placed there.
@@ -2748,7 +2816,6 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
         private val BLOB_RATES = floatArrayOf(1f, -0.62f, 0.41f)
         private val BLOB_TINTS = floatArrayOf(0.45f, 0.18f, 0.68f)
         private const val WAVE_BARS = 7
-        private const val CLOUD_GLYPH_COLOR = 0xFF343B8F.toInt()
 
         /** Lattice (#253): recording runs its idle constellation at the tempo the library ships it at. */
         private const val RECORDING_SPEED_UP = 6f

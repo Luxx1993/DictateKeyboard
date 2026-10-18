@@ -34,10 +34,13 @@ import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Policy
-import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,14 +58,10 @@ import dev.patrickgold.florisboard.R
 import dev.patrickgold.florisboard.app.settings.search.settingsSearchAnchor
 import dev.patrickgold.florisboard.app.LocalNavController
 import dev.patrickgold.florisboard.app.Routes
-import dev.patrickgold.florisboard.app.WHATS_NEW_TOURS
-import dev.patrickgold.florisboard.app.WhatsNewTourState
-import dev.patrickgold.florisboard.clipboardManager
 import dev.patrickgold.florisboard.lib.compose.FlorisScreen
 import dev.patrickgold.florisboard.lib.util.launchUrl
 import dev.patrickgold.jetpref.datastore.ui.Preference
 import org.florisboard.lib.android.stringRes
-import org.florisboard.lib.compose.FlorisCanvasIcon
 import org.florisboard.lib.compose.stringRes
 
 @Composable
@@ -71,7 +70,6 @@ fun AboutScreen() = FlorisScreen {
 
     val navController = LocalNavController.current
     val context = LocalContext.current
-    val clipboardManager by context.clipboardManager()
 
     val appVersion = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
 
@@ -83,10 +81,13 @@ fun AboutScreen() = FlorisScreen {
                 .fillMaxWidth()
                 .padding(top = 24.dp, bottom = 32.dp)
         ) {
-            FlorisCanvasIcon(
+            // The globe has no background of its own, so here it takes the screen's text colour rather than
+            // the launcher's white, which would vanish on a light screen.
+            Icon(
                 modifier = Modifier.requiredSize(64.dp),
-                iconId = R.mipmap.app_icon,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_diktat_globe_notification),
                 contentDescription = stringRes(R.string.app_name_full),
+                tint = MaterialTheme.colorScheme.onSurface,
             )
             Text(
                 text = stringRes(R.string.app_name_full),
@@ -108,7 +109,8 @@ fun AboutScreen() = FlorisScreen {
             summary = appVersion,
             onClick = {
                 try {
-                    clipboardManager.addNewPlaintext(appVersion)
+                    val clipboard = context.getSystemService(android.content.ClipboardManager::class.java)
+                    clipboard.setPrimaryClip(android.content.ClipData.newPlainText(appVersion, appVersion))
                     Toast.makeText(context, R.string.about__version_copied__title, Toast.LENGTH_SHORT).show()
                 } catch (e: Throwable) {
                     Toast.makeText(
@@ -118,54 +120,6 @@ fun AboutScreen() = FlorisScreen {
                     ).show()
                 }
             },
-        )
-        // A single "What's new" entry that opens a small version picker, so users on any prior version can
-        // re-view every release's tour without cluttering the list. (Auto-show on update still jumps
-        // straight to the updated version — see WhatsNewTour / pendingTourVersions.)
-        var showWhatsNewPicker by remember { mutableStateOf(false) }
-        Preference(
-            icon = Icons.Default.AutoAwesome,
-            modifier = Modifier.settingsSearchAnchor("about__whats_new__title"),
-            title = stringRes(R.string.about__whats_new__title),
-            summary = stringRes(R.string.about__whats_new__summary),
-            onClick = { showWhatsNewPicker = true },
-        )
-        if (showWhatsNewPicker) {
-            AlertDialog(
-                onDismissRequest = { showWhatsNewPicker = false },
-                title = { Text(stringRes(R.string.about__whats_new__title)) },
-                text = {
-                    // Newest first; the registry is ascending, so reverse for display.
-                    Column {
-                        WHATS_NEW_TOURS.reversed().forEach { tour ->
-                            val versionLabel = tour.version.toString().substringBeforeLast(".0")
-                            Text(
-                                text = stringRes(R.string.about__whats_new__versioned)
-                                    .replace("{version}", versionLabel),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        showWhatsNewPicker = false
-                                        WhatsNewTourState.open(tour.version)
-                                    }
-                                    .padding(vertical = 14.dp),
-                            )
-                        }
-                    }
-                },
-                confirmButton = {
-                    TextButton(onClick = { showWhatsNewPicker = false }) {
-                        Text(stringRes(R.string.action__cancel))
-                    }
-                },
-            )
-        }
-        Preference(
-            icon = Icons.Outlined.Public,
-            modifier = Modifier.settingsSearchAnchor("about__website__title"),
-            title = stringRes(R.string.about__website__title),
-            summary = "dictatekeyboard.com",
-            onClick = { context.launchUrl(R.string.florisboard__website_url) },
         )
         Preference(
             icon = Icons.Default.History,

@@ -81,12 +81,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.ConfigurationCompat
 import androidx.navigation.NavController
 import dev.patrickgold.florisboard.R
-import dev.patrickgold.florisboard.app.DictationOnly
 import dev.patrickgold.florisboard.app.FlorisAppActivity
 import dev.patrickgold.florisboard.app.FlorisPreferenceModel
 import dev.patrickgold.florisboard.app.FlorisPreferenceStore
 import dev.patrickgold.florisboard.app.LocalNavController
-import dev.patrickgold.florisboard.dictate.cloud.DictateCloud
 import dev.patrickgold.florisboard.dictate.ui.DictateWaveform
 import dev.patrickgold.florisboard.app.settings.dictate.ProviderSetupHandoff
 import dev.patrickgold.florisboard.app.settings.dictate.modelLanguagesAndSize
@@ -101,7 +99,6 @@ import dev.patrickgold.florisboard.dictate.provider.ProviderRegistry
 import dev.patrickgold.florisboard.dictate.provider.TranscriptionApi
 import dev.patrickgold.florisboard.lib.compose.FlorisScreen
 import dev.patrickgold.florisboard.lib.compose.FlorisScreenScope
-import dev.patrickgold.florisboard.lib.util.InputMethodUtils
 import dev.patrickgold.florisboard.lib.util.launchActivity
 import dev.patrickgold.florisboard.lib.util.launchUrl
 import dev.patrickgold.jetpref.datastore.model.collectAsState
@@ -133,8 +130,6 @@ fun SetupScreen() = FlorisScreen {
     val prefs by FlorisPreferenceStore
     val scope = rememberCoroutineScope()
 
-    val isFlorisBoardEnabled by InputMethodUtils.observeIsFlorisboardEnabled(foregroundOnly = true)
-    val isFlorisBoardSelected by InputMethodUtils.observeIsFlorisboardSelected(foregroundOnly = true)
     val hasNotificationPermission by prefs.internal.notificationPermissionState.collectAsState()
 
     // Dictate onboarding: the active transcription provider must have a usable key (or be keyless)
@@ -177,8 +172,6 @@ fun SetupScreen() = FlorisScreen {
         }
 
     content(
-        isFlorisBoardEnabled,
-        isFlorisBoardSelected,
         isMicGranted,
         isProviderConfigured,
         providerSkipped,
@@ -240,8 +233,6 @@ internal fun isProviderConfigured(
 
 @Composable
 private fun FlorisScreenScope.content(
-    isFlorisBoardEnabled: Boolean,
-    isFlorisBoardSelected: Boolean,
     isMicGranted: Boolean,
     isProviderConfigured: Boolean,
     providerSkipped: Boolean,
@@ -258,9 +249,6 @@ private fun FlorisScreenScope.content(
 ) {
 
     fun targetStep(): Int = when {
-        // Diktat-Edition: there is no keyboard to enable or select.
-        !DictationOnly.enabled && !isFlorisBoardEnabled -> Steps.EnableIme.id
-        !DictationOnly.enabled && !isFlorisBoardSelected -> Steps.SelectIme.id
         !isMicGranted -> Steps.GrantMicPermission.id
         hasNotificationPermission == NotificationPermissionState.NOT_SET && AndroidVersion.ATLEAST_API33_T -> Steps.SelectNotification.id
         !isProviderConfigured && !providerSkipped -> Steps.SetUpProvider.id
@@ -276,34 +264,13 @@ private fun FlorisScreenScope.content(
 
     content {
         LaunchedEffect(
-            isFlorisBoardEnabled, isFlorisBoardSelected, isMicGranted,
+            isMicGranted,
             hasNotificationPermission, isProviderConfigured, providerSkipped,
             floatingButtonStepPassed,
         ) {
             stepState.setCurrentAuto(targetStep())
         }
 
-        // Below block allows to return from the system IME enabler activity
-        // as soon as it gets selected.
-        LaunchedEffect(Unit) {
-            while (true) {
-                delay(200L)
-                val isEnabled = InputMethodUtils.isFlorisboardEnabled(context)
-                if (stepState.getCurrentAuto().value == Steps.EnableIme.id &&
-                    stepState.getCurrentManual().value == -1 &&
-                    !isFlorisBoardEnabled &&
-                    !isFlorisBoardSelected &&
-                    hasNotificationPermission == NotificationPermissionState.NOT_SET &&
-                    isEnabled
-                ) {
-                    context.launchActivity(FlorisAppActivity::class) {
-                        it.flags = (Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
-                            or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                            or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    }
-                }
-            }
-        }
         FlorisStepLayout(
             modifier = Modifier
                 .fillMaxSize()
@@ -397,32 +364,11 @@ private fun PreferenceUiScope<FlorisPreferenceModel>.steps(
     }
 
     return listOfNotNull(
-        if (DictationOnly.enabled) null else FlorisStep(
-            id = Steps.EnableIme.id,
-            title = stringRes(R.string.setup__enable_ime__title),
-            // The app greets with its waveform rather than a keyboard glyph — the same animation the
-            // "What's new" tour opens with, so the two screens rhyme from the first second.
-            art = { SetupWelcomeWave() },
-        ) {
-            StepText(stringRes(R.string.setup__enable_ime__description))
-            StepButton(label = stringRes(R.string.setup__enable_ime__open_settings_btn)) {
-                InputMethodUtils.showImeEnablerActivity(context)
-            }
-        },
-        if (DictationOnly.enabled) null else FlorisStep(
-            id = Steps.SelectIme.id,
-            title = stringRes(R.string.setup__select_ime__title),
-            icon = Icons.Default.SwapHoriz,
-        ) {
-            StepText(stringRes(R.string.setup__select_ime__description))
-            StepButton(label = stringRes(R.string.setup__select_ime__switch_keyboard_btn)) {
-                InputMethodUtils.showImePicker(context)
-            }
-        },
         FlorisStep(
             id = Steps.GrantMicPermission.id,
             title = stringRes(R.string.setup__grant_mic_permission__title),
-            icon = Icons.Default.Mic,
+            // The app greets with its waveform: this is the first step there is.
+            art = { SetupWelcomeWave() },
         ) {
             StepText(stringRes(R.string.setup__grant_mic_permission__description))
             StepButton(stringRes(R.string.setup__grant_mic_permission__btn)) {
@@ -448,10 +394,6 @@ private fun PreferenceUiScope<FlorisPreferenceModel>.steps(
             ProviderSetupStep(
                 onSaveKey = ::saveKey,
                 onSkip = onSkipProvider,
-                onOpenCloud = {
-                    DictateCloud.openedFromSetup = true
-                    navController.navigate(Routes.Settings.DictateCloud)
-                },
                 onActivateLocalModel = ::activateLocalModel,
                 onOpenAllModels = { openProviderEditor(ProviderRegistry.LOCAL.id) },
                 onOpenServerEditor = { openProviderEditor(ProviderSetupHandoff.ADD_CUSTOM) },
@@ -477,7 +419,7 @@ private fun PreferenceUiScope<FlorisPreferenceModel>.steps(
                     this@steps.prefs.internal.openFloatingButtonAfterSetup.set(true)
                     this@steps.prefs.internal.isImeSetUp.set(true)
                 }
-                navController.navigate(Routes.Settings.Home) {
+                navController.navigate(Routes.Main) {
                     popUpTo(Routes.Setup.Screen) { inclusive = true }
                 }
             }
@@ -509,7 +451,7 @@ private fun PreferenceUiScope<FlorisPreferenceModel>.steps(
             }
             StepButton(label = stringRes(R.string.setup__finish_up__finish_btn)) {
                 scope.launch { this@steps.prefs.internal.isImeSetUp.set(true) }
-                navController.navigate(Routes.Settings.Home) {
+                navController.navigate(Routes.Main) {
                     popUpTo(Routes.Setup.Screen) {
                         inclusive = true
                     }
@@ -530,7 +472,6 @@ private fun PreferenceUiScope<FlorisPreferenceModel>.steps(
 private fun FlorisStepLayoutScope.ProviderSetupStep(
     onSaveKey: (providerId: String, key: String) -> Unit,
     onSkip: () -> Unit,
-    onOpenCloud: () -> Unit,
     onActivateLocalModel: (modelId: String) -> Unit,
     onOpenAllModels: () -> Unit,
     onOpenServerEditor: () -> Unit,
@@ -548,16 +489,6 @@ private fun FlorisStepLayoutScope.ProviderSetupStep(
     // headline ways are meant to be equal here.
     var branch by rememberSaveable { mutableStateOf(ProviderBranch.CHOICE) }
 
-    // Coming back from the credit screen via "use my own provider" lands here, and must land on the
-    // key flow rather than on the fork the user has already answered.
-    val ownKeyRequested by DictateCloud.ownKeyRequested.collectAsState()
-    LaunchedEffect(ownKeyRequested) {
-        if (ownKeyRequested) {
-            branch = ProviderBranch.OWN_KEY
-            DictateCloud.ownKeyRequested.value = false
-        }
-    }
-
     // Every side of the fork is long enough to scroll, and to the layout this is one step
     // throughout — so without this, answering the fork from halfway down the page lands the key
     // flow halfway down as well, past its own heading.
@@ -571,7 +502,6 @@ private fun FlorisStepLayoutScope.ProviderSetupStep(
     when (branch) {
         ProviderBranch.CHOICE -> {
             ProviderChoice(
-                onChooseCloud = onOpenCloud,
                 onChooseOwnKey = { branch = ProviderBranch.OWN_KEY },
                 onChooseOnDevice = { branch = ProviderBranch.ON_DEVICE },
                 onChooseServer = onOpenServerEditor,
@@ -750,9 +680,6 @@ private fun FlorisStepLayoutScope.ProviderSetupStep(
                 ) {
                     ProviderRegistry.presets
                         .filter { it.capabilities.transcription }
-                        // Dictate Cloud is the *other* branch of this step, not an entry in the list
-                        // of providers to bring a key for — it has no key page and nothing to paste.
-                        .filter { it.id != ProviderRegistry.CLOUD.id }
                         .forEach { preset ->
                             DropdownMenuItem(
                                 leadingIcon = {
@@ -825,7 +752,6 @@ private fun SetupWelcomeWave() {
  */
 @Composable
 private fun FlorisStepLayoutScope.ProviderChoice(
-    onChooseCloud: () -> Unit,
     onChooseOwnKey: () -> Unit,
     onChooseOnDevice: () -> Unit,
     onChooseServer: () -> Unit,
@@ -834,15 +760,6 @@ private fun FlorisStepLayoutScope.ProviderChoice(
     StepText(stringRes(R.string.setup__provider__choose_intro))
     Spacer(modifier = Modifier.height(16.dp))
 
-    ChoiceCard(
-        title = stringRes(R.string.setup__provider__choice_cloud_title),
-        body = stringRes(R.string.setup__provider__choice_cloud_body),
-        buttonLabel = stringRes(R.string.setup__provider__choice_cloud_btn),
-        onClick = onChooseCloud,
-        // One mark, because this is one service.
-        marks = listOf(ProviderRegistry.CLOUD.id),
-    )
-    Spacer(modifier = Modifier.height(12.dp))
     ChoiceCard(
         title = stringRes(R.string.setup__provider__choice_own_title),
         body = stringRes(R.string.setup__provider__choice_own_body),
@@ -1188,8 +1105,6 @@ private fun ChoiceCard(
 }
 
 private sealed class Steps(val id: Int) {
-    data object EnableIme : Steps(id = 1)
-    data object SelectIme : Steps(id = 2)
     data object GrantMicPermission : Steps(id = 3)
     data object SelectNotification : Steps(id = 4)
     data object SetUpProvider : Steps(id = 5)

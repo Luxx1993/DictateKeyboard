@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- App icon "Welle um die Welt", black, for light wallpapers. Chosen in Settings › Other; the launcher
+     shows it through the SettingsLauncherAliasBlack activity alias. -->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@android:color/transparent"/>
+    <foreground android:drawable="@drawable/ic_diktat_globe_black"/>
+    <monochrome android:drawable="@drawable/ic_diktat_globe_monochrome"/>
+</adaptive-icon>

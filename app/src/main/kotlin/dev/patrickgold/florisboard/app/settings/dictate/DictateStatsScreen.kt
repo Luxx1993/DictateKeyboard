@@ -79,7 +79,6 @@ import org.florisboard.lib.compose.stringRes
 @Composable
 fun DictateStatsScreen() = FlorisScreen {
     title = stringRes(R.string.dictate__stats_title)
-    previewFieldVisible = false
     iconSpaceReserved = false
 
     val prefs by FlorisPreferenceStore
@@ -95,7 +94,6 @@ fun DictateStatsScreen() = FlorisScreen {
         val streakCurrent by prefs.dictate.statsStreakCurrent.collectAsState()
         val streakBest by prefs.dictate.statsStreakBest.collectAsState()
         val daily by prefs.dictate.statsDaily.collectAsState()
-        val milestonesEnabled by prefs.dictate.statsMilestonesEnabled.collectAsState()
         val context = LocalContext.current
 
         var showResetDialog by remember { mutableStateOf(false) }
@@ -148,37 +146,11 @@ fun DictateStatsScreen() = FlorisScreen {
             val shareBody = stringRes(R.string.dictate__stats_share_text)
                 .format(savedText, formatCount(dictations), formatCount(words))
             FilledTonalButton(
-                onClick = { shareStats(context, "$shareBody\n\n$PLAY_STORE_URL") },
+                onClick = { shareStats(context, "$shareBody\n\n$PROJECT_URL") },
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(18.dp))
                 Text("  " + stringRes(R.string.dictate__stats_share))
-            }
-
-            // --- Milestone celebrations toggle (opt-out, lives on this page) ---
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    Icon(Icons.Default.Celebration, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(stringRes(R.string.dictate__stats_milestones_title), style = MaterialTheme.typography.bodyLarge)
-                        Text(
-                            stringRes(R.string.dictate__stats_milestones_summary),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    Switch(
-                        checked = milestonesEnabled,
-                        onCheckedChange = { scope.launch { prefs.dictate.statsMilestonesEnabled.set(it) } },
-                    )
-                }
             }
 
             // --- Tracking-since + reset ---
@@ -363,7 +335,7 @@ private fun EmptyState() {
 
 // --- helpers --------------------------------------------------------------------------------------
 
-private const val PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=net.devemperor.dictate"
+private const val PROJECT_URL = "https://github.com/Luxx1993/unisono-diktat"
 private val BAR_MAX_HEIGHT = 64.dp
 
 private fun shareStats(context: android.content.Context, text: String) {

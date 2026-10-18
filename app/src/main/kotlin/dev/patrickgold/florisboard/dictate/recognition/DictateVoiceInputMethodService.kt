@@ -29,7 +29,7 @@ import dev.patrickgold.florisboard.R
 import dev.patrickgold.florisboard.app.FlorisPreferenceStore
 import dev.patrickgold.florisboard.dictate.DictateController
 import dev.patrickgold.florisboard.dictate.ui.AudioReactiveCloudOrbView
-import dev.patrickgold.florisboard.ime.keyboard.IncognitoMode
+import dev.patrickgold.florisboard.dictate.ui.CloudPalette
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -66,7 +66,7 @@ class DictateVoiceInputMethodService : InputMethodService() {
     private var committed = false
 
     override fun onCreateInputView(): View {
-        val accentColor = runCatching { prefs.theme.accentColor.get() }
+        val accentColor = runCatching { prefs.other.accentColor.get() }
             .getOrDefault(ComposeColor(0xFF30B7E6))
         val accent = accentColor.toArgb()
         // The accent is the user's own colour, so the label on a surface filled with it is picked against
@@ -82,6 +82,10 @@ class DictateVoiceInputMethodService : InputMethodService() {
         ).toInt()
 
         val orbView = AudioReactiveCloudOrbView(this).also { orb = it }
+        // The same cloud as the floating button, in the palette chosen for it.
+        runCatching { prefs.dictate.floatingButtonColor.get() }.getOrNull()?.let {
+            orbView.setColors(CloudPalette.forColor(it.toArgb()))
+        }
         orbView.setMode(AudioReactiveCloudOrbView.Mode.LISTENING)
 
         val glow = View(this).apply {
@@ -197,13 +201,7 @@ class DictateVoiceInputMethodService : InputMethodService() {
             InputType.TYPE_CLASS_NUMBER -> variation == InputType.TYPE_NUMBER_VARIATION_PASSWORD
             else -> false
         }
-        val incognito = when (prefs.suggestion.incognitoMode.get()) {
-            IncognitoMode.FORCE_OFF -> false
-            IncognitoMode.FORCE_ON -> true
-            IncognitoMode.DYNAMIC_ON_OFF ->
-                info.imeOptions and EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING != 0 ||
-                    prefs.suggestion.forceIncognitoModeFromDynamic.get()
-        }
+        val incognito = info.imeOptions and EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING != 0
         return password || incognito
     }
 

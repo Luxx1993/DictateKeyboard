@@ -22,8 +22,10 @@ package dev.patrickgold.florisboard.dictate.data.prompts
  * having to cut a release for every added prompt.
  */
 object PromptLibraryCatalog {
-    private const val OWNER = "DevEmperor"
-    private const val REPO = "DictateKeyboard"
+    // diktat's own repository, whose `prompt-library` branch came along with the fork. Should the fetch
+    // fail, the browser shows the snapshot bundled in the APK (see PromptLibraryManager's fallback).
+    private const val OWNER = "Luxx1993"
+    private const val REPO = "unisono-diktat"
 
     /** Branch that holds the library file. Single re-point for hosting. */
     const val BRANCH = "prompt-library"

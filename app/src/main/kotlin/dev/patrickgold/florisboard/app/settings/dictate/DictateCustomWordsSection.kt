@@ -52,9 +52,6 @@ import dev.patrickgold.florisboard.R
 import dev.patrickgold.florisboard.app.FlorisPreferenceModel
 import dev.patrickgold.florisboard.app.settings.search.settingsSearchAnchor
 import dev.patrickgold.florisboard.dictate.data.prompts.CustomWordList
-import dev.patrickgold.florisboard.glideTypingManager
-import dev.patrickgold.florisboard.ime.dictionary.DictionaryManager
-import dev.patrickgold.florisboard.ime.dictionary.PersonalDictionaryWriter
 import dev.patrickgold.jetpref.datastore.model.PreferenceData
 import dev.patrickgold.jetpref.datastore.model.collectAsState
 import dev.patrickgold.jetpref.datastore.ui.Preference
@@ -178,32 +175,20 @@ internal fun PreferenceUiScope<FlorisPreferenceModel>.CustomWordsSection(pref: P
         ImportWordsDialog(
             report = report,
             onDismiss = { pendingImport = null },
-            onConfirm = { alsoToDictionary ->
+            onConfirm = {
                 pendingImport = null
                 // An import is its own confirmed action, so it is written straight through rather than
                 // left to the editor's OK — otherwise a later Cancel would silently undo a file the
-                // user just approved, and the personal-dictionary half (which is written now) could
-                // not be undone with it anyway.
+                // user just approved.
                 report.merged?.let { merged ->
                     editorText = merged
                     scope.launch { pref.set(merged) }
                 }
                 scope.launch {
-                    val addedToDictionary = withContext(Dispatchers.IO) {
-                        if (alsoToDictionary) addToPersonalDictionary(context, report.fromFile) else 0
-                    }
-                    if (alsoToDictionary) {
-                        context.showLongToast(
-                            R.string.dictate__custom_words_import_done_dictionary,
-                            "count" to report.accepted.size,
-                            "dict" to addedToDictionary,
-                        )
-                    } else {
-                        context.showLongToast(
-                            R.string.dictate__custom_words_import_done,
-                            "count" to report.accepted.size,
-                        )
-                    }
+                    context.showLongToast(
+                        R.string.dictate__custom_words_import_done,
+                        "count" to report.accepted.size,
+                    )
                 }
             },
         )
@@ -367,9 +352,8 @@ private fun DialogFileButton(
 private fun ImportWordsDialog(
     report: CustomWordList.ImportReport,
     onDismiss: () -> Unit,
-    onConfirm: (alsoToDictionary: Boolean) -> Unit,
+    onConfirm: () -> Unit,
 ) {
-    var alsoToDictionary by remember { mutableStateOf(false) }
     val preview = report.accepted.ifEmpty { report.fromFile }
 
     JetPrefAlertDialog(
@@ -379,7 +363,7 @@ private fun ImportWordsDialog(
         title = stringRes(R.string.dictate__custom_words_import_title),
         confirmLabel = stringRes(R.string.action__add),
         dismissLabel = stringRes(R.string.action__cancel),
-        onConfirm = { onConfirm(alsoToDictionary) },
+        onConfirm = onConfirm,
         onDismiss = onDismiss,
     ) {
         Column {
@@ -431,16 +415,6 @@ private fun ImportWordsDialog(
                 text = preview.take(8).joinToString(", ") + if (preview.size > 8) ", …" else "",
                 fontStyle = FontStyle.Italic,
             )
-            // The split between the two lists is deliberate and stays — but an import is exactly the
-            // moment somebody expects one list to be the other, so the offer is made here in words
-            // rather than left to be discovered as a missing feature.
-            CheckboxRow(
-                title = stringRes(R.string.dictate__custom_words_import_also_dictionary),
-                summary = stringRes(R.string.dictate__custom_words_import_also_dictionary_summary),
-                checked = alsoToDictionary,
-                onCheckedChange = { alsoToDictionary = it },
-                modifier = Modifier.padding(top = 12.dp),
-            )
         }
     }
 }
@@ -460,50 +434,3 @@ internal fun writeText(context: Context, uri: Uri, text: String): Boolean = runC
     true
 }.getOrDefault(false)
 
-/**
- * Writes [words] into the internal personal dictionary and returns how many were new.
- *
- * The internal one rather than the system one: it is the dictionary the keyboard's own engine reads,
- * and the system one belongs to the device rather than to this app.
- */
-private fun addToPersonalDictionary(context: Context, words: List<String>): Int {
-    val manager = DictionaryManager.default()
-    manager.loadUserDictionariesIfNecessary()
-    val dao = manager.florisUserDictionaryDao() ?: return 0
-    val added = PersonalDictionaryWriter.addWords(dao, words)
-    // Glide typing indexes the vocabulary once per subtype, so without this a swipe would keep using
-    // the list as it was before the import (issue #263).
-    if (added.isNotEmpty()) context.glideTypingManager().value.invalidateWordData()
-    return added.size
-}
-
-/** A checkbox with a title and an explanation under it, for use inside a dialog. */
-@Composable
-private fun CheckboxRow(
-    title: String,
-    summary: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .selectable(selected = checked, onClick = { onCheckedChange(!checked) }),
-        verticalAlignment = Alignment.Top,
-    ) {
-        Checkbox(
-            checked = checked,
-            onCheckedChange = null,
-            modifier = Modifier.padding(end = 8.dp),
-        )
-        Column(modifier = Modifier.weight(1f)) {
-            Text(title, style = MaterialTheme.typography.bodyLarge)
-            Text(
-                summary,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
-}

@@ -22,36 +22,16 @@ import kotlin.test.assertTrue
 class DictateFloatingButtonShowWhenTest {
 
     @Test
-    fun `the old switch keeps its meaning`() {
-        assertEquals(
-            DictateFloatingButtonShowWhen.ALSO_WITH_DICTATE_KEYBOARD,
-            DictateFloatingButtonShowWhen.fromShowWithDictateKeyboard("true"),
-        )
+    fun `a removed keyboard option falls back to what the button has always done`() {
         assertEquals(
             DictateFloatingButtonShowWhen.FIELD_SELECTED,
-            DictateFloatingButtonShowWhen.fromShowWithDictateKeyboard("false"),
-        )
-        // Anything unreadable falls back to what the button has always done.
-        assertEquals(
-            DictateFloatingButtonShowWhen.FIELD_SELECTED,
-            DictateFloatingButtonShowWhen.fromShowWithDictateKeyboard(""),
+            DictateFloatingButtonShowWhen.fromRemovedKeyboardOption(),
         )
     }
 
-    /** Each entry sets exactly one of the two terms the visibility rule asks about, or neither. */
     @Test
-    fun `each entry says what it changes`() {
-        with(DictateFloatingButtonShowWhen.FIELD_SELECTED) {
-            assertFalse(keyboardRequired)
-            assertFalse(besideDictateKeyboard)
-        }
-        with(DictateFloatingButtonShowWhen.KEYBOARD_OPEN) {
-            assertTrue(keyboardRequired)
-            assertFalse(besideDictateKeyboard)
-        }
-        with(DictateFloatingButtonShowWhen.ALSO_WITH_DICTATE_KEYBOARD) {
-            assertFalse(keyboardRequired)
-            assertTrue(besideDictateKeyboard)
-        }
+    fun `only keyboard open needs a keyboard`() {
+        assertFalse(DictateFloatingButtonShowWhen.FIELD_SELECTED.keyboardRequired)
+        assertTrue(DictateFloatingButtonShowWhen.KEYBOARD_OPEN.keyboardRequired)
     }
 }

@@ -61,6 +61,17 @@ data class ProviderPreset(
      */
     val apiKeyUrl: String? = null,
     val defaultChatModel: String? = null,
+    /**
+     * The `reasoning_effort` [defaultChatModel] runs at while the user's own setting is Off — a fact
+     * about that one model, measured, never a guess about what models in general can take.
+     *
+     * Off omits the field and leaves the effort to the provider, and for a reasoning model the provider's
+     * default is rarely what a rewording wants: OpenAI's gpt-6-luna thinks at medium unless told
+     * otherwise, which made a one-sentence correction twice as slow and multiplied its output tokens.
+     * Applies only while that exact model is the one in use ([reasoningEffortWhenOff]); a model the user
+     * picked runs at whatever their setting says.
+     */
+    val defaultChatReasoningEffort: String? = null,
     val defaultTranscriptionModel: String? = null,
     val extraHeaders: Map<String, String> = emptyMap(),
     val isCustom: Boolean = false,
@@ -121,6 +132,10 @@ data class ProviderPreset(
     /** Whether the audio and text can stay in the EU with this provider — by default, or by region. */
     val servesFromEu: Boolean
         get() = hostedInEu || regions.any { it.id == "eu" }
+
+    /** The effort to send with [model] when the user's setting is Off; null leaves it to the provider. */
+    fun reasoningEffortWhenOff(model: String): String? =
+        defaultChatReasoningEffort?.takeIf { model == defaultChatModel }
 }
 
 /**
@@ -139,18 +154,35 @@ object ProviderRegistry {
         capabilities = CHAT_AND_STT,
         supportsDynamicModels = true,
         apiKeyUrl = "https://platform.openai.com/api-keys",
-        defaultChatModel = "gpt-4o-mini",
+        // OpenAI announced on 2026-10-14 that gpt-4o, gpt-4o-mini, gpt-4.1 and gpt-4.1-mini leave the API
+        // on 2027-01-14, and gpt-4.1-nano goes sooner, on 2026-10-23; all five were this list, and the first
+        // was the default (deprecations page, read 2026-10-16). gpt-6-luna is the replacement OpenAI names
+        // for every one of them and also the cheapest model it sells ($0.10 in / $0.50 out per 1M tokens,
+        // against gpt-4o-mini's $0.15 / $0.60). Like the transcription default below, it reaches everyone
+        // who never chose a model; an explicit choice is stored verbatim and left alone.
+        defaultChatModel = "gpt-6-luna",
+        // Unlike gpt-4o-mini, Luna is a reasoning model, and with the field omitted it thinks at medium.
+        // Measured 2026-10-16 with the app's own requests, five runs each:
+        //     Fix Grammar, one sentence     omitted ~2.0 s, 85-145 reasoning tokens   none ~0.9 s, 0
+        //     auto-formatting, spoken cues  omitted 2.5-7.2 s, up to 620 tokens       none 1.0-1.5 s, 0
+        // At none it set list and paragraph cues as reliably as gpt-4o-mini, and like gpt-4o-mini (every
+        // run) it left a spelling cue standing ("Meyer with a y"), which medium resolved four times in
+        // five. Today's results at today's speed beat a slightly better guess at five times the wait, so
+        // the default runs at none; the emulator showed the same, 1.1-1.6 s against 3.3-4.8 s at medium.
+        // "minimal" is no option: Luna refuses it with a 400, and gpt-6.1-sol refuses none as well.
+        defaultChatReasoningEffort = "none",
         // gpt-transcribe (2026-07) is both cheaper than gpt-4o-transcribe ($0.0045 vs $0.006 per minute)
         // and markedly more accurate, so it is the default. This applies to everyone who never chose a
         // model — the account stores an empty string in that case and resolves through here on every
         // call, so existing installs move to it too. An explicit choice is stored verbatim and untouched.
         defaultTranscriptionModel = "gpt-transcribe",
-        curatedChatModels = listOf(
-            "gpt-4o-mini", "gpt-4o", "gpt-4.1-mini", "gpt-4.1", "gpt-4.1-nano",
-        ),
-        curatedTranscriptionModels = listOf(
-            "gpt-transcribe", "gpt-4o-mini-transcribe", "gpt-4o-transcribe", "whisper-1",
-        ),
+        // gpt-6-astra, the third of the current line, is left to the live catalog: at a hundred times
+        // Luna's price it buys nothing a correction or a rephrasing needs.
+        curatedChatModels = listOf("gpt-6-luna", "gpt-6.1-sol"),
+        // whisper-1, gpt-4o-transcribe and gpt-4o-mini-transcribe leave the API on 2027-02-26 (announced
+        // 2026-08-26). Until then they still come up in the live catalog for whoever wants them; they are
+        // just no longer offered as a starting point.
+        curatedTranscriptionModels = listOf("gpt-transcribe"),
         // The guide lists mp3, mp4, mpeg, mpga, m4a, wav, webm; the API reference adds flac and ogg.
         // Rather than pick a page, the endpoint was asked directly on 2026-09-04 with the same Ogg/Opus
         // bytes twice, same `audio/ogg` part type, only the file NAME differing:
@@ -171,43 +203,9 @@ object ProviderRegistry {
         supportsRealtime = true,
         realtimeApi = RealtimeApi.OPENAI,
         defaultRealtimeModel = "gpt-live-transcribe",
+        // The two gpt-4o transcribers went with the batch list above, for the same 2027-02-26 date.
         curatedRealtimeModels = listOf(
             "gpt-live-transcribe", "gpt-realtime-whisper", "gpt-transcribe",
-            "gpt-4o-transcribe", "gpt-4o-mini-transcribe",
-        ),
-    )
-
-    /**
-     * Dictate Cloud — credit bought inside the app instead of an API key of one's own.
-     *
-     * Technically the least remarkable entry in this list: the server speaks the same OpenAI formats
-     * as everything else, so [OpenAiCompatibleClient] reaches it unchanged and the wallet token
-     * simply sits where an API key would, in [ProviderAccount.apiKey]. What differs is who decides.
-     * The model is not the user's pick but the server's, because the price is calculated from it —
-     * so there is nothing for the picker to offer and [supportsDynamicModels] is false. The ids
-     * below travel with the request and are overwritten upstream; they exist so the request stays
-     * well-formed, not because they name anything real.
-     *
-     * Realtime stays off on purpose rather than by omission: streaming costs nearly four times a
-     * dictated minute, and the on-device engine already does it for nothing.
-     */
-    val CLOUD = ProviderPreset(
-        id = "cloud",
-        displayName = "Dictate Cloud",
-        baseUrl = "https://api.dictatekeyboard.com/v1/",
-        capabilities = CHAT_AND_STT,
-        supportsDynamicModels = false,
-        apiKeyUrl = null,
-        defaultChatModel = "dictate-cloud",
-        defaultTranscriptionModel = "dictate-cloud",
-        supportsRealtime = false,
-        // Not copied from an upstream provider's list — the server does not say which one it used. This
-        // is what its OWN duration probe reads (`cloud/src/audio.ts`), and that matters to the person
-        // paying: a container it cannot probe is billed from a generous size estimate instead of the
-        // real length. Converting into this set is therefore cheaper for the user, not just safer.
-        acceptedAudioContainers = setOf(
-            AudioContainer.WAV, AudioContainer.MP3, AudioContainer.M4A,
-            AudioContainer.OGG, AudioContainer.FLAC,
         ),
     )
 
@@ -269,8 +267,13 @@ object ProviderRegistry {
         supportsDynamicModels = true,
         apiKeyUrl = "https://openrouter.ai/keys",
         // OpenRouter exposes hundreds of models (incl. Claude, Gemini, Llama …); users pick from the
-        // live catalog. This is just a safe default to start with and is fully user-overridable.
-        defaultChatModel = "openai/gpt-4o-mini",
+        // live catalog. This is just a safe default to start with and is fully user-overridable. It follows
+        // the OpenAI preset off gpt-4o-mini, whose only upstream is OpenAI and which leaves its API on
+        // 2027-01-14; openai/gpt-6-luna is in OpenRouter's public catalog at the same $0.10 / $0.50
+        // (read 2026-10-16). No [defaultChatReasoningEffort] here: OpenRouter documents its own nested
+        // `reasoning` object and maps efforts to the nearest supported level, and whether it reads the
+        // top-level field this client sends has not been measured.
+        defaultChatModel = "openai/gpt-6-luna",
         // gpt-transcribe is the same model the OpenAI preset defaults to, which is the point: one model
         // behaving one way across providers, already exercised by this app. It is also the only entry
         // below that OpenRouter does not route — OpenAI is its sole upstream, so nobody's dictation
@@ -308,8 +311,8 @@ object ProviderRegistry {
         // Attribution headers recommended by OpenRouter: both are used for app ranking and some routes
         // reject requests without an HTTP-Referer. The value is a stable identifier, not a real URL.
         extraHeaders = mapOf(
-            "HTTP-Referer" to "https://github.com/DevEmperor/Dictate",
-            "X-Title" to "Dictate",
+            "HTTP-Referer" to "https://github.com/Luxx1993/unisono-diktat",
+            "X-Title" to "diktat",
         ),
         // Data residency (#403): the EU entry point decrypts in the EU and routes only to in-region
         // provider endpoints, failing a request outright rather than letting it leave the region. Same
@@ -910,7 +913,7 @@ object ProviderRegistry {
 
     /** All built-in presets in display order. The custom option is added by the UI on top of these. */
     val presets: List<ProviderPreset> = listOf(
-        CLOUD, OPENAI, GROQ, OPENROUTER, GEMINI, ANTHROPIC, TOGETHER, DEEPINFRA, MISTRAL, SONIOX,
+        OPENAI, GROQ, OPENROUTER, GEMINI, ANTHROPIC, TOGETHER, DEEPINFRA, MISTRAL, SONIOX,
         ELEVENLABS, DEEPGRAM, ASSEMBLYAI, AZURE, XAI, DEEPSEEK, SILICONFLOW, SCALEWAY, OVHCLOUD,
         OLLAMA, LOCAL,
     )
@@ -984,7 +987,7 @@ object ProviderRegistry {
      *    megabytes, the lower of the two readings, since nobody has measured which one xAI means.
      */
     fun maxUploadBytes(providerId: String): Long = when (providerId) {
-        "openai", "cloud", "groq", "openrouter", "scaleway" -> 25L * 1024 * 1024
+        "openai", "groq", "openrouter", "scaleway" -> 25L * 1024 * 1024
         "gemini" -> 15L * 1024 * 1024
         "siliconflow" -> 50L * 1024 * 1024
         "azure" -> 300L * 1024 * 1024
