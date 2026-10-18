@@ -13,16 +13,13 @@ Kernablauf: sprechen → KI räumt den Text auf → Text wird eingefügt. Lukas 
 
 ## Stand der Diktat-Edition
 
-- Schalter `dictationOnly` (Standard `true`, Gradle-Property): Tastatur (IME), Rechtschreibprüfung, Wear OS
-  und Offline-Übersetzung sind im Manifest abgeschaltet (`manifestPlaceholders["fullKeyboard"]`). Spracheingabe-Methode,
-  Erkennungsdienst und schwebender Button bleiben. Mit `-PdictationOnly=false` entsteht wieder die vollständige App.
-- Tastatur-Routen in den Einstellungen werden über `app/src/main/kotlin/dev/patrickgold/florisboard/app/DictationOnly.kt` ausgeblendet.
-- **Lukas' Vorgabe: Tastatur und alles Zugehörige soll so weit wie möglich raus.** Bisher nur ausgeblendet; das Entfernen
-  ist geplant (`docs/FUNKTIONEN.md` Abschnitt 13). Updates vom Original lassen sich danach kaum noch übernehmen, das ist gewollt.
-  Schrittweise vorgehen, nach jedem Schritt bauen.
-  Maßstab: Es bleibt nur, was die Diktierfunktion laut Screens und das Einrichten in Android als Eingabe-/Spracheingabe-Methode
-  technisch brauchen, so wenig wie möglich. Keine Tastaturfunktion bleibt um ihrer selbst willen. Im Zweifel entfernen, bauen,
-  prüfen; Behaltenes mit Grund in FUNKTIONEN.md Abschnitt 13 notieren.
+- **Tastatur und Zubehör sind entfernt** (Oktober 2026): Tastatur-IME, Rechtschreibprüfung, Wear OS, Dictate Cloud, GIF,
+  Sticker, Scan, Übersetzung, Erweiterungen, Theme-Engine, Tastatur-Einstellungen. Details, was blieb und warum, und offene
+  Punkte: `docs/FUNKTIONEN.md` Abschnitt 13. Den Gradle-Schalter `dictationOnly` gibt es nicht mehr.
+- Es bleiben: Diktat-Logik, schwebender Button, Spracheingabe-Methode (für SwiftKeys Mikrofon-Taste),
+  System-Erkennungsdienst, Datei transkribieren, Einstellungen, Verlauf, Statistik, Sichern/Wiederherstellen.
+- Maßstab für weitere Arbeit: Es bleibt nur, was die Diktierfunktion laut Screens und das Einrichten in Android als
+  Eingabe-/Spracheingabe-Methode technisch brauchen. Behaltenes mit Grund in FUNKTIONEN.md Abschnitt 13 notieren.
 
 ## Bauen
 
@@ -54,10 +51,10 @@ Alle Design-Entscheidungen stehen in **`docs/design/diktat-design.md`**. Das ist
 
 ## Nächste Aufgaben
 
-0. Tastatur und Zubehör entfernen (`docs/FUNKTIONEN.md` Abschnitt 13).
 1. App-Icon einbauen (adaptives Icon, Themen-Icon, Umschalter weiß/schwarz), dann Splash-Animation A, dann In-App-Animation D.
 2. Entwurf 3 als neue Oberfläche umsetzen.
 3. Wolken-Shader an den Prototyp angleichen.
 4. Später: Anbieter Gladia, Preset Cerebras, AssemblyAI Sync API.
+5. Offen aus dem Entfernen: „Halten zum Aufnehmen“ und Langdiktat am Button anbinden oder streichen (FUNKTIONEN.md 13).
 
 Details und Reihenfolge: Abschnitt 5 und 7 in `docs/design/diktat-design.md`.

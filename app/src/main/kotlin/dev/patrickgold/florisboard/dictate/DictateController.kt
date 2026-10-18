@@ -2741,16 +2741,13 @@ object DictateController {
     // --- Long-form segmented dictation (issue #170) ---------------------------------------------
 
     /**
-     * Whether the next recording should run in segmented mode: the feature is on, output goes to the
-     * keyboard (not the accessibility overlay), it's not a live-prompt recording, realtime streaming is
-     * not active, and the provider isn't in single-call multimodal mode (which would format per segment).
+     * Whether the next recording should run in segmented mode. Segmented output only ever went to the
+     * keyboard, never to the floating button or the voice input, so since the keyboard was removed (Diktat-
+     * Edition) no recording runs segmented. Whether long-form dictation is wired to the button or removed
+     * is still open (docs/FUNKTIONEN.md, section 13).
      */
-    private fun isSegmentedMode(context: Context): Boolean =
-        prefs.dictate.longformMode.get().isEnabled &&
-            false &&
-            !livePromptArmed &&
-            !isRealtimeActive(context) &&
-            !transcriptionAccount().transcriptionViaChat
+    @Suppress("UNUSED_PARAMETER")
+    private fun isSegmentedMode(context: Context): Boolean = false
 
     private fun initSegmented(appContext: Context) {
         segmentedActive = true

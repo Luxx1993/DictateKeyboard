@@ -42,11 +42,6 @@ val projectVersionNameSuffix = projectVersionName.substringAfter("-", "").let { 
     }
 }
 
-// Diktat-Edition (Fork Luxx1993): Die volle Tastatur, Rechtschreibprüfung, Wear OS und die
-// Offline-Übersetzung sind abgeschaltet; Diktat, Spracheingabe und schwebender Button bleiben.
-// Mit -PdictationOnly=false entsteht wieder die vollständige Original-App.
-val dictationOnly = providers.gradleProperty("dictationOnly").map { it.toBoolean() }.getOrElse(true)
-
 kotlin {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_11)
@@ -93,10 +88,6 @@ configure<ApplicationExtension> {
         }
 
         buildConfigField("String", "BUILD_COMMIT_HASH", "\"${getGitCommitHash().get()}\"")
-        buildConfigField("String", "FLADDONS_API_VERSION", "\"v~draft2\"")
-        buildConfigField("String", "FLADDONS_STORE_URL", "\"beta.addons.florisboard.org\"")
-        buildConfigField("boolean", "DICTATION_ONLY", dictationOnly.toString())
-        manifestPlaceholders["fullKeyboard"] = (!dictationOnly).toString()
 
         sourceSets {
             maybeCreate("main").apply {

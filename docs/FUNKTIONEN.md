@@ -1,9 +1,10 @@
 # diktat – Funktionen
 
-Stand: aus dem Code des Branches `diktat-edition` gelesen (Oktober 2026). Beschreibt, was die App **heute kann**,
+Stand: aus dem Code des Branches `diktat-edition` gelesen (Oktober 2026), nach dem Entfernen der Tastatur
+aktualisiert (Abschnitt 13). Beschreibt, was die App **heute kann**,
 wo es im Code liegt und was Lukas damit vorhat. Design und Optik stehen in `docs/design/diktat-design.md`.
 
-Status-Legende: **vorhanden** (läuft heute) · **versteckt** (Code da, in der Diktat-Edition ausgeblendet) ·
+Status-Legende: **vorhanden** (läuft heute) · **entfernt** (in der Diktat-Edition gelöscht, siehe Abschnitt 13) ·
 **geplant** (von Lukas gewünscht, noch nicht gebaut) · **offen** (Entscheidung von Lukas steht aus).
 
 Pfade beginnen, wenn nicht anders genannt, bei `app/src/main/kotlin/dev/patrickgold/florisboard/`.
@@ -24,7 +25,7 @@ des Originals, das nur dann bleibt, wenn es unten steht.
 - Dazu aus Lukas' Wünschen: Icon mit Animationen und Umschalter weiß/schwarz; Verlauf und Statistik behalten; Offline-Spracherkennung behalten.
 
 **Nicht im Soll:** Tastatur in jeder Form, Wear OS, GIFs, Sticker, Scan, Übersetzung, Rechtschreibprüfung, Dictate Cloud (Guthaben).
-**Im Code vorhanden, aber nicht in den Screens (Verbleib noch zu klären):** Echtzeit, Langdiktat, Bluetooth-Mikro, Audioquelle, Audio beschleunigen, Sofortaufnahme, Auto-Enter, Tippgeschwindigkeit, Prompt-Bibliothek, Tipp-Kürzel, Proxy, Verlauf-Details. Vorschlag: unter „Mehr“ oder „Aufnahme“ in der neuen Oberfläche bündeln, nichts davon neu bauen.
+**Im Code vorhanden, aber nicht in den Screens (Verbleib noch zu klären):** Echtzeit, Langdiktat (ohne Tastatur ohne Wirkung), Bluetooth-Mikro, Audioquelle, Audio beschleunigen, Auto-Enter, Tippgeschwindigkeit, Prompt-Bibliothek, Proxy, Verlauf-Details. Sofortaufnahme und Tipp-Kürzel sind mit der Tastatur entfernt. Vorschlag: unter „Mehr“ oder „Aufnahme“ in der neuen Oberfläche bündeln, nichts davon neu bauen.
 
 ---
 
@@ -46,8 +47,8 @@ sprechen → (Transkription durch Anbieter) → optional KI-Aufräumen / Stil �
 | **Spracheingabe-Methode** | Dictate als Spracheingabe-Methode, zusammen mit einer fremden Tastatur (SwiftKey) nutzbar. | `dictate/recognition/DictateVoiceInputMethodService.kt` | vorhanden |
 | **System-Erkennungsdienst** | Dictate als systemweiter Spracherkenner (Standard-Android-`RecognitionService`). Manche Tastaturen (z. B. Gboard) nutzen ihn nicht. | `dictate/recognition/DictateRecognitionService.kt`, `RecognitionActivity.kt` | vorhanden |
 | **Datei transkribieren** | Audiodatei wählen oder aus anderer App teilen, Ergebnis in eigener Ansicht. Auch im Menü des schwebenden Buttons. | `dictate/importer/`, `FileTranscriptionActivity.kt` | vorhanden |
-| **Volle Tastatur (IME)** | FlorisBoard-Tastatur mit Diktat-Leiste, Prompts, GIFs, Sticker, Scan, Übersetzung | `dictate/ui/`, `dictate/gif/`, `dictate/sticker/`, `dictate/scan/`, `dictate/translate/` | **versteckt** (`dictationOnly`) |
-| **Wear OS** | Diktat von der Uhr | `dictate/wear/` | **versteckt** |
+| ~~Volle Tastatur (IME)~~ | FlorisBoard-Tastatur mit Diktat-Leiste, Prompts, GIFs, Sticker, Scan, Übersetzung | – | **entfernt** (Abschnitt 13) |
+| ~~Wear OS~~ | Diktat von der Uhr | – | **entfernt** (Abschnitt 13) |
 
 ## 3. Anbieter (Transkription und Aufräumen)
 
@@ -73,11 +74,10 @@ Die Einstellungsseite zeigt nur eingerichtete Anbieter, weitere hinter „Anbiet
 | Ollama (lokal im Netz, ohne Key) | – | ja | – |
 | **Auf dem Gerät (offline)** | ja (Whisper-Modelle) | – | ja |
 | **Eigener Server** (OpenAI-kompatibel, benutzerdefiniert) | ja | ja | – |
-| Dictate Cloud | ja | ja | – |
 
 Hinweise:
 - Lukas nutzt heute **ElevenLabs Scribe** + **Claude Haiku 5.5**. Das Modell wird im Konto des Anbieters eingetragen (nicht der Code-Standard).
-- **Dictate Cloud** ist das Guthaben-Angebot des Originals (kostenpflichtig, Credit-Pakete). Lukas will nichts bezahlen und nutzt eigene Keys. Sie ist nicht im Soll und kommt mit der Tastatur raus (Abschnitt 13).
+- **Dictate Cloud** (Guthaben-Angebot des Originals) ist **entfernt** (Abschnitt 13). Lukas nutzt eigene Keys.
 - Weitere Wünsche: **Gladia**, **Cerebras** (als Voreinstellung zum Aufräumen), **AssemblyAI Sync API** – **geplant**, noch nicht im Code.
 - Proxy-Einstellung (HTTP/SOCKS mit Login) vorhanden: `app/settings/dictate/DictateProxyScreen.kt`.
 - Offline-Modelle werden heruntergeladen und verwaltet: `dictate/provider/LocalModelManager.kt`, `ModelDownloadService.kt`.
@@ -91,13 +91,11 @@ Hinweise:
 
 Alle in `app/settings/dictate/DictateScreen.kt`:
 
-- **Halten zum Aufnehmen** (Push-to-Talk) statt zweimal tippen
+- **Halten zum Aufnehmen** (Push-to-Talk) statt zweimal tippen – wirkte nur an der Mikrofon-Taste der Tastatur; am schwebenden Button noch nicht angebunden (Abschnitt 13)
 - **Echtzeit-Transkription** (Streaming, wenn der Anbieter es kann)
-- **Langdiktat**: aus / manuell („Weiter“-Taste schneidet Abschnitte) / automatisch (Sprachpausen-Erkennung mit Silero-VAD und Smart Turn v3)
+- **Langdiktat**: aus / manuell („Weiter“-Taste schneidet Abschnitte) / automatisch (Sprachpausen-Erkennung mit Silero-VAD und Smart Turn v3) – lief nur in der Tastatur, **ohne Wirkung** seit sie entfernt ist (Abschnitt 13)
 - Andere Audio-Wiedergabe pausieren; Bluetooth-Mikrofon; Audioquelle wählen; Bildschirm anlassen
-- **Aufnahme-Anzeige**: statisch, Puls, Pegel, Wellenform
 - **Stille Aufnahmen überspringen**; **lange Pausen herausschneiden**; **Audio beschleunigen** (Tonhöhe bleibt)
-- **Sofortaufnahme** (Aufnahme startet, sobald die Eingabe öffnet)
 - Status: **vorhanden**.
 
 ## 6. Ausgabe-Einstellungen (Gruppe „Ausgabe“)
@@ -123,7 +121,6 @@ Ein Prompt hat:
 - Name und Anweisungstext an die KI. Text in `[eckigen Klammern]` wird **unverändert eingefügt** (Textbaustein/Snippet).
 - **Auswahl erforderlich**: wirkt auf den markierten Text und ersetzt ihn.
 - **Automatisch anwenden**: läuft nach jedem Diktat von selbst (das ist der „Aktive Stil“ / „Nach jedem Diktat anwenden“ im Entwurf).
-- **Tipp-Kürzel** (z. B. `;sig`), das einen Textbaustein beim Tippen auslöst (`dictate/snippet/SnippetTriggers.kt`).
 - **Denkaufwand** pro Prompt.
 - Reihenfolge per langem Drücken und Ziehen; **Export/Import** als `dictate_prompts.json`.
 - **Prompt-Bibliothek** der Community zum Hinzufügen (`DictatePromptLibraryScreen.kt`, `dictate/data/prompts/PromptLibrary*.kt`).
@@ -137,14 +134,14 @@ Zwei getrennte Dinge (im Entwurf in einem Tab „Wörterbuch“):
 1. **Eigene Wörter** (`DictateCustomWordsSection.kt`): Namen und Fachbegriffe, die dem Sprachmodell mitgegeben werden, damit es sie richtig schreibt. Zählt Tokens (das Sprachmodell liest nur begrenzt viel), Import/Export als Textdatei.
 2. **Ersetzungen / Mappings** (`DictateMappingsScreen.kt`, `DictateMappings.kt`): Suchen-und-Ersetzen auf dem fertigen Text, exakt und lokal. Pro Regel: Groß-/Kleinschreibung beachten, nur ganze Wörter.
 
-Status: **vorhanden**. Die Persönliche-Wörterbuch-Seiten der Tastatur sind **versteckt**.
+Status: **vorhanden**. Das persönliche Wörterbuch der Tastatur ist **entfernt** (auch der Import eigener Wörter dorthin).
 
 ## 10. Schwebender Button („Wolke“)
 
 Einstellungen in `app/settings/dictate/DictateFloatingButtonScreen.kt`:
 
 - Ein/Aus, Bedienungshilfe-Dienst und Mikrofonfreigabe einrichten
-- **Wann zeigen**: sobald ein Feld Fokus hat · nur bei offener Tastatur · auch mit Dictate-Tastatur (`DictateFloatingButtonShowWhen.kt`)
+- **Wann zeigen**: sobald ein Feld Fokus hat · nur bei offener Tastatur (`DictateFloatingButtonShowWhen.kt`). Solange Dictates eigene Spracheingabe offen ist, tritt der Button zurück.
 - **App-Auswahl**: überall · nur in bestimmten Apps · überall außer in bestimmten Apps (`DictateFloatingButtonAppsScreen.kt`)
 - **Stil**: Ring, Pille, Kugel, **Wolke**, Aurora, Gitterkugel (`DictateFloatingButtonDesign.kt`) – Lukas' Wahl: Wolke
 - Größe, an Rand einrasten, Farbe, ausblenden wenn untätig, **Position pro App merken**, Vibration beim Tippen
@@ -169,31 +166,43 @@ Einstellungen in `app/settings/dictate/DictateFloatingButtonScreen.kt`:
 
 ## 13. Tastatur und Zubehör entfernen
 
-Lukas' Vorgabe: **die Tastatur und alles, was damit zusammenhängt, soll so weit wie möglich raus.** Heute ist sie nur
-ausgeblendet (`app/DictationOnly.kt`, `manifestPlaceholders["fullKeyboard"]`, Gradle-Property `dictationOnly`);
-der Code steckt noch in der App. Ausgeblendet sind: Sprachen/Layouts, Design, Tastatur, Eingabe-Feedback, eigene Symbole,
-Smartbar, Tippen/Korrektur, Wörterbuch der Tastatur, Gesten, Zwischenablage, Medien (GIF/Sticker), physische Tastatur,
-Übersetzung, Diktat-Layout, Wear. Rechtschreibprüfung und Offline-Übersetzung sind im Manifest abgeschaltet.
+Lukas' Vorgabe: **die Tastatur und alles, was damit zusammenhängt, soll so weit wie möglich raus.**
+Status: **erledigt** (Oktober 2026, drei Schritte, nach jedem Schritt gebaut; Unit-Tests grün).
+Den Schalter `dictationOnly` und `app/DictationOnly.kt` gibt es nicht mehr: die App kann keine volle Tastatur mehr bauen.
+Updates des Originals lassen sich damit praktisch nicht mehr übernehmen (so gewollt).
 
-Zu entfernen (Status: **geplant**, in Schritten, nach jedem Schritt Build prüfen):
-1. Tastatur-IME, Rechtschreibprüfung, Wear (`dictate/wear/`), Übersetzung (`dictate/translate/`), GIFs (`dictate/gif/`), Sticker (`dictate/sticker/`), Scan (`dictate/scan/`), Dictate-Tastaturoberfläche (`dictate/ui/` soweit nur Tastatur).
-2. Die dazugehörigen Einstellungsseiten, Ressourcen, Sprachdateien und Abhängigkeiten (nativer Übersetzer, Wear-Module).
-3. Dictate Cloud (Guthaben-Seiten, Abrechnung) als nicht im Soll.
+**Entfernt:**
+1. Wear OS: Modul `:wear`, `dictate/wear/`, Wear-Protokoll in `lib/dictate-core`, Wear-Seite, `play-services-wearable`.
+2. Dictate Cloud: Guthaben-Anbieter, Cloud-Seite, Play Billing, Guthaben-Hinweise, Wallet-Felder im Anbieterkonto, Server (`cloud/`).
+3. Tastatur: `FlorisImeService`, Rechtschreibprüfung, das ganze Paket `ime/` (Layouts, Wortvorschläge, Gesten,
+   Zwischenablage, Emoji, Themes, Smartbar …), GIF, Sticker, Scan (ML Kit), Übersetzung (Bergamot), eigene Symbole,
+   Tipp-Kürzel, die Tastatur-Oberfläche in `dictate/ui/`, Erweiterungen (`app/ext`, `lib/ext`), Theme-Engine `lib/snygg`,
+   Devtools, Was-ist-neu-Tour und Changelog-Dialog, alle Tastatur-Einstellungsseiten, 21 MB Tastatur-Assets,
+   Coil, die Tastatur-Hinweise in der Smartbar (Bewerten, Spenden, Meilensteine), Sofortaufnahme,
+   Aufnahme-Animation, Prompt-Layout, „Sprache folgt Tastatur“, die Einrichtungs-Schritte „Tastatur aktivieren/auswählen“,
+   ~1.800 unbenutzte Texte (in allen Sprachen) und weitere Ressourcen.
 
-**Bleibt wegen Abhängigkeit:** (noch leer, Claude Code trägt hier ein, was er aus diesem Grund behalten musste)
-**Regel (Lukas, präzisiert):** Raus soll **alles, was nicht gebraucht wird** für
-(a) die Diktierfunktion so, wie die Screens sie zeigen, und
-(b) das Einrichten der App in Android als Eingabe-/Spracheingabe-Methode (damit sie unter den Android-Tastatur-Einstellungen
-wählbar ist und die Mikrofon-Taste in SwiftKey sie nutzen kann).
-Es geht ausdrücklich **nicht** darum, Tastaturfunktionen zu erhalten. Von der Tastatur bleibt nur, was (a) oder (b) technisch
-zum Laufen braucht (zum Beispiel die Registrierung des Eingabedienstes im Manifest und die Verbindung zum Textfeld),
-und davon so wenig wie möglich. Im Zweifel: entfernen, bauen, prüfen; geht etwas aus (a) oder (b) kaputt, genau diesen Teil
-zurückholen und unter „Bleibt wegen Abhängigkeit“ mit Grund notieren.
+**Bleibt wegen Abhängigkeit:**
+- **Spracheingabe-Methode** (`dictate/recognition/DictateVoiceInputMethodService.kt`, `res/xml/dictate_voice_ime.xml`,
+  Manifest-Eintrag mit `BIND_INPUT_METHOD`): das ist die Eingabemethode, die Android unter den Tastatur-Einstellungen
+  anbietet und die SwiftKeys Mikrofon-Taste aufruft (Regel b). Sie ist eigenständig und braucht keinen Tastatur-Code.
+- **Erkennungsdienst** (`DictateRecognitionService`, `RecognitionActivity`, `res/xml/recognition_service.xml`): für Apps und
+  Tastaturen, die den System-Spracherkenner oder `RECOGNIZE_SPEECH` nutzen (Regel b).
+- **Erkennung „eigene Eingabemethode ist offen“** im Bedienungshilfe-Dienst: betrifft jetzt die Spracheingabe-Methode; der
+  Button tritt zurück, solange sie zu sehen ist.
+- **Paketname und Grundgerüst von FlorisBoard** (`dev.patrickgold.florisboard`, `FlorisApplication`, `FlorisAppActivity`,
+  `FlorisPreferenceModel`, `lib/android`, `lib/kotlin`, `lib/compose`, `lib/color`, JetPref): tragen die ganze App, sind aber
+  keine Tastatur. Umbenennen wäre reine Kosmetik mit großem Umfang.
+- **Spalte `trigger` in der Prompt-Datenbank**: das Tipp-Kürzel ist weg, die Spalte bleibt, damit keine Datenbank-Migration nötig ist.
+- **Import aus der alten Dictate-App** (`DictateLegacyMigrator`): keine Tastatur, nur Übernahme alter Einstellungen.
 
-Bleiben muss, was (a) und (b) braucht (Abschnitt 2: Button, Spracheingabe-Methode, Erkennungsdienst, Datei transkribieren).
-
-Preis: Das **Übernehmen von Updates des Originals** wird dadurch schwer. Das nimmt Lukas' Vorgabe in Kauf.
-`dictationOnly=false` geht dann nicht mehr. Wenn das nicht gewollt ist, vorher auf einem Branch sichern.
+**Offen (Entscheidung von Lukas):**
+- **Halten zum Aufnehmen**: steht im Soll („Gedrückt halten“), lief aber nur an der Mikrofon-Taste der Tastatur. Die Logik im
+  `DictateController` ist erhalten, am schwebenden Button aber nicht angebunden. Anbinden oder Einstellung streichen?
+- **Langdiktat**: lief nur in der Tastatur und ist jetzt ohne Wirkung (`isSegmentedMode` liefert immer `false`). Die
+  Einstellung ist noch sichtbar. An den Button anbinden oder samt Code entfernen?
+- Nicht auf einem Gerät getestet (kein Emulator im Container). Vor dem nächsten Schritt einmal auf dem S24 prüfen:
+  Button, Spracheingabe in SwiftKey, Datei transkribieren, Sichern/Wiederherstellen.
 
 ## 14. Geplant (von Lukas)
 
