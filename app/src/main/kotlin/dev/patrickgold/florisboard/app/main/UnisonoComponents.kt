@@ -137,10 +137,11 @@ fun UNavRow(
     icon: ImageVector? = null,
     subtitle: String? = null,
     trailing: (@Composable RowScope.() -> Unit)? = null,
+    modifier: Modifier = Modifier,
 ) {
     val c = LocalUnisono.current
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 44.dp)
             .clickable(onClick = onClick)
