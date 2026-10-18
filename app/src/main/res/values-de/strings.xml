@@ -761,6 +761,8 @@
     <string name="main__tab_settings">Einstellungen</string>
     <string name="main__greeting_named">Hallo, {name}</string>
     <string name="pref__other__user_name__label">Dein Name für die Begrüßung</string>
+    <string name="main__greeting_set_name">Namen eintragen</string>
+    <string name="main__greeting_name_hint">Dein Name</string>
     <string name="main__greeting">Hallo</string>
     <string name="main__start_subtitle">Diktiere in jeder App über die Wolke oder die Mikrofon-Taste deiner Tastatur.</string>
     <string name="main__stat_words_total">Wörter gesamt</string>

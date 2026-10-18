@@ -149,7 +149,7 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
     private var menuView: View? = null
     private var menuAdded = false
 
-    private var currentDesign = DictateFloatingButtonDesign.PILL
+    private var currentDesign = DictateFloatingButtonDesign.CLOUD
     private var sizeScale = DictateFloatingButtonSize.MEDIUM.scale
     private var accentColor = 0xFF30B7E6.toInt()
 

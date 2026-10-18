@@ -3,7 +3,7 @@
 Stand: 18.10.2026. Entstanden in einer Design-Session mit Claude (claude.ai). Dieses Dokument
 enthält alle Entscheidungen, damit die Umsetzung im Code ohne den ursprünglichen Chat weitergehen kann.
 
-Das ursprüngliche Design-Canvas (privat, nur für Lukas): https://claude.ai/artifact/Rs7wSSxyuCEvwaud7Puj2j
+Das ursprüngliche Design-Canvas (privat): https://claude.ai/artifact/Rs7wSSxyuCEvwaud7Puj2j
 
 ## Inhalt dieses Ordners
 
@@ -20,7 +20,7 @@ Das ursprüngliche Design-Canvas (privat, nur für Lukas): https://claude.ai/art
 
 ## 1. Ziel der App
 
-Lukas' eigene, anbieterunabhängige Diktier-App für Android, ein Fork von Dictate Keyboard
+Luxx1993s eigene, anbieterunabhängige Diktier-App für Android, ein Fork von Dictate Keyboard
 (Branch `diktat-edition`). Kernablauf: sprechen → KI räumt den Text auf → Text wird eingefügt.
 Bedient wird sie über den schwebenden Button („Wolke“) neben SwiftKey. Eigene API-Keys,
 aktuell ElevenLabs Scribe (Transkription) und Claude Haiku 5.5 (Aufräumen).
@@ -72,7 +72,7 @@ Alle Seitenüberschriften stehen auf derselben Kante: `padding-top: 40px`, Über
 Keine Wortmarken-Zeile über der Überschrift.
 
 - **Start** (`entwurf-3/Main.html`, dunkel `StartDunkel.html`, Galaxy-S24-Mockup `StartS24.html`)
-  - „Hallo, Lukas“ mit Untertitel „Diktiere in jeder App über SwiftKey oder die Wolke.“
+  - „Hallo“ (mit eingetragenem Namen „Hallo, Name“) und Untertitel „Diktiere in jeder App über die Wolke oder die Mikrofon-Taste deiner Tastatur.“
   - Statistik in drei Spalten: Wörter gesamt, Diesen Monat, Tage in Folge (Zahl 34 px, Manrope 300)
   - Karte „Aktive Anbieter“: Transkription (ElevenLabs Scribe, Punkt Bernstein) und Aufräumen (Claude Haiku 5.5, Punkt Rosenholz), jeweils mit Pfeil zu den Einstellungen
   - „Letzte Diktate“: 3 Einträge, Text zweizeilig gekürzt, Zeit in IBM Plex Mono, Kopieren-Button 44×44

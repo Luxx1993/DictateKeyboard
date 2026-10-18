@@ -1,13 +1,13 @@
 # CLAUDE.md – diktat (Diktat-Edition von Dictate Keyboard)
 
-Kontext für Claude Code. Projektinhaber: Lukas. Kommunikation auf Deutsch, Lukas mit Namen ansprechen.
+Kontext für Claude Code. Projektinhaber: Luxx1993 (GitHub). Kommunikation auf Deutsch, den Projektinhaber persönlich ansprechen.
 
 ## Was das ist
 
-Lukas' eigene, anbieterunabhängige Diktier-App für Android, ein Fork von **Dictate Keyboard**
+Luxx1993s eigene, anbieterunabhängige Diktier-App für Android, ein Fork von **Dictate Keyboard**
 (DevEmperor, Apache 2.0, basiert auf FlorisBoard). Arbeitsbranch: **`diktat-edition`**.
 
-Kernablauf: sprechen → KI räumt den Text auf → Text wird eingefügt. Lukas nutzt die App über den
+Kernablauf: sprechen → KI räumt den Text auf → Text wird eingefügt. Luxx1993 nutzt die App über den
 **schwebenden Button („Wolke“)** neben SwiftKey, mit eigenen API-Keys: aktuell **ElevenLabs Scribe**
 (Transkription) und **Claude Haiku 5.5** (Aufräumen). Gerät: Samsung Galaxy S24 (arm64).
 

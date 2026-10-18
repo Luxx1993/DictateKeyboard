@@ -282,11 +282,11 @@ abstract class FlorisPreferenceModel : PreferenceModel() {
             key = "dictate__floating_button_show_when",
             default = DictateFloatingButtonShowWhen.FIELD_SELECTED,
         )
-        // Visual style of the floating button: a compact ring (RING) or a bubble that expands into a pill
-        // with a timer + live waveform while active (PILL). See DictateFloatingButtonDesign.
+        // Visual style of the floating button, see DictateFloatingButtonDesign. diktat's own is the cloud (CLOUD,
+        // docs/design/diktat-design.md §4); an install that never chose one gets it.
         val floatingButtonDesign = enum(
             key = "dictate__floating_button_design",
-            default = DictateFloatingButtonDesign.PILL,
+            default = DictateFloatingButtonDesign.CLOUD,
         )
         // Overall size of the floating button (scales the skin dimensions).
         val floatingButtonSize = enum(

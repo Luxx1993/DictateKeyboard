@@ -2,10 +2,10 @@
 
 Stand: aus dem Code des Branches `diktat-edition` gelesen (Oktober 2026), nach dem Entfernen der Tastatur
 aktualisiert (Abschnitt 13). Beschreibt, was die App **heute kann**,
-wo es im Code liegt und was Lukas damit vorhat. Design und Optik stehen in `docs/design/diktat-design.md`.
+wo es im Code liegt und was Luxx1993 damit vorhat. Design und Optik stehen in `docs/design/diktat-design.md`.
 
 Status-Legende: **vorhanden** (läuft heute) · **entfernt** (in der Diktat-Edition gelöscht, siehe Abschnitt 13) ·
-**geplant** (von Lukas gewünscht, noch nicht gebaut) · **offen** (Entscheidung von Lukas steht aus).
+**geplant** (von Luxx1993 gewünscht, noch nicht gebaut) · **offen** (Entscheidung von Luxx1993 steht aus).
 
 Pfade beginnen, wenn nicht anders genannt, bei `app/src/main/kotlin/dev/patrickgold/florisboard/`.
 
@@ -22,7 +22,7 @@ des Originals, das nur dann bleibt, wenn es unten steht.
 - **Wörterbuch:** Suche/Hinzufügen, **Eigene Wörter**, **Ersetzungen** (gesprochen → geschrieben, läuft nach dem Diktat).
 - **Stile:** Aufräum-Stile, genau einer aktiv und läuft nach jedem Diktat; Standard „Aufräumen“, dazu Wörtlich, E-Mail, Chat, Aktenvermerk; „Neuer Stil“.
 - **Einstellungen:** Schwebender Button (Stil Wolke, Farbe, Schalter), **Diktat** (Sprachen, KI-Anbieter, Aufnahme: Gedrückt halten und Stille kürzen), **Mehr** (Datei transkribieren, Spracheingabe = Mikrofon-Taste in SwiftKey, Sichern und Wiederherstellen).
-- Dazu aus Lukas' Wünschen: Icon mit Animationen und Umschalter weiß/schwarz; Verlauf und Statistik behalten; Offline-Spracherkennung behalten.
+- Dazu aus Luxx1993s Wünschen: Icon mit Animationen und Umschalter weiß/schwarz; Verlauf und Statistik behalten; Offline-Spracherkennung behalten.
 
 **Nicht im Soll:** Tastatur in jeder Form, Wear OS, GIFs, Sticker, Scan, Übersetzung, Rechtschreibprüfung, Dictate Cloud (Guthaben).
 **Im Code vorhanden, aber nicht in den Screens (Verbleib noch zu klären):** Echtzeit, Bluetooth-Mikro, Audioquelle, Audio beschleunigen, Auto-Enter, Tippgeschwindigkeit, Prompt-Bibliothek, Proxy, Verlauf-Details. Sofortaufnahme und Tipp-Kürzel sind mit der Tastatur entfernt. Vorschlag: unter „Mehr“ oder „Aufnahme“ in der neuen Oberfläche bündeln, nichts davon neu bauen.
@@ -43,7 +43,7 @@ sprechen → (Transkription durch Anbieter) → optional KI-Aufräumen / Stil �
 
 | Weg | Was es ist | Code | Status |
 |---|---|---|---|
-| **Schwebender Button („Wolke“)** | Bubble über anderen Apps (Bedienungshilfe-Dienst), schreibt in das fokussierte Feld. Lukas' Hauptweg neben SwiftKey. | `dictate/overlay/` | vorhanden |
+| **Schwebender Button („Wolke“)** | Bubble über anderen Apps (Bedienungshilfe-Dienst), schreibt in das fokussierte Feld. Luxx1993s Hauptweg neben SwiftKey. | `dictate/overlay/` | vorhanden |
 | **Spracheingabe-Methode** | Dictate als Spracheingabe-Methode, zusammen mit einer fremden Tastatur (SwiftKey) nutzbar. | `dictate/recognition/DictateVoiceInputMethodService.kt` | vorhanden |
 | **System-Erkennungsdienst** | Dictate als systemweiter Spracherkenner (Standard-Android-`RecognitionService`). Manche Tastaturen (z. B. Gboard) nutzen ihn nicht. | `dictate/recognition/DictateRecognitionService.kt`, `RecognitionActivity.kt` | vorhanden |
 | **Datei transkribieren** | Audiodatei wählen oder aus anderer App teilen, Ergebnis in eigener Ansicht. Auch im Menü des schwebenden Buttons. | `dictate/importer/`, `FileTranscriptionActivity.kt` | vorhanden |
@@ -76,8 +76,8 @@ Die Einstellungsseite zeigt nur eingerichtete Anbieter, weitere hinter „Anbiet
 | **Eigener Server** (OpenAI-kompatibel, benutzerdefiniert) | ja | ja | – |
 
 Hinweise:
-- Lukas nutzt heute **ElevenLabs Scribe** + **Claude Haiku 5.5**. Das Modell wird im Konto des Anbieters eingetragen (nicht der Code-Standard).
-- **Dictate Cloud** (Guthaben-Angebot des Originals) ist **entfernt** (Abschnitt 13). Lukas nutzt eigene Keys.
+- Luxx1993 nutzt heute **ElevenLabs Scribe** + **Claude Haiku 5.5**. Das Modell wird im Konto des Anbieters eingetragen (nicht der Code-Standard).
+- **Dictate Cloud** (Guthaben-Angebot des Originals) ist **entfernt** (Abschnitt 13). Luxx1993 nutzt eigene Keys.
 - Weitere Wünsche: **Gladia**, **Cerebras** (als Voreinstellung zum Aufräumen), **AssemblyAI Sync API** – **geplant**, noch nicht im Code.
 - Proxy-Einstellung (HTTP/SOCKS mit Login) vorhanden: `app/settings/dictate/DictateProxyScreen.kt`.
 - Offline-Modelle werden heruntergeladen und verwaltet: `dictate/provider/LocalModelManager.kt`, `ModelDownloadService.kt`.
@@ -125,7 +125,7 @@ Ein Prompt hat:
 - Reihenfolge per langem Drücken und Ziehen; **Export/Import** als `dictate_prompts.json`.
 - **Prompt-Bibliothek** der Community zum Hinzufügen (`DictatePromptLibraryScreen.kt`, `dictate/data/prompts/PromptLibrary*.kt`).
 - Außerdem „Zeichensetzung & Stil“ für die Transkription selbst (keiner / Standard / eigener Text).
-- **Mitgelieferte Stile** Aufräumen (aktiv), Wörtlich, E-Mail, Chat, Aktenvermerk: formuliert nach Dictate Keyboards eigenen Prompts (Füllwörter entfernen, Grammatik, E-Mail, freundlich/kürzer, formell/Stichpunkte), Wortlaut von Lukas freigegeben. Neue Installation: diese fünf statt der alten Beispiel-Prompts. Bestehende: einmalig ergänzt (`DictateLegacyMigrator.seedStylesIfNeeded`), eigene Prompts bleiben, Aufräumen wird nur aktiv, wenn noch kein Prompt automatisch läuft.
+- **Mitgelieferte Stile** Aufräumen (aktiv), Wörtlich, E-Mail, Chat, Aktenvermerk: formuliert nach Dictate Keyboards eigenen Prompts (Füllwörter entfernen, Grammatik, E-Mail, freundlich/kürzer, formell/Stichpunkte), Wortlaut von Luxx1993 freigegeben. Neue Installation: diese fünf statt der alten Beispiel-Prompts. Bestehende: einmalig ergänzt (`DictateLegacyMigrator.seedStylesIfNeeded`), eigene Prompts bleiben, Aufräumen wird nur aktiv, wenn noch kein Prompt automatisch läuft.
 - **Tab „Stile“** (`app/main/StylesTab.kt`): zeigt alle Prompts außer Textbausteinen. Aktiv ist der Prompt mit „Automatisch anwenden“, sonst der zuletzt gewählte (`prefs.dictate.activeStyleId`). Der Schalter setzt „Automatisch anwenden“ nur auf diesen einen Stil; Tippen auf eine andere Karte macht sie aktiv, langes Drücken (oder Tippen auf den aktiven Stil) öffnet den Editor im Tab: Name und Anweisung ändern, speichern, löschen. „Neuer Stil“ legt einen eigenen Stil an. Reihenfolge, Denkaufwand, Import/Export und Bibliothek bleiben unter „Stile verwalten“.
 
 ## 9. Wörterbuch
@@ -145,7 +145,7 @@ Einstellungen in `app/settings/dictate/DictateFloatingButtonScreen.kt`:
 - Ein/Aus, Bedienungshilfe-Dienst und Mikrofonfreigabe einrichten
 - **Wann zeigen**: sobald ein Feld Fokus hat · nur bei offener Tastatur (`DictateFloatingButtonShowWhen.kt`). Solange Dictates eigene Spracheingabe offen ist, tritt der Button zurück.
 - **App-Auswahl**: überall · nur in bestimmten Apps · überall außer in bestimmten Apps (`DictateFloatingButtonAppsScreen.kt`)
-- **Stil**: Ring, Pille, Kugel, **Wolke**, Aurora, Gitterkugel (`DictateFloatingButtonDesign.kt`) – Lukas' Wahl: Wolke
+- **Stil**: Ring, Pille, Kugel, **Wolke**, Aurora, Gitterkugel (`DictateFloatingButtonDesign.kt`) – Luxx1993s Wahl: Wolke
 - Größe, an Rand einrasten, Farbe, ausblenden wenn untätig, **Position pro App merken**, Vibration beim Tippen
 - **Rückgängig-Taste**; **jedes Diktat in die Zwischenablage kopieren**
 - **Einfügen**: über die Eingabeverbindung der Bedienungshilfe, sonst den Feldinhalt, sonst Einfügen per Zwischenablage; drei Versuche. Nimmt die App den Text trotzdem nicht an, liegt er in der Zwischenablage **und** wartet zwei Minuten: Tippen ins Feld (gleiche App) oder auf die Wolke fügt ihn ein, doppelt eingefügt wird nicht. Scheitert auch das, bleibt nur die Zwischenablage. Das Log (`DictateOverlay`, Zeile `commit path=…`) nennt die App, nie den Text.
@@ -158,7 +158,7 @@ Einstellungen in `app/settings/dictate/DictateFloatingButtonScreen.kt`:
 - Verlauf der Diktate an/aus, **Audio mit aufbewahren**, Speichergrenzen (maximale Einträge, automatisch löschen nach X Tagen, Audio-Speichergrenze)
 - Einträge ansehen, kopieren, Audio abspielen, Verlauf leeren, **in einen Ordner exportieren** (optional mit Aufnahme)
 - Code: `dictate/data/history/`, `app/settings/dictate/DictateHistoryScreen.kt`
-- Status: **vorhanden**. Lukas will Verlauf und Statistik **behalten**.
+- Status: **vorhanden**. Luxx1993 will Verlauf und Statistik **behalten**.
 
 ## 12. Statistik
 
@@ -169,7 +169,7 @@ Einstellungen in `app/settings/dictate/DictateFloatingButtonScreen.kt`:
 
 ## 13. Tastatur und Zubehör entfernen
 
-Lukas' Vorgabe: **die Tastatur und alles, was damit zusammenhängt, soll so weit wie möglich raus.**
+Luxx1993s Vorgabe: **die Tastatur und alles, was damit zusammenhängt, soll so weit wie möglich raus.**
 Status: **erledigt** (Oktober 2026, drei Schritte, nach jedem Schritt gebaut; Unit-Tests grün).
 Den Schalter `dictationOnly` und `app/DictationOnly.kt` gibt es nicht mehr: die App kann keine volle Tastatur mehr bauen.
 Updates des Originals lassen sich damit praktisch nicht mehr übernehmen (so gewollt).
@@ -202,11 +202,11 @@ Updates des Originals lassen sich damit praktisch nicht mehr übernehmen (so gew
 **Entschieden:** Langdiktat bleibt und ist am schwebenden Button angebunden (Abschnitt 5). Halten zum Aufnehmen bleibt und ist am schwebenden Button angebunden, wählbar unter Einstellungen ›
 Aufnahme (Antippen oder Gedrückt halten, Abschnitt 5).
 
-**Offen (Entscheidung von Lukas):**
+**Offen (Entscheidung von Luxx1993):**
 - Nicht auf einem Gerät getestet (kein Emulator im Container). Vor dem nächsten Schritt einmal auf dem S24 prüfen:
   Button, Spracheingabe in SwiftKey, Datei transkribieren, Sichern/Wiederherstellen.
 
-## 14. Geplant (von Lukas)
+## 14. Geplant (von Luxx1993)
 
 Reihenfolge und Details: `CLAUDE.md` und `docs/design/diktat-design.md` Abschnitt 7.
 
@@ -215,7 +215,7 @@ Reihenfolge und Details: `CLAUDE.md` und `docs/design/diktat-design.md` Abschnit
 3. Wolken-Shader an den Prototyp angleichen: **vorhanden**, auf dem S24 noch nicht angesehen
 4. Anbieter Gladia, Preset Cerebras, AssemblyAI Sync API
 
-## 15. Noch offen (Entscheidung von Lukas)
+## 15. Noch offen (Entscheidung von Luxx1993)
 
 - Welche der vorhandenen Einstellungen bleiben in der neuen Oberfläche sichtbar, welche wandern unter „Mehr“?
-- Offline-Spracherkennung: laut Lukas **behalten**; Modellverwaltung muss in die neue Oberfläche passen.
+- Offline-Spracherkennung: laut Luxx1993 **behalten**; Modellverwaltung muss in die neue Oberfläche passen.
