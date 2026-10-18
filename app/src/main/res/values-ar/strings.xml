@@ -378,7 +378,6 @@
     <string name="dictate__bluetooth_mic_summary">التسجيل عبر سماعة بلوتوث متصلة عند توفّرها</string>
     <string name="dictate__keep_screen_awake_title">إبقاء الشاشة قيد التشغيل</string>
     <string name="dictate__keep_screen_awake_summary">منع إيقاف تشغيل الشاشة أثناء التسجيل</string>
-    <string name="dictate__recording_animation_title">مؤشر التسجيل</string>
     <string name="dictate__skip_silent_title">تخطّي التسجيلات الصامتة</string>
     <string name="dictate__skip_silent_summary">تجنّب النصوص المُختلَقة واستدعاءات API المهدورة في الصوت الصامت</string>
     <string name="dictate__trim_silent_gaps_title">اقتصاص فترات التوقف الطويلة</string>

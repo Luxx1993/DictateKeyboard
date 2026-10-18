@@ -382,7 +382,6 @@
     <string name="dictate__bluetooth_mic_summary">Rekam melalui headset Bluetooth yang terhubung jika tersedia</string>
     <string name="dictate__keep_screen_awake_title">Jaga layar tetap menyala</string>
     <string name="dictate__keep_screen_awake_summary">Cegah layar mati saat merekam</string>
-    <string name="dictate__recording_animation_title">Indikator perekaman</string>
     <string name="dictate__skip_silent_title">Lewati rekaman senyap</string>
     <string name="dictate__skip_silent_summary">Hindari teks halusinasi dan panggilan API sia-sia pada audio senyap</string>
     <string name="dictate__trim_silent_gaps_title">Pangkas jeda panjang</string>
