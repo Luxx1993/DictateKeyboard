@@ -44,6 +44,7 @@ import dev.patrickgold.florisboard.app.main.UDialog
 import dev.patrickgold.florisboard.app.main.UDivider
 import dev.patrickgold.florisboard.app.main.UNavRow
 import dev.patrickgold.florisboard.app.main.USwitchRow
+import dev.patrickgold.florisboard.app.main.UTextField
 import dev.patrickgold.florisboard.app.main.UnisonoIcons
 import dev.patrickgold.florisboard.app.main.UnisonoPage
 import dev.patrickgold.florisboard.app.settings.search.settingsSearchAnchor
@@ -215,13 +216,13 @@ private fun MappingEditorDialog(
             onClose(mapping.copy(from = from.trim(), to = to, matchCase = matchCase, wholeWord = wholeWord))
         },
     ) {
-        MappingField(
+        UTextField(
             label = stringRes(R.string.dictate__mappings_field_from),
             placeholder = stringRes(R.string.dictate__mappings_field_from_placeholder),
             value = from,
             onValueChange = { from = it },
         )
-        MappingField(
+        UTextField(
             label = stringRes(R.string.dictate__mappings_field_to),
             placeholder = stringRes(R.string.dictate__mappings_field_to_placeholder),
             value = to,
@@ -244,36 +245,6 @@ private fun MappingEditorDialog(
         if (onDelete != null && !isNew) {
             UDivider()
             UNavRow(title = stringRes(R.string.action__delete), onClick = onDelete)
-        }
-    }
-}
-
-@Composable
-private fun MappingField(label: String, placeholder: String, value: String, onValueChange: (String) -> Unit) {
-    val c = LocalUnisono.current
-    Column(
-        Modifier.padding(horizontal = 18.dp, vertical = 6.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        Text(label, style = Unisono.Mono, color = c.textTertiary)
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .height(44.dp)
-                .clip(Unisono.Pill)
-                .background(c.sunken)
-                .padding(horizontal = 14.dp),
-            contentAlignment = Alignment.CenterStart,
-        ) {
-            if (value.isEmpty()) Text(placeholder, style = Unisono.Body, color = c.textTertiary)
-            BasicTextField(
-                value = value,
-                onValueChange = onValueChange,
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                textStyle = Unisono.Body.copy(color = c.textPrimary),
-                cursorBrush = SolidColor(c.textPrimary),
-            )
         }
     }
 }

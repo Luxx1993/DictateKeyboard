@@ -10,46 +10,31 @@
 
 package dev.patrickgold.florisboard.app.settings.about
 
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.dp
 import dev.patrickgold.florisboard.R
-import dev.patrickgold.florisboard.lib.compose.FlorisScreen
+import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
+import dev.patrickgold.florisboard.app.apptheme.Unisono
+import dev.patrickgold.florisboard.app.main.UCard
+import dev.patrickgold.florisboard.app.main.UnisonoPage
 import dev.patrickgold.florisboard.lib.io.FlorisRef
 import dev.patrickgold.florisboard.lib.io.loadTextAsset
-import org.florisboard.lib.compose.florisVerticalScroll
 import org.florisboard.lib.compose.stringRes
 
-/**
- * Shows the attributions for the redistributed language data (word-frequency dictionaries from OPUS
- * OpenSubtitles and bigram context data from the Leipzig Corpora Collection, CC BY). Required attribution;
- * surfaced under About so it is visible in the app, not just bundled as an asset.
- */
 @Composable
-fun DataAttributionsScreen() = FlorisScreen {
-    title = stringRes(R.string.about__data_attributions__title)
-    scrollable = false
-
+fun DataAttributionsScreen() = UnisonoPage(title = stringRes(R.string.about__data_attributions__title)) {
     val context = LocalContext.current
-
-    content {
-        SelectionContainer(
-            modifier = Modifier
-                .fillMaxSize()
-                .florisVerticalScroll(),
-        ) {
+    val c = LocalUnisono.current
+    UCard {
+        SelectionContainer(Modifier.padding(14.dp)) {
             val text = FlorisRef.assets("license/data_attributions.txt").loadTextAsset(context)
                 .getOrElse { it.message ?: "" }
-            Text(
-                text = text,
-                fontFamily = FontFamily.Monospace,
-                fontSize = 12.sp,
-            )
+            Text(text = text, style = Unisono.Mono, color = c.textPrimary)
         }
     }
 }

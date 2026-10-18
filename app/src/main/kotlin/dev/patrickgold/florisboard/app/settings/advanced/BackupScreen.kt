@@ -21,6 +21,22 @@ import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Row
+import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
+import dev.patrickgold.florisboard.app.apptheme.Unisono
+import dev.patrickgold.florisboard.app.main.UButton
+import dev.patrickgold.florisboard.app.main.UCard
+import dev.patrickgold.florisboard.app.main.UCheckRow
+import dev.patrickgold.florisboard.app.main.UChoiceOption
+import dev.patrickgold.florisboard.app.main.UDivider
+import dev.patrickgold.florisboard.app.main.UGroupLabel
+import dev.patrickgold.florisboard.app.main.UNotice
+import dev.patrickgold.florisboard.app.main.UnisonoPage
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
+import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Checkbox
@@ -135,8 +151,7 @@ private class RedactingWriter(private val delegate: DataStoreWriter) : DataStore
 }
 
 @Composable
-fun BackupScreen() = FlorisScreen {
-    title = stringRes(R.string.backup_and_restore__back_up__title)
+fun BackupScreen() = UnisonoPage(title = stringRes(R.string.backup_and_restore__back_up__title)) {
 
     val navController = LocalNavController.current
     val context = LocalContext.current
@@ -266,94 +281,72 @@ fun BackupScreen() = FlorisScreen {
         }
     }
 
-    bottomBar {
-        FlorisButtonBar {
-            ButtonBarSpacer()
-            ButtonBarTextButton(
-                onClick = {
-                    backupWorkspace?.close()
-                    navController.popBackStack()
-                },
-                text = stringRes(R.string.action__cancel),
-            )
-            ButtonBarButton(
-                onClick = {
-                    scope.launch { prepareAndPerformBackup() }
-                },
-                text = stringRes(R.string.action__back_up),
-                enabled = backupFilesSelector.atLeastOneSelected(),
-            )
-        }
+    // What is actually in the archive, said before the user picks where to send it (issue #367).
+    //
+    // Three wordings, one card. Only the preferences carry credentials, so that is the one state that
+    // warns, but an archive of nothing but the history is transcripts and recordings of someone's voice,
+    // and saying nothing about that would be the same mistake one level down.
+    val credentialsInArchive = backupFilesSelector.jetprefDatastore &&
+        backupFilesSelector.providerCredentials
+    val contentNoticeId = when {
+        credentialsInArchive -> R.string.backup_and_restore__back_up__credentials_warning
+        backupFilesSelector.jetprefDatastore ->
+            R.string.backup_and_restore__back_up__credentials_excluded_note
+        backupFilesSelector.atLeastOneSelected() ->
+            R.string.backup_and_restore__back_up__personal_content_note
+        else -> null
     }
+    // Only one of the three is a warning; the others say the archive is safe to hand on.
+    if (contentNoticeId != null) UNotice(stringRes(contentNoticeId), warning = credentialsInArchive)
 
-    content {
-        // What is actually in the archive, said before the user picks where to send it (issue #367).
-        //
-        // Three wordings, one card. Only the preferences carry credentials, so that is the one state that
-        // warns — but an archive of nothing but the history is transcripts and recordings of someone's
-        // voice, and saying nothing at all about that would be the same mistake one level down. The third
-        // state is for exactly that case: personal content, no credentials.
-        val credentialsInArchive = backupFilesSelector.jetprefDatastore &&
-            backupFilesSelector.providerCredentials
-        val contentNoticeId = when {
-            credentialsInArchive -> R.string.backup_and_restore__back_up__credentials_warning
-            backupFilesSelector.jetprefDatastore ->
-                R.string.backup_and_restore__back_up__credentials_excluded_note
-            backupFilesSelector.atLeastOneSelected() ->
-                R.string.backup_and_restore__back_up__personal_content_note
-            else -> null
-        }
-        if (contentNoticeId != null) {
-            // Only one of the three is a warning, and only it gets the warning card. The other two say the
-            // archive is safe to hand on, and saying that on a yellow alarm background contradicts itself —
-            // the colour is read before the sentence is.
-            if (credentialsInArchive) {
-                FlorisWarningCard(
-                    modifier = Modifier.defaultFlorisOutlinedBox(),
-                    text = stringRes(contentNoticeId),
-                )
-            } else {
-                FlorisInfoCard(
-                    modifier = Modifier.defaultFlorisOutlinedBox(),
-                    text = stringRes(contentNoticeId),
-                )
-            }
-        }
-        FlorisOutlinedBox(
-            modifier = Modifier.defaultFlorisOutlinedBox(),
-            title = stringRes(R.string.backup_and_restore__back_up__destination),
-        ) {
-            // The destination sets the starting point for the credentials, because it is the destination
-            // that says whether this archive is going to someone else. Only on an actual change, though:
-            // tapping the radio that is already selected has to stay the no-op it looks like, or it would
-            // quietly undo a deliberate choice made after it.
-            RadioListItem(
-                onClick = {
-                    if (backupDestination != Backup.Destination.FILE_SYS) {
-                        backupDestination = Backup.Destination.FILE_SYS
-                        backupFilesSelector.providerCredentials = true
-                    }
-                },
-                selected = backupDestination == Backup.Destination.FILE_SYS,
-                text = stringRes(R.string.backup_and_restore__back_up__destination_file_sys),
-            )
-            RadioListItem(
-                onClick = {
-                    if (backupDestination != Backup.Destination.SHARE_INTENT) {
-                        backupDestination = Backup.Destination.SHARE_INTENT
-                        // Sharing hands the archive to someone else, so it starts from the variant that is
-                        // safe to hand over. Still a checkbox and still the user's call — the card above
-                        // says what re-ticking it means.
-                        backupFilesSelector.providerCredentials = false
-                    }
-                },
-                selected = backupDestination == Backup.Destination.SHARE_INTENT,
-                text = stringRes(R.string.backup_and_restore__back_up__destination_share_intent),
-            )
-        }
-        BackupFilesSelector(
-            filesSelector = backupFilesSelector,
-            title = stringRes(R.string.backup_and_restore__back_up__files),
+    UGroupLabel(stringRes(R.string.backup_and_restore__back_up__destination))
+    UCard {
+        // The destination sets the starting point for the credentials, because it is the destination that
+        // says whether this archive is going to someone else. Only on an actual change, though: tapping
+        // the radio that is already selected has to stay the no-op it looks like.
+        RadioListItem(
+            onClick = {
+                if (backupDestination != Backup.Destination.FILE_SYS) {
+                    backupDestination = Backup.Destination.FILE_SYS
+                    backupFilesSelector.providerCredentials = true
+                }
+            },
+            selected = backupDestination == Backup.Destination.FILE_SYS,
+            text = stringRes(R.string.backup_and_restore__back_up__destination_file_sys),
+        )
+        UDivider()
+        RadioListItem(
+            onClick = {
+                if (backupDestination != Backup.Destination.SHARE_INTENT) {
+                    backupDestination = Backup.Destination.SHARE_INTENT
+                    // Sharing hands the archive to someone else, so it starts from the variant that is safe
+                    // to hand over. Still a checkbox and still the user's call.
+                    backupFilesSelector.providerCredentials = false
+                }
+            },
+            selected = backupDestination == Backup.Destination.SHARE_INTENT,
+            text = stringRes(R.string.backup_and_restore__back_up__destination_share_intent),
+        )
+    }
+    BackupFilesSelector(
+        filesSelector = backupFilesSelector,
+        title = stringRes(R.string.backup_and_restore__back_up__files),
+    )
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        UButton(
+            text = stringRes(R.string.action__cancel),
+            primary = false,
+            modifier = Modifier.weight(1f),
+            onClick = {
+                backupWorkspace?.close()
+                navController.popBackStack()
+            },
+        )
+        UButton(
+            text = stringRes(R.string.action__back_up),
+            modifier = Modifier.weight(1f),
+            enabled = backupFilesSelector.atLeastOneSelected(),
+            onClick = { scope.launch { prepareAndPerformBackup() } },
         )
     }
 }
@@ -367,19 +360,17 @@ internal fun BackupFilesSelector(
     // person writing it; restoring selectively around them is a different feature and not this one.
     showCredentials: Boolean = true,
 ) {
-    FlorisOutlinedBox(
-        modifier = modifier.defaultFlorisOutlinedBox(),
-        title = title,
-    ) {
+    UGroupLabel(title)
+    UCard(modifier) {
         CheckboxListItem(
             onClick = { filesSelector.jetprefDatastore = !filesSelector.jetprefDatastore },
             checked = filesSelector.jetprefDatastore,
             text = stringRes(R.string.backup_and_restore__back_up__files_jetpref_datastore),
         )
-        // Gone entirely while the preferences are not being backed up, rather than greyed out: there is
-        // nothing for it to modify then, and a disabled box that is still ticked reads as "the keys are
-        // coming along" — the same ambiguity that made issue #297 a bug report.
+        // Gone entirely while the preferences are not being backed up, rather than greyed out: a disabled
+        // box that is still ticked reads as "the keys are coming along" (issue #297).
         if (showCredentials && filesSelector.jetprefDatastore) {
+            UDivider()
             CheckboxListItem(
                 onClick = { filesSelector.providerCredentials = !filesSelector.providerCredentials },
                 checked = filesSelector.providerCredentials,
@@ -387,17 +378,18 @@ internal fun BackupFilesSelector(
                 isSecondaryListItem = true,
             )
         }
+        UDivider()
         CheckboxListItem(
             onClick = { filesSelector.dictatePrompts = !filesSelector.dictatePrompts },
             checked = filesSelector.dictatePrompts,
             text = stringRes(R.string.backup_and_restore__back_up__files_dictate_prompts),
         )
+        UDivider()
         CheckboxListItem(
             onClick = { filesSelector.dictateHistory = !filesSelector.dictateHistory },
             checked = filesSelector.dictateHistory,
             text = stringRes(R.string.dictate__history_title),
         )
-
     }
 }
 
@@ -406,46 +398,13 @@ internal fun CheckboxListItem(
     onClick: () -> Unit,
     checked: Boolean,
     text: String,
-    isSecondaryListItem: Boolean = false
-) {
-    JetPrefListItem(
-        modifier = Modifier.rippleClickable(onClick = onClick),
-        icon = {
-            Row {
-                if (isSecondaryListItem) {
-                    Spacer(modifier = Modifier.width(40.dp))
-                }
-                Checkbox(
-                    checked = checked,
-                    onCheckedChange = null,
-                )
-            }
-        },
-        text = text,
-    )
-}
-
-@Composable
-internal fun TriStateCheckboxListItem(
-    onClick: () -> Unit,
-    state: ToggleableState,
-    text: String,
     isSecondaryListItem: Boolean = false,
 ) {
-    JetPrefListItem(
-        modifier = Modifier.rippleClickable(onClick = onClick),
-        icon = {
-            Row {
-                if (isSecondaryListItem) {
-                    Spacer(modifier = Modifier.width(40.dp))
-                }
-                TriStateCheckbox(
-                    state = state,
-                    onClick = null,
-                )
-            }
-        },
-        text = text,
+    UCheckRow(
+        title = text,
+        checked = checked,
+        onCheckedChange = { onClick() },
+        modifier = if (isSecondaryListItem) Modifier.padding(start = 24.dp) else Modifier,
     )
 }
 
@@ -456,15 +415,5 @@ internal fun RadioListItem(
     text: String,
     secondaryText: String? = null,
 ) {
-    JetPrefListItem(
-        modifier = Modifier.rippleClickable(onClick = onClick),
-        icon = {
-            RadioButton(
-                selected = selected,
-                onClick = null,
-            )
-        },
-        text = text,
-        secondaryText = secondaryText,
-    )
+    UChoiceOption(title = text, subtitle = secondaryText, selected = selected, onClick = onClick)
 }

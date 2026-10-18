@@ -11,6 +11,11 @@
 package dev.patrickgold.florisboard.app.main
 
 import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.alpha
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -235,10 +240,16 @@ fun UChoiceOption(
 
 /** A checkable row for lists where several can be on at once. */
 @Composable
-fun UCheckRow(title: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit, subtitle: String? = null) {
+fun UCheckRow(
+    title: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    subtitle: String? = null,
+    modifier: Modifier = Modifier,
+) {
     val c = LocalUnisono.current
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .toggleable(value = checked, role = Role.Checkbox, onValueChange = onCheckedChange)
             .padding(horizontal = 18.dp, vertical = 12.dp),
@@ -356,6 +367,71 @@ fun UDialog(
                     color = c.textPrimary,
                 )
             }
+        }
+    }
+}
+
+/** A labelled single-line text field on a sunken pill, for use inside a [UDialog]. */
+@Composable
+fun UTextField(label: String, placeholder: String, value: String, onValueChange: (String) -> Unit) {
+    val c = LocalUnisono.current
+    Column(
+        Modifier.padding(horizontal = 18.dp, vertical = 6.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Text(label, style = Unisono.Mono, color = c.textTertiary)
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .height(44.dp)
+                .clip(Unisono.Pill)
+                .background(c.sunken)
+                .padding(horizontal = 14.dp),
+            contentAlignment = Alignment.CenterStart,
+        ) {
+            if (value.isEmpty()) Text(placeholder, style = Unisono.Body, color = c.textTertiary)
+            BasicTextField(
+                value = value,
+                onValueChange = onValueChange,
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                textStyle = Unisono.Body.copy(color = c.textPrimary),
+                cursorBrush = SolidColor(c.textPrimary),
+            )
+        }
+    }
+}
+
+/** A pill button: [primary] is filled with the action colour, otherwise outlined. */
+@Composable
+fun UButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, primary: Boolean = true, enabled: Boolean = true) {
+    val c = LocalUnisono.current
+    val shape = Unisono.Pill
+    Box(
+        modifier = modifier
+            .heightIn(min = 48.dp)
+            .clip(shape)
+            .then(if (primary) Modifier.background(c.action) else Modifier.border(1.dp, c.borderStrong, shape))
+            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+            .padding(horizontal = 24.dp, vertical = 12.dp)
+            .alpha(if (enabled) 1f else 0.4f),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(text, style = Unisono.Caption, color = if (primary) c.onAction else c.textPrimary)
+    }
+}
+
+/** A note in a card with a coloured dot: red for a [warning], green otherwise. */
+@Composable
+fun UNotice(text: String, warning: Boolean = false) {
+    val c = LocalUnisono.current
+    UCard {
+        Row(
+            Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 14.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Box(Modifier.padding(top = 6.dp)) { UDot(if (warning) Color(0xFFB3443A) else c.success) }
+            Text(text, style = Unisono.Label, color = c.textPrimary, modifier = Modifier.weight(1f))
         }
     }
 }
