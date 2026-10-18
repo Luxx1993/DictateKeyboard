@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
-    <string name="app_name">Dictate</string>
+    <string name="app_name">diktat</string>
     <!-- Emoji strings -->
     <string name="emoji__history__pinned">Fixados</string>
     <!-- Quick action strings -->
@@ -11,9 +11,9 @@
     <string name="settings__title" comment="Title of Settings">Definições</string>
     <string name="settings__system_default" comment="General string which is used when a preference has the system default value set">Definição do sistema</string>
     <string name="settings__home__title" comment="Title of the Home screen">Bem-vindo a {app_name}</string>
-    <string name="dictate__settings_unreadable_card">Não foi possível ler as suas definições, por isso o Dictate iniciou com os valores predefinidos. Toque aqui para as recuperar.</string>
+    <string name="dictate__settings_unreadable_card">Não foi possível ler as suas definições, por isso o diktat iniciou com os valores predefinidos. Toque aqui para as recuperar.</string>
     <string name="dictate__settings_unreadable_title">Restaurar?</string>
-    <string name="dictate__settings_unreadable_message">Ao iniciar, o Dictate não conseguiu ler o seu ficheiro de definições. Guardou-o intacto e iniciou com os valores predefinidos. «Restaurar» recupera os seus fornecedores, chaves, prompts e definições tal como estavam. «Eliminar» apaga o ficheiro antigo.</string>
+    <string name="dictate__settings_unreadable_message">Ao iniciar, o diktat não conseguiu ler o seu ficheiro de definições. Guardou-o intacto e iniciou com os valores predefinidos. «Restaurar» recupera os seus fornecedores, chaves, prompts e definições tal como estavam. «Eliminar» apaga o ficheiro antigo.</string>
     <string name="dictate__settings_restore_failed">As definições antigas continuam sem poder ser lidas.</string>
     <string name="settings__search__title" comment="Title of the settings search screen">Pesquisar nas definições</string>
     <string name="settings__search__placeholder" comment="Placeholder in the settings search field">Pesquisar nas definições…</string>
@@ -67,7 +67,7 @@
     <string name="setup__footer__repository" comment="Repository label for URL">Repositório</string>
     <string name="setup__grant_notification_permission__title">Permitir notificação com relatório de erros</string>
     <string name="setup__grant_notification_permission__description">A partir do Android 13, as aplicações precisam pedir permissão para
-        enviar notificações. No Dictate, isso só é usado para abrir a tela de relatório de erros caso ocorra um erro.
+        enviar notificações. No diktat, isso só é usado para abrir a tela de relatório de erros caso ocorra um erro.
         Esta permissão pode ser alterada a qualquer momento nas configurações do sistema.
     </string>
     <string name="setup__grant_notification_permission__btn">Conceder permissão</string>
@@ -106,7 +106,7 @@
     <string name="backup_and_restore__restore__success">Dados restaurados com sucesso!</string>
     <string name="backup_and_restore__restore__failure">Falha ao restaurar dados: {error_message}</string>
     <!-- Crash Dialog strings -->
-    <string name="crash_dialog__title" comment="Title of crash dialog">Relatório de erros do Dictate</string>
+    <string name="crash_dialog__title" comment="Title of crash dialog">Relatório de erros do diktat</string>
     <string name="crash_dialog__description" comment="Description of crash dialog">Desculpe o inconveniente mas a aplicação encerrou devido a um problema desconhecido.</string>
     <string name="crash_dialog__report_instructions" comment="Issue tracker report instructions for the crash dialog. The %s placeholder is the name of the crash report template and always in English/LTR.">Se quiser reportar este erro, analise o registo de erros reportados no GitHub e verifique se este problema já foi reportado.\nSe não o encontrar, copie o relatório de erro e abra uma ocorrência. Utilize o modelo \"%s\", preencha a descrição, os passos necessários para reproduzir o erro e cole o relatório no final. Desta forma, pode ajudar a melhorar o Floriboard. Obrigado!</string>
     <string name="crash_dialog__copy_to_clipboard" comment="Label of Copy to clipboard button in crash dialog">Copiar para a área de transferência</string>
@@ -114,10 +114,10 @@
     <string name="crash_dialog__copy_to_clipboard_failure" comment="Label of Copy to clipboard failure message in crash dialog">Não foi possível copiar. Não existe um gestor para a área de transferência.</string>
     <string name="crash_dialog__open_issue_tracker" comment="Label of Open issue tracker button in crash dialog">Abrir registo de erros (github.com)</string>
     <string name="crash_dialog__close" comment="Label of Close button in crash dialog">Fechar</string>
-    <string name="crash_notification_channel__title" comment="Title of crash notification channel">Relatórios de erros do Dictate</string>
-    <string name="crash_once_notification__title" comment="Title of the notification for a single crash">O Dictate parou de funcionar…</string>
+    <string name="crash_notification_channel__title" comment="Title of crash notification channel">Relatórios de erros do diktat</string>
+    <string name="crash_once_notification__title" comment="Title of the notification for a single crash">O diktat parou de funcionar…</string>
     <string name="crash_once_notification__body" comment="Body of the notification for a single crash">Toque para ver os detalhes do erro</string>
-    <string name="crash_multiple_notification__title" comment="Title of the notification for consecutive crashes">Parece que Dictate não está a funcionar muito bem…</string>
+    <string name="crash_multiple_notification__title" comment="Title of the notification for consecutive crashes">Parece que diktat não está a funcionar muito bem…</string>
     <string name="crash_multiple_notification__body" comment="Body of the notification for consecutive crashes">A ativar o teclado usado anteriormente para parar este ciclo. Toque para ver os detalhes do erro.</string>
     <!-- Action strings -->
     <string name="action__add">Adicionar</string>
@@ -144,15 +144,12 @@
     <string name="state__no_file_selected">Nenhum ficheiro selecionado</string>
     <!-- Dictate strings -->
     <string name="quick_action__dictate_live_prompt">Instrução em direto</string>
-    <string name="about__based_on_floris__title">Baseado no FlorisBoard</string>
-    <string name="about__based_on_floris__summary">Uma derivação do FlorisBoard por Patrick Goldinger e colaboradores, Apache 2.0. Toque para abrir.</string>
-    <string name="about__made_by">Feito com ❤️ por DevEmperor\nSoli deo gloria ✝️</string>
     <string name="about__feedback__title">Comentários e apoio</string>
     <string name="about__feedback__summary">Envie um e-mail com perguntas, erros ou ideias</string>
     <string name="about__feedback__email">contact@devemperor.net</string>
-    <string name="about__feedback__subject">Dictate Feedback</string>
-    <string name="setup__provider__title">Escolhe como o Dictate transcreve</string>
-    <string name="setup__provider__choose_intro">O Dictate transforma a tua voz em texto com um serviço de IA. À maioria das pessoas serve uma destas duas formas — e se preferires não usar nenhum serviço na nuvem, tens mais duas em baixo.</string>
+    <string name="about__feedback__subject">diktat Feedback</string>
+    <string name="setup__provider__title">Escolhe como o diktat transcreve</string>
+    <string name="setup__provider__choose_intro">O diktat transforma a tua voz em texto com um serviço de IA. À maioria das pessoas serve uma destas duas formas — e se preferires não usar nenhum serviço na nuvem, tens mais duas em baixo.</string>
     <string name="setup__provider__choice_own_title">Usar o teu próprio fornecedor de IA</string>
     <string name="setup__provider__choice_own_body">Cria uma chave no fornecedor à tua escolha — o Groq é gratuito para o ditado do dia a dia. Manténs a tua conta e pagas diretamente ao fornecedor, aos preços dele. Demora cerca de dois minutos.</string>
     <string name="setup__provider__choice_own_btn">Configurar a minha chave</string>
@@ -161,14 +158,14 @@
     <string name="setup__provider__choice_local_title">No teu dispositivo, sem ligação</string>
     <string name="setup__provider__choice_local_body">Descarrega um modelo de voz uma única vez. Sem conta, sem custos e nenhum áudio sai do telemóvel.</string>
     <string name="setup__provider__choice_server_title">O teu próprio servidor</string>
-    <string name="setup__provider__choice_server_body">Aponta o Dictate para um servidor de voz que geres tu, ou para qualquer endpoint compatível com OpenAI.</string>
+    <string name="setup__provider__choice_server_body">Aponta o diktat para um servidor de voz que geres tu, ou para qualquer endpoint compatível com OpenAI.</string>
     <string name="setup__provider__local_intro">O reconhecimento de voz passa a correr no teu telemóvel: nada é enviado para lado nenhum e funciona sem ligação. Escolhe agora um modelo para descarregar — podes adicionar ou trocar modelos mais tarde.</string>
     <string name="setup__provider__local_recommended">Recomendado para o teu idioma</string>
     <string name="setup__provider__local_bigger">Mais preciso, mas uma transferência bem maior</string>
     <string name="setup__provider__local_download_btn">Descarregar modelo</string>
     <string name="setup__provider__local_use_btn">Usar este modelo</string>
     <string name="setup__provider__local_all_models">Mostrar todos os modelos</string>
-    <string name="setup__provider__what_is_key">Uma chave de API é como uma palavra-passe pessoal que permite ao Dictate usar o serviço por si. Criar uma é gratuito e demora cerca de dois minutos.</string>
+    <string name="setup__provider__what_is_key">Uma chave de API é como uma palavra-passe pessoal que permite ao diktat usar o serviço por si. Criar uma é gratuito e demora cerca de dois minutos.</string>
     <string name="setup__provider__recommended">Recomendamos o <b>Groq</b>: é rápido e gratuito para o ditado do dia a dia.</string>
     <string name="setup__provider__steps_groq">1. Toque no botão abaixo para abrir o Groq.\n2. Inicie sessão com a Google ou o seu e-mail.\n3. Toque em «Create API Key», dê-lhe qualquer nome e confirme.\n4. Copie a chave (começa por «gsk_»).\n5. Volte aqui e toque em «Colar chave de API» abaixo.</string>
     <string name="setup__provider__steps_generic">1. Toque no botão abaixo para abrir {provider}.\n2. Crie uma conta se ainda não tiver uma.\n3. Crie uma nova chave de API e copie-a.\n4. Volte aqui e toque em «Colar chave de API» abaixo.</string>
@@ -182,12 +179,12 @@
     <string name="setup__provider__skip_btn">Configurar mais tarde</string>
     <string name="setup__provider__other_provider">Usar outro fornecedor de IA</string>
     <string name="setup__provider__other_provider_hint">Avançado: escolha outro serviço em vez do Groq. Vai precisar de uma chave de API desse fornecedor.</string>
-    <string name="setup__finish_up__add_key_hint">Dica: ainda não adicionou uma chave de IA. Adicione uma a qualquer momento em Definições → Dictate → Fornecedores de IA para começar a ditar.</string>
+    <string name="setup__finish_up__add_key_hint">Dica: ainda não adicionou uma chave de IA. Adicione uma a qualquer momento em Definições → diktat → Fornecedores de IA para começar a ditar.</string>
     <string name="crash_dialog__bug_report_template">Relatório de falha</string>
     <string name="unit__seconds__symbol">{v} s</string>
-    <string name="dictate__accessibility_service_label">Botão flutuante do Dictate</string>
+    <string name="dictate__accessibility_service_label">Botão flutuante do diktat</string>
     <string name="dictate__accessibility_service_summary">Mostra um botão flutuante para ditar em qualquer campo de texto.</string>
-    <string name="dictate__accessibility_service_description">O Dictate usa este serviço para o botão de ditado flutuante. Quando ativado, deteta quando um campo de texto tem o foco em qualquer app — para que o botão possa aparecer — e insere a sua fala transcrita nesse campo. O Dictate só lê o campo focado para colocar o seu texto no cursor; não recolhe, armazena nem partilha qualquer outro conteúdo do ecrã.</string>
+    <string name="dictate__accessibility_service_description">O diktat usa este serviço para o botão de ditado flutuante. Quando ativado, deteta quando um campo de texto tem o foco em qualquer app — para que o botão possa aparecer — e insere a sua fala transcrita nesse campo. O diktat só lê o campo focado para colocar o seu texto no cursor; não recolhe, armazena nem partilha qualquer outro conteúdo do ecrã.</string>
     <string name="dictate__overlay_notification_channel">Botão de ditado flutuante</string>
     <string name="dictate__overlay_notification_recording">A gravar — toque no botão flutuante para transcrever</string>
     <string name="dictate__floating_button_title">Botão flutuante</string>
@@ -198,7 +195,7 @@
     <string name="dictate__floating_button_service_enabled">Ativado · toque para abrir as definições do sistema</string>
     <string name="dictate__floating_button_service_disabled">Ainda não ativado · toque para configurar</string>
     <string name="dictate__floating_button_disclosure_title">Ativar o botão flutuante</string>
-    <string name="dictate__floating_button_disclosure_message">Para mostrar o botão flutuante, o Dictate precisa do serviço de acessibilidade. Deteta quando um campo de texto tem o foco em qualquer app — para que o botão possa aparecer — e insere a sua fala transcrita nesse campo. O Dictate só lê o campo focado para colocar o seu texto; não recolhe, armazena nem partilha qualquer outro conteúdo do ecrã.\n\nNo ecrã seguinte, encontre “Botão flutuante do Dictate” e ative-o.</string>
+    <string name="dictate__floating_button_disclosure_message">Para mostrar o botão flutuante, o diktat precisa do serviço de acessibilidade. Deteta quando um campo de texto tem o foco em qualquer app — para que o botão possa aparecer — e insere a sua fala transcrita nesse campo. O diktat só lê o campo focado para colocar o seu texto; não recolhe, armazena nem partilha qualquer outro conteúdo do ecrã.\n\nNo ecrã seguinte, encontre “Botão flutuante do diktat” e ative-o.</string>
     <string name="dictate__floating_button_disclosure_continue">Abrir definições</string>
     <string name="dictate__floating_button_mic_title">Acesso ao microfone</string>
     <string name="dictate__floating_button_mic_summary">Necessário para gravar a sua voz · toque para conceder</string>
@@ -228,7 +225,7 @@
     <string name="dictate__floating_button_apps_scope_all">Todas as aplicações</string>
     <string name="dictate__floating_button_apps_scope_only">Apenas as aplicações abaixo</string>
     <string name="dictate__floating_button_apps_scope_except">Todas exceto as aplicações abaixo</string>
-    <string name="dictate__floating_button_apps_note">O botão nunca é desenhado sobre uma aplicação que deixe de fora, e o Dictate não lê os campos de texto dela. Uma aplicação que recusa serviços de acessibilidade em geral continuará a ver que o serviço está ligado.</string>
+    <string name="dictate__floating_button_apps_note">O botão nunca é desenhado sobre uma aplicação que deixe de fora, e o diktat não lê os campos de texto dela. Uma aplicação que recusa serviços de acessibilidade em geral continuará a ver que o serviço está ligado.</string>
     <string name="dictate__floating_button_apps_search">Procurar aplicações</string>
     <string name="dictate__floating_button_apps_none">Nenhuma aplicação encontrada para «{search_term}»</string>
     <string name="dictate__floating_button_design_title">Estilo do botão</string>
@@ -268,8 +265,8 @@
     <string name="dictate__voice_input_listening">A ouvir…</string>
     <string name="dictate__voice_input_transcribing">A transcrever…</string>
     <string name="dictate__voice_input_hint">Toca para enviar</string>
-    <string name="dictate__voice_ime_label">Entrada de voz do Dictate</string>
-    <string name="dictate__error_no_api_key">Sem chave de API – configure-a nas definições do Dictate.</string>
+    <string name="dictate__voice_ime_label">Entrada de voz do diktat</string>
+    <string name="dictate__error_no_api_key">Sem chave de API – configure-a nas definições do diktat.</string>
     <string name="dictate__error_transcription_failed">Falha na transcrição.</string>
     <string name="dictate__error_unknown">Erro desconhecido durante a transcrição.</string>
     <string name="dictate__error_rewording_failed">Falha na reformulação.</string>
@@ -293,7 +290,7 @@
     <string name="dictate__status_retrying">A tentar novamente… ({attempt})</string>
     <string name="dictate__action_resend">Tentar novamente</string>
     <string name="dictate__action_dismiss">Dispensar</string>
-    <string name="dictate__title">Dictate</string>
+    <string name="dictate__title">Dictation</string>
     <string name="dictate__api_key_title">Chave de API</string>
     <string name="dictate__api_key_placeholder">sk-…</string>
     <string name="dictate__model_placeholder">deixe vazio para o predefinido do fornecedor</string>
@@ -483,7 +480,7 @@
     <string name="dictate__command_word_summary">Os ditados que começam por «{word}» são executados como instrução em direto</string>
     <string name="dictate__command_word_placeholder">Jarvis</string>
     <string name="dictate__command_word_info_title">Acerca da palavra de comando</string>
-    <string name="dictate__command_word_info_description">Normalmente o Dictate escreve o que diz. Se definir uma palavra de comando, um ditado que comece por ela passa a ser uma instrução: a palavra é removida e o resto é enviado à IA, juntamente com o texto selecionado, se existir.\n\n«Jarvis, torna isto mais formal» reescreve a seleção. «Jarvis, qual é a capital do Japão» escreve a resposta no campo. É o botão de instrução em direto, alcançado dizendo o seu nome em vez de lhe tocar.\n\nA palavra só conta no início do ditado e apenas como palavra inteira, por isso escolha algo com que raramente comece uma frase.</string>
+    <string name="dictate__command_word_info_description">Normalmente o diktat escreve o que diz. Se definir uma palavra de comando, um ditado que comece por ela passa a ser uma instrução: a palavra é removida e o resto é enviado à IA, juntamente com o texto selecionado, se existir.\n\n«Jarvis, torna isto mais formal» reescreve a seleção. «Jarvis, qual é a capital do Japão» escreve a resposta no campo. É o botão de instrução em direto, alcançado dizendo o seu nome em vez de lhe tocar.\n\nA palavra só conta no início do ditado e apenas como palavra inteira, por isso escolha algo com que raramente comece uma frase.</string>
     <string name="dictate__auto_formatting_title">Formatação automática</string>
     <string name="dictate__auto_formatting_summary">Converter indicações de formatação faladas em Markdown (títulos, listas, …)</string>
     <string name="dictate__system_prompt_title">Instrução de reformulação</string>
@@ -567,7 +564,7 @@
     <string name="dictate__import_not_audio">Este ficheiro não contém áudio.</string>
     <string name="dictate__import_only_first">Apenas o primeiro ficheiro é transcrito – mais {count} ficaram de fora.</string>
     <string name="setup__grant_mic_permission__title">Acesso ao microfone</string>
-    <string name="setup__grant_mic_permission__description">O Dictate precisa de acesso ao microfone para gravar a sua voz para transcrição.</string>
+    <string name="setup__grant_mic_permission__description">O diktat precisa de acesso ao microfone para gravar a sua voz para transcrição.</string>
     <string name="setup__grant_mic_permission__btn">Conceder permissão de microfone</string>
     <!-- Dictate on-device (offline) models -->
     <string name="dictate__local_models_header">Funciona no seu dispositivo — nenhum áudio é enviado. Transfira um modelo para começar.</string>
@@ -605,7 +602,7 @@
     <string name="dictate__floating_button_copy_to_clipboard_summary_on">Cada ditado também é copiado para a área de transferência, para que possa colá-lo manualmente se a inserção falhar. Pode mostrar um aviso da área de transferência em alguns telemóveis.</string>
     <string name="dictate__floating_button_copy_to_clipboard_summary_off">Os ditados são apenas inseridos, não copiados para a área de transferência.</string>
     <string name="dictate__floating_button_menu_group">Menu ao manter premido</string>
-    <string name="dictate__floating_button_menu_settings_title">Definições do Dictate</string>
+    <string name="dictate__floating_button_menu_settings_title">Definições do diktat</string>
     <string name="dictate__floating_button_undo_summary_off">Não é mostrado nenhum botão para anular.</string>
     <string name="dictate__floating_button_undo_summary_on">Após um ditado, surge um botão para anular junto ao botão, para remover o texto inserido com um só toque.</string>
     <string name="dictate__floating_button_undo_title">Botão para anular</string>
@@ -696,7 +693,7 @@
     <string name="dictate__history_export_all_result">{written} escritos, {skipped} já existentes, {failed} falhados</string>
     <string name="dictate__history_export_last_failure">Uma escrita falhou {when}. «Exportar tudo agora» repõe o que falta.</string>
     <string name="dictate__history_export_warning_title">O que vai para lá</string>
-    <string name="dictate__history_export_warning_message">A pasta passará a conter o texto de cada ditado que fizer, e também as gravações se as ativar. Tudo o que a sincronize — um cliente na nuvem, uma ferramenta de cópia de segurança, outra aplicação — leva essas transcrições para fora deste dispositivo.\n\nO Dictate continua a escrever até desligar a pasta e nunca apaga nada dela: as entradas que saem do histórico permanecem na pasta. Os campos de palavra-passe e de navegação anónima nunca são registados e, por isso, nunca são exportados.</string>
+    <string name="dictate__history_export_warning_message">A pasta passará a conter o texto de cada ditado que fizer, e também as gravações se as ativar. Tudo o que a sincronize — um cliente na nuvem, uma ferramenta de cópia de segurança, outra aplicação — leva essas transcrições para fora deste dispositivo.\n\nO diktat continua a escrever até desligar a pasta e nunca apaga nada dela: as entradas que saem do histórico permanecem na pasta. Os campos de palavra-passe e de navegação anónima nunca são registados e, por isso, nunca são exportados.</string>
     <string name="dictate__history_export_needs_history">A exportação para pasta escreve o que o histórico regista, por isso o histórico tem de estar ativado.</string>
     <string name="dictate__history_export_enable_history">Ativar histórico</string>
     <string name="dictate__history_export_pick_failed">Não foi possível obter acesso de escrita a essa pasta</string>
@@ -719,7 +716,7 @@
     <string name="dictate__stats_reset_confirm_title">Repor estatísticas?</string>
     <string name="dictate__stats_reset_confirm_msg">Isto apaga permanentemente todas as tuas estatísticas de ditado.</string>
     <string name="dictate__stats_share">Partilhar</string>
-    <string name="dictate__stats_share_text">Poupei %1$s com o Dictate — %2$s ditados, %3$s palavras. 🎤</string>
+    <string name="dictate__stats_share_text">Poupei %1$s com o diktat — %2$s ditados, %3$s palavras. 🎤</string>
     <string name="dictate__reasoning_effort_title">Esforço de raciocínio</string>
     <string name="dictate__reasoning_effort_off">Desligado</string>
     <string name="dictate__reasoning_effort_minimal">Mínimo</string>

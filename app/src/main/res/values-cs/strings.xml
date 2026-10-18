@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
-    <string name="app_name">Dictate</string>
+    <string name="app_name">diktat</string>
     <!-- Emoji strings -->
     <string name="emoji__history__pinned">Připnuté</string>
     <!-- Quick action strings -->
@@ -11,9 +11,9 @@
     <string name="settings__title" comment="Title of Settings">Nastavení</string>
     <string name="settings__system_default" comment="General string which is used when a preference has the system default value set">Výchozí nastavení systému</string>
     <string name="settings__home__title" comment="Title of the Home screen">Vítejte ve {app_name}</string>
-    <string name="dictate__settings_unreadable_card">Vaše nastavení nešlo načíst, proto Dictate začal s výchozími hodnotami. Klepnutím je vrátíte zpět.</string>
+    <string name="dictate__settings_unreadable_card">Vaše nastavení nešlo načíst, proto diktat začal s výchozími hodnotami. Klepnutím je vrátíte zpět.</string>
     <string name="dictate__settings_unreadable_title">Obnovit nastavení?</string>
-    <string name="dictate__settings_unreadable_message">Při spuštění nemohl Dictate načíst svůj soubor s nastavením. Ponechal ho nedotčený a začal s výchozími hodnotami. „Obnovit“ vrátí vaše poskytovatele, klíče, prompty a nastavení do původního stavu. „Odstranit“ starý soubor smaže.</string>
+    <string name="dictate__settings_unreadable_message">Při spuštění nemohl diktat načíst svůj soubor s nastavením. Ponechal ho nedotčený a začal s výchozími hodnotami. „Obnovit“ vrátí vaše poskytovatele, klíče, prompty a nastavení do původního stavu. „Odstranit“ starý soubor smaže.</string>
     <string name="dictate__settings_restore_failed">Staré nastavení stále nejde načíst.</string>
     <string name="settings__search__title" comment="Title of the settings search screen">Hledat v nastavení</string>
     <string name="settings__search__placeholder" comment="Placeholder in the settings search field">Hledat v nastavení…</string>
@@ -68,7 +68,7 @@
     <string name="setup__footer__repository" comment="Repository label for URL">Repozitář</string>
     <string name="setup__grant_notification_permission__title">Povolit oznámení o hlášení pádu</string>
     <string name="setup__grant_notification_permission__description">Počínaje systémem Android 13 musí aplikace žádat o oprávnění
-        k posílání oznámení. V aplikaci Dictate je toto oprávnění použito pouze pro otevření obrazovky hlášení
+        k posílání oznámení. V aplikaci diktat je toto oprávnění použito pouze pro otevření obrazovky hlášení
         o pádu. Toto oprávnění lze kdykoli změnit v systémových nastaveních.
     </string>
     <string name="setup__grant_notification_permission__btn">Udělit oprávnění</string>
@@ -108,17 +108,17 @@
     <string name="backup_and_restore__restore__failure">Nepodařilo se obnovit data: {error_message}</string>
     <!-- Crash Dialog strings -->
     <string name="crash_dialog__title" comment="Title of crash dialog">Zpráva o chybě Dictateu</string>
-    <string name="crash_dialog__description" comment="Description of crash dialog">Omlouváme se za potíže, ale aplikace Dictate spadla kvůli neočekávané chybě.</string>
-    <string name="crash_dialog__report_instructions" comment="Issue tracker report instructions for the crash dialog. The %s placeholder is the name of the crash report template and always in English/LTR.">Pokud chcete tuto chybu nahlásit, podívejte se nejprve do nástroje pro sledování problémů na GitHubu, pokud již nebyla chyba nahlášena.\nPokud tomu tak není, zkopírujte vygenerovaný záznam o chybě a otevřete nový problém. Použijte šablonu „%s“ a vyplňte popis, kroky k reprodukci a na konec vložte vygenerovaný záznam o pádu. Pomůžete tak k tomu, aby byl Dictate lepší a stabilnější pro všechny. Děkujeme!</string>
+    <string name="crash_dialog__description" comment="Description of crash dialog">Omlouváme se za potíže, ale aplikace diktat spadla kvůli neočekávané chybě.</string>
+    <string name="crash_dialog__report_instructions" comment="Issue tracker report instructions for the crash dialog. The %s placeholder is the name of the crash report template and always in English/LTR.">Pokud chcete tuto chybu nahlásit, podívejte se nejprve do nástroje pro sledování problémů na GitHubu, pokud již nebyla chyba nahlášena.\nPokud tomu tak není, zkopírujte vygenerovaný záznam o chybě a otevřete nový problém. Použijte šablonu „%s“ a vyplňte popis, kroky k reprodukci a na konec vložte vygenerovaný záznam o pádu. Pomůžete tak k tomu, aby byl diktat lepší a stabilnější pro všechny. Děkujeme!</string>
     <string name="crash_dialog__copy_to_clipboard" comment="Label of Copy to clipboard button in crash dialog">Kopírovat do schránky</string>
     <string name="crash_dialog__copy_to_clipboard_success" comment="Label of Copy to clipboard success message in crash dialog">Zkopírováno do schránky</string>
     <string name="crash_dialog__copy_to_clipboard_failure" comment="Label of Copy to clipboard failure message in crash dialog">Nepodařilo se zkopírovat do systémové schránky: Instance správce schránky nenalezena</string>
     <string name="crash_dialog__open_issue_tracker" comment="Label of Open issue tracker button in crash dialog">Nahlásit problém (github.com)</string>
     <string name="crash_dialog__close" comment="Label of Close button in crash dialog">Zavřít</string>
-    <string name="crash_notification_channel__title" comment="Title of crash notification channel">Chybová hlášení Dictate</string>
-    <string name="crash_once_notification__title" comment="Title of the notification for a single crash">Dictate přestal pracovat…</string>
+    <string name="crash_notification_channel__title" comment="Title of crash notification channel">Chybová hlášení diktat</string>
+    <string name="crash_once_notification__title" comment="Title of the notification for a single crash">diktat přestal pracovat…</string>
     <string name="crash_once_notification__body" comment="Body of the notification for a single crash">Klepnutím zobrazíte podrobnosti o chybě</string>
-    <string name="crash_multiple_notification__title" comment="Title of the notification for consecutive crashes">Zdá se, že Dictate přestal opakovaně pracovat…</string>
+    <string name="crash_multiple_notification__title" comment="Title of the notification for consecutive crashes">Zdá se, že diktat přestal opakovaně pracovat…</string>
     <string name="crash_multiple_notification__body" comment="Body of the notification for consecutive crashes">Vrácení zpět na předchozí klávesnici pro zastavení nekonečného crash loopu. Klepnutím zobrazíte podrobnosti o chybě</string>
     <!-- Action strings -->
     <string name="action__add">Přidat</string>
@@ -145,15 +145,12 @@
     <string name="state__no_file_selected">Nebyl vybrán žádný soubor</string>
     <!-- Dictate strings -->
     <string name="quick_action__dictate_live_prompt">Pokyn naživo</string>
-    <string name="about__based_on_floris__title">Založeno na FlorisBoard</string>
-    <string name="about__based_on_floris__summary">Fork FlorisBoard od Patricka Goldingera a přispěvatelů, Apache 2.0. Klepnutím jej otevřete.</string>
-    <string name="about__made_by">Vytvořeno s ❤️ od DevEmperor\nSoli deo gloria ✝️</string>
     <string name="about__feedback__title">Zpětná vazba a podpora</string>
     <string name="about__feedback__summary">Pošlete e-mail s dotazy, chybami nebo nápady</string>
     <string name="about__feedback__email">contact@devemperor.net</string>
-    <string name="about__feedback__subject">Dictate Feedback</string>
-    <string name="setup__provider__title">Vyberte, jak má Dictate přepisovat</string>
-    <string name="setup__provider__choose_intro">Dictate převádí vaši řeč na text pomocí služby AI. Většině lidí vyhoví jeden ze dvou způsobů — a pokud nechcete používat žádnou cloudovou službu, níže najdete další dva.</string>
+    <string name="about__feedback__subject">diktat Feedback</string>
+    <string name="setup__provider__title">Vyberte, jak má diktat přepisovat</string>
+    <string name="setup__provider__choose_intro">diktat převádí vaši řeč na text pomocí služby AI. Většině lidí vyhoví jeden ze dvou způsobů — a pokud nechcete používat žádnou cloudovou službu, níže najdete další dva.</string>
     <string name="setup__provider__choice_own_title">Použít vlastního poskytovatele AI</string>
     <string name="setup__provider__choice_own_body">Vytvořte si klíč u poskytovatele podle svého výběru — Groq je pro běžné diktování zdarma. Zůstává vám vlastní účet a platíte přímo poskytovateli za jeho ceny. Zabere to asi dvě minuty.</string>
     <string name="setup__provider__choice_own_btn">Nastavit vlastní klíč</string>
@@ -162,14 +159,14 @@
     <string name="setup__provider__choice_local_title">Ve vašem zařízení, offline</string>
     <string name="setup__provider__choice_local_body">Jednou stáhnete řečový model. Žádný účet, žádné náklady a žádná nahrávka neopustí telefon.</string>
     <string name="setup__provider__choice_server_title">Vlastní server</string>
-    <string name="setup__provider__choice_server_body">Nasměrujte Dictate na řečový server, který provozujete sami, nebo na jakýkoli koncový bod kompatibilní s OpenAI.</string>
+    <string name="setup__provider__choice_server_body">Nasměrujte diktat na řečový server, který provozujete sami, nebo na jakýkoli koncový bod kompatibilní s OpenAI.</string>
     <string name="setup__provider__local_intro">Rozpoznávání řeči pak běží ve vašem telefonu: nic se nikam neposílá a funguje to i bez připojení. Vyberte si teď jeden model ke stažení — další můžete přidat nebo změnit později.</string>
     <string name="setup__provider__local_recommended">Doporučeno pro váš jazyk</string>
     <string name="setup__provider__local_bigger">Přesnější, ale výrazně větší stahování</string>
     <string name="setup__provider__local_download_btn">Stáhnout model</string>
     <string name="setup__provider__local_use_btn">Použít tento model</string>
     <string name="setup__provider__local_all_models">Zobrazit všechny modely</string>
-    <string name="setup__provider__what_is_key">Klíč API je jako osobní heslo, které aplikaci Dictate umožňuje používat službu za vás. Jeho vytvoření je zdarma a trvá asi dvě minuty.</string>
+    <string name="setup__provider__what_is_key">Klíč API je jako osobní heslo, které aplikaci diktat umožňuje používat službu za vás. Jeho vytvoření je zdarma a trvá asi dvě minuty.</string>
     <string name="setup__provider__recommended">Doporučujeme <b>Groq</b> – je rychlý a zdarma pro každodenní diktování.</string>
     <string name="setup__provider__steps_groq">1. Klepnutím na tlačítko níže otevřete Groq.\n2. Přihlaste se pomocí Googlu nebo e-mailu.\n3. Klepněte na „Create API Key\", zadejte libovolný název a potvrďte.\n4. Zkopírujte klíč (začíná na „gsk_\").\n5. Vraťte se sem a klepněte na „Vložit klíč API\" níže.</string>
     <string name="setup__provider__steps_generic">1. Klepnutím na tlačítko níže otevřete {provider}.\n2. Vytvořte si účet, pokud ještě žádný nemáte.\n3. Vytvořte nový klíč API a zkopírujte jej.\n4. Vraťte se sem a klepněte na „Vložit klíč API\" níže.</string>
@@ -183,12 +180,12 @@
     <string name="setup__provider__skip_btn">Nastavit později</string>
     <string name="setup__provider__other_provider">Použít jiného poskytovatele AI</string>
     <string name="setup__provider__other_provider_hint">Pokročilé: zvolte jinou službu než Groq. Budete potřebovat klíč API od tohoto poskytovatele.</string>
-    <string name="setup__finish_up__add_key_hint">Tip: zatím jste nepřidali klíč AI. Přidejte jej kdykoli v Nastavení → Dictate → Poskytovatelé AI a začněte diktovat.</string>
+    <string name="setup__finish_up__add_key_hint">Tip: zatím jste nepřidali klíč AI. Přidejte jej kdykoli v Nastavení → diktat → Poskytovatelé AI a začněte diktovat.</string>
     <string name="crash_dialog__bug_report_template">Hlášení o pádu</string>
     <string name="unit__seconds__symbol">{v} s</string>
-    <string name="dictate__accessibility_service_label">Plovoucí tlačítko Dictate</string>
+    <string name="dictate__accessibility_service_label">Plovoucí tlačítko diktat</string>
     <string name="dictate__accessibility_service_summary">Zobrazit plovoucí tlačítko pro diktování do libovolného textového pole.</string>
-    <string name="dictate__accessibility_service_description">Dictate používá tuto službu pro plovoucí tlačítko diktování. Když je zapnutá, rozpozná, že je textové pole zaměřené v jakékoli aplikaci — aby se tlačítko mohlo zobrazit — a vloží přepsanou řeč do tohoto pole. Dictate čte pouze zaměřené pole, aby umístil text na pozici kurzoru; nesbírá, neukládá ani nesdílí žádný jiný obsah obrazovky.</string>
+    <string name="dictate__accessibility_service_description">diktat používá tuto službu pro plovoucí tlačítko diktování. Když je zapnutá, rozpozná, že je textové pole zaměřené v jakékoli aplikaci — aby se tlačítko mohlo zobrazit — a vloží přepsanou řeč do tohoto pole. diktat čte pouze zaměřené pole, aby umístil text na pozici kurzoru; nesbírá, neukládá ani nesdílí žádný jiný obsah obrazovky.</string>
     <string name="dictate__overlay_notification_channel">Plovoucí tlačítko diktování</string>
     <string name="dictate__overlay_notification_recording">Nahrávání — klepnutím na plovoucí tlačítko přepíšete</string>
     <string name="dictate__floating_button_title">Plovoucí tlačítko</string>
@@ -199,7 +196,7 @@
     <string name="dictate__floating_button_service_enabled">Zapnuto · klepnutím otevřete nastavení systému</string>
     <string name="dictate__floating_button_service_disabled">Zatím nezapnuto · klepnutím nastavíte</string>
     <string name="dictate__floating_button_disclosure_title">Zapnout plovoucí tlačítko</string>
-    <string name="dictate__floating_button_disclosure_message">Aby se plovoucí tlačítko zobrazilo, Dictate potřebuje službu přístupnosti. Rozpozná, že je textové pole zaměřené v jakékoli aplikaci — aby se tlačítko mohlo zobrazit — a vloží přepsanou řeč do tohoto pole. Dictate čte pouze zaměřené pole, aby umístil váš text; nesbírá, neukládá ani nesdílí žádný jiný obsah obrazovky.\n\nNa další obrazovce najděte „Plovoucí tlačítko Dictate” a zapněte ho.</string>
+    <string name="dictate__floating_button_disclosure_message">Aby se plovoucí tlačítko zobrazilo, diktat potřebuje službu přístupnosti. Rozpozná, že je textové pole zaměřené v jakékoli aplikaci — aby se tlačítko mohlo zobrazit — a vloží přepsanou řeč do tohoto pole. diktat čte pouze zaměřené pole, aby umístil váš text; nesbírá, neukládá ani nesdílí žádný jiný obsah obrazovky.\n\nNa další obrazovce najděte „Plovoucí tlačítko diktat” a zapněte ho.</string>
     <string name="dictate__floating_button_disclosure_continue">Otevřít nastavení</string>
     <string name="dictate__floating_button_mic_title">Přístup k mikrofonu</string>
     <string name="dictate__floating_button_mic_summary">Vyžadováno k nahrávání hlasu · klepnutím povolíte</string>
@@ -229,7 +226,7 @@
     <string name="dictate__floating_button_apps_scope_all">Všechny aplikace</string>
     <string name="dictate__floating_button_apps_scope_only">Jen aplikace níže</string>
     <string name="dictate__floating_button_apps_scope_except">Všechny kromě aplikací níže</string>
-    <string name="dictate__floating_button_apps_note">Nad aplikací, kterou vynecháte, se tlačítko nikdy nevykreslí a Dictate v ní nečte textová pole. Aplikace, které vadí služby přístupnosti jako takové, stejně pozná, že je služba zapnutá.</string>
+    <string name="dictate__floating_button_apps_note">Nad aplikací, kterou vynecháte, se tlačítko nikdy nevykreslí a diktat v ní nečte textová pole. Aplikace, které vadí služby přístupnosti jako takové, stejně pozná, že je služba zapnutá.</string>
     <string name="dictate__floating_button_apps_search">Hledat aplikace</string>
     <string name="dictate__floating_button_apps_none">Pro „{search_term}“ nebyla nalezena žádná aplikace</string>
     <string name="dictate__floating_button_design_title">Styl tlačítka</string>
@@ -269,8 +266,8 @@
     <string name="dictate__voice_input_listening">Poslouchám…</string>
     <string name="dictate__voice_input_transcribing">Přepis…</string>
     <string name="dictate__voice_input_hint">Klepnutím odešlete</string>
-    <string name="dictate__voice_ime_label">Hlasový vstup Dictate</string>
-    <string name="dictate__error_no_api_key">Není nastaven klíč API – nastavte jej v nastavení Dictate.</string>
+    <string name="dictate__voice_ime_label">Hlasový vstup diktat</string>
+    <string name="dictate__error_no_api_key">Není nastaven klíč API – nastavte jej v nastavení diktat.</string>
     <string name="dictate__error_transcription_failed">Přepis selhal.</string>
     <string name="dictate__error_unknown">Neznámá chyba při přepisu.</string>
     <string name="dictate__error_rewording_failed">Přeformulování selhalo.</string>
@@ -294,7 +291,7 @@
     <string name="dictate__status_retrying">Opakování… ({attempt})</string>
     <string name="dictate__action_resend">Zkusit znovu</string>
     <string name="dictate__action_dismiss">Zavřít</string>
-    <string name="dictate__title">Dictate</string>
+    <string name="dictate__title">Dictation</string>
     <string name="dictate__api_key_title">Klíč API</string>
     <string name="dictate__api_key_placeholder">sk-…</string>
     <string name="dictate__model_placeholder">ponechte prázdné pro výchozí nastavení poskytovatele</string>
@@ -484,7 +481,7 @@
     <string name="dictate__command_word_summary">Diktáty začínající slovem „{word}“ se spustí jako pokyn naživo</string>
     <string name="dictate__command_word_placeholder">Jarvis</string>
     <string name="dictate__command_word_info_title">O příkazovém slově</string>
-    <string name="dictate__command_word_info_description">Dictate normálně zapisuje to, co řeknete. Když nastavíte příkazové slovo, diktát, který jím začíná, se místo toho stane pokynem: slovo se odstraní a zbytek se pošle AI spolu s vybraným textem, pokud nějaký je.\n\n„Jarvisi, uprav to formálněji“ přepíše výběr. „Jarvisi, jaké je hlavní město Japonska“ zapíše odpověď do pole. Je to tlačítko pokynu naživo, jen vyvolané vyslovením jeho jména místo klepnutí.\n\nSlovo platí jen úplně na začátku diktátu a jen jako celé slovo — vyberte tedy něco, čím větu zahajujete zřídka.</string>
+    <string name="dictate__command_word_info_description">diktat normálně zapisuje to, co řeknete. Když nastavíte příkazové slovo, diktát, který jím začíná, se místo toho stane pokynem: slovo se odstraní a zbytek se pošle AI spolu s vybraným textem, pokud nějaký je.\n\n„Jarvisi, uprav to formálněji“ přepíše výběr. „Jarvisi, jaké je hlavní město Japonska“ zapíše odpověď do pole. Je to tlačítko pokynu naživo, jen vyvolané vyslovením jeho jména místo klepnutí.\n\nSlovo platí jen úplně na začátku diktátu a jen jako celé slovo — vyberte tedy něco, čím větu zahajujete zřídka.</string>
     <string name="dictate__auto_formatting_title">Automatické formátování</string>
     <string name="dictate__auto_formatting_summary">Převádět vyřčené pokyny k formátování na Markdown (nadpisy, seznamy, …)</string>
     <string name="dictate__system_prompt_title">Pokyn k přeformulování</string>
@@ -568,7 +565,7 @@
     <string name="dictate__import_not_audio">Tento soubor neobsahuje zvuk.</string>
     <string name="dictate__import_only_first">Přepisuje se jen první soubor – dalších {count} bylo vynecháno.</string>
     <string name="setup__grant_mic_permission__title">Přístup k mikrofonu</string>
-    <string name="setup__grant_mic_permission__description">Dictate potřebuje přístup k mikrofonu, aby mohl nahrát váš hlas pro přepis.</string>
+    <string name="setup__grant_mic_permission__description">diktat potřebuje přístup k mikrofonu, aby mohl nahrát váš hlas pro přepis.</string>
     <string name="setup__grant_mic_permission__btn">Udělit oprávnění k mikrofonu</string>
     <!-- Dictate on-device (offline) models -->
     <string name="dictate__local_models_header">Běží ve vašem zařízení — žádný zvuk se neodesílá. Stáhněte model a začněte.</string>
@@ -608,7 +605,7 @@
     <string name="dictate__floating_button_copy_to_clipboard_summary_on">Každé diktování se také zkopíruje do schránky, takže je můžeš vložit ručně, pokud vložení selže. Na některých telefonech může zobrazit upozornění schránky.</string>
     <string name="dictate__floating_button_copy_to_clipboard_summary_off">Diktování se pouze vkládají, nekopírují se do schránky.</string>
     <string name="dictate__floating_button_menu_group">Nabídka při podržení</string>
-    <string name="dictate__floating_button_menu_settings_title">Nastavení Dictate</string>
+    <string name="dictate__floating_button_menu_settings_title">Nastavení diktat</string>
     <string name="dictate__floating_button_undo_summary_off">Tlačítko zpět se nezobrazuje.</string>
     <string name="dictate__floating_button_undo_summary_on">Po diktování se vedle tlačítka zobrazí tlačítko zpět, kterým jedním klepnutím odstraníte vložený text.</string>
     <string name="dictate__floating_button_undo_title">Tlačítko zpět</string>
@@ -722,7 +719,7 @@
     <string name="dictate__stats_reset_confirm_title">Vynulovat statistiky?</string>
     <string name="dictate__stats_reset_confirm_msg">Trvale to vymaže všechny vaše statistiky diktování.</string>
     <string name="dictate__stats_share">Sdílet</string>
-    <string name="dictate__stats_share_text">Ušetřil jsem %1$s s Dictate — %2$s diktátů, %3$s slov. 🎤</string>
+    <string name="dictate__stats_share_text">Ušetřil jsem %1$s s diktat — %2$s diktátů, %3$s slov. 🎤</string>
     <string name="dictate__reasoning_effort_title">Úsilí uvažování</string>
     <string name="dictate__reasoning_effort_off">Vypnuto</string>
     <string name="dictate__reasoning_effort_minimal">Minimální</string>

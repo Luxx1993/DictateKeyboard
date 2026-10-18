@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
-    <string name="app_name">Dictate</string>
+    <string name="app_name">diktat</string>
     <!-- Emoji strings -->
     <string name="emoji__history__pinned">已置顶</string>
     <!-- Quick action strings -->
@@ -11,9 +11,9 @@
     <string name="settings__title" comment="Title of Settings">设置</string>
     <string name="settings__system_default" comment="General string which is used when a preference has the system default value set">系统默认</string>
     <string name="settings__home__title" comment="Title of the Home screen">欢迎使用{app_name}</string>
-    <string name="dictate__settings_unreadable_card">无法读取你的设置，因此 Dictate 已使用默认值启动。点按此处即可恢复。</string>
+    <string name="dictate__settings_unreadable_card">无法读取你的设置，因此 diktat 已使用默认值启动。点按此处即可恢复。</string>
     <string name="dictate__settings_unreadable_title">恢复设置？</string>
-    <string name="dictate__settings_unreadable_message">Dictate 启动时无法读取其设置文件。它已原样保留该文件，并使用默认值启动。“还原”会将你的服务商、密钥、提示词和设置恢复原样。“删除”会移除旧文件。</string>
+    <string name="dictate__settings_unreadable_message">diktat 启动时无法读取其设置文件。它已原样保留该文件，并使用默认值启动。“还原”会将你的服务商、密钥、提示词和设置恢复原样。“删除”会移除旧文件。</string>
     <string name="dictate__settings_restore_failed">仍然无法读取旧设置。</string>
     <string name="settings__search__title" comment="Title of the settings search screen">搜索设置</string>
     <string name="settings__search__placeholder" comment="Placeholder in the settings search field">搜索设置…</string>
@@ -67,7 +67,7 @@
     <string name="setup__footer__repository" comment="Repository label for URL">源码库</string>
     <string name="setup__grant_notification_permission__title">允许崩溃报告消息通知</string>
     <string name="setup__grant_notification_permission__description">自安卓 13 以来，应用在发送通知前
-    必须向用户申请权限。在 Dictate 中，这一权限仅用于在崩溃时打开一个崩溃报告页面。
+    必须向用户申请权限。在 diktat 中，这一权限仅用于在崩溃时打开一个崩溃报告页面。
     这一权限可以随时在系统设置中更改。
     </string>
     <string name="setup__grant_notification_permission__btn">授予权限</string>
@@ -106,18 +106,18 @@
     <string name="backup_and_restore__restore__success">成功还原备份！</string>
     <string name="backup_and_restore__restore__failure">还原数据失败：{error_message}</string>
     <!-- Crash Dialog strings -->
-    <string name="crash_dialog__title" comment="Title of crash dialog">Dictate 错误报告</string>
-    <string name="crash_dialog__description" comment="Description of crash dialog">很抱歉给您带来不便，但 Dictate 因意外错误而崩溃。</string>
-    <string name="crash_dialog__report_instructions" comment="Issue tracker report instructions for the crash dialog. The %s placeholder is the name of the crash report template and always in English/LTR.">如果您希望报告此错误，请先查看 GitHub 上的问题跟踪器（如果尚未报告您的崩溃）。\n如果没有，请复制生成的崩溃日志并打开一个新问题。使用“%s”模板，填写描述、重现崩溃的步骤，最后粘贴生成的崩溃日志。这有助于让 Dictate 对每个用户都更好、更稳定。谢谢！</string>
+    <string name="crash_dialog__title" comment="Title of crash dialog">diktat 错误报告</string>
+    <string name="crash_dialog__description" comment="Description of crash dialog">很抱歉给您带来不便，但 diktat 因意外错误而崩溃。</string>
+    <string name="crash_dialog__report_instructions" comment="Issue tracker report instructions for the crash dialog. The %s placeholder is the name of the crash report template and always in English/LTR.">如果您希望报告此错误，请先查看 GitHub 上的问题跟踪器（如果尚未报告您的崩溃）。\n如果没有，请复制生成的崩溃日志并打开一个新问题。使用“%s”模板，填写描述、重现崩溃的步骤，最后粘贴生成的崩溃日志。这有助于让 diktat 对每个用户都更好、更稳定。谢谢！</string>
     <string name="crash_dialog__copy_to_clipboard" comment="Label of Copy to clipboard button in crash dialog">复制到系统剪贴板</string>
     <string name="crash_dialog__copy_to_clipboard_success" comment="Label of Copy to clipboard success message in crash dialog">已复制到系统剪贴板</string>
     <string name="crash_dialog__copy_to_clipboard_failure" comment="Label of Copy to clipboard failure message in crash dialog">无法复制到系统剪贴板：找不到剪贴板管理器实例</string>
     <string name="crash_dialog__open_issue_tracker" comment="Label of Open issue tracker button in crash dialog">打开问题跟踪器（github.com）</string>
     <string name="crash_dialog__close" comment="Label of Close button in crash dialog">关闭</string>
-    <string name="crash_notification_channel__title" comment="Title of crash notification channel">Dictate 错误报告</string>
-    <string name="crash_once_notification__title" comment="Title of the notification for a single crash">Dictate 已停止工作…</string>
+    <string name="crash_notification_channel__title" comment="Title of crash notification channel">diktat 错误报告</string>
+    <string name="crash_once_notification__title" comment="Title of the notification for a single crash">diktat 已停止工作…</string>
     <string name="crash_once_notification__body" comment="Body of the notification for a single crash">点击查看错误详情</string>
-    <string name="crash_multiple_notification__title" comment="Title of the notification for consecutive crashes">Dictate 似乎反复停止工作…</string>
+    <string name="crash_multiple_notification__title" comment="Title of the notification for consecutive crashes">diktat 似乎反复停止工作…</string>
     <string name="crash_multiple_notification__body" comment="Body of the notification for consecutive crashes">回退到上一个键盘以停止无限崩溃循环。点击查看错误详情</string>
     <!-- Action strings -->
     <string name="action__add">添加</string>
@@ -144,15 +144,12 @@
     <string name="state__no_file_selected">未选择文件</string>
     <!-- Dictate strings -->
     <string name="quick_action__dictate_live_prompt">实时指令</string>
-    <string name="about__based_on_floris__title">基于 FlorisBoard</string>
-    <string name="about__based_on_floris__summary">由 Patrick Goldinger 及贡献者开发的 FlorisBoard 分支，Apache 2.0。点按可打开。</string>
-    <string name="about__made_by">由 DevEmperor 用 ❤️ 制作\nSoli deo gloria ✝️</string>
     <string name="about__feedback__title">反馈与支持</string>
     <string name="about__feedback__summary">发送电子邮件提出问题、漏洞或建议</string>
     <string name="about__feedback__email">contact@devemperor.net</string>
-    <string name="about__feedback__subject">Dictate Feedback</string>
-    <string name="setup__provider__title">选择 Dictate 的转写方式</string>
-    <string name="setup__provider__choose_intro">Dictate 借助 AI 服务把语音转成文字。上面两种方式适合大多数人；如果你完全不想用云服务，下面还有两种。</string>
+    <string name="about__feedback__subject">diktat Feedback</string>
+    <string name="setup__provider__title">选择 diktat 的转写方式</string>
+    <string name="setup__provider__choose_intro">diktat 借助 AI 服务把语音转成文字。上面两种方式适合大多数人；如果你完全不想用云服务，下面还有两种。</string>
     <string name="setup__provider__choice_own_title">使用你自己的 AI 服务商</string>
     <string name="setup__provider__choice_own_body">在你选定的服务商处创建密钥——Groq 用于日常听写是免费的。你保留自己的账号，按服务商的价格直接付费。大约需要两分钟。</string>
     <string name="setup__provider__choice_own_btn">设置我自己的密钥</string>
@@ -161,14 +158,14 @@
     <string name="setup__provider__choice_local_title">在你的设备上，离线</string>
     <string name="setup__provider__choice_local_body">只需下载一次语音模型。无需账号、没有费用，音频也不会离开你的手机。</string>
     <string name="setup__provider__choice_server_title">你自己的服务器</string>
-    <string name="setup__provider__choice_server_body">把 Dictate 指向你自己运行的语音服务器，或任何兼容 OpenAI 的端点。</string>
+    <string name="setup__provider__choice_server_body">把 diktat 指向你自己运行的语音服务器，或任何兼容 OpenAI 的端点。</string>
     <string name="setup__provider__local_intro">语音识别随后在你的手机上运行：不会发送到任何地方，没有网络也能用。先选一个模型下载——以后可以随时添加或更换。</string>
     <string name="setup__provider__local_recommended">推荐给你的语言</string>
     <string name="setup__provider__local_bigger">更准确，但下载大得多</string>
     <string name="setup__provider__local_download_btn">下载模型</string>
     <string name="setup__provider__local_use_btn">使用此模型</string>
     <string name="setup__provider__local_all_models">显示全部模型</string>
-    <string name="setup__provider__what_is_key">API 密钥就像一个个人密码，让 Dictate 代您使用该服务。创建它是免费的，大约需要两分钟。</string>
+    <string name="setup__provider__what_is_key">API 密钥就像一个个人密码，让 diktat 代您使用该服务。创建它是免费的，大约需要两分钟。</string>
     <string name="setup__provider__recommended">我们推荐 <b>Groq</b>——它快速且对日常听写免费。</string>
     <string name="setup__provider__steps_groq">1. 点按下方按钮打开 Groq。\n2. 使用 Google 或您的电子邮箱登录。\n3. 点按“Create API Key”，任意命名并确认。\n4. 复制密钥（以“gsk_”开头）。\n5. 返回此处，点按下方的“粘贴 API 密钥”。</string>
     <string name="setup__provider__steps_generic">1. 点按下方按钮打开 {provider}。\n2. 如果还没有账户，请先创建。\n3. 创建一个新的 API 密钥并复制。\n4. 返回此处，点按下方的“粘贴 API 密钥”。</string>
@@ -182,12 +179,12 @@
     <string name="setup__provider__skip_btn">稍后设置</string>
     <string name="setup__provider__other_provider">使用其他 AI 服务商</string>
     <string name="setup__provider__other_provider_hint">高级：选择 Groq 以外的其他服务。您需要该服务商的 API 密钥。</string>
-    <string name="setup__finish_up__add_key_hint">提示：您尚未添加 AI 密钥。可随时在设置 → Dictate → AI 服务商中添加，即可开始听写。</string>
+    <string name="setup__finish_up__add_key_hint">提示：您尚未添加 AI 密钥。可随时在设置 → diktat → AI 服务商中添加，即可开始听写。</string>
     <string name="crash_dialog__bug_report_template">崩溃报告</string>
     <string name="unit__seconds__symbol">{v} 秒</string>
-    <string name="dictate__accessibility_service_label">Dictate 悬浮按钮</string>
+    <string name="dictate__accessibility_service_label">diktat 悬浮按钮</string>
     <string name="dictate__accessibility_service_summary">显示一个悬浮按钮，可向任意文本框听写。</string>
-    <string name="dictate__accessibility_service_description">Dictate 使用此服务来提供悬浮听写按钮。启用后，它会检测任意应用中文本框何时获得焦点（以便按钮可以出现），并将转写的语音插入该文本框。Dictate 仅读取获得焦点的文本框，以便将文本放置在光标处；它不会收集、存储或分享任何其他屏幕内容。</string>
+    <string name="dictate__accessibility_service_description">diktat 使用此服务来提供悬浮听写按钮。启用后，它会检测任意应用中文本框何时获得焦点（以便按钮可以出现），并将转写的语音插入该文本框。diktat 仅读取获得焦点的文本框，以便将文本放置在光标处；它不会收集、存储或分享任何其他屏幕内容。</string>
     <string name="dictate__overlay_notification_channel">悬浮听写按钮</string>
     <string name="dictate__overlay_notification_recording">正在录音 — 点按悬浮按钮进行转写</string>
     <string name="dictate__floating_button_title">悬浮按钮</string>
@@ -198,7 +195,7 @@
     <string name="dictate__floating_button_service_enabled">已启用 · 点按以打开系统设置</string>
     <string name="dictate__floating_button_service_disabled">尚未启用 · 点按以设置</string>
     <string name="dictate__floating_button_disclosure_title">启用悬浮按钮</string>
-    <string name="dictate__floating_button_disclosure_message">若要显示悬浮按钮，Dictate 需要无障碍服务。它会检测任意应用中文本框何时获得焦点（以便按钮可以出现），并将转写的语音插入该文本框。Dictate 仅读取获得焦点的文本框，以便放置您的文本；它不会收集、存储或分享任何其他屏幕内容。\n\n在下一个屏幕中，找到“Dictate 悬浮按钮”并将其开启。</string>
+    <string name="dictate__floating_button_disclosure_message">若要显示悬浮按钮，diktat 需要无障碍服务。它会检测任意应用中文本框何时获得焦点（以便按钮可以出现），并将转写的语音插入该文本框。diktat 仅读取获得焦点的文本框，以便放置您的文本；它不会收集、存储或分享任何其他屏幕内容。\n\n在下一个屏幕中，找到“diktat 悬浮按钮”并将其开启。</string>
     <string name="dictate__floating_button_disclosure_continue">打开设置</string>
     <string name="dictate__floating_button_mic_title">麦克风权限</string>
     <string name="dictate__floating_button_mic_summary">录制语音所必需 · 点按以授予</string>
@@ -228,7 +225,7 @@
     <string name="dictate__floating_button_apps_scope_all">所有应用</string>
     <string name="dictate__floating_button_apps_scope_only">仅下列应用</string>
     <string name="dictate__floating_button_apps_scope_except">除下列应用外的所有应用</string>
-    <string name="dictate__floating_button_apps_note">被排除的应用上方永远不会绘制按钮，Dictate 也不会读取其中的文本框。但对于本身就抵触无障碍服务的应用，它仍然能看出该服务已开启。</string>
+    <string name="dictate__floating_button_apps_note">被排除的应用上方永远不会绘制按钮，diktat 也不会读取其中的文本框。但对于本身就抵触无障碍服务的应用，它仍然能看出该服务已开启。</string>
     <string name="dictate__floating_button_apps_search">搜索应用</string>
     <string name="dictate__floating_button_apps_none">未找到与“{search_term}”匹配的应用</string>
     <string name="dictate__floating_button_design_title">按钮样式</string>
@@ -268,8 +265,8 @@
     <string name="dictate__voice_input_listening">正在聆听…</string>
     <string name="dictate__voice_input_transcribing">正在转写…</string>
     <string name="dictate__voice_input_hint">点按发送</string>
-    <string name="dictate__voice_ime_label">Dictate 语音输入</string>
-    <string name="dictate__error_no_api_key">未设置 API 密钥——请在 Dictate 设置中配置。</string>
+    <string name="dictate__voice_ime_label">diktat 语音输入</string>
+    <string name="dictate__error_no_api_key">未设置 API 密钥——请在 diktat 设置中配置。</string>
     <string name="dictate__error_transcription_failed">转录失败。</string>
     <string name="dictate__error_unknown">转录时发生未知错误。</string>
     <string name="dictate__error_rewording_failed">改写失败。</string>
@@ -293,7 +290,7 @@
     <string name="dictate__status_retrying">重试中…（{attempt}）</string>
     <string name="dictate__action_resend">重试</string>
     <string name="dictate__action_dismiss">关闭</string>
-    <string name="dictate__title">Dictate</string>
+    <string name="dictate__title">Dictation</string>
     <string name="dictate__api_key_title">API 密钥</string>
     <string name="dictate__api_key_placeholder">sk-…</string>
     <string name="dictate__model_placeholder">留空以使用服务商默认模型</string>
@@ -483,7 +480,7 @@
     <string name="dictate__command_word_summary">以“{word}”开头的听写将作为实时指令执行</string>
     <string name="dictate__command_word_placeholder">贾维斯</string>
     <string name="dictate__command_word_info_title">关于指令唤醒词</string>
-    <string name="dictate__command_word_info_description">Dictate 通常会把你说的话原样写下来。设置唤醒词后，以它开头的听写会改为按指令处理：该词被去掉，其余内容连同选中的文本（如果有）一起发送给 AI。\n\n“贾维斯，把这段改得正式一点”会改写选中的文本；“贾维斯，日本的首都是哪里”会把答案写进输入框。也就是把实时指令按钮从“点一下”变成“叫一声”。\n\n该词只有位于听写最开头、且作为完整词出现时才生效，所以请挑一个你很少用来起头的词。</string>
+    <string name="dictate__command_word_info_description">diktat 通常会把你说的话原样写下来。设置唤醒词后，以它开头的听写会改为按指令处理：该词被去掉，其余内容连同选中的文本（如果有）一起发送给 AI。\n\n“贾维斯，把这段改得正式一点”会改写选中的文本；“贾维斯，日本的首都是哪里”会把答案写进输入框。也就是把实时指令按钮从“点一下”变成“叫一声”。\n\n该词只有位于听写最开头、且作为完整词出现时才生效，所以请挑一个你很少用来起头的词。</string>
     <string name="dictate__auto_formatting_title">自动格式化</string>
     <string name="dictate__auto_formatting_summary">将口述的格式提示转换为 Markdown（标题、列表等）</string>
     <string name="dictate__system_prompt_title">改写指令</string>
@@ -567,7 +564,7 @@
     <string name="dictate__import_not_audio">此文件不含音频。</string>
     <string name="dictate__import_only_first">只转写第一个文件，另外 {count} 个已跳过。</string>
     <string name="setup__grant_mic_permission__title">麦克风访问权限</string>
-    <string name="setup__grant_mic_permission__description">Dictate 需要麦克风访问权限来录制您的语音以进行转录。</string>
+    <string name="setup__grant_mic_permission__description">diktat 需要麦克风访问权限来录制您的语音以进行转录。</string>
     <string name="setup__grant_mic_permission__btn">授予麦克风权限</string>
     <!-- Dictate on-device (offline) models -->
     <string name="dictate__local_models_header">在您的设备上运行 — 不会发送任何音频。下载模型即可开始。</string>
@@ -604,7 +601,7 @@
     <string name="dictate__floating_button_copy_to_clipboard_summary_on">每次听写也会复制到剪贴板，这样即使插入失败也能手动粘贴。在某些手机上可能会显示剪贴板提示。</string>
     <string name="dictate__floating_button_copy_to_clipboard_summary_off">听写仅插入，不复制到剪贴板。</string>
     <string name="dictate__floating_button_menu_group">长按菜单</string>
-    <string name="dictate__floating_button_menu_settings_title">Dictate 设置</string>
+    <string name="dictate__floating_button_menu_settings_title">diktat 设置</string>
     <string name="dictate__floating_button_undo_summary_off">不显示撤销按钮。</string>
     <string name="dictate__floating_button_undo_summary_on">听写完成后，按钮旁会出现撤销按钮，轻点一下即可删除已插入的文本。</string>
     <string name="dictate__floating_button_undo_title">撤销按钮</string>
@@ -694,7 +691,7 @@
     <string name="dictate__history_export_all_result">已写入 {written} 条，已存在 {skipped} 条，失败 {failed} 条</string>
     <string name="dictate__history_export_last_failure">{when}有一次写入失败。“立即导出全部”可以补齐缺失的文件。</string>
     <string name="dictate__history_export_warning_title">文件夹里会有什么</string>
-    <string name="dictate__history_export_warning_message">从现在起，该文件夹会保存你每一段听写的文字；如果开启，还会保存录音。任何同步它的工具 — 云端客户端、备份工具或其他应用 — 都会把这些转写带离本设备。\n\n在你断开该文件夹之前，Dictate 会持续写入，并且从不删除其中的文件：从历史记录中移除的条目仍会留在文件夹里。密码字段和无痕输入从不记录，因此也从不导出。</string>
+    <string name="dictate__history_export_warning_message">从现在起，该文件夹会保存你每一段听写的文字；如果开启，还会保存录音。任何同步它的工具 — 云端客户端、备份工具或其他应用 — 都会把这些转写带离本设备。\n\n在你断开该文件夹之前，diktat 会持续写入，并且从不删除其中的文件：从历史记录中移除的条目仍会留在文件夹里。密码字段和无痕输入从不记录，因此也从不导出。</string>
     <string name="dictate__history_export_needs_history">文件夹导出写入的是历史记录所保存的内容，因此需要开启历史记录。</string>
     <string name="dictate__history_export_enable_history">开启历史记录</string>
     <string name="dictate__history_export_pick_failed">无法获得该文件夹的写入权限</string>
@@ -717,7 +714,7 @@
     <string name="dictate__stats_reset_confirm_title">重置统计？</string>
     <string name="dictate__stats_reset_confirm_msg">这将永久清除你所有的听写统计，无法撤销。</string>
     <string name="dictate__stats_share">分享</string>
-    <string name="dictate__stats_share_text">我用 Dictate 节省了 %1$s — %2$s 次听写，%3$s 字。🎤</string>
+    <string name="dictate__stats_share_text">我用 diktat 节省了 %1$s — %2$s 次听写，%3$s 字。🎤</string>
     <string name="dictate__reasoning_effort_title">推理力度</string>
     <string name="dictate__reasoning_effort_off">关闭</string>
     <string name="dictate__reasoning_effort_minimal">最小</string>

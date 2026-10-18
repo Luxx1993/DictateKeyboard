@@ -63,7 +63,6 @@ object SettingsSearchIndex {
         // Hand-added (issue #385): the generator has no entry for this screen file, and running it
         // would drop the keywordsRes arguments below along with every other hand-added row.
         SettingsSearchEntry(R.string.about__version__title, R.string.about__title, Routes.Settings.About, anchor = "about__version__title"),
-        SettingsSearchEntry(R.string.about__website__title, R.string.about__title, Routes.Settings.About, anchor = "about__website__title"),
         SettingsSearchEntry(R.string.about__changelog__title, R.string.about__title, Routes.Settings.About, anchor = "about__changelog__title"),
         SettingsSearchEntry(R.string.about__repository__title, R.string.about__title, Routes.Settings.About, anchor = "about__repository__title"),
         SettingsSearchEntry(R.string.about__based_on_floris__title, R.string.about__title, Routes.Settings.About, anchor = "about__based_on_floris__title"),

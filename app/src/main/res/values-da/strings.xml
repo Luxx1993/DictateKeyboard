@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
-    <string name="app_name">Dictate</string>
+    <string name="app_name">diktat</string>
     <!-- Emoji strings -->
     <string name="emoji__history__pinned">Fastgjorte</string>
     <!-- Quick action strings -->
@@ -38,6 +38,6 @@
     <string name="setup__footer__privacy_policy" comment="Privacy policy label for URL">Privatlivspolitik</string>
     <string name="setup__footer__repository" comment="Repository label for URL">Projektarkiv</string>
     <!-- Crash Dialog strings -->
-    <string name="crash_dialog__title" comment="Title of crash dialog">Dictate fejlrapport</string>
+    <string name="crash_dialog__title" comment="Title of crash dialog">diktat fejlrapport</string>
     <string name="crash_dialog__close" comment="Label of Close button in crash dialog">Luk</string>
 </resources>

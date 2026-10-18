@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
-    <string name="app_name">Dictate</string>
+    <string name="app_name">diktat</string>
     <!-- Emoji strings -->
     <string name="emoji__history__pinned">ピン留め済み</string>
     <!-- Quick action strings -->
@@ -11,9 +11,9 @@
     <string name="settings__title" comment="Title of Settings">設定</string>
     <string name="settings__system_default" comment="General string which is used when a preference has the system default value set">システムのデフォルト</string>
     <string name="settings__home__title" comment="Title of the Home screen">{app_name}へようこそ</string>
-    <string name="dictate__settings_unreadable_card">設定を読み込めなかったため、Dictate は初期設定で起動しました。ここをタップすると元に戻せます。</string>
+    <string name="dictate__settings_unreadable_card">設定を読み込めなかったため、diktat は初期設定で起動しました。ここをタップすると元に戻せます。</string>
     <string name="dictate__settings_unreadable_title">設定を復元しますか？</string>
-    <string name="dictate__settings_unreadable_message">起動時に Dictate は設定ファイルを読み込めませんでした。ファイルはそのまま保管し、初期設定で起動しています。「復元」でプロバイダー、キー、プロンプト、設定を元どおりに戻せます。「削除」で古いファイルを削除します。</string>
+    <string name="dictate__settings_unreadable_message">起動時に diktat は設定ファイルを読み込めませんでした。ファイルはそのまま保管し、初期設定で起動しています。「復元」でプロバイダー、キー、プロンプト、設定を元どおりに戻せます。「削除」で古いファイルを削除します。</string>
     <string name="dictate__settings_restore_failed">古い設定はまだ読み込めません。</string>
     <string name="settings__search__title" comment="Title of the settings search screen">設定を検索</string>
     <string name="settings__search__placeholder" comment="Placeholder in the settings search field">設定を検索…</string>
@@ -139,15 +139,12 @@
     <string name="state__no_file_selected">ファイルが選択されていません</string>
     <!-- Dictate strings -->
     <string name="quick_action__dictate_live_prompt">音声指示</string>
-    <string name="about__based_on_floris__title">FlorisBoardベース</string>
-    <string name="about__based_on_floris__summary">Patrick Goldinger 氏と貢献者による FlorisBoard のフォーク、Apache 2.0。タップして開きます。</string>
-    <string name="about__made_by">DevEmperorが❤️を込めて制作\nSoli deo gloria ✝️</string>
     <string name="about__feedback__title">フィードバックとサポート</string>
     <string name="about__feedback__summary">質問・不具合・アイデアをメールで送信</string>
     <string name="about__feedback__email">contact@devemperor.net</string>
-    <string name="about__feedback__subject">Dictate Feedback</string>
+    <string name="about__feedback__subject">diktat Feedback</string>
     <string name="setup__provider__title">文字起こしの方法を選ぶ</string>
-    <string name="setup__provider__choose_intro">Dictate は AI サービスを使って音声を文字にします。ほとんどの方には上の2つの方法が合いますが、クラウドサービスをまったく使いたくない場合は、下にさらに2つあります。</string>
+    <string name="setup__provider__choose_intro">diktat は AI サービスを使って音声を文字にします。ほとんどの方には上の2つの方法が合いますが、クラウドサービスをまったく使いたくない場合は、下にさらに2つあります。</string>
     <string name="setup__provider__choice_own_title">自分の AI プロバイダーを使う</string>
     <string name="setup__provider__choice_own_body">お好きなプロバイダーでキーを作成します。Groq は日常的な音声入力なら無料です。ご自身のアカウントのまま、プロバイダーの料金で直接支払います。2分ほどで終わります。</string>
     <string name="setup__provider__choice_own_btn">自分のキーを設定する</string>
@@ -156,7 +153,7 @@
     <string name="setup__provider__choice_local_title">端末上で、オフライン</string>
     <string name="setup__provider__choice_local_body">音声モデルを一度ダウンロードするだけ。アカウントも費用も不要で、音声が端末から出ることはありません。</string>
     <string name="setup__provider__choice_server_title">自分のサーバー</string>
-    <string name="setup__provider__choice_server_body">自分で動かしている音声サーバー、または OpenAI 互換の任意のエンドポイントに Dictate を向けます。</string>
+    <string name="setup__provider__choice_server_body">自分で動かしている音声サーバー、または OpenAI 互換の任意のエンドポイントに diktat を向けます。</string>
     <string name="setup__provider__local_intro">音声認識は端末上で動きます。どこにも送信されず、接続がなくても使えます。まずはモデルを1つ選んでダウンロードしてください。あとから追加や変更もできます。</string>
     <string name="setup__provider__local_recommended">あなたの言語におすすめ</string>
     <string name="setup__provider__local_bigger">より高精度ですが、ダウンロードはかなり大きくなります</string>
@@ -177,12 +174,12 @@
     <string name="setup__provider__skip_btn">後で設定</string>
     <string name="setup__provider__other_provider">別のAIプロバイダーを使用</string>
     <string name="setup__provider__other_provider_hint">詳細設定: Groq以外のサービスを選択します。そのプロバイダーのAPIキーが必要です。</string>
-    <string name="setup__finish_up__add_key_hint">ヒント: まだAIキーを追加していません。設定 → Dictate → AIプロバイダーでいつでも追加して、音声入力を始められます。</string>
+    <string name="setup__finish_up__add_key_hint">ヒント: まだAIキーを追加していません。設定 → diktat → AIプロバイダーでいつでも追加して、音声入力を始められます。</string>
     <string name="crash_dialog__bug_report_template">クラッシュレポート</string>
     <string name="unit__seconds__symbol">{v}秒</string>
-    <string name="dictate__accessibility_service_label">Dictate のフローティングボタン</string>
+    <string name="dictate__accessibility_service_label">diktat のフローティングボタン</string>
     <string name="dictate__accessibility_service_summary">任意のテキスト欄に音声入力するためのフローティングボタンを表示します。</string>
-    <string name="dictate__accessibility_service_description">Dictate はフローティング音声入力ボタンにこのサービスを使用します。有効にすると、任意のアプリでテキスト欄がフォーカスされたことを検出し（ボタンを表示できるように）、文字起こしした音声をその欄に挿入します。Dictate はカーソル位置にテキストを配置するためにフォーカス中の欄のみを読み取り、その他の画面の内容を収集・保存・共有することはありません。</string>
+    <string name="dictate__accessibility_service_description">diktat はフローティング音声入力ボタンにこのサービスを使用します。有効にすると、任意のアプリでテキスト欄がフォーカスされたことを検出し（ボタンを表示できるように）、文字起こしした音声をその欄に挿入します。diktat はカーソル位置にテキストを配置するためにフォーカス中の欄のみを読み取り、その他の画面の内容を収集・保存・共有することはありません。</string>
     <string name="dictate__overlay_notification_channel">フローティング音声入力ボタン</string>
     <string name="dictate__overlay_notification_recording">録音中 — フローティングボタンをタップして文字起こし</string>
     <string name="dictate__floating_button_title">フローティングボタン</string>
@@ -193,7 +190,7 @@
     <string name="dictate__floating_button_service_enabled">有効 · タップしてシステム設定を開く</string>
     <string name="dictate__floating_button_service_disabled">まだ有効ではありません · タップして設定</string>
     <string name="dictate__floating_button_disclosure_title">フローティングボタンを有効にする</string>
-    <string name="dictate__floating_button_disclosure_message">フローティングボタンを表示するには、Dictate にユーザー補助サービスが必要です。任意のアプリでテキスト欄がフォーカスされたことを検出し（ボタンを表示できるように）、文字起こしした音声をその欄に挿入します。Dictate はテキストを配置するためにフォーカス中の欄のみを読み取り、その他の画面の内容を収集・保存・共有することはありません。\n\n次の画面で「Dictate のフローティングボタン」を見つけてオンにしてください。</string>
+    <string name="dictate__floating_button_disclosure_message">フローティングボタンを表示するには、diktat にユーザー補助サービスが必要です。任意のアプリでテキスト欄がフォーカスされたことを検出し（ボタンを表示できるように）、文字起こしした音声をその欄に挿入します。diktat はテキストを配置するためにフォーカス中の欄のみを読み取り、その他の画面の内容を収集・保存・共有することはありません。\n\n次の画面で「diktat のフローティングボタン」を見つけてオンにしてください。</string>
     <string name="dictate__floating_button_disclosure_continue">設定を開く</string>
     <string name="dictate__floating_button_mic_title">マイクへのアクセス</string>
     <string name="dictate__floating_button_mic_summary">音声の録音に必要です · タップして許可</string>
@@ -223,7 +220,7 @@
     <string name="dictate__floating_button_apps_scope_all">すべてのアプリ</string>
     <string name="dictate__floating_button_apps_scope_only">下で選んだアプリのみ</string>
     <string name="dictate__floating_button_apps_scope_except">下で選んだアプリ以外すべて</string>
-    <string name="dictate__floating_button_apps_note">選ばなかったアプリの上にボタンが描画されることはなく、Dictate がそのアプリのテキスト欄を読むこともありません。ユーザー補助サービス自体を拒むアプリには、サービスが有効であること自体は引き続き分かります。</string>
+    <string name="dictate__floating_button_apps_note">選ばなかったアプリの上にボタンが描画されることはなく、diktat がそのアプリのテキスト欄を読むこともありません。ユーザー補助サービス自体を拒むアプリには、サービスが有効であること自体は引き続き分かります。</string>
     <string name="dictate__floating_button_apps_search">アプリを検索</string>
     <string name="dictate__floating_button_apps_none">「{search_term}」に一致するアプリはありません</string>
     <string name="dictate__floating_button_design_title">ボタンのスタイル</string>
@@ -263,7 +260,7 @@
     <string name="dictate__voice_input_listening">聞き取り中…</string>
     <string name="dictate__voice_input_transcribing">文字起こし中…</string>
     <string name="dictate__voice_input_hint">タップで送信</string>
-    <string name="dictate__voice_ime_label">Dictate 音声入力</string>
+    <string name="dictate__voice_ime_label">diktat 音声入力</string>
     <string name="dictate__error_no_api_key">APIキーが設定されていません – Dictate設定で構成してください。</string>
     <string name="dictate__error_transcription_failed">文字起こしに失敗しました。</string>
     <string name="dictate__error_unknown">文字起こし中に不明なエラーが発生しました。</string>
@@ -288,7 +285,7 @@
     <string name="dictate__status_retrying">再試行中…（{attempt}）</string>
     <string name="dictate__action_resend">もう一度試す</string>
     <string name="dictate__action_dismiss">閉じる</string>
-    <string name="dictate__title">Dictate</string>
+    <string name="dictate__title">Dictation</string>
     <string name="dictate__api_key_title">APIキー</string>
     <string name="dictate__api_key_placeholder">sk-…</string>
     <string name="dictate__model_placeholder">プロバイダーの既定値を使う場合は空欄</string>
@@ -478,7 +475,7 @@
     <string name="dictate__command_word_summary">「{word}」で始まる音声入力は音声指示として実行されます</string>
     <string name="dictate__command_word_placeholder">ジャービス</string>
     <string name="dictate__command_word_info_title">コマンドワードについて</string>
-    <string name="dictate__command_word_info_description">Dictate は通常、話した内容をそのまま書き取ります。コマンドワードを設定すると、その語で始まる音声入力は指示として扱われます。語は取り除かれ、残りが（選択中のテキストがあればそれと一緒に）AI へ送られます。\n\n「ジャービス、もっと丁寧にして」は選択範囲を書き換えます。「ジャービス、日本の首都はどこ」は答えを入力欄に書き込みます。つまり、タップする代わりに名前を呼んで使う音声指示ボタンです。\n\nこの語は音声入力のいちばん最初にあるときだけ、しかも単独の語としてのみ有効です。文の書き出しにめったに使わない語を選んでください。</string>
+    <string name="dictate__command_word_info_description">diktat は通常、話した内容をそのまま書き取ります。コマンドワードを設定すると、その語で始まる音声入力は指示として扱われます。語は取り除かれ、残りが（選択中のテキストがあればそれと一緒に）AI へ送られます。\n\n「ジャービス、もっと丁寧にして」は選択範囲を書き換えます。「ジャービス、日本の首都はどこ」は答えを入力欄に書き込みます。つまり、タップする代わりに名前を呼んで使う音声指示ボタンです。\n\nこの語は音声入力のいちばん最初にあるときだけ、しかも単独の語としてのみ有効です。文の書き出しにめったに使わない語を選んでください。</string>
     <string name="dictate__auto_formatting_title">自動書式設定</string>
     <string name="dictate__auto_formatting_summary">話した書式の指示をMarkdown（見出し、リストなど）に変換します</string>
     <string name="dictate__system_prompt_title">言い換えの指示</string>
@@ -599,7 +596,7 @@
     <string name="dictate__floating_button_copy_to_clipboard_summary_on">各口述はクリップボードにもコピーされ、挿入が失敗しても手動で貼り付けられます。一部の端末ではクリップボードの通知が表示される場合があります。</string>
     <string name="dictate__floating_button_copy_to_clipboard_summary_off">口述は挿入されるだけで、クリップボードにはコピーされません。</string>
     <string name="dictate__floating_button_menu_group">長押しメニュー</string>
-    <string name="dictate__floating_button_menu_settings_title">Dictate の設定</string>
+    <string name="dictate__floating_button_menu_settings_title">diktat の設定</string>
     <string name="dictate__floating_button_undo_summary_off">元に戻すボタンを表示しません。</string>
     <string name="dictate__floating_button_undo_summary_on">音声入力後、ボタンの横に元に戻すボタンが表示され、ワンタップで挿入したテキストを削除できます。</string>
     <string name="dictate__floating_button_undo_title">元に戻すボタン</string>
@@ -690,7 +687,7 @@
     <string name="dictate__history_export_all_result">{written} 件を書き出し、{skipped} 件は既存、{failed} 件が失敗</string>
     <string name="dictate__history_export_last_failure">{when}に書き出しが失敗しました。「すべて今すぐ書き出す」で不足分を補えます。</string>
     <string name="dictate__history_export_warning_title">そこに入るもの</string>
-    <string name="dictate__history_export_warning_message">このフォルダーには、これ以降のすべての音声入力の文字が保存されます。設定すれば録音も保存されます。クラウドクライアント、バックアップツール、他のアプリなど、このフォルダーを同期するものはすべて、その文字起こしを端末の外へ持ち出します。\n\n接続を解除するまで Dictate は書き出しを続け、フォルダーから削除することはありません。履歴から消えた項目もフォルダーには残ります。パスワード欄とシークレット入力は記録されないため、書き出されることもありません。</string>
+    <string name="dictate__history_export_warning_message">このフォルダーには、これ以降のすべての音声入力の文字が保存されます。設定すれば録音も保存されます。クラウドクライアント、バックアップツール、他のアプリなど、このフォルダーを同期するものはすべて、その文字起こしを端末の外へ持ち出します。\n\n接続を解除するまで diktat は書き出しを続け、フォルダーから削除することはありません。履歴から消えた項目もフォルダーには残ります。パスワード欄とシークレット入力は記録されないため、書き出されることもありません。</string>
     <string name="dictate__history_export_needs_history">フォルダーへの書き出しは履歴に記録された内容を書き出すため、履歴をオンにする必要があります。</string>
     <string name="dictate__history_export_enable_history">履歴をオンにする</string>
     <string name="dictate__history_export_pick_failed">そのフォルダーへの書き込み権限を取得できませんでした</string>
@@ -713,7 +710,7 @@
     <string name="dictate__stats_reset_confirm_title">統計をリセットしますか？</string>
     <string name="dictate__stats_reset_confirm_msg">音声入力の統計をすべて完全に削除します。取り消せません。</string>
     <string name="dictate__stats_share">共有</string>
-    <string name="dictate__stats_share_text">Dictate で %1$s 節約しました — %2$s 回、%3$s 語。🎤</string>
+    <string name="dictate__stats_share_text">diktat で %1$s 節約しました — %2$s 回、%3$s 語。🎤</string>
     <string name="dictate__reasoning_effort_title">推論の労力</string>
     <string name="dictate__reasoning_effort_off">オフ</string>
     <string name="dictate__reasoning_effort_minimal">最小</string>

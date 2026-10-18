@@ -21,6 +21,15 @@ Kernablauf: sprechen → KI räumt den Text auf → Text wird eingefügt. Lukas 
 - Maßstab für weitere Arbeit: Es bleibt nur, was die Diktierfunktion laut Screens und das Einrichten in Android als
   Eingabe-/Spracheingabe-Methode technisch brauchen. Behaltenes mit Grund in FUNKTIONEN.md Abschnitt 13 notieren.
 
+## Repository
+
+- README, Datenschutz (`PRIVACY_POLICY.md`), `SECURITY.md` und die Links in der App gelten für diktat und zeigen auf
+  `Luxx1993/DictateKeyboard`. Die Fork-Verbindung zu `DevEmperor/DictateKeyboard` bleibt (Remote `upstream` zum Abgleich).
+- Herkunft bleibt genannt: README „Herkunft und Lizenz“, `NOTICE` (eigener Block oben, Originale unverändert), Über-Seite
+  „Basiert auf Dictate Keyboard“. Apache 2.0 verlangt das.
+- Noch an DevEmperor gebunden: Downloads der Offline- und Smart-Turn-Modelle (`LocalModelCatalog.REL`, Releases von
+  Dictate Keyboard) und die Paket-ID `net.devemperor.dictate` (Ändern hieße neue App, Einstellungen per Sicherung umziehen).
+
 ## Bauen
 
 ```bash
