@@ -771,6 +771,15 @@
     <string name="main__rec_group_start">Aufnehmen</string>
     <string name="main__rec_group_mic">Mikrofon</string>
     <string name="main__rec_group_send">Vor dem Senden</string>
+    <string name="main__lang_subtitle">Die Sprachen, in denen du diktierst. Die aktive geht an den Anbieter; mit „Automatisch erkennen“ wählt er unter deinen.</string>
+    <string name="main__lang_mine">Deine Sprachen</string>
+    <string name="main__lang_add">Sprache hinzufügen</string>
+    <string name="main__lang_search">Sprache suchen</string>
+    <string name="main__lang_tap_hint">Tippe auf eine Sprache, um sie zu entfernen.</string>
+    <string name="main__prov_subtitle">Wer transkribiert und wer aufräumt, jeweils mit eigenem Schlüssel.</string>
+    <string name="main__prov_group_active">Im Einsatz</string>
+    <string name="main__prov_group_mine">Deine Anbieter</string>
+    <string name="main__prov_group_network">Netzwerk</string>
     <string name="main__greeting_set_name">Namen eintragen</string>
     <string name="main__greeting_name_hint">Dein Name</string>
     <string name="main__greeting">Hallo</string>

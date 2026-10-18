@@ -872,6 +872,15 @@
     <string name="main__rec_group_start">Recording</string>
     <string name="main__rec_group_mic">Microphone</string>
     <string name="main__rec_group_send">Before sending</string>
+    <string name="main__lang_subtitle">The languages you dictate in. The active one goes to the provider; with auto-detect it chooses among yours.</string>
+    <string name="main__lang_mine">Your languages</string>
+    <string name="main__lang_add">Add a language</string>
+    <string name="main__lang_search">Search languages</string>
+    <string name="main__lang_tap_hint">Tap a language to remove it.</string>
+    <string name="main__prov_subtitle">Who transcribes and who cleans up, each with its own key.</string>
+    <string name="main__prov_group_active">In use</string>
+    <string name="main__prov_group_mine">Your providers</string>
+    <string name="main__prov_group_network">Network</string>
     <string name="main__greeting_set_name">Add your name</string>
     <string name="main__greeting_name_hint">Your name</string>
     <string name="main__greeting">Hello</string>
