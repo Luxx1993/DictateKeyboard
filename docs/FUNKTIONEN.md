@@ -10,6 +10,24 @@ Pfade beginnen, wenn nicht anders genannt, bei `app/src/main/kotlin/dev/patrickg
 
 ---
 
+## 0. Soll-Zustand (maßgeblich)
+
+Die Screens in `docs/design/entwurf-3/` zeigen, was die App können soll. Alles, was dort nicht vorkommt, ist kein Ziel.
+Die Abschnitte 1–12 beschreiben, was der Code heute kann; wo sie mehr enthalten als dieser Abschnitt, ist das Mehrangebot
+des Originals, das nur dann bleibt, wenn es unten steht.
+
+**Aus den Screens:**
+- **Start:** Begrüßung, Statistik (Wörter gesamt, Diesen Monat, Tage in Folge), die zwei aktiven Anbieter (Transkription, Aufräumen), „Letzte Diktate“ mit Kopieren-Taste und „Alle“.
+- **Wörterbuch:** Suche/Hinzufügen, **Eigene Wörter**, **Ersetzungen** (gesprochen → geschrieben, läuft nach dem Diktat).
+- **Stile:** Aufräum-Stile, genau einer aktiv und läuft nach jedem Diktat; Standard „Aufräumen“, dazu Wörtlich, E-Mail, Chat, Aktenvermerk; „Neuer Stil“.
+- **Einstellungen:** Schwebender Button (Stil Wolke, Farbe, Schalter), **Diktat** (Sprachen, KI-Anbieter, Aufnahme: Gedrückt halten und Stille kürzen), **Mehr** (Datei transkribieren, Spracheingabe = Mikrofon-Taste in SwiftKey, Sichern und Wiederherstellen).
+- Dazu aus Lukas' Wünschen: Icon mit Animationen und Umschalter weiß/schwarz; Verlauf und Statistik behalten; Offline-Spracherkennung behalten.
+
+**Nicht im Soll:** Tastatur in jeder Form, Wear OS, GIFs, Sticker, Scan, Übersetzung, Rechtschreibprüfung, Dictate Cloud (Guthaben).
+**Im Code vorhanden, aber nicht in den Screens (Verbleib noch zu klären):** Echtzeit, Langdiktat, Bluetooth-Mikro, Audioquelle, Audio beschleunigen, Sofortaufnahme, Auto-Enter, Tippgeschwindigkeit, Prompt-Bibliothek, Tipp-Kürzel, Proxy, Verlauf-Details. Vorschlag: unter „Mehr“ oder „Aufnahme“ in der neuen Oberfläche bündeln, nichts davon neu bauen.
+
+---
+
 ## 1. Kernablauf
 
 sprechen → (Transkription durch Anbieter) → optional KI-Aufräumen / Stil → Ersetzungen (Wörterbuch) → Text einfügen.
@@ -59,7 +77,7 @@ Die Einstellungsseite zeigt nur eingerichtete Anbieter, weitere hinter „Anbiet
 
 Hinweise:
 - Lukas nutzt heute **ElevenLabs Scribe** + **Claude Haiku 5.5**. Das Modell wird im Konto des Anbieters eingetragen (nicht der Code-Standard).
-- **Dictate Cloud** ist das Guthaben-Angebot des Originals (kostenpflichtig, Credit-Pakete). Lukas will nichts bezahlen und nutzt eigene Keys. Ob die Cloud-Seite ausgeblendet wird: **offen**.
+- **Dictate Cloud** ist das Guthaben-Angebot des Originals (kostenpflichtig, Credit-Pakete). Lukas will nichts bezahlen und nutzt eigene Keys. Sie ist nicht im Soll und kommt mit der Tastatur raus (Abschnitt 13).
 - Weitere Wünsche: **Gladia**, **Cerebras** (als Voreinstellung zum Aufräumen), **AssemblyAI Sync API** – **geplant**, noch nicht im Code.
 - Proxy-Einstellung (HTTP/SOCKS mit Login) vorhanden: `app/settings/dictate/DictateProxyScreen.kt`.
 - Offline-Modelle werden heruntergeladen und verwaltet: `dictate/provider/LocalModelManager.kt`, `ModelDownloadService.kt`.
@@ -149,13 +167,22 @@ Einstellungen in `app/settings/dictate/DictateFloatingButtonScreen.kt`:
 - Der Entwurf zeigt auf der Startseite: Wörter gesamt, Diesen Monat, Tage in Folge. „Diesen Monat“ ist als eigene Zahl im Code nicht geprüft.
 - Status: **vorhanden**.
 
-## 13. Was die Diktat-Edition ausblendet
+## 13. Tastatur und Zubehör entfernen
 
-Quelle: `app/DictationOnly.kt` (Einstellungsseiten) und `manifestPlaceholders["fullKeyboard"]` (Manifest).
-Ausgeblendet: Sprachen/Layouts der Tastatur, Design der Tastatur, Tastatur, Tasteneingabe-Feedback, eigene Symbole,
+Lukas' Vorgabe: **die Tastatur und alles, was damit zusammenhängt, soll so weit wie möglich raus.** Heute ist sie nur
+ausgeblendet (`app/DictationOnly.kt`, `manifestPlaceholders["fullKeyboard"]`, Gradle-Property `dictationOnly`);
+der Code steckt noch in der App. Ausgeblendet sind: Sprachen/Layouts, Design, Tastatur, Eingabe-Feedback, eigene Symbole,
 Smartbar, Tippen/Korrektur, Wörterbuch der Tastatur, Gesten, Zwischenablage, Medien (GIF/Sticker), physische Tastatur,
 Übersetzung, Diktat-Layout, Wear. Rechtschreibprüfung und Offline-Übersetzung sind im Manifest abgeschaltet.
-`-PdictationOnly=false` bringt alles zurück.
+
+Zu entfernen (Status: **geplant**, in Schritten, nach jedem Schritt Build prüfen):
+1. Tastatur-IME, Rechtschreibprüfung, Wear (`dictate/wear/`), Übersetzung (`dictate/translate/`), GIFs (`dictate/gif/`), Sticker (`dictate/sticker/`), Scan (`dictate/scan/`), Dictate-Tastaturoberfläche (`dictate/ui/` soweit nur Tastatur).
+2. Die dazugehörigen Einstellungsseiten, Ressourcen, Sprachdateien und Abhängigkeiten (nativer Übersetzer, Wear-Module).
+3. Dictate Cloud (Guthaben-Seiten, Abrechnung) als nicht im Soll.
+Bleiben muss alles, was der Kernablauf braucht (Abschnitt 2: Button, Spracheingabe-Methode, Erkennungsdienst, Datei transkribieren).
+
+Preis: Das **Übernehmen von Updates des Originals** wird dadurch schwer. Das nimmt Lukas' Vorgabe in Kauf.
+`dictationOnly=false` geht dann nicht mehr. Wenn das nicht gewollt ist, vorher auf einem Branch sichern.
 
 ## 14. Geplant (von Lukas)
 
@@ -168,7 +195,6 @@ Reihenfolge und Details: `CLAUDE.md` und `docs/design/diktat-design.md` Abschnit
 
 ## 15. Noch offen (Entscheidung von Lukas)
 
-- Dictate Cloud (kostenpflichtiges Guthaben) ausblenden?
 - Mitgelieferte Stile (Wörtlich, E-Mail, Chat, Aktenvermerk): Wortlaut der Prompts festlegen.
 - Welche der vorhandenen Einstellungen bleiben in der neuen Oberfläche sichtbar, welche wandern unter „Mehr“?
 - Offline-Spracherkennung: laut Lukas **behalten**; Modellverwaltung muss in die neue Oberfläche passen.

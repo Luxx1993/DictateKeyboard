@@ -17,8 +17,9 @@ Kernablauf: sprechen → KI räumt den Text auf → Text wird eingefügt. Lukas 
   und Offline-Übersetzung sind im Manifest abgeschaltet (`manifestPlaceholders["fullKeyboard"]`). Spracheingabe-Methode,
   Erkennungsdienst und schwebender Button bleiben. Mit `-PdictationOnly=false` entsteht wieder die vollständige App.
 - Tastatur-Routen in den Einstellungen werden über `app/src/main/kotlin/dev/patrickgold/florisboard/app/DictationOnly.kt` ausgeblendet.
-- Der Tastatur-Code bleibt absichtlich erhalten, damit Updates vom Original übernehmbar bleiben. Änderungen möglichst
-  klein und gekapselt halten statt Upstream-Code umzubauen.
+- **Lukas' Vorgabe: Tastatur und alles Zugehörige soll so weit wie möglich raus.** Bisher nur ausgeblendet; das Entfernen
+  ist geplant (`docs/FUNKTIONEN.md` Abschnitt 13). Updates vom Original lassen sich danach kaum noch übernehmen, das ist gewollt.
+  Schrittweise vorgehen, nach jedem Schritt bauen.
 
 ## Bauen
 
@@ -38,7 +39,7 @@ APK unter `app/build/outputs/apk/debug/`. Debug-Builds sind mit einem Debug-Schl
 
 ## Design
 
-Was die App kann (Funktionen, Anbieter, Einstellungen, Status je Funktion): **`docs/FUNKTIONEN.md`**.
+Was die App können soll und heute kann: **`docs/FUNKTIONEN.md`** (Abschnitt 0 = Soll laut Screens).
 Alle Design-Entscheidungen stehen in **`docs/design/diktat-design.md`**. Das ist die maßgebliche Quelle. Kurz:
 
 - **Oberfläche „Entwurf 3“**: warmer Unisono-Look (Papier `#F4F1EC`, Tinte `#1F1C1A`, Manrope und IBM Plex Mono),
@@ -50,6 +51,7 @@ Alle Design-Entscheidungen stehen in **`docs/design/diktat-design.md`**. Das ist
 
 ## Nächste Aufgaben
 
+0. Tastatur und Zubehör entfernen (`docs/FUNKTIONEN.md` Abschnitt 13).
 1. App-Icon einbauen (adaptives Icon, Themen-Icon, Umschalter weiß/schwarz), dann Splash-Animation A, dann In-App-Animation D.
 2. Entwurf 3 als neue Oberfläche umsetzen.
 3. Wolken-Shader an den Prototyp angleichen.
