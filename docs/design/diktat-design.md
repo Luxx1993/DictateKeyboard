@@ -173,7 +173,8 @@ farbige oder zweifarbige Logos; Pille um den aktiven Navigationseintrag; einger�
 - [ ] Entwurf 3 auf dem S24 ansehen (hell, dunkel) und Abstände nachziehen
 - [x] Unterseiten im Unisono-Look, Teil 1: Schwebender Button und Aufnahme (`UnisonoPage`, Karten, `UChoiceDialog` statt Material-Dialogen, Stil-Auswahl mit Vorschaubildern `res/drawable-xhdpi/preview_bubble_*.png`; Bausteine in `app/main/UnisonoSettings.kt`)
 - [x] Unterseiten Teil 2a: KI-Anbieter (Im Einsatz, Deine Anbieter, Netzwerk; Auswahl als `UDialog`) und Sprachen (aktive Sprache, Chips, Hinzufügen mit Suche). Der Anbieter-Editor-Dialog (`ProviderEditorDialog`) ist noch im alten Look
-- [ ] Unterseiten Teil 2b: Verlauf, Statistik, Ersetzungen, Prompts, Anbieter-Editor; Teil 3: Sonstige, Sichern, Über, Lizenzen, Einrichtung
+- [x] Unterseiten Teil 2b: Statistik, Ersetzungen und Verlauf im Unisono-Look. Im Verlauf bleiben die Dialoge (Export, Detail, Limits) noch alt
+- [ ] Offen aus Teil 2: Prompts (`DictatePromptsScreen`, Editor und Ziehen zum Sortieren) und Prompt-Bibliothek, Anbieter-Editor-Dialog; die Stile-Seite deckt das Anlegen und Bearbeiten schon im neuen Look ab; Teil 3: Sonstige, Sichern, Über, Lizenzen, Einrichtung
 - [ ] Mitgelieferte Stile (Wörtlich, E-Mail, Chat, Aktenvermerk) als Standard-Prompts
 - [x] Wolken-Shader an den Prototyp angeglichen (`dictate/ui/AudioReactiveCloudOrbView.kt`, Bewegung in `CloudMotion.kt`, Paletten in `CloudPalette.kt`):
   dieselben Ebenen, Keyframes und Dauern wie `SchwebenderButton.html`. Gegen Screenshots des Prototyps (Chromium) mit einem
