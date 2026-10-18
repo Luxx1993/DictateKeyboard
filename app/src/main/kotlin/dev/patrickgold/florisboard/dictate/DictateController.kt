@@ -840,11 +840,12 @@ object DictateController {
     }
 
     /**
-     * True when the button should behave as hold-to-record: the user chose [DictateRecordMode.HOLD] and the
-     * upcoming recording is not long-form segmented, which cannot sensibly be held down for its whole duration.
+     * True when the button should behave as hold-to-record: the user chose [DictateRecordMode.HOLD]. Long-form
+     * dictation applies to tap mode only (see [isSegmentedMode]), so the two never meet.
      */
+    @Suppress("UNUSED_PARAMETER")
     fun isPushToTalkActive(context: Context): Boolean =
-        prefs.dictate.recordMode.get() == DictateRecordMode.HOLD && !isSegmentedMode(context.applicationContext)
+        prefs.dictate.recordMode.get() == DictateRecordMode.HOLD
 
     /**
      * True when a tap on the mic would start a fresh recording — everything except a recording already
@@ -1427,12 +1428,13 @@ object DictateController {
                 requestAudioFocusIfEnabled(appContext)
                 val audioSource = setupBluetoothIfEnabled(appContext)
                 // Long-form segmented dictation (#170): transcribe cut segments in the background while
-                // recording continues. Off for realtime / live-prompt / overlay / multimodal (see the gate).
+                // recording continues. Only for the floating button in tap mode (see the gate).
                 val segmented = isSegmentedMode(appContext)
                 // Auto-split: Silero VAD finds candidate pauses, then Smart Turn v3 decides whether the
                 // thought is complete; the configured pause remains the Pipecat-style safety fallback.
                 segmentVad?.release()
-                segmentVad = if (segmented && prefs.dictate.longformMode.get() == DictateLongformMode.AUTO) {
+                // Always cut at pauses: the floating button has no "Next" button for a manual cut.
+                segmentVad = if (segmented) {
                     LiveSpeechSplitter(
                         appContext,
                         prefs.dictate.longformAutoSplitSeconds.get() * 1000,
@@ -2743,13 +2745,22 @@ object DictateController {
     // --- Long-form segmented dictation (issue #170) ---------------------------------------------
 
     /**
-     * Whether the next recording should run in segmented mode. Segmented output only ever went to the
-     * keyboard, never to the floating button or the voice input, so since the keyboard was removed (Diktat-
-     * Edition) no recording runs segmented. Whether long-form dictation is wired to the button or removed
-     * is still open (docs/FUNKTIONEN.md, section 13).
+     * Whether the next recording should run in segmented mode: long-form dictation is on, the recording is
+     * the floating button's in tap mode (hold-to-record is for short dictations, nobody holds a finger down
+     * for ten minutes), it is not a live-prompt recording, realtime streaming is not active, and the
+     * provider isn't in single-call multimodal mode (which would format per segment).
+     *
+     * The keyboard this was built for had a "Next" button to cut a segment by hand; the floating button has
+     * none, so there segments are always cut at pauses ([DictateLongformMode.MANUAL] counts as AUTO). The
+     * voice input for other keyboards hands one finished text back to the system and stays one-shot.
      */
-    @Suppress("UNUSED_PARAMETER")
-    private fun isSegmentedMode(context: Context): Boolean = false
+    private fun isSegmentedMode(context: Context): Boolean =
+        prefs.dictate.longformMode.get().isEnabled &&
+            outputTarget == OutputTarget.OVERLAY &&
+            prefs.dictate.recordMode.get() == DictateRecordMode.TAP &&
+            !livePromptArmed &&
+            !isRealtimeActive(context) &&
+            !transcriptionAccount().transcriptionViaChat
 
     private fun initSegmented(appContext: Context) {
         segmentedActive = true
@@ -2990,7 +3001,7 @@ object DictateController {
             providerName = account.displayName.ifBlank { preset.displayName },
             model = model,
             language = prefs.dictate.activeInputLanguage.get().takeIf { it != DictateLanguages.DETECT } ?: "",
-            source = DictateHistorySource.KEYBOARD,
+            source = if (outputTarget == OutputTarget.OVERLAY) DictateHistorySource.OVERLAY else DictateHistorySource.KEYBOARD,
         )
         finalizeAndCommit(
             appContext, assembled, recordedSeconds, live = false,

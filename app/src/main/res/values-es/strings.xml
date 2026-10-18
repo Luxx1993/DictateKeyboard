@@ -416,8 +416,6 @@
     <string name="dictate__smart_turn_download_failed">Error de descarga: toca para reintentar.</string>
     <string name="dictate__longform_mode_off">Desactivado</string>
     <string name="dictate__longform_mode_off_summary">Transcribir una sola vez al final (predeterminado).</string>
-    <string name="dictate__longform_mode_manual">Segmento siguiente</string>
-    <string name="dictate__longform_mode_manual_summary">Envía cada parte con «Segmento siguiente» durante la grabación.</string>
     <string name="dictate__providers_field_realtime_model">Modelo en tiempo real</string>
     <string name="dictate__providers_custom_realtime">Transmisión en tiempo real</string>
     <string name="dictate__providers_custom_realtime_summary">Este servidor usa el protocolo realtime de OpenAI en /v1/realtime</string>

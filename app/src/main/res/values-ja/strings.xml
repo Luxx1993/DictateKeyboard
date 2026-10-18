@@ -410,8 +410,6 @@
     <string name="dictate__smart_turn_download_failed">ダウンロードに失敗しました — タップして再試行。</string>
     <string name="dictate__longform_mode_off">オフ</string>
     <string name="dictate__longform_mode_off_summary">最後に一度だけ文字起こしします（デフォルト）。</string>
-    <string name="dictate__longform_mode_manual">次のセグメント</string>
-    <string name="dictate__longform_mode_manual_summary">録音中に「次のセグメント」で各部分を送信します。</string>
     <string name="dictate__providers_field_realtime_model">リアルタイムモデル</string>
     <string name="dictate__providers_custom_realtime">リアルタイム ストリーミング</string>
     <string name="dictate__providers_custom_realtime_summary">このサーバーは /v1/realtime で OpenAI のリアルタイム プロトコルに対応しています</string>

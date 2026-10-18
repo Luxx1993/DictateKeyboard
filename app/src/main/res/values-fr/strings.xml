@@ -414,8 +414,6 @@
     <string name="dictate__smart_turn_download_failed">Échec du téléchargement — appuyez pour réessayer.</string>
     <string name="dictate__longform_mode_off">Désactivé</string>
     <string name="dictate__longform_mode_off_summary">Transcrire une seule fois à la fin (par défaut).</string>
-    <string name="dictate__longform_mode_manual">Segment suivant</string>
-    <string name="dictate__longform_mode_manual_summary">Envoyez chaque partie avec « Segment suivant » pendant l’enregistrement.</string>
     <string name="dictate__providers_field_realtime_model">Modèle en temps réel</string>
     <string name="dictate__providers_custom_realtime">Diffusion en temps réel</string>
     <string name="dictate__providers_custom_realtime_summary">Ce serveur utilise le protocole realtime d\'OpenAI sur /v1/realtime</string>

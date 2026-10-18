@@ -559,8 +559,8 @@ private fun speedUpSaving(percent: Int): String =
 @Composable
 private fun longformModeSummary(mode: DictateLongformMode, seconds: Int): String = when (mode) {
     DictateLongformMode.OFF -> stringRes(R.string.dictate__longform_mode_off)
-    DictateLongformMode.MANUAL -> stringRes(R.string.dictate__longform_mode_manual)
-    DictateLongformMode.AUTO -> stringRes(R.string.dictate__longform_autosplit_title) + " · " +
+    // No "Next" button without the keyboard: a manual choice from back then cuts at pauses like AUTO.
+    DictateLongformMode.MANUAL, DictateLongformMode.AUTO -> stringRes(R.string.dictate__longform_autosplit_title) + " · " +
         stringRes(R.string.dictate__longform_autosplit_value, "seconds" to "$seconds")
 }
 
@@ -585,23 +585,27 @@ private fun LongformDialog(
         dismissLabel = stringRes(android.R.string.ok),
         onDismiss = onDismiss,
     ) {
+        // The floating button has no "Next" button, so MANUAL is no choice of its own any more: it shows,
+        // and works, as AUTO (see DictateController.isSegmentedMode).
+        val shown = if (mode == DictateLongformMode.MANUAL) DictateLongformMode.AUTO else mode
         Column {
+            Text(
+                modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
+                text = stringRes(R.string.dictate__longform_button_note),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             LongformModeRow(
-                value = DictateLongformMode.OFF, selected = mode,
+                value = DictateLongformMode.OFF, selected = shown,
                 titleRes = R.string.dictate__longform_mode_off,
                 summaryRes = R.string.dictate__longform_mode_off_summary,
             ) { scope.launch { prefs.dictate.longformMode.set(it) } }
             LongformModeRow(
-                value = DictateLongformMode.MANUAL, selected = mode,
-                titleRes = R.string.dictate__longform_mode_manual,
-                summaryRes = R.string.dictate__longform_mode_manual_summary,
-            ) { scope.launch { prefs.dictate.longformMode.set(it) } }
-            LongformModeRow(
-                value = DictateLongformMode.AUTO, selected = mode,
+                value = DictateLongformMode.AUTO, selected = shown,
                 titleRes = R.string.dictate__longform_autosplit_title,
                 summaryRes = R.string.dictate__longform_autosplit_summary,
             ) { scope.launch { prefs.dictate.longformMode.set(it) } }
-            if (mode == DictateLongformMode.AUTO) {
+            if (shown == DictateLongformMode.AUTO) {
                 var sliderValue by remember(seconds) { mutableStateOf(seconds.toFloat()) }
                 Text(
                     modifier = Modifier.padding(top = 12.dp, start = 8.dp),

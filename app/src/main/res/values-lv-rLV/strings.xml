@@ -416,8 +416,6 @@
     <string name="dictate__smart_turn_download_failed">Lejupielāde neizdevās — pieskaries, lai mēģinātu vēlreiz.</string>
     <string name="dictate__longform_mode_off">Izslēgts</string>
     <string name="dictate__longform_mode_off_summary">Transkribēt vienu reizi beigās (noklusējums).</string>
-    <string name="dictate__longform_mode_manual">Nākamais segments</string>
-    <string name="dictate__longform_mode_manual_summary">Sūti katru daļu ar pogu „Nākamais segments“ ierakstīšanas laikā.</string>
     <string name="dictate__providers_field_realtime_model">Reāllaika modelis</string>
     <string name="dictate__providers_custom_realtime">Straumēšana reāllaikā</string>
     <string name="dictate__providers_custom_realtime_summary">Šis serveris izmanto OpenAI realtime protokolu vietnē /v1/realtime</string>

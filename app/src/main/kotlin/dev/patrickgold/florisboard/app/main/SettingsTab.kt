@@ -171,6 +171,7 @@ internal fun SettingsTab() {
     val rewordingId by prefs.dictate.rewordingProviderId.collectAsState()
     val rewordingEnabled by prefs.dictate.rewordingEnabled.collectAsState()
     val recordMode by prefs.dictate.recordMode.collectAsState()
+    val longform by prefs.dictate.longformMode.collectAsState()
     UCard {
         UNavRow(
             title = stringRes(R.string.main__settings_languages),
@@ -198,7 +199,11 @@ internal fun SettingsTab() {
                     DictateRecordMode.TAP -> R.string.dictate__record_mode_tap_short
                     DictateRecordMode.HOLD -> R.string.dictate__record_mode_hold_short
                 },
-            ),
+            ) + if (longform.isEnabled && recordMode == DictateRecordMode.TAP) {
+                " · " + stringRes(R.string.dictate__longform_title)
+            } else {
+                ""
+            },
             icon = UnisonoIcons.Wave,
             onClick = { navController.navigate(Routes.Settings.DictateRecording) },
         )

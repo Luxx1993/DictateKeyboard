@@ -414,8 +414,6 @@
     <string name="dictate__smart_turn_download_failed">Ha fallat la baixada — toca per tornar-ho a provar.</string>
     <string name="dictate__longform_mode_off">Desactivat</string>
     <string name="dictate__longform_mode_off_summary">Transcriu una sola vegada al final (predeterminat).</string>
-    <string name="dictate__longform_mode_manual">Segment següent</string>
-    <string name="dictate__longform_mode_manual_summary">Envia cada part amb «Segment següent» durant la gravació.</string>
     <string name="dictate__providers_field_realtime_model">Model en temps real</string>
     <string name="dictate__providers_custom_realtime">Transmissió en temps real</string>
     <string name="dictate__providers_custom_realtime_summary">Aquest servidor parla el protocol realtime d\'OpenAI a /v1/realtime</string>

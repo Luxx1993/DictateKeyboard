@@ -413,8 +413,6 @@
     <string name="dictate__smart_turn_download_failed">İndirme başarısız — yeniden denemek için dokun.</string>
     <string name="dictate__longform_mode_off">Kapalı</string>
     <string name="dictate__longform_mode_off_summary">Sonunda bir kez yazıya dök (varsayılan).</string>
-    <string name="dictate__longform_mode_manual">Sonraki bölüm</string>
-    <string name="dictate__longform_mode_manual_summary">Kayıt sırasında her bölümü “Sonraki bölüm” düğmesiyle gönderin.</string>
     <string name="dictate__providers_field_realtime_model">Gerçek zamanlı model</string>
     <string name="dictate__providers_custom_realtime">Gerçek zamanlı akış</string>
     <string name="dictate__providers_custom_realtime_summary">Bu sunucu /v1/realtime adresinde OpenAI realtime protokolünü kullanır</string>

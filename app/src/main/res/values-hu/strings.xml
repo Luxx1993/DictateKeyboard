@@ -417,8 +417,6 @@
     <string name="dictate__smart_turn_download_failed">A letöltés sikertelen — koppints az újrapróbálkozáshoz.</string>
     <string name="dictate__longform_mode_off">Ki</string>
     <string name="dictate__longform_mode_off_summary">Átírás egyszer a végén (alapértelmezett).</string>
-    <string name="dictate__longform_mode_manual">Következő szegmens</string>
-    <string name="dictate__longform_mode_manual_summary">Felvétel közben küldj el minden részt a „Következő szegmens” gombbal.</string>
     <string name="dictate__providers_field_realtime_model">Valós idejű modell</string>
     <string name="dictate__providers_custom_realtime">Valós idejű streamelés</string>
     <string name="dictate__providers_custom_realtime_summary">Ez a kiszolgáló az OpenAI realtime protokollt használja a /v1/realtime végponton</string>

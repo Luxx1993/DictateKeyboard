@@ -25,7 +25,7 @@ des Originals, das nur dann bleibt, wenn es unten steht.
 - Dazu aus Lukas' Wünschen: Icon mit Animationen und Umschalter weiß/schwarz; Verlauf und Statistik behalten; Offline-Spracherkennung behalten.
 
 **Nicht im Soll:** Tastatur in jeder Form, Wear OS, GIFs, Sticker, Scan, Übersetzung, Rechtschreibprüfung, Dictate Cloud (Guthaben).
-**Im Code vorhanden, aber nicht in den Screens (Verbleib noch zu klären):** Echtzeit, Langdiktat (ohne Tastatur ohne Wirkung), Bluetooth-Mikro, Audioquelle, Audio beschleunigen, Auto-Enter, Tippgeschwindigkeit, Prompt-Bibliothek, Proxy, Verlauf-Details. Sofortaufnahme und Tipp-Kürzel sind mit der Tastatur entfernt. Vorschlag: unter „Mehr“ oder „Aufnahme“ in der neuen Oberfläche bündeln, nichts davon neu bauen.
+**Im Code vorhanden, aber nicht in den Screens (Verbleib noch zu klären):** Echtzeit, Bluetooth-Mikro, Audioquelle, Audio beschleunigen, Auto-Enter, Tippgeschwindigkeit, Prompt-Bibliothek, Proxy, Verlauf-Details. Sofortaufnahme und Tipp-Kürzel sind mit der Tastatur entfernt. Vorschlag: unter „Mehr“ oder „Aufnahme“ in der neuen Oberfläche bündeln, nichts davon neu bauen.
 
 ---
 
@@ -93,7 +93,7 @@ Alle in `app/settings/dictate/DictateScreen.kt`:
 
 - **Aufnahme mit dem Button** (`prefs.dictate.recordMode`, `DictateRecordMode`): **Antippen** zum Starten, nochmal zum Beenden (Standard) oder **Gedrückt halten** zum Aufnehmen, loslassen zum Senden. Wirkt am schwebenden Button (`DictateBubbleController.attachTouch`). Im Halten-Modus öffnet kurzes Tippen das Prompt-Menü, Ziehen vor dem Start verschiebt den Button. Ersetzt den alten Tastatur-Schalter `dictate__push_to_talk`.
 - **Echtzeit-Transkription** (Streaming, wenn der Anbieter es kann)
-- **Langdiktat**: aus / manuell („Weiter“-Taste schneidet Abschnitte) / automatisch (Sprachpausen-Erkennung mit Silero-VAD und Smart Turn v3) – lief nur in der Tastatur, **ohne Wirkung** seit sie entfernt ist (Abschnitt 13)
+- **Langdiktat**: aus / an. An heißt: lange Diktate am schwebenden Button werden schon während des Sprechens in Abschnitten transkribiert, geschnitten an Sprechpausen (Silero-VAD, optional Smart Turn v3, maximale Pause einstellbar); Formatieren, Stil und Ersetzungen laufen am Ende einmal über alles. Gilt nur beim **Antippen** (nicht beim Gedrückthalten), nicht mit Echtzeit-Transkription und nicht für die Spracheingabe in SwiftKey. Die frühere Variante „manuell“ (Weiter-Taste der Tastatur) zählt jetzt als automatisch.
 - Andere Audio-Wiedergabe pausieren; Bluetooth-Mikrofon; Audioquelle wählen; Bildschirm anlassen
 - **Stille Aufnahmen überspringen**; **lange Pausen herausschneiden**; **Audio beschleunigen** (Tonhöhe bleibt)
 - Status: **vorhanden**.
@@ -198,12 +198,10 @@ Updates des Originals lassen sich damit praktisch nicht mehr übernehmen (so gew
 - **Spalte `trigger` in der Prompt-Datenbank**: das Tipp-Kürzel ist weg, die Spalte bleibt, damit keine Datenbank-Migration nötig ist.
 - **Import aus der alten Dictate-App** (`DictateLegacyMigrator`): keine Tastatur, nur Übernahme alter Einstellungen.
 
-**Entschieden:** Halten zum Aufnehmen bleibt und ist am schwebenden Button angebunden, wählbar unter Einstellungen ›
+**Entschieden:** Langdiktat bleibt und ist am schwebenden Button angebunden (Abschnitt 5). Halten zum Aufnehmen bleibt und ist am schwebenden Button angebunden, wählbar unter Einstellungen ›
 Aufnahme (Antippen oder Gedrückt halten, Abschnitt 5).
 
 **Offen (Entscheidung von Lukas):**
-- **Langdiktat**: lief nur in der Tastatur und ist jetzt ohne Wirkung (`isSegmentedMode` liefert immer `false`). Die
-  Einstellung ist noch sichtbar. An den Button anbinden oder samt Code entfernen?
 - Nicht auf einem Gerät getestet (kein Emulator im Container). Vor dem nächsten Schritt einmal auf dem S24 prüfen:
   Button, Spracheingabe in SwiftKey, Datei transkribieren, Sichern/Wiederherstellen.
 

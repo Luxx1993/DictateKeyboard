@@ -548,8 +548,6 @@
     <string name="dictate__smart_turn_download_failed" comment="Shown when the Smart Turn model download failed">Download failed — tap to retry.</string>
     <string name="dictate__longform_mode_off" comment="Long-form mode: disabled">Off</string>
     <string name="dictate__longform_mode_off_summary" comment="Summary for the off long-form mode">Transcribe once at the end (default).</string>
-    <string name="dictate__longform_mode_manual" comment="Long-form mode: manual Next button only">Next button</string>
-    <string name="dictate__longform_mode_manual_summary" comment="Summary for the manual long-form mode">Send each part with the Next button while recording.</string>
     <string name="dictate__instant_recording_title" comment="Setting: start recording when the keyboard opens">Instant recording</string>
     <string name="dictate__output_group" comment="Group title for output-behavior settings">Output</string>
     <string name="dictate__auto_enter_title" comment="Setting: press Enter after a transcription">Auto-enter</string>
@@ -929,6 +927,7 @@
     <string name="main__settings_voice_input_open">Open input methods</string>
     <string name="main__settings_backup">Back up and restore</string>
     <string name="main__settings_all">All settings</string>
+    <string name="dictate__longform_button_note">For the floating button in tap mode. Long dictations are transcribed piece by piece while you speak, cut at your pauses. Holding to record and the voice input stay one-shot.</string>
     <string name="dictate__record_mode_title">Recording with the button</string>
     <string name="dictate__record_mode_tap">Tap to start, tap again to stop</string>
     <string name="dictate__record_mode_hold">Hold to record, release to send</string>

@@ -428,7 +428,7 @@
     <string name="dictate__realtime_mode_off">Aus</string>
     <string name="dictate__realtime_mode_live">Text beim Sprechen anzeigen</string>
     <string name="dictate__realtime_mode_at_end">Text erst beim Stoppen anzeigen</string>
-    <string name="dictate__longform_title">Langform-Diktat</string>
+    <string name="dictate__longform_title">Langdiktat</string>
     <string name="dictate__longform_autosplit_title">Intelligentes Auto-Teilen</string>
     <string name="dictate__longform_autosplit_summary">Silero erkennt Pausen, dann prüft Smart Turn, ob dein Gedanke abgeschlossen ist. Anhaltende Stille nutzt die maximale Pause als Fallback.</string>
     <string name="dictate__longform_autosplit_threshold_title">Maximale Pause</string>
@@ -440,8 +440,6 @@
     <string name="dictate__smart_turn_download_failed">Download fehlgeschlagen – zum Wiederholen tippen.</string>
     <string name="dictate__longform_mode_off">Aus</string>
     <string name="dictate__longform_mode_off_summary">Am Ende einmal transkribieren (Standard).</string>
-    <string name="dictate__longform_mode_manual">Nächster Abschnitt</string>
-    <string name="dictate__longform_mode_manual_summary">Sende jeden Teil während der Aufnahme mit „Nächster Abschnitt“.</string>
     <string name="dictate__providers_field_realtime_model">Echtzeit-Modell</string>
     <string name="dictate__providers_custom_realtime">Echtzeit-Streaming</string>
     <string name="dictate__providers_custom_realtime_summary">Dieser Server spricht das OpenAI-Realtime-Protokoll unter /v1/realtime</string>
@@ -828,6 +826,7 @@
     <string name="main__settings_voice_input_open">Eingabemethoden öffnen</string>
     <string name="main__settings_backup">Sichern und wiederherstellen</string>
     <string name="main__settings_all">Alle Einstellungen</string>
+    <string name="dictate__longform_button_note">Für den schwebenden Button beim Antippen. Lange Diktate werden schon während des Sprechens in Abschnitten transkribiert, geschnitten an deinen Pausen. Gedrückt halten und die Spracheingabe bleiben in einem Stück.</string>
     <string name="dictate__record_mode_title">Aufnahme mit dem Button</string>
     <string name="dictate__record_mode_tap">Antippen zum Starten, nochmal zum Beenden</string>
     <string name="dictate__record_mode_hold">Gedrückt halten zum Aufnehmen, loslassen zum Senden</string>

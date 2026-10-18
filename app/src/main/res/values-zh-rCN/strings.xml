@@ -415,8 +415,6 @@
     <string name="dictate__smart_turn_download_failed">下载失败——点按重试。</string>
     <string name="dictate__longform_mode_off">关闭</string>
     <string name="dictate__longform_mode_off_summary">在结束时一次性转录（默认）。</string>
-    <string name="dictate__longform_mode_manual">下一段</string>
-    <string name="dictate__longform_mode_manual_summary">录音时用“下一段”按钮发送每个部分。</string>
     <string name="dictate__providers_field_realtime_model">实时模型</string>
     <string name="dictate__providers_custom_realtime">实时流式传输</string>
     <string name="dictate__providers_custom_realtime_summary">此服务器在 /v1/realtime 上支持 OpenAI 实时协议</string>

@@ -403,8 +403,6 @@
     <string name="dictate__smart_turn_download_failed">Download non riuscito — tocca per riprovare.</string>
     <string name="dictate__longform_mode_off">Disattivato</string>
     <string name="dictate__longform_mode_off_summary">Trascrivi una sola volta alla fine (predefinito).</string>
-    <string name="dictate__longform_mode_manual">Segmento successivo</string>
-    <string name="dictate__longform_mode_manual_summary">Invia ogni parte con «Segmento successivo» durante la registrazione.</string>
     <string name="dictate__providers_field_realtime_model">Modello in tempo reale</string>
     <string name="dictate__providers_custom_realtime">Streaming in tempo reale</string>
     <string name="dictate__providers_custom_realtime_summary">Questo server usa il protocollo realtime di OpenAI su /v1/realtime</string>

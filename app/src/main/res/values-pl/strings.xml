@@ -416,8 +416,6 @@
     <string name="dictate__smart_turn_download_failed">Pobieranie nie powiodło się — dotknij, aby ponowić.</string>
     <string name="dictate__longform_mode_off">Wył.</string>
     <string name="dictate__longform_mode_off_summary">Transkrybuj raz na końcu (domyślnie).</string>
-    <string name="dictate__longform_mode_manual">Następny segment</string>
-    <string name="dictate__longform_mode_manual_summary">Wysyłaj każdą część przyciskiem „Następny segment” podczas nagrywania.</string>
     <string name="dictate__providers_field_realtime_model">Model czasu rzeczywistego</string>
     <string name="dictate__providers_custom_realtime">Strumieniowanie w czasie rzeczywistym</string>
     <string name="dictate__providers_custom_realtime_summary">Ten serwer obsługuje protokół OpenAI realtime pod /v1/realtime</string>

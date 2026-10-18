@@ -412,8 +412,6 @@
     <string name="dictate__smart_turn_download_failed">فشل التنزيل — انقر لإعادة المحاولة.</string>
     <string name="dictate__longform_mode_off">إيقاف</string>
     <string name="dictate__longform_mode_off_summary">التفريغ النصي مرة واحدة في النهاية (افتراضي).</string>
-    <string name="dictate__longform_mode_manual">المقطع التالي</string>
-    <string name="dictate__longform_mode_manual_summary">أرسل كل جزء بزر «المقطع التالي» أثناء التسجيل.</string>
     <string name="dictate__providers_field_realtime_model">النموذج الفوري</string>
     <string name="dictate__providers_custom_realtime">البث في الوقت الفعلي</string>
     <string name="dictate__providers_custom_realtime_summary">يدعم هذا الخادم بروتوكول OpenAI الفوري على ‎/v1/realtime</string>
