@@ -34,8 +34,8 @@ APK unter `app/build/outputs/apk/debug/`. Debug-Builds sind mit einem Debug-Schl
 - `dictate/overlay/` – schwebender Button (Accessibility-Service, Bubble-Controller)
 - `dictate/ui/AudioReactiveCloudOrbView.kt` – AGSL-Shader der Wolke
 - `app/settings/` – Compose-Einstellungen (`HomeScreen.kt`, `dictate/DictateProvidersScreen.kt` …)
-- `app/src/main/AndroidManifest.xml` – Launcher-Alias `dev.patrickgold.florisboard.SettingsLauncherAlias`, Splash-Theme `FlorisAppTheme.Splash`
-- `app/src/main/res/mipmap-anydpi-v26/app_icon.xml` – adaptives Icon (noch das alte Dictate-Icon)
+- `app/src/main/AndroidManifest.xml` – Launcher-Aliase `dev.patrickgold.florisboard.SettingsLauncherAlias` (weiß) und `…AliasBlack` (schwarz), Splash-Theme `FlorisAppTheme.Splash`
+- `app/src/main/res/mipmap-anydpi-v26/app_icon.xml` / `app_icon_black.xml` – adaptives Icon „Welle um die Welt“ (weiß/schwarz), Umschalter in `app/AppIcon.kt`
 
 ## Design
 
@@ -51,7 +51,7 @@ Alle Design-Entscheidungen stehen in **`docs/design/diktat-design.md`**. Das ist
 
 ## Nächste Aufgaben
 
-1. App-Icon einbauen (adaptives Icon, Themen-Icon, Umschalter weiß/schwarz), dann Splash-Animation A, dann In-App-Animation D.
+1. App-Icon: Icon, Themen-Icon und Umschalter weiß/schwarz sind drin. Als Nächstes Splash-Animation A, dann In-App-Animation D.
 2. Entwurf 3 als neue Oberfläche umsetzen.
 3. Wolken-Shader an den Prototyp angleichen.
 4. Später: Anbieter Gladia, Preset Cerebras, AssemblyAI Sync API.

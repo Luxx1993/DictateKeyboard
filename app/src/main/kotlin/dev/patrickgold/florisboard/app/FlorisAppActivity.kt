@@ -54,8 +54,6 @@ import dev.patrickgold.jetpref.datastore.model.collectAsState
 import dev.patrickgold.jetpref.datastore.ui.ProvideDefaultDialogPrefStrings
 import java.util.concurrent.atomic.AtomicBoolean
 import org.florisboard.lib.android.AndroidVersion
-import org.florisboard.lib.android.hideAppIcon
-import org.florisboard.lib.android.showAppIcon
 import org.florisboard.lib.compose.ProvideLocalizedResources
 import org.florisboard.lib.compose.conditional
 import org.florisboard.lib.compose.stringRes
@@ -78,6 +76,7 @@ class FlorisAppActivity : ComponentActivity() {
     private val appContext by appContext()
     private var appTheme by mutableStateOf(AppTheme.AUTO)
     private var showAppIcon = true
+    private var appIconColor = AppIconColor.WHITE
     private var resourcesContext by mutableStateOf(this as Context)
     private var intentToBeHandled by mutableStateOf<Intent?>(null)
 
@@ -101,6 +100,13 @@ class FlorisAppActivity : ComponentActivity() {
         if (AndroidVersion.ATMOST_API28_P) {
             prefs.other.showAppIcon.asFlow().collectIn(lifecycleScope) {
                 showAppIcon = it
+            }
+        }
+        // The colour switches right away, so the choice can be checked on the home screen.
+        prefs.other.appIconColor.asFlow().collectIn(lifecycleScope) {
+            if (it != appIconColor) {
+                appIconColor = it
+                AppIcon.apply(this, appIconColor, showAppIcon)
             }
         }
 
@@ -137,15 +143,9 @@ class FlorisAppActivity : ComponentActivity() {
     override fun onPause() {
         super.onPause()
 
-        // App icon visibility control was restricted in Android 10.
+        // App icon visibility control was restricted in Android 10, so showAppIcon only ever changes there.
         // See https://developer.android.com/reference/android/content/pm/LauncherApps#getActivityList(java.lang.String,%20android.os.UserHandle)
-        if (AndroidVersion.ATMOST_API28_P) {
-            if (showAppIcon) {
-                this.showAppIcon()
-            } else {
-                this.hideAppIcon()
-            }
-        }
+        AppIcon.apply(this, appIconColor, showAppIcon)
     }
 
     override fun onNewIntent(intent: Intent) {

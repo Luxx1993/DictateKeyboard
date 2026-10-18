@@ -208,7 +208,7 @@ Updates des Originals lassen sich damit praktisch nicht mehr übernehmen (so gew
 
 Reihenfolge und Details: `CLAUDE.md` und `docs/design/diktat-design.md` Abschnitt 7.
 
-1. App-Icon „Welle um die Welt“ einbauen, Splash-Animation A, In-App-Animation D, Umschalter weiß/schwarz
+1. App-Icon „Welle um die Welt“: Icon, Themen-Icon und Umschalter weiß/schwarz **vorhanden**; Splash-Animation A und In-App-Animation D **geplant**
 2. Neue Oberfläche „Entwurf 3“ (Start, Wörterbuch, Stile, Einstellungen)
 3. Wolken-Shader an den Prototyp angleichen
 4. Anbieter Gladia, Preset Cerebras, AssemblyAI Sync API

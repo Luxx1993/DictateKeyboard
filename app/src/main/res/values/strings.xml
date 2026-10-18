@@ -46,6 +46,9 @@
     </string>
     <string name="pref__other__settings_language__label" comment="Label of Settings language preference in Other">Settings language</string>
     <string name="pref__other__show_app_icon__label" comment="Label of Show app icon preference in Other">Show app icon in launcher</string>
+    <string name="pref__other__app_icon_color__label" comment="Setting: colour of the launcher icon. The icon has no background, so it is chosen to match the wallpaper.">App icon</string>
+    <string name="pref__other__app_icon_color__white" comment="Entry of the app icon setting: white icon, for dark wallpapers">White (for dark wallpapers)</string>
+    <string name="pref__other__app_icon_color__black" comment="Entry of the app icon setting: black icon, for light wallpapers">Black (for light wallpapers)</string>
     <string name="pref__other__show_app_icon__summary_atleast_q" comment="Summary of Show app icon preference in Other for Android 10+">Always enabled on Android 10+ due to restrictions of the system</string>
     <!-- Emptying the app\'s scratch space (issue #337): a shared file on its way through can be a
          hundred megabytes, and until now there was no way to get rid of it from inside the app. -->

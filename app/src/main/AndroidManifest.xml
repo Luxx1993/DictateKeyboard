@@ -50,7 +50,6 @@
         android:icon="@mipmap/app_icon"
         android:label="@string/floris_app_name"
         android:enableOnBackInvokedCallback="true"
-        android:roundIcon="@mipmap/app_icon_round"
         android:supportsRtl="true"
         android:theme="@style/FlorisAppTheme"
         tools:targetApi="tiramisu"
@@ -136,7 +135,6 @@
             android:icon="@mipmap/app_icon"
             android:label="@string/settings__title"
             android:launchMode="singleTask"
-            android:roundIcon="@mipmap/app_icon_round"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/FlorisAppTheme.Splash"
             android:exported="true">
@@ -148,15 +146,29 @@
             </intent-filter>
         </activity>
 
-        <!-- Using an activity alias to disable/enable the app icon in the launcher -->
+        <!-- Launcher entry with the white icon (default). An activity alias, so the icon can be hidden or
+             swapped for the black one; see app/AppIcon.kt. -->
         <activity-alias
             android:name="dev.patrickgold.florisboard.SettingsLauncherAlias"
             android:icon="@mipmap/app_icon"
             android:label="@string/floris_app_name"
-            android:launchMode="singleTask"
-            android:roundIcon="@mipmap/app_icon_round"
             android:targetActivity="dev.patrickgold.florisboard.app.FlorisAppActivity"
-            android:theme="@style/FlorisAppTheme.Splash"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.APPLICATION_PREFERENCES" />
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+
+        <!-- The same entry with the black icon (Settings › Other › App icon). Exactly one of the two aliases
+             is enabled at a time; see app/AppIcon.kt. -->
+        <activity-alias
+            android:name="dev.patrickgold.florisboard.SettingsLauncherAliasBlack"
+            android:icon="@mipmap/app_icon_black"
+            android:label="@string/floris_app_name"
+            android:targetActivity="dev.patrickgold.florisboard.app.FlorisAppActivity"
+            android:enabled="false"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

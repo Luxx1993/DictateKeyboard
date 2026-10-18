@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="FlorisAppTheme.Splash" parent="Theme.SplashScreen.IconBackground">
+    <!-- The globe without a plate behind it, as on the launcher (docs/design/diktat-design.md §5). -->
+    <style name="FlorisAppTheme.Splash" parent="Theme.SplashScreen">
         <item name="postSplashScreenTheme">@style/FlorisAppTheme</item>
         <item name="windowSplashScreenBackground">@color/florisApp_windowBackground</item>
-        <item name="windowSplashScreenIconBackgroundColor">@color/ic_app_icon_background</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_app_icon_foreground</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_diktat_globe_themed</item>
 
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
     </style>

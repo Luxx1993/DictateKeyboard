@@ -744,6 +744,12 @@ abstract class FlorisPreferenceModel : PreferenceModel() {
             key = "other__show_app_icon",
             default = true,
         )
+        // White or black launcher icon (docs/design/diktat-design.md §5). Applied through two activity
+        // aliases, see AppIcon.
+        val appIconColor = enum(
+            key = "other__app_icon_color",
+            default = AppIconColor.WHITE,
+        )
     }
 
     override fun migrate(entry: PreferenceMigrationEntry): PreferenceMigrationEntry {

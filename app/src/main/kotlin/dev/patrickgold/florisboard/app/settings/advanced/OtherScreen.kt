@@ -18,7 +18,7 @@ package dev.patrickgold.florisboard.app.settings.advanced
 
 import android.text.format.Formatter
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Adb
+import dev.patrickgold.florisboard.app.AppIconColor
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.FormatColorFill
@@ -170,6 +170,16 @@ fun OtherScreen() = FlorisScreen {
                 }
             }
         )
+        ListPreference(
+            prefs.other.appIconColor,
+            icon = ImageVector.vectorResource(R.drawable.ic_diktat_globe_notification),
+            modifier = Modifier.settingsSearchAnchor("pref__other__app_icon_color__label"),
+            title = stringRes(R.string.pref__other__app_icon_color__label),
+            entries = listPrefEntries {
+                entry(AppIconColor.WHITE, stringRes(R.string.pref__other__app_icon_color__white))
+                entry(AppIconColor.BLACK, stringRes(R.string.pref__other__app_icon_color__black))
+            },
+        )
         SwitchPreference(
             prefs.other.showAppIcon,
             icon = Icons.Default.Preview,
@@ -181,8 +191,7 @@ fun OtherScreen() = FlorisScreen {
             },
             enabledIf = { AndroidVersion.ATMOST_API28_P },
         )
-        // What the app made and can make again: a shared file on its way through, downloaded GIFs,
-        // decoded images (issue #337). Emptied on every cold start anyway, so the row exists for the
+        // What the app made and can make again, such as a shared file on its way through (issue #337). Emptied on every cold start anyway, so the row exists for the
         // hours in between — and it says how much there is, because a cleaning button that will not
         // tell you what it cleans is a button nobody trusts.
         Preference(

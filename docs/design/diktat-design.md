@@ -117,12 +117,19 @@ orthografische Projektion, Strichstärke abhängig von der Tiefe z (smoothstep),
 Im adaptiven Icon (108 dp) wird das 48er-Raster auf die sichtbaren 72 dp gelegt (Skalierung 1,5, Versatz 18),
 die Kugel ist damit ca. 62 dp groß und liegt in der 66-dp-Schutzzone.
 
-### Umsetzung in Android (offen)
+### Umsetzung in Android (Punkte 1, 2 und 5 erledigt, 3 und 4 offen)
 
-1. **Adaptives Icon** `mipmap-anydpi-v26/app_icon.xml` (und `app_icon_round.xml`):
-   `background` = `@android:color/transparent`, `foreground` = `ic_diktat_globe_white`, `monochrome` = `ic_diktat_globe_monochrome`
-   (Dateien aus `icon/export/android/` nach `app/src/main/res/drawable/` kopieren). Bisher liegen dort WebP-Vordergründe und die Farbe `ic_app_icon_background` (#4F576D).
-2. **Umschalter „Icon weiß / Icon schwarz“** in den Einstellungen. Zweiter Alias neben dem bestehenden
+1. **Adaptives Icon** – *erledigt.* `mipmap-anydpi-v26/app_icon.xml` (weiß) und `app_icon_black.xml` (schwarz):
+   `background` = `@android:color/transparent`, `foreground` = `ic_diktat_globe_white` bzw. `_black`,
+   `monochrome` = `ic_diktat_globe_monochrome`. Die alten WebP-Vordergründe, `app_icon_round` und die Farbe
+   `ic_app_icon_background` sind raus. Die Dateien in `app/src/main/res/drawable/ic_diktat_globe_*.xml` sind Kopien aus
+   `icon/export/android/`; nach einer Änderung am Generator neu kopieren.
+   Zusätzlich erzeugt der Generator `ic_diktat_globe_themed` (Linienfarbe `@color/diktat_icon_ink`: Tinte hell, Papier
+   dunkel) für den Splash-Screen und `ic_diktat_globe_notification` (24 dp) für Benachrichtigungen, die Einstellungszeile
+   und die Info-Seite (dort in der Textfarbe getönt, weil Weiß auf hellem Grund verschwände).
+   Der Splash-Screen zeigt bis zur Animation A die statische Kugel ohne Hintergrundplatte (`Theme.SplashScreen`).
+2. **Umschalter „Icon weiß / Icon schwarz“** – *erledigt:* Einstellungen › Weitere › App-Icon, Code in `app/AppIcon.kt`,
+   Einstellung `other__app_icon_color`. Ursprünglicher Plan: Zweiter Alias neben dem bestehenden
    `dev.patrickgold.florisboard.SettingsLauncherAlias` (Manifest) mit schwarzem Icon (`app_icon_black.xml`), standardmäßig deaktiviert;
    beim Umschalten per `PackageManager.setComponentEnabledSetting` den einen Alias an-, den anderen ausschalten.
    Achtung: Die vorhandene Funktion „App-Icon ausblenden“ (`lib/android/.../PackageManager.kt`, `SETTINGS_ACTIVITY_NAME`, nur API ≤ 28) muss den jeweils aktiven Alias berücksichtigen.
@@ -137,7 +144,7 @@ die Kugel ist damit ca. 62 dp groß und liegt in der 66-dp-Schutzzone.
    Formel in `lat_anim(..., mode='D')`: Schleife 6 s (eine Schleife = 120° Drehung, volle Umdrehung 18 s), zwei Atemzüge pro Schleife.
    Am besten als Compose-`Canvas`, der pro Frame projiziert und die Segmente mit tiefenabhängiger Strichstärke zeichnet (kein Video, keine Bitmap).
    Bei „Animationen entfernen“ statisch zeigen.
-5. **Themen-Icon** (Android 13+): `monochrome`-Ebene wie oben.
+5. **Themen-Icon** (Android 13+): `monochrome`-Ebene wie oben – *erledigt.*
 
 Vorschau: `icon/export/svg/diktat-anim-A-drehen.svg` und `diktat-anim-D-drehen-amplitude-gegenlaeufig.svg` im Browser öffnen.
 
@@ -149,7 +156,8 @@ farbige oder zweifarbige Logos; Pille um den aktiven Navigationseintrag; einger�
 
 ## 7. Nächste Schritte
 
-- [ ] App-Icon (Abschnitt 5, Punkte 1, 2, 5) einbauen und auf dem Galaxy S24 prüfen, ob der transparente Hintergrund wirklich ohne Fläche erscheint
+- [x] App-Icon (Abschnitt 5, Punkte 1, 2, 5) eingebaut
+- [ ] Auf dem Galaxy S24 prüfen, ob der transparente Hintergrund wirklich ohne Fläche erscheint (One UI legt bei manchen Launcher-Einstellungen eine eigene Fläche unter Icons)
 - [ ] Splash-Animation A
 - [ ] In-App-Animation D (Compose) an passender Stelle (z. B. Verarbeitungsanzeige)
 - [ ] Entwurf 3 als neue Oberfläche umsetzen (Start, Wörterbuch, Stile, Einstellungen, hell und dunkel)

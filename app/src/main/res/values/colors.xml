@@ -2,11 +2,11 @@
 <resources>
     <color name="colorPrimary">#4CAF50</color><!-- Green 500 -->
     <color name="colorPrimaryDark">#388E3C</color><!-- Green 700 -->
-    <color name="colorAccent">#FF9800</color><!-- Orange 500 --><!-- Orange 700 -->
-<!-- Green 500 --><!-- White --><!-- Yellow A200 --><!-- Black --><!-- Red 1000? --><!-- White -->
+    <color name="colorAccent">#FF9800</color><!-- Orange 500 -->
 
-    <color name="ic_app_icon_background">#4F576D</color><!-- Dictate icon background -->
-<!-- White --><!-- Black --><!-- Black --><!-- Gray 50 -->
+    <!-- Line colour of the globe icon where it stands on the app's own background (splash screen):
+         ink on light, paper on dark (docs/design/diktat-design.md). -->
+    <color name="diktat_icon_ink">#1F1C1A</color>
 
     <color name="florisApp_windowBackground">#FFFFFFFF</color>
 

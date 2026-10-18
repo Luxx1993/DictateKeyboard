@@ -38,6 +38,10 @@ import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,7 +63,6 @@ import dev.patrickgold.florisboard.lib.compose.FlorisScreen
 import dev.patrickgold.florisboard.lib.util.launchUrl
 import dev.patrickgold.jetpref.datastore.ui.Preference
 import org.florisboard.lib.android.stringRes
-import org.florisboard.lib.compose.FlorisCanvasIcon
 import org.florisboard.lib.compose.stringRes
 
 @Composable
@@ -79,10 +82,13 @@ fun AboutScreen() = FlorisScreen {
                 .fillMaxWidth()
                 .padding(top = 24.dp, bottom = 32.dp)
         ) {
-            FlorisCanvasIcon(
+            // The globe has no background of its own, so here it takes the screen's text colour rather than
+            // the launcher's white, which would vanish on a light screen.
+            Icon(
                 modifier = Modifier.requiredSize(64.dp),
-                iconId = R.mipmap.app_icon,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_diktat_globe_notification),
                 contentDescription = stringRes(R.string.app_name_full),
+                tint = MaterialTheme.colorScheme.onSurface,
             )
             Text(
                 text = stringRes(R.string.app_name_full),

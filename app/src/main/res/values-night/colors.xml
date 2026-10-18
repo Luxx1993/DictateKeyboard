@@ -2,4 +2,5 @@
 <resources>
 
     <color name="florisApp_windowBackground">#FF1F1F1F</color>
+    <color name="diktat_icon_ink">#F4F1EC</color>
 </resources>

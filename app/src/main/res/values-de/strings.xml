@@ -38,6 +38,9 @@
     <string name="pref__other__settings_accent_color__label" comment="Label of accent color preference in Other">Akzentfarben der Einstellungen    </string>
     <string name="pref__other__settings_language__label" comment="Label of Settings language preference in Other">App-Sprache</string>
     <string name="pref__other__show_app_icon__label" comment="Label of Show app icon preference in Other">Zeige die App in der Übersicht</string>
+    <string name="pref__other__app_icon_color__label">App-Icon</string>
+    <string name="pref__other__app_icon_color__white">Weiß (für dunkle Hintergründe)</string>
+    <string name="pref__other__app_icon_color__black">Schwarz (für helle Hintergründe)</string>
     <string name="pref__other__clear_cache__label">Zwischenspeicher leeren</string>
     <string name="pref__other__clear_cache__summary">Temporäre Dateien: {size}</string>
     <string name="pref__other__clear_cache__confirm">Leeren</string>
