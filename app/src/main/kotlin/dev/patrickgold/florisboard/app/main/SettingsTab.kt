@@ -37,8 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
@@ -61,28 +59,15 @@ import dev.patrickgold.florisboard.app.settings.dictate.isOverlayServiceEnabled
 import dev.patrickgold.florisboard.dictate.DictateLanguages
 import dev.patrickgold.florisboard.dictate.DictateRecordMode
 import dev.patrickgold.florisboard.dictate.importer.TranscribeShareActivity
+import dev.patrickgold.florisboard.dictate.ui.AudioReactiveCloudOrbView
+import dev.patrickgold.florisboard.dictate.ui.CloudColors
+import dev.patrickgold.florisboard.dictate.ui.CloudPalette
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.viewinterop.AndroidView
 import dev.patrickgold.florisboard.dictate.provider.ProviderListing
 import dev.patrickgold.jetpref.datastore.model.collectAsState
 import kotlinx.coroutines.launch
 import org.florisboard.lib.compose.stringRes
-
-/**
- * The five colours of the cloud (docs/design/diktat-design.md §4), as the HTML references draw them:
- * light, main and deep tone plus the highlight. The main tone is what the floating button stores; the
- * shader itself is matched to the prototype in a later step.
- */
-enum class CloudPalette(val label: Int, val light: Color, val main: Color, val deep: Color, val glow: Color) {
-    LAGOON(R.string.main__palette_lagoon, Color(0xFF9AD7E6), Color(0xFF3FA9C8), Color(0xFF1E6F8E), Color(0xFFDDF4EF)),
-    PERIWINKLE(R.string.main__palette_periwinkle, Color(0xFFB8C7F9), Color(0xFF7A8FFB), Color(0xFF5C63FB), Color(0xFFE3EBFE)),
-    SAGE(R.string.main__palette_sage, Color(0xFFB5D9A8), Color(0xFF6BA86F), Color(0xFF2F6A52), Color(0xFFEDF3CF)),
-    SUNSET(R.string.main__palette_sunset, Color(0xFFEDBFCF), Color(0xFFC96F9D), Color(0xFF7B3F80), Color(0xFFF8E1D2)),
-    INK(R.string.main__palette_ink, Color(0xFFCFC8BF), Color(0xFF6F6962), Color(0xFF1F1C1A), Color(0xFFF4F1EC));
-
-    companion object {
-        /** The palette whose main tone is [color], or null for a colour picked elsewhere. */
-        fun of(color: Color): CloudPalette? = entries.firstOrNull { it.main == color }
-    }
-}
 
 /**
  * Einstellungen (Entwurf 3, `Einstellungen.html`): the floating button and its colour, then the dictation
@@ -116,7 +101,7 @@ internal fun SettingsTab() {
 
     val floatingEnabled by prefs.dictate.floatingButtonEnabled.collectAsState()
     val color by prefs.dictate.floatingButtonColor.collectAsState()
-    val palette = CloudPalette.of(color)
+    val palette = CloudPalette.of(color.toArgb())
     UCard {
         val floatingLabel = stringRes(R.string.main__settings_floating)
         Row(
@@ -127,7 +112,7 @@ internal fun SettingsTab() {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            CloudSwatch(palette ?: CloudPalette.LAGOON, size = 56.dp, mainOverride = color.takeIf { palette == null })
+            CloudSwatch(CloudPalette.forColor(color.toArgb()), size = 56.dp, animated = true)
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(floatingLabel, style = Unisono.BodyStrong.copy(fontSize = 17.sp, lineHeight = 24.sp), color = c.textPrimary)
                 Text(
@@ -168,12 +153,12 @@ internal fun SettingsTab() {
                         .selectable(
                             selected = p == palette,
                             role = Role.RadioButton,
-                            onClick = { scope.launch { prefs.dictate.floatingButtonColor.set(p.main) } },
+                            onClick = { scope.launch { prefs.dictate.floatingButtonColor.set(Color(p.main)) } },
                         )
                         .semantics { contentDescription = label },
                     contentAlignment = Alignment.Center,
                 ) {
-                    CloudSwatch(p, size = 28.dp, selected = p == palette)
+                    CloudSwatch(p.colors, size = 34.dp, animated = false, selected = p == palette)
                 }
             }
         }
@@ -296,33 +281,32 @@ internal fun SettingsTab() {
 }
 
 /**
- * A still picture of the cloud in [palette]: a glassy sphere lit from the top left. [selected] draws the
- * ink ring of the chosen swatch; [mainOverride] tints it with a colour picked outside the five palettes.
+ * The cloud itself, drawn by the floating button's own view: [animated] for the preview, a single still
+ * frame for a swatch. [selected] adds the ink ring of the chosen swatch.
  */
 @Composable
-private fun CloudSwatch(palette: CloudPalette, size: Dp, selected: Boolean = false, mainOverride: Color? = null) {
+private fun CloudSwatch(colors: CloudColors, size: Dp, animated: Boolean, selected: Boolean = false) {
     val ring = LocalUnisono.current.action
     val gap = LocalUnisono.current.raised
-    val main = mainOverride ?: palette.main
-    Canvas(Modifier.size(size)) {
-        val r = this.size.minDimension / 2f
-        val center = Offset(this.size.width / 2f, this.size.height / 2f)
-        val body = if (selected) r - 3.5.dp.toPx() else r
-        drawCircle(
-            brush = Brush.radialGradient(
-                0f to palette.glow,
-                0.35f to palette.light,
-                0.75f to main,
-                1f to palette.deep,
-                center = Offset(center.x - body * 0.35f, center.y - body * 0.4f),
-                radius = body * 1.6f,
-            ),
-            radius = body,
-            center = center,
+    Box(Modifier.size(size), contentAlignment = Alignment.Center) {
+        AndroidView(
+            factory = { context ->
+                AudioReactiveCloudOrbView(context).apply {
+                    fullBleed = true
+                    still = !animated
+                    setMode(AudioReactiveCloudOrbView.Mode.IDLE)
+                }
+            },
+            update = { it.setColors(colors) },
+            // Room for the ring around the chosen one, the prototype's 2 px gap and 1.5 px line.
+            modifier = Modifier.size(size - 7.dp),
         )
         if (selected) {
-            drawCircle(color = gap, radius = body + 1.dp.toPx(), center = center, style = Stroke(2.dp.toPx()))
-            drawCircle(color = ring, radius = r - 0.75.dp.toPx(), center = center, style = Stroke(1.5.dp.toPx()))
+            Canvas(Modifier.size(size)) {
+                val r = this.size.minDimension / 2f
+                drawCircle(color = gap, radius = r - 2.5.dp.toPx(), style = Stroke(2.dp.toPx()))
+                drawCircle(color = ring, radius = r - 0.75.dp.toPx(), style = Stroke(1.5.dp.toPx()))
+            }
         }
     }
 }

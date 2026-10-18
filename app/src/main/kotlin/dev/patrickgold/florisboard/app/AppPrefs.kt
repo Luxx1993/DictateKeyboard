@@ -299,10 +299,11 @@ abstract class FlorisPreferenceModel : PreferenceModel() {
             key = "dictate__floating_button_snap_to_edge",
             default = true,
         )
-        // Accent color of the floating button (idle/transcribing visuals). Defaults to the Dictate light blue.
+        // Colour of the floating button. For the cloud it picks the palette (CloudPalette, by its main tone);
+        // the default is the standard palette Lagune. Dictate's old default light blue reads as Lagune too.
         val floatingButtonColor = custom(
             key = "dictate__floating_button_color",
-            default = Color(0xFF30B7E6),
+            default = Color(0xFF3FA9C8),
             serializer = ColorPreferenceSerializer,
         )
         // Fade + shrink the button to a small dot after a few seconds of inactivity; tap to restore.

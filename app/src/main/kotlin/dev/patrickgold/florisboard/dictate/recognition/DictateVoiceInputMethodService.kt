@@ -29,6 +29,7 @@ import dev.patrickgold.florisboard.R
 import dev.patrickgold.florisboard.app.FlorisPreferenceStore
 import dev.patrickgold.florisboard.dictate.DictateController
 import dev.patrickgold.florisboard.dictate.ui.AudioReactiveCloudOrbView
+import dev.patrickgold.florisboard.dictate.ui.CloudPalette
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -81,6 +82,10 @@ class DictateVoiceInputMethodService : InputMethodService() {
         ).toInt()
 
         val orbView = AudioReactiveCloudOrbView(this).also { orb = it }
+        // The same cloud as the floating button, in the palette chosen for it.
+        runCatching { prefs.dictate.floatingButtonColor.get() }.getOrNull()?.let {
+            orbView.setColors(CloudPalette.forColor(it.toArgb()))
+        }
         orbView.setMode(AudioReactiveCloudOrbView.Mode.LISTENING)
 
         val glow = View(this).apply {

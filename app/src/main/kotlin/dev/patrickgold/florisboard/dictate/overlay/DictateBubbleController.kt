@@ -65,6 +65,7 @@ import dev.patrickgold.florisboard.dictate.data.prompts.PromptModel
 import dev.patrickgold.florisboard.dictate.data.prompts.PromptsDatabaseHelper
 import dev.patrickgold.florisboard.dictate.data.prompts.snippetBody
 import dev.patrickgold.florisboard.dictate.ui.AudioReactiveCloudOrbView
+import dev.patrickgold.florisboard.dictate.ui.CloudPalette
 import dev.patrickgold.florisboard.dictate.ui.DictateAuroraOrbView
 import dev.patrickgold.florisboard.dictate.ui.DictateLatticeSphereView
 import dev.patrickgold.florisboard.lib.devtools.flogDebug
@@ -2579,11 +2580,13 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
     private inner class CloudSkin(context: Context) : BubbleSkin {
         private val viewSize = sdp(64)
         private val coreSize = sdp(48)
-        private val idleInset = sdp(13)
+        // The prototype's check is a third of the sphere (30 px on 90): 16 dp on the 48 dp core.
+        private val idleInset = sdp(16)
 
         override val visualInset: Int = (viewSize - coreSize) / 2
 
-        private val cloud = AudioReactiveCloudOrbView(context)
+        private val palette = CloudPalette.forColor(accentColor)
+        private val cloud = AudioReactiveCloudOrbView(context).apply { setColors(palette) }
         private val icon = ImageView(context).apply {
             elevation = sdpf(6f)
         }
@@ -2600,13 +2603,13 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
             minimumHeight = viewSize
         }
 
-        /** Cut from the same sky as the cloud, down to the dark glyph it puts on that surface. */
+        /** Cut from the same colours as the cloud, down to the dark glyph it puts on that surface. */
         override fun sideButtonBackground(): GradientDrawable = GradientDrawable(
             GradientDrawable.Orientation.TOP_BOTTOM,
-            AudioReactiveCloudOrbView.SURFACE_GRADIENT,
+            AudioReactiveCloudOrbView.surfaceGradient(palette),
         ).apply { shape = GradientDrawable.OVAL }
 
-        override val sideButtonForeground: Int = CLOUD_GLYPH_COLOR
+        override val sideButtonForeground: Int = palette.o2
 
         override fun applyState(state: DictateController.UiState) {
             when (state) {
@@ -2650,11 +2653,11 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
             cloud.stop()
         }
 
-        // Idle: the cloud itself is the button, with a mic hint so it reads as "tap to dictate".
+        // Idle: the cloud alone is the button, without a glyph, as in the prototype ("Bereit – Tippen startet").
         private fun showIdle() {
             cloud.setPaused(false)
             cloud.setMode(AudioReactiveCloudOrbView.Mode.IDLE)
-            showGlyph(R.drawable.ic_dictate_overlay_mic, idleInset, CLOUD_GLYPH_COLOR, 0.9f)
+            icon.visibility = View.INVISIBLE
         }
 
         private fun showGlyph(resId: Int, inset: Int, tint: Int, alpha: Float) {
@@ -2805,7 +2808,6 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
         private val BLOB_RATES = floatArrayOf(1f, -0.62f, 0.41f)
         private val BLOB_TINTS = floatArrayOf(0.45f, 0.18f, 0.68f)
         private const val WAVE_BARS = 7
-        private const val CLOUD_GLYPH_COLOR = 0xFF343B8F.toInt()
 
         /** Lattice (#253): recording runs its idle constellation at the tempo the library ships it at. */
         private const val RECORDING_SPEED_UP = 6f

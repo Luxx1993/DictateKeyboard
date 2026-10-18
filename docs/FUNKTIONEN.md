@@ -150,7 +150,7 @@ Einstellungen in `app/settings/dictate/DictateFloatingButtonScreen.kt`:
 - **Rückgängig-Taste**; **jedes Diktat in die Zwischenablage kopieren**
 - **Menü am Button**: Datei transkribieren, Verlauf, Einstellungen (`overlay/BubbleMenuAction.kt`) – einzeln abschaltbar
 - Zustände der Wolke: Ruhe, Zuhören (folgt dem Mikrofonpegel), Denken, Erfolg, Fehler (`ui/AudioReactiveCloudOrbView.kt`)
-- Optik der Wolke und Paletten: siehe Design-Dokument Abschnitt 4. Angleichen an den Prototyp: **geplant**.
+- Optik der Wolke und Paletten: siehe Design-Dokument Abschnitt 4. An den Prototyp **angeglichen** (5 Paletten, Farbe im Tab Einstellungen); dieselbe Wolke zeigen Spracheingabe und Erkennungsdienst.
 
 ## 11. Verlauf
 
@@ -213,7 +213,7 @@ Reihenfolge und Details: `CLAUDE.md` und `docs/design/diktat-design.md` Abschnit
 
 1. App-Icon „Welle um die Welt“: Icon, Themen-Icon, Umschalter weiß/schwarz, Splash-Animation A und In-App-Animation D (in „Datei transkribieren“) **vorhanden**
 2. Neue Oberfläche „Entwurf 3“ (Start, Wörterbuch, Stile, Einstellungen): **vorhanden** (`app/main/`), Startbildschirm der App; die alte Einstellungsliste ist „Alle Einstellungen“. Auf dem S24 noch nicht angesehen.
-3. Wolken-Shader an den Prototyp angleichen
+3. Wolken-Shader an den Prototyp angleichen: **vorhanden**, auf dem S24 noch nicht angesehen
 4. Anbieter Gladia, Preset Cerebras, AssemblyAI Sync API
 
 ## 15. Noch offen (Entscheidung von Lukas)

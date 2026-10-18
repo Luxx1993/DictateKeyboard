@@ -32,7 +32,7 @@ APK unter `app/build/outputs/apk/debug/`. Debug-Builds sind mit einem Debug-Schl
 
 - `app/src/main/kotlin/dev/patrickgold/florisboard/dictate/` – Diktat-Logik (Anbieter, Aufnahme, Overlay)
 - `dictate/overlay/` – schwebender Button (Accessibility-Service, Bubble-Controller)
-- `dictate/ui/AudioReactiveCloudOrbView.kt` – AGSL-Shader der Wolke
+- `dictate/ui/AudioReactiveCloudOrbView.kt` – AGSL-Shader der Wolke (Ebenen wie der Prototyp), `CloudMotion.kt` (Keyframes), `CloudPalette.kt` (5 Paletten)
 - `dictate/ui/DiktatGlobe.kt` – Icon-Kugel als Compose-Komponente, Animation D
 - `app/main/` – Oberfläche Entwurf 3: `MainScreen.kt` (4 Tabs, Startbildschirm), `StartTab`, `DictionaryTab`, `StylesTab`, `SettingsTab`, Bausteine `UnisonoComponents.kt`, Icons `UnisonoIcons.kt`
 - `app/apptheme/Unisono.kt` – Farben, Schriften, Textstile des Unisono-Looks
@@ -56,7 +56,7 @@ Alle Design-Entscheidungen stehen in **`docs/design/diktat-design.md`**. Das ist
 
 1. App-Icon ist fertig (Icon, Themen-Icon, Umschalter, Animation A im Splash, Animation D als `DiktatGlobe` in „Datei transkribieren“).
 2. Entwurf 3 ist umgesetzt (`app/main/`: Start, Wörterbuch, Stile, Einstellungen); auf dem S24 ansehen und nachziehen.
-3. Wolken-Shader an den Prototyp angleichen.
+3. Wolken-Shader ist an den Prototyp angeglichen (`dictate/ui/`: Shader, `CloudMotion`, `CloudPalette`); auf dem S24 ansehen.
 4. Später: Anbieter Gladia, Preset Cerebras, AssemblyAI Sync API.
 5. Offen aus dem Entfernen: Langdiktat am Button anbinden oder streichen (FUNKTIONEN.md 13). Halten/Antippen ist wählbar (Einstellungen › Aufnahme).
 

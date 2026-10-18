@@ -172,5 +172,11 @@ farbige oder zweifarbige Logos; Pille um den aktiven Navigationseintrag; einger�
 - [x] Entwurf 3 als neue Oberfläche umsetzen (Start, Wörterbuch, Stile, Einstellungen, hell und dunkel): `app/main/` mit `MainScreen`, Tabs, `UnisonoComponents`, `UnisonoIcons` (Pfade aus den HTML-Referenzen); Theme in `app/apptheme/Unisono.kt`
 - [ ] Entwurf 3 auf dem S24 ansehen (hell, dunkel) und Abstände nachziehen
 - [ ] Mitgelieferte Stile (Wörtlich, E-Mail, Chat, Aktenvermerk) als Standard-Prompts
-- [ ] Wolken-Shader an den Prototyp angleichen. Die Farbwahl mit 5 Paletten steht im Tab Einstellungen (`CloudPalette`) und speichert den Hauptton in `floatingButtonColor`; der Shader nutzt die vollen Paletten noch nicht
+- [x] Wolken-Shader an den Prototyp angeglichen (`dictate/ui/AudioReactiveCloudOrbView.kt`, Bewegung in `CloudMotion.kt`, Paletten in `CloudPalette.kt`):
+  dieselben Ebenen, Keyframes und Dauern wie `SchwebenderButton.html`. Gegen Screenshots des Prototyps (Chromium) mit einem
+  Python-Nachbau des Shaders verglichen, in Ruhe und bei 13 s, Lagune und Abendrot: Farben im Mittel auf wenige Stufen gleich.
+  Die Texturen des Prototyps sind kein neutrales Grau (Mittel 0,73 bei halber Deckkraft) und hellen die Kugel auf; das ist übernommen.
+  Ruhe ohne Mikro-Symbol, mit 20 Bildern/s. Zuhören folgt dem echten Mikrofonpegel statt der festen Stimm-Keyframes.
+  Die Farbwahl speichert den Hauptton (o1) der Palette; Dictates altes Hellblau gilt als Lagune.
+- [ ] Wolke auf dem S24 ansehen (Ruhe, Zuhören, Verarbeiten, Fertig, Fehler; Akkuverbrauch in Ruhe)
 - [ ] Später: Anbieter Gladia, Preset Cerebras, AssemblyAI Sync API
