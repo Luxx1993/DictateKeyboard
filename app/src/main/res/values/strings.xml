@@ -861,6 +861,17 @@
     <string name="main__tab_settings">Settings</string>
     <string name="main__greeting_named">Hello, {name}</string>
     <string name="pref__other__user_name__label">Your name, for the greeting</string>
+    <string name="main__back">Back</string>
+    <string name="main__done">Done</string>
+    <string name="main__fb_group_look">Appearance</string>
+    <string name="main__fb_group_behaviour">Behaviour</string>
+    <string name="main__fb_group_after">After dictating</string>
+    <string name="main__fb_more_colors">More colours</string>
+    <string name="main__fb_more_colors_summary">Any colour; the cloud mixes its palette from it</string>
+    <string name="main__fb_preview_note">Previews in Lagoon; the button takes your colour.</string>
+    <string name="main__rec_group_start">Recording</string>
+    <string name="main__rec_group_mic">Microphone</string>
+    <string name="main__rec_group_send">Before sending</string>
     <string name="main__greeting_set_name">Add your name</string>
     <string name="main__greeting_name_hint">Your name</string>
     <string name="main__greeting">Hello</string>

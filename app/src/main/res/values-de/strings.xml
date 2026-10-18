@@ -760,6 +760,17 @@
     <string name="main__tab_settings">Einstellungen</string>
     <string name="main__greeting_named">Hallo, {name}</string>
     <string name="pref__other__user_name__label">Dein Name für die Begrüßung</string>
+    <string name="main__back">Zurück</string>
+    <string name="main__done">Fertig</string>
+    <string name="main__fb_group_look">Aussehen</string>
+    <string name="main__fb_group_behaviour">Verhalten</string>
+    <string name="main__fb_group_after">Nach dem Diktat</string>
+    <string name="main__fb_more_colors">Weitere Farben</string>
+    <string name="main__fb_more_colors_summary">Jede Farbe; die Wolke mischt daraus ihre Palette</string>
+    <string name="main__fb_preview_note">Vorschau in Lagune; der Button nimmt deine Farbe an.</string>
+    <string name="main__rec_group_start">Aufnehmen</string>
+    <string name="main__rec_group_mic">Mikrofon</string>
+    <string name="main__rec_group_send">Vor dem Senden</string>
     <string name="main__greeting_set_name">Namen eintragen</string>
     <string name="main__greeting_name_hint">Dein Name</string>
     <string name="main__greeting">Hallo</string>

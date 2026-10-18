@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2026 DevEmperor (Dictate)
+ * Copyright (C) 2026 Luxx1993 (diktat)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,30 +19,20 @@ import android.content.pm.PackageManager
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Undo
-import androidx.compose.material.icons.filled.Accessibility
-import androidx.compose.material.icons.filled.Adjust
-import androidx.compose.material.icons.filled.Apps
-import androidx.compose.material.icons.filled.TouchApp
-import androidx.compose.material.icons.filled.Brush
-import androidx.compose.material.icons.filled.BlurOn
-import androidx.compose.material.icons.filled.ColorLens
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Keyboard
-import androidx.compose.material.icons.filled.PinDrop
-import androidx.compose.material.icons.filled.Vibration
-import androidx.compose.material.icons.filled.Mic
-import androidx.compose.material.icons.filled.PhotoSizeSelectSmall
-import androidx.compose.material.icons.filled.PushPin
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -54,372 +45,389 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import dev.patrickgold.florisboard.R
-import dev.patrickgold.florisboard.app.settings.search.settingsSearchAnchor
 import dev.patrickgold.florisboard.app.FlorisPreferenceStore
 import dev.patrickgold.florisboard.app.LocalNavController
 import dev.patrickgold.florisboard.app.Routes
+import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
+import dev.patrickgold.florisboard.app.apptheme.Unisono
+import dev.patrickgold.florisboard.app.main.BubblePreview
+import dev.patrickgold.florisboard.app.main.PaletteRow
+import dev.patrickgold.florisboard.app.main.StylePreview
+import dev.patrickgold.florisboard.app.main.UCard
+import dev.patrickgold.florisboard.app.main.UCheckRow
+import dev.patrickgold.florisboard.app.main.UChoice
+import dev.patrickgold.florisboard.app.main.UChoiceRow
+import dev.patrickgold.florisboard.app.main.UDialog
+import dev.patrickgold.florisboard.app.main.UDivider
+import dev.patrickgold.florisboard.app.main.UGroupLabel
+import dev.patrickgold.florisboard.app.main.UNavRow
+import dev.patrickgold.florisboard.app.main.USwitch
+import dev.patrickgold.florisboard.app.main.USwitchRow
+import dev.patrickgold.florisboard.app.main.UnisonoPage
+import dev.patrickgold.florisboard.app.settings.search.settingsSearchAnchor
 import dev.patrickgold.florisboard.dictate.DictateFloatingButtonAppScope
-import dev.patrickgold.florisboard.dictate.overlay.BubbleMenuAction
-import dev.patrickgold.florisboard.dictate.overlay.DictateAccessibilityService
-import dev.patrickgold.florisboard.lib.compose.FlorisScreen
-import dev.patrickgold.jetpref.datastore.model.collectAsState
-import dev.patrickgold.jetpref.material.ui.JetPrefAlertDialog
-import org.florisboard.lib.compose.rippleClickable
 import dev.patrickgold.florisboard.dictate.DictateFloatingButtonDesign
 import dev.patrickgold.florisboard.dictate.DictateFloatingButtonShowWhen
 import dev.patrickgold.florisboard.dictate.DictateFloatingButtonSize
+import dev.patrickgold.florisboard.dictate.overlay.BubbleMenuAction
+import dev.patrickgold.florisboard.dictate.overlay.DictateAccessibilityService
+import dev.patrickgold.florisboard.dictate.ui.CloudPalette
+import dev.patrickgold.jetpref.datastore.model.PreferenceData
+import dev.patrickgold.jetpref.datastore.model.collectAsState
 import kotlinx.coroutines.launch
 import org.florisboard.lib.color.ColorMappings
-import dev.patrickgold.jetpref.datastore.ui.ColorPickerPreference
-import dev.patrickgold.jetpref.datastore.ui.ListPreference
-import dev.patrickgold.jetpref.datastore.ui.Preference
-import dev.patrickgold.jetpref.datastore.ui.PreferenceGroup
-import dev.patrickgold.jetpref.datastore.ui.SwitchPreference
-import dev.patrickgold.jetpref.datastore.ui.listPrefEntries
 import org.florisboard.lib.compose.stringRes
 
 /**
- * Settings for the floating dictation button (issue #88). The in-app master toggle
- * ([dev.patrickgold.florisboard.app.AppPrefs.Dictate.floatingButtonEnabled]) hides/shows the bubble; the
- * bubble only actually appears once the [DictateAccessibilityService] is also enabled in the system
- * accessibility settings, which the user reaches from here after a prominent disclosure of what the
- * service does. The service-enabled status is re-read on every resume so it reflects changes made in the
- * system settings.
+ * Settings for the floating dictation button (issue #88), in the look of Entwurf 3. The in-app master
+ * toggle hides/shows the bubble; the bubble only actually appears once the [DictateAccessibilityService] is
+ * also enabled in the system accessibility settings, which the user reaches from here after a prominent
+ * disclosure of what the service does. The service-enabled status is re-read on every resume so it
+ * reflects changes made in the system settings. Everything below the setup only shows once both are on.
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun DictateFloatingButtonScreen() = FlorisScreen {
-    title = stringRes(R.string.dictate__floating_button_title)
-    iconSpaceReserved = true
-
+fun DictateFloatingButtonScreen() = UnisonoPage(title = stringRes(R.string.main__settings_floating)) {
     val prefs by FlorisPreferenceStore
+    val c = LocalUnisono.current
+    val context = LocalContext.current
+    val navController = LocalNavController.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val scope = rememberCoroutineScope()
 
-    content {
-        val context = LocalContext.current
-        val navController = LocalNavController.current
-        val lifecycleOwner = LocalLifecycleOwner.current
-        val enabled by prefs.dictate.floatingButtonEnabled.collectAsState()
-        val appScope by prefs.dictate.floatingButtonAppScope.collectAsState()
-        val apps by prefs.dictate.floatingButtonApps.collectAsState()
-        val appCount = apps.packages.size
+    val enabled by prefs.dictate.floatingButtonEnabled.collectAsState()
+    val design by prefs.dictate.floatingButtonDesign.collectAsState()
+    val appScope by prefs.dictate.floatingButtonAppScope.collectAsState()
+    val apps by prefs.dictate.floatingButtonApps.collectAsState()
+    val appCount = apps.packages.size
 
-        // Opening this screen clears the "New" badge on the Dictate settings entry.
-        LaunchedEffect(Unit) { prefs.dictate.floatingButtonHintSeen.set(true) }
+    // Opening this screen clears the "New" badge on the Dictate settings entry.
+    LaunchedEffect(Unit) { prefs.dictate.floatingButtonHintSeen.set(true) }
 
-        var serviceEnabled by remember { mutableStateOf(isOverlayServiceEnabled(context)) }
-        var micGranted by remember { mutableStateOf(isMicGranted(context)) }
-        DisposableEffect(lifecycleOwner) {
-            val observer = LifecycleEventObserver { _, event ->
-                if (event == Lifecycle.Event.ON_RESUME) {
-                    serviceEnabled = isOverlayServiceEnabled(context)
-                    micGranted = isMicGranted(context)
-                }
+    var serviceEnabled by remember { mutableStateOf(isOverlayServiceEnabled(context)) }
+    var micGranted by remember { mutableStateOf(isMicGranted(context)) }
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                serviceEnabled = isOverlayServiceEnabled(context)
+                micGranted = isMicGranted(context)
             }
-            lifecycleOwner.lifecycle.addObserver(observer)
-            onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
         }
-        val requestMic = rememberLauncherForActivityResult(
-            ActivityResultContracts.RequestPermission(),
-        ) { granted -> micGranted = granted }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+    val requestMic = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { granted -> micGranted = granted }
 
-        var showDisclosure by remember { mutableStateOf(false) }
-        var showMenuDialog by remember { mutableStateOf(false) }
+    var showDisclosure by remember { mutableStateOf(false) }
+    var openDialog by remember { mutableStateOf<String?>(null) }
 
-        SwitchPreference(
-            prefs.dictate.floatingButtonEnabled,
-            icon = Icons.Default.Adjust,
-            modifier = Modifier.settingsSearchAnchor("dictate__floating_button_enable_title"),
-            title = stringRes(R.string.dictate__floating_button_enable_title),
-            summary = stringRes(R.string.dictate__floating_button_enable_summary),
-        )
+    // The button itself, and the master switch.
+    UCard(Modifier.settingsSearchAnchor("dictate__floating_button_enable_title")) {
+        val label = stringRes(R.string.dictate__floating_button_enable_title)
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
+        ) {
+            BubblePreview(design, size = 56.dp)
+            Column(Modifier.weight(1f)) {
+                Text(label, style = Unisono.BodyStrong.copy(fontSize = 17.sp, lineHeight = 24.sp), color = c.textPrimary)
+                Text(stringRes(R.string.dictate__floating_button_enable_summary), style = Unisono.Label, color = c.textSecondary)
+            }
+            USwitch(
+                checked = enabled,
+                onCheckedChange = { scope.launch { prefs.dictate.floatingButtonEnabled.set(it) } },
+                contentDescription = label,
+            )
+        }
+    }
 
-        if (enabled) {
-            // Setup first, right under the master toggle: the accessibility service (and mic) must be on
-            // before any of the display/behavior options matter, so those are only shown once it is enabled.
-            PreferenceGroup(title = stringRes(R.string.dictate__floating_button_permission_group)) {
-                Preference(
-                    icon = Icons.Default.Accessibility,
-                    modifier = Modifier.settingsSearchAnchor("dictate__floating_button_service_title"),
+    if (enabled) {
+        // Setup first, right under the master toggle: the accessibility service (and mic) must be on before
+        // any of the display/behavior options matter, so those are only shown once it is enabled.
+        UGroupLabel(stringRes(R.string.dictate__floating_button_permission_group))
+        UCard {
+            Box(Modifier.settingsSearchAnchor("dictate__floating_button_service_title")) {
+                UNavRow(
                     title = stringRes(R.string.dictate__floating_button_service_title),
-                    summary = if (serviceEnabled) {
-                        stringRes(R.string.dictate__floating_button_service_enabled)
-                    } else {
-                        stringRes(R.string.dictate__floating_button_service_disabled)
-                    },
-                    onClick = {
+                    subtitle = stringRes(
                         if (serviceEnabled) {
-                            openAccessibilitySettings(context)
+                            R.string.dictate__floating_button_service_enabled
                         } else {
-                            showDisclosure = true
-                        }
-                    },
+                            R.string.dictate__floating_button_service_disabled
+                        },
+                    ),
+                    onClick = { if (serviceEnabled) openAccessibilitySettings(context) else showDisclosure = true },
                 )
-                // The bubble records through the same pipeline as the keyboard, so it needs the mic
-                // permission. Usually already granted via the keyboard onboarding, but surface it here in
-                // case the user enabled the bubble without ever recording.
-                if (!micGranted) {
-                    Preference(
-                        icon = Icons.Default.Mic,
-                        modifier = Modifier.settingsSearchAnchor("dictate__floating_button_mic_title"),
+            }
+            // The bubble records through the same pipeline as the voice input, so it needs the mic permission.
+            if (!micGranted) {
+                UDivider()
+                Box(Modifier.settingsSearchAnchor("dictate__floating_button_mic_title")) {
+                    UNavRow(
                         title = stringRes(R.string.dictate__floating_button_mic_title),
-                        summary = stringRes(R.string.dictate__floating_button_mic_summary),
+                        subtitle = stringRes(R.string.dictate__floating_button_mic_summary),
                         onClick = { requestMic.launch(Manifest.permission.RECORD_AUDIO) },
                     )
                 }
             }
         }
+    }
 
-        if (enabled && serviceEnabled) {
-            // When it appears (issue #439), one choice where there used to be two switches about keyboards.
-            ListPreference(
-                prefs.dictate.floatingButtonShowWhen,
-                icon = Icons.Default.Keyboard,
-                modifier = Modifier.settingsSearchAnchor("dictate__floating_button_show_when_title"),
-                title = stringRes(R.string.dictate__floating_button_show_when_title),
-                entries = listPrefEntries {
-                    entry(
-                        DictateFloatingButtonShowWhen.FIELD_SELECTED,
-                        stringRes(R.string.dictate__floating_button_show_when_field),
-                    )
-                    entry(
-                        DictateFloatingButtonShowWhen.KEYBOARD_OPEN,
-                        stringRes(R.string.dictate__floating_button_show_when_keyboard),
-                    )
-                },
-            )
-
-            // Where it may appear at all (issue #392), directly under the other "where" switch: a
-            // banking app that objects to overlays, or an app that already has a microphone of its own.
-            Preference(
-                icon = Icons.Default.Apps,
-                modifier = Modifier.settingsSearchAnchor("dictate__floating_button_apps_title"),
-                title = stringRes(R.string.dictate__floating_button_apps_title),
-                summary = when (appScope) {
-                    DictateFloatingButtonAppScope.ALL ->
-                        stringRes(R.string.dictate__floating_button_apps_summary_all)
-                    DictateFloatingButtonAppScope.ONLY_SELECTED ->
-                        stringRes(R.string.dictate__floating_button_apps_summary_only, "n" to appCount)
-                    DictateFloatingButtonAppScope.EXCEPT_SELECTED ->
-                        stringRes(R.string.dictate__floating_button_apps_summary_except, "n" to appCount)
-                },
-                onClick = { navController.navigate(Routes.Settings.DictateFloatingButtonApps) },
-            )
-
-            ListPreference(
-                prefs.dictate.floatingButtonDesign,
-                icon = Icons.Default.Brush,
-                modifier = Modifier.settingsSearchAnchor("dictate__floating_button_design_title"),
+    if (enabled && serviceEnabled) {
+        UGroupLabel(stringRes(R.string.main__fb_group_look))
+        UCard {
+            UChoiceRow(
                 title = stringRes(R.string.dictate__floating_button_design_title),
-                entries = listPrefEntries {
-                    entry(
-                        DictateFloatingButtonDesign.PILL,
-                        stringRes(R.string.dictate__floating_button_design_pill),
-                        stringRes(R.string.dictate__floating_button_design_pill_summary),
-                    )
-                    entry(
-                        DictateFloatingButtonDesign.RING,
-                        stringRes(R.string.dictate__floating_button_design_ring),
-                        stringRes(R.string.dictate__floating_button_design_ring_summary),
-                    )
-                    entry(
-                        DictateFloatingButtonDesign.ORB,
-                        stringRes(R.string.dictate__floating_button_design_orb),
-                        stringRes(R.string.dictate__floating_button_design_orb_summary),
-                    )
-                    entry(
-                        DictateFloatingButtonDesign.CLOUD,
-                        stringRes(R.string.dictate__floating_button_design_cloud),
-                        stringRes(R.string.dictate__floating_button_design_cloud_summary),
-                    )
-                    entry(
-                        DictateFloatingButtonDesign.AURORA,
-                        stringRes(R.string.dictate__floating_button_design_aurora),
-                        stringRes(R.string.dictate__floating_button_design_aurora_summary),
-                    )
-                    entry(
-                        DictateFloatingButtonDesign.LATTICE,
-                        stringRes(R.string.dictate__floating_button_design_lattice),
-                        stringRes(R.string.dictate__floating_button_design_lattice_summary),
-                    )
-                },
+                description = stringRes(R.string.main__fb_preview_note),
+                choices = listOf(
+                    designChoice(DictateFloatingButtonDesign.CLOUD, R.string.dictate__floating_button_design_cloud, R.string.dictate__floating_button_design_cloud_summary),
+                    designChoice(DictateFloatingButtonDesign.PILL, R.string.dictate__floating_button_design_pill, R.string.dictate__floating_button_design_pill_summary),
+                    designChoice(DictateFloatingButtonDesign.RING, R.string.dictate__floating_button_design_ring, R.string.dictate__floating_button_design_ring_summary),
+                    designChoice(DictateFloatingButtonDesign.ORB, R.string.dictate__floating_button_design_orb, R.string.dictate__floating_button_design_orb_summary),
+                    designChoice(DictateFloatingButtonDesign.AURORA, R.string.dictate__floating_button_design_aurora, R.string.dictate__floating_button_design_aurora_summary),
+                    designChoice(DictateFloatingButtonDesign.LATTICE, R.string.dictate__floating_button_design_lattice, R.string.dictate__floating_button_design_lattice_summary),
+                ),
+                selected = design,
+                onSelect = { scope.launch { prefs.dictate.floatingButtonDesign.set(it) } },
+                open = openDialog == "design",
+                onOpenChange = { openDialog = if (it) "design" else null },
+                modifier = Modifier.settingsSearchAnchor("dictate__floating_button_design_title"),
             )
-
-            ListPreference(
-                prefs.dictate.floatingButtonSize,
-                icon = Icons.Default.PhotoSizeSelectSmall,
-                modifier = Modifier.settingsSearchAnchor("dictate__floating_button_size_title"),
+            UDivider()
+            Box(Modifier.settingsSearchAnchor("dictate__floating_button_color_title")) { PaletteRow() }
+            UDivider()
+            val color by prefs.dictate.floatingButtonColor.collectAsState()
+            UNavRow(
+                title = stringRes(R.string.main__fb_more_colors),
+                subtitle = stringRes(R.string.main__fb_more_colors_summary),
+                onClick = { openDialog = "color" },
+                trailing = { Box(Modifier.size(22.dp).clip(CircleShape).background(color)) },
+            )
+            UDivider()
+            val size by prefs.dictate.floatingButtonSize.collectAsState()
+            UChoiceRow(
                 title = stringRes(R.string.dictate__floating_button_size_title),
-                entries = listPrefEntries {
-                    entry(
-                        DictateFloatingButtonSize.SMALL,
-                        stringRes(R.string.dictate__floating_button_size_small),
-                    )
-                    entry(
-                        DictateFloatingButtonSize.MEDIUM,
-                        stringRes(R.string.dictate__floating_button_size_medium),
-                    )
-                    entry(
-                        DictateFloatingButtonSize.LARGE,
-                        stringRes(R.string.dictate__floating_button_size_large),
-                    )
-                },
-            )
-
-            SwitchPreference(
-                prefs.dictate.floatingButtonSnapToEdge,
-                icon = Icons.Default.PushPin,
-                modifier = Modifier.settingsSearchAnchor("dictate__floating_button_snap_title"),
-                title = stringRes(R.string.dictate__floating_button_snap_title),
-                summaryOn = stringRes(R.string.dictate__floating_button_snap_summary_on),
-                summaryOff = stringRes(R.string.dictate__floating_button_snap_summary_off),
-            )
-
-            ColorPickerPreference(
-                prefs.dictate.floatingButtonColor,
-                icon = Icons.Default.ColorLens,
-                modifier = Modifier.settingsSearchAnchor("dictate__floating_button_color_title"),
-                title = stringRes(R.string.dictate__floating_button_color_title),
-                defaultValueLabel = stringRes(R.string.action__default),
-                showAlphaSlider = false,
-                defaultColors = ColorMappings.colors,
-                // Enable the full RGB/HSV picker (not just the preset palette), matching the accent color.
-                enableAdvancedLayout = true,
-            )
-
-            SwitchPreference(
-                prefs.dictate.floatingButtonAutoDim,
-                icon = Icons.Default.BlurOn,
-                modifier = Modifier.settingsSearchAnchor("dictate__floating_button_auto_dim_title"),
-                title = stringRes(R.string.dictate__floating_button_auto_dim_title),
-                summaryOn = stringRes(R.string.dictate__floating_button_auto_dim_summary_on),
-                summaryOff = stringRes(R.string.dictate__floating_button_auto_dim_summary_off),
-            )
-
-            SwitchPreference(
-                prefs.dictate.floatingButtonRememberPosition,
-                icon = Icons.Default.PinDrop,
-                modifier = Modifier.settingsSearchAnchor("dictate__floating_button_remember_position_title"),
-                title = stringRes(R.string.dictate__floating_button_remember_position_title),
-                summaryOn = stringRes(R.string.dictate__floating_button_remember_position_summary_on),
-                summaryOff = stringRes(R.string.dictate__floating_button_remember_position_summary_off),
-            )
-
-            SwitchPreference(
-                prefs.dictate.floatingButtonHaptic,
-                icon = Icons.Default.Vibration,
-                modifier = Modifier.settingsSearchAnchor("dictate__floating_button_haptic_title"),
-                title = stringRes(R.string.dictate__floating_button_haptic_title),
-                summaryOn = stringRes(R.string.dictate__floating_button_haptic_summary_on),
-                summaryOff = stringRes(R.string.dictate__floating_button_haptic_summary_off),
-            )
-
-            SwitchPreference(
-                prefs.dictate.floatingButtonUndoEnabled,
-                icon = Icons.AutoMirrored.Filled.Undo,
-                modifier = Modifier.settingsSearchAnchor("dictate__floating_button_undo_title"),
-                title = stringRes(R.string.dictate__floating_button_undo_title),
-                summaryOn = stringRes(R.string.dictate__floating_button_undo_summary_on),
-                summaryOff = stringRes(R.string.dictate__floating_button_undo_summary_off),
-            )
-
-            SwitchPreference(
-                prefs.dictate.floatingButtonCopyToClipboard,
-                icon = Icons.Default.ContentCopy,
-                modifier = Modifier.settingsSearchAnchor("dictate__floating_button_copy_to_clipboard_title"),
-                title = stringRes(R.string.dictate__floating_button_copy_to_clipboard_title),
-                summaryOn = stringRes(R.string.dictate__floating_button_copy_to_clipboard_summary_on),
-                summaryOff = stringRes(R.string.dictate__floating_button_copy_to_clipboard_summary_off),
-            )
-
-            // What holding the button offers besides the prompts (issue #408). The hold is the only free
-            // gesture the bubble has (#357), so this menu is where anything that is not the microphone
-            // lives — each entry off by default, since for a Gboard + bubble user this menu is their only
-            // route to the prompts and nothing should join it unasked. One row rather than a switch each:
-            // these are the contents of a single list, and the summary is the list as it stands.
-            val menuActions = BubbleMenuAction.entries.filter { it.pref(prefs).collectAsState().value }
-            Preference(
-                icon = Icons.Default.TouchApp,
-                modifier = Modifier.settingsSearchAnchor("dictate__floating_button_menu_group"),
-                title = stringRes(R.string.dictate__floating_button_menu_group),
-                summary = if (menuActions.isEmpty()) {
-                    stringRes(R.string.quick_action__noop)
-                } else {
-                    menuActions.map { stringRes(it.labelRes) }.joinToString()
-                },
-                onClick = { showMenuDialog = true },
+                choices = listOf(
+                    UChoice(DictateFloatingButtonSize.SMALL, stringRes(R.string.dictate__floating_button_size_small)),
+                    UChoice(DictateFloatingButtonSize.MEDIUM, stringRes(R.string.dictate__floating_button_size_medium)),
+                    UChoice(DictateFloatingButtonSize.LARGE, stringRes(R.string.dictate__floating_button_size_large)),
+                ),
+                selected = size,
+                onSelect = { scope.launch { prefs.dictate.floatingButtonSize.set(it) } },
+                open = openDialog == "size",
+                onOpenChange = { openDialog = if (it) "size" else null },
+                modifier = Modifier.settingsSearchAnchor("dictate__floating_button_size_title"),
             )
         }
 
-        if (showMenuDialog) {
-            JetPrefAlertDialog(
-                title = stringRes(R.string.dictate__floating_button_menu_group),
-                confirmLabel = stringRes(R.string.action__ok),
-                onConfirm = { showMenuDialog = false },
-                onDismiss = { showMenuDialog = false },
+        if (openDialog == "color") {
+            val color by prefs.dictate.floatingButtonColor.collectAsState()
+            UDialog(
+                title = stringRes(R.string.main__fb_more_colors),
+                description = stringRes(R.string.main__fb_more_colors_summary),
+                onDismiss = { openDialog = null },
             ) {
-                val scope = rememberCoroutineScope()
-                Column {
-                    // Rows of our own rather than JetPrefListItem: that one paints itself in the theme's
-                    // `surface`, which inside a dialog (a lighter container) shows up as a black block
-                    // behind the list. Ticking takes effect at once, as it does in the app-visibility
-                    // list — there is nothing here that a second confirmation could protect.
-                    BubbleMenuAction.entries.forEach { action ->
-                        val pref = action.pref(prefs)
-                        val checked by pref.collectAsState()
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .rippleClickable { scope.launch { pref.set(!checked) } }
-                                .padding(horizontal = 8.dp, vertical = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
+                FlowRow(
+                    modifier = Modifier.padding(horizontal = 14.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    val swatches = CloudPalette.entries.map { Color(it.main) } + ColorMappings.colors
+                    for (swatch in swatches.distinct()) {
+                        val chosen = swatch.toArgb() == color.toArgb()
+                        Box(
+                            Modifier
+                                .size(44.dp)
+                                .clip(CircleShape)
+                                .clickable { scope.launch { prefs.dictate.floatingButtonColor.set(swatch) } },
+                            contentAlignment = Alignment.Center,
                         ) {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(action.iconRes),
-                                contentDescription = null,
+                            Box(
+                                Modifier
+                                    .size(if (chosen) 30.dp else 34.dp)
+                                    .clip(CircleShape)
+                                    .background(swatch),
                             )
-                            Text(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .padding(start = 16.dp),
-                                text = stringRes(action.labelRes),
-                                style = MaterialTheme.typography.bodyLarge,
-                            )
-                            Checkbox(checked = checked, onCheckedChange = null)
+                            if (chosen) Box(Modifier.size(38.dp).border(1.5.dp, c.action, CircleShape))
                         }
                     }
                 }
             }
         }
 
-        if (showDisclosure) {
-            AlertDialog(
-                onDismissRequest = { showDisclosure = false },
-                title = { Text(stringRes(R.string.dictate__floating_button_disclosure_title)) },
-                text = { Text(stringRes(R.string.dictate__floating_button_disclosure_message)) },
-                confirmButton = {
-                    TextButton(onClick = {
-                        showDisclosure = false
-                        openAccessibilitySettings(context)
-                    }) {
-                        Text(stringRes(R.string.dictate__floating_button_disclosure_continue))
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showDisclosure = false }) {
-                        Text(stringRes(android.R.string.cancel))
-                    }
-                },
+        UGroupLabel(stringRes(R.string.main__fb_group_behaviour))
+        UCard {
+            // When it appears (issue #439), one choice where there used to be two switches about keyboards.
+            val showWhen by prefs.dictate.floatingButtonShowWhen.collectAsState()
+            UChoiceRow(
+                title = stringRes(R.string.dictate__floating_button_show_when_title),
+                choices = listOf(
+                    UChoice(DictateFloatingButtonShowWhen.FIELD_SELECTED, stringRes(R.string.dictate__floating_button_show_when_field)),
+                    UChoice(DictateFloatingButtonShowWhen.KEYBOARD_OPEN, stringRes(R.string.dictate__floating_button_show_when_keyboard)),
+                ),
+                selected = showWhen,
+                onSelect = { scope.launch { prefs.dictate.floatingButtonShowWhen.set(it) } },
+                open = openDialog == "showWhen",
+                onOpenChange = { openDialog = if (it) "showWhen" else null },
+                modifier = Modifier.settingsSearchAnchor("dictate__floating_button_show_when_title"),
+            )
+            UDivider()
+            // Where it may appear at all (issue #392): a banking app that objects to overlays, or an app
+            // that already has a microphone of its own.
+            Box(Modifier.settingsSearchAnchor("dictate__floating_button_apps_title")) {
+                UNavRow(
+                    title = stringRes(R.string.dictate__floating_button_apps_title),
+                    subtitle = when (appScope) {
+                        DictateFloatingButtonAppScope.ALL ->
+                            stringRes(R.string.dictate__floating_button_apps_summary_all)
+                        DictateFloatingButtonAppScope.ONLY_SELECTED ->
+                            stringRes(R.string.dictate__floating_button_apps_summary_only, "n" to appCount)
+                        DictateFloatingButtonAppScope.EXCEPT_SELECTED ->
+                            stringRes(R.string.dictate__floating_button_apps_summary_except, "n" to appCount)
+                    },
+                    onClick = { navController.navigate(Routes.Settings.DictateFloatingButtonApps) },
+                )
+            }
+            UDivider()
+            PrefSwitch(
+                prefs.dictate.floatingButtonSnapToEdge, "dictate__floating_button_snap_title",
+                R.string.dictate__floating_button_snap_title,
+                R.string.dictate__floating_button_snap_summary_on, R.string.dictate__floating_button_snap_summary_off,
+            )
+            UDivider()
+            PrefSwitch(
+                prefs.dictate.floatingButtonAutoDim, "dictate__floating_button_auto_dim_title",
+                R.string.dictate__floating_button_auto_dim_title,
+                R.string.dictate__floating_button_auto_dim_summary_on, R.string.dictate__floating_button_auto_dim_summary_off,
+            )
+            UDivider()
+            PrefSwitch(
+                prefs.dictate.floatingButtonRememberPosition, "dictate__floating_button_remember_position_title",
+                R.string.dictate__floating_button_remember_position_title,
+                R.string.dictate__floating_button_remember_position_summary_on,
+                R.string.dictate__floating_button_remember_position_summary_off,
+            )
+            UDivider()
+            PrefSwitch(
+                prefs.dictate.floatingButtonHaptic, "dictate__floating_button_haptic_title",
+                R.string.dictate__floating_button_haptic_title,
+                R.string.dictate__floating_button_haptic_summary_on, R.string.dictate__floating_button_haptic_summary_off,
             )
         }
+
+        UGroupLabel(stringRes(R.string.main__fb_group_after))
+        UCard {
+            PrefSwitch(
+                prefs.dictate.floatingButtonUndoEnabled, "dictate__floating_button_undo_title",
+                R.string.dictate__floating_button_undo_title,
+                R.string.dictate__floating_button_undo_summary_on, R.string.dictate__floating_button_undo_summary_off,
+            )
+            UDivider()
+            PrefSwitch(
+                prefs.dictate.floatingButtonCopyToClipboard, "dictate__floating_button_copy_to_clipboard_title",
+                R.string.dictate__floating_button_copy_to_clipboard_title,
+                R.string.dictate__floating_button_copy_to_clipboard_summary_on,
+                R.string.dictate__floating_button_copy_to_clipboard_summary_off,
+            )
+            UDivider()
+            // What holding the button offers besides the prompts (issue #408). One row rather than a switch
+            // each: these are the contents of a single list, and the summary is the list as it stands.
+            val menuActions = BubbleMenuAction.entries.filter { it.pref(prefs).collectAsState().value }
+            Box(Modifier.settingsSearchAnchor("dictate__floating_button_menu_group")) {
+                UNavRow(
+                    title = stringRes(R.string.dictate__floating_button_menu_group),
+                    subtitle = if (menuActions.isEmpty()) {
+                        stringRes(R.string.quick_action__noop)
+                    } else {
+                        menuActions.map { stringRes(it.labelRes) }.joinToString()
+                    },
+                    onClick = { openDialog = "menu" },
+                )
+            }
+        }
+
+        if (openDialog == "menu") {
+            UDialog(
+                title = stringRes(R.string.dictate__floating_button_menu_group),
+                onDismiss = { openDialog = null },
+            ) {
+                // Ticking takes effect at once; there is nothing here a second confirmation could protect.
+                BubbleMenuAction.entries.forEachIndexed { i, action ->
+                    if (i > 0) UDivider()
+                    val pref = action.pref(prefs)
+                    val checked by pref.collectAsState()
+                    UCheckRow(
+                        title = stringRes(action.labelRes),
+                        checked = checked,
+                        onCheckedChange = { scope.launch { pref.set(it) } },
+                    )
+                }
+            }
+        }
     }
+
+    if (showDisclosure) {
+        AlertDialog(
+            onDismissRequest = { showDisclosure = false },
+            title = { Text(stringRes(R.string.dictate__floating_button_disclosure_title)) },
+            text = { Text(stringRes(R.string.dictate__floating_button_disclosure_message)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDisclosure = false
+                    openAccessibilitySettings(context)
+                }) {
+                    Text(stringRes(R.string.dictate__floating_button_disclosure_continue))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDisclosure = false }) {
+                    Text(stringRes(android.R.string.cancel))
+                }
+            },
+        )
+    }
+}
+
+@Composable
+private fun designChoice(design: DictateFloatingButtonDesign, titleRes: Int, summaryRes: Int) = UChoice(
+    value = design,
+    title = stringRes(titleRes),
+    subtitle = stringRes(summaryRes),
+    leading = { StylePreview(design, size = 48.dp) },
+)
+
+/** A switch row bound to [pref], with the summary for each state and its search anchor. */
+@Composable
+internal fun PrefSwitch(
+    pref: PreferenceData<Boolean>,
+    anchor: String,
+    titleRes: Int,
+    summaryOnRes: Int,
+    summaryOffRes: Int = summaryOnRes,
+) {
+    val scope = rememberCoroutineScope()
+    val value by pref.collectAsState()
+    USwitchRow(
+        title = stringRes(titleRes),
+        subtitle = stringRes(if (value) summaryOnRes else summaryOffRes),
+        checked = value,
+        onCheckedChange = { scope.launch { pref.set(it) } },
+        modifier = Modifier.settingsSearchAnchor(anchor),
+    )
 }
 
 /** Whether the Dictate accessibility service is currently enabled in the system accessibility settings. */

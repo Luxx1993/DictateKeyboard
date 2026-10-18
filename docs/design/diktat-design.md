@@ -171,6 +171,8 @@ farbige oder zweifarbige Logos; Pille um den aktiven Navigationseintrag; einger�
 - [x] In-App-Animation D (Compose) in „Datei transkribieren“; in Entwurf 3 weiterverwenden
 - [x] Entwurf 3 als neue Oberfläche umsetzen (Start, Wörterbuch, Stile, Einstellungen, hell und dunkel): `app/main/` mit `MainScreen`, Tabs, `UnisonoComponents`, `UnisonoIcons` (Pfade aus den HTML-Referenzen); Theme in `app/apptheme/Unisono.kt`
 - [ ] Entwurf 3 auf dem S24 ansehen (hell, dunkel) und Abstände nachziehen
+- [x] Unterseiten im Unisono-Look, Teil 1: Schwebender Button und Aufnahme (`UnisonoPage`, Karten, `UChoiceDialog` statt Material-Dialogen, Stil-Auswahl mit Vorschaubildern `res/drawable-xhdpi/preview_bubble_*.png`; Bausteine in `app/main/UnisonoSettings.kt`)
+- [ ] Unterseiten Teil 2: KI-Anbieter, Sprachen, Verlauf, Statistik, Ersetzungen, Prompts; Teil 3: Sonstige, Sichern, Über, Lizenzen, Einrichtung
 - [ ] Mitgelieferte Stile (Wörtlich, E-Mail, Chat, Aktenvermerk) als Standard-Prompts
 - [x] Wolken-Shader an den Prototyp angeglichen (`dictate/ui/AudioReactiveCloudOrbView.kt`, Bewegung in `CloudMotion.kt`, Paletten in `CloudPalette.kt`):
   dieselben Ebenen, Keyframes und Dauern wie `SchwebenderButton.html`. Gegen Screenshots des Prototyps (Chromium) mit einem

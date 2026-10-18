@@ -100,8 +100,6 @@ internal fun SettingsTab() {
     }
 
     val floatingEnabled by prefs.dictate.floatingButtonEnabled.collectAsState()
-    val color by prefs.dictate.floatingButtonColor.collectAsState()
-    val palette = CloudPalette.of(color.toArgb())
     UCard {
         val floatingLabel = stringRes(R.string.main__settings_floating)
         Row(
@@ -112,7 +110,8 @@ internal fun SettingsTab() {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            CloudSwatch(CloudPalette.forColor(color.toArgb()), size = 56.dp, animated = true)
+            val design by prefs.dictate.floatingButtonDesign.collectAsState()
+            BubblePreview(design, size = 56.dp)
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(floatingLabel, style = Unisono.BodyStrong.copy(fontSize = 17.sp, lineHeight = 24.sp), color = c.textPrimary)
                 Text(
@@ -134,34 +133,7 @@ internal fun SettingsTab() {
             )
         }
         UDivider()
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(start = 18.dp, end = 8.dp, top = 6.dp, bottom = 6.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                stringRes(R.string.main__settings_color),
-                modifier = Modifier.weight(1f),
-                style = Unisono.Body.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold),
-                color = c.textPrimary,
-            )
-            for (p in CloudPalette.entries) {
-                val label = stringRes(p.label)
-                Box(
-                    modifier = Modifier
-                        .size(44.dp)
-                        .clip(Unisono.Pill)
-                        .selectable(
-                            selected = p == palette,
-                            role = Role.RadioButton,
-                            onClick = { scope.launch { prefs.dictate.floatingButtonColor.set(Color(p.main)) } },
-                        )
-                        .semantics { contentDescription = label },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    CloudSwatch(p.colors, size = 34.dp, animated = false, selected = p == palette)
-                }
-            }
-        }
+        PaletteRow()
     }
 
     UGroupLabel(stringRes(R.string.main__settings_group_dictation))
@@ -282,37 +254,6 @@ internal fun SettingsTab() {
                 }) { Text(stringRes(R.string.backup_and_restore__restore__title)) }
             },
         )
-    }
-}
-
-/**
- * The cloud itself, drawn by the floating button's own view: [animated] for the preview, a single still
- * frame for a swatch. [selected] adds the ink ring of the chosen swatch.
- */
-@Composable
-private fun CloudSwatch(colors: CloudColors, size: Dp, animated: Boolean, selected: Boolean = false) {
-    val ring = LocalUnisono.current.action
-    val gap = LocalUnisono.current.raised
-    Box(Modifier.size(size), contentAlignment = Alignment.Center) {
-        AndroidView(
-            factory = { context ->
-                AudioReactiveCloudOrbView(context).apply {
-                    fullBleed = true
-                    still = !animated
-                    setMode(AudioReactiveCloudOrbView.Mode.IDLE)
-                }
-            },
-            update = { it.setColors(colors) },
-            // Room for the ring around the chosen one, the prototype's 2 px gap and 1.5 px line.
-            modifier = Modifier.size(size - 7.dp),
-        )
-        if (selected) {
-            Canvas(Modifier.size(size)) {
-                val r = this.size.minDimension / 2f
-                drawCircle(color = gap, radius = r - 2.5.dp.toPx(), style = Stroke(2.dp.toPx()))
-                drawCircle(color = ring, radius = r - 0.75.dp.toPx(), style = Stroke(1.5.dp.toPx()))
-            }
-        }
     }
 }
 
