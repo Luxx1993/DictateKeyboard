@@ -181,11 +181,16 @@ Zu entfernen (Status: **geplant**, in Schritten, nach jedem Schritt Build prüfe
 3. Dictate Cloud (Guthaben-Seiten, Abrechnung) als nicht im Soll.
 
 **Bleibt wegen Abhängigkeit:** (noch leer, Claude Code trägt hier ein, was er aus diesem Grund behalten musste)
-**Regel (Lukas):** Tastatur-Funktionen werden entfernt, außer ein gewünschter Teil hängt im Code daran und liefe sonst nicht.
-Dann bleibt der Teil drin, der dafür gebraucht wird (nicht mehr). Im Zweifel: entfernen, bauen, prüfen; geht etwas Gewünschtes kaputt, den Teil
-zurückholen und hier unter „Bleibt wegen Abhängigkeit“ mit Grund notieren.
+**Regel (Lukas, präzisiert):** Raus soll **alles, was nicht gebraucht wird** für
+(a) die Diktierfunktion so, wie die Screens sie zeigen, und
+(b) das Einrichten der App in Android als Eingabe-/Spracheingabe-Methode (damit sie unter den Android-Tastatur-Einstellungen
+wählbar ist und die Mikrofon-Taste in SwiftKey sie nutzen kann).
+Es geht ausdrücklich **nicht** darum, Tastaturfunktionen zu erhalten. Von der Tastatur bleibt nur, was (a) oder (b) technisch
+zum Laufen braucht (zum Beispiel die Registrierung des Eingabedienstes im Manifest und die Verbindung zum Textfeld),
+und davon so wenig wie möglich. Im Zweifel: entfernen, bauen, prüfen; geht etwas aus (a) oder (b) kaputt, genau diesen Teil
+zurückholen und unter „Bleibt wegen Abhängigkeit“ mit Grund notieren.
 
-Bleiben muss alles, was der Kernablauf braucht (Abschnitt 2: Button, Spracheingabe-Methode, Erkennungsdienst, Datei transkribieren).
+Bleiben muss, was (a) und (b) braucht (Abschnitt 2: Button, Spracheingabe-Methode, Erkennungsdienst, Datei transkribieren).
 
 Preis: Das **Übernehmen von Updates des Originals** wird dadurch schwer. Das nimmt Lukas' Vorgabe in Kauf.
 `dictationOnly=false` geht dann nicht mehr. Wenn das nicht gewollt ist, vorher auf einem Branch sichern.
