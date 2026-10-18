@@ -677,19 +677,6 @@ private fun RowScope.ErrorContent(state: DictateController.UiState.Error) {
             }
             DismissButton()
         }
-        DictateController.ErrorAction.TOP_UP -> {
-            SnyggIconButton(
-                elementName = FlorisImeUi.SmartbarActionKey.elementName,
-                onClick = { DictateController.openCloudSettings(context) },
-                modifier = Modifier.fillMaxHeight().aspectRatio(1f),
-            ) {
-                SnyggIcon(
-                    imageVector = Icons.Default.AddCard,
-                    contentDescription = stringRes(R.string.dictate__action_top_up),
-                )
-            }
-            DismissButton()
-        }
         DictateController.ErrorAction.SAVE_AUDIO -> {
             SnyggIconButton(
                 elementName = FlorisImeUi.SmartbarActionKey.elementName,
@@ -859,7 +846,6 @@ private fun errorIcon(
     // A stopped transcription with its recording kept (#437): the glyph of the interrupted-recording chip,
     // the other offer of a kept recording, rather than a warning sign over something the user chose.
     neutral && action == DictateController.ErrorAction.RESEND -> Icons.Default.GraphicEq
-    action == DictateController.ErrorAction.TOP_UP -> Icons.Default.AddCard
     action == DictateController.ErrorAction.OPEN_SETTINGS -> Icons.Default.VpnKey
     kind == DictateApiException.Kind.QUOTA_EXCEEDED -> Icons.Default.DataUsage
     kind == DictateApiException.Kind.CONTENT_SIZE_LIMIT -> Icons.Default.WarningAmber
@@ -891,7 +877,6 @@ private fun PromoContent(kind: DictateController.PromoKind, message: String? = n
         DictateController.PromoKind.MILESTONE -> Icons.Default.EmojiEvents
         // The mark of what is running low, not of the action — the accent pill beside it already
         // says "top up".
-        DictateController.PromoKind.LOW_CREDIT -> ImageVector.vectorResource(R.drawable.ic_dictate_cloud)
     }
     // Milestone text is dynamic (which milestone), so it arrives via [message]; the rest map to a res.
     val messageRes = when (kind) {
@@ -900,7 +885,6 @@ private fun PromoContent(kind: DictateController.PromoKind, message: String? = n
         DictateController.PromoKind.CHANGELOG -> R.string.dictate__promo_changelog_message
         DictateController.PromoKind.FLOATING_BUTTON -> R.string.dictate__promo_floating_button_message
         DictateController.PromoKind.MILESTONE -> R.string.dictate__stats_milestone_title
-        DictateController.PromoKind.LOW_CREDIT -> R.string.dictate__promo_low_credit_message
     }
     val actionRes = when (kind) {
         DictateController.PromoKind.RATE -> R.string.dictate__promo_rate_action
@@ -908,7 +892,6 @@ private fun PromoContent(kind: DictateController.PromoKind, message: String? = n
         DictateController.PromoKind.CHANGELOG -> R.string.dictate__promo_changelog_action
         DictateController.PromoKind.FLOATING_BUTTON -> R.string.dictate__promo_floating_button_action
         DictateController.PromoKind.MILESTONE -> R.string.dictate__promo_milestone_action
-        DictateController.PromoKind.LOW_CREDIT -> R.string.dictate__promo_low_credit_action
     }
 
     // Gentle pop-in (fade + slight scale) on top of the Smartbar's own slide transition.
