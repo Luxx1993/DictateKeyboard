@@ -16,7 +16,7 @@
 
 package dev.patrickgold.florisboard.app.settings.about
 
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,46 +24,32 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.dp
 import dev.patrickgold.florisboard.R
-import dev.patrickgold.florisboard.lib.compose.FlorisScreen
+import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
+import dev.patrickgold.florisboard.app.apptheme.Unisono
+import dev.patrickgold.florisboard.app.main.UCard
+import dev.patrickgold.florisboard.app.main.UnisonoPage
 import dev.patrickgold.florisboard.lib.io.FlorisRef
 import dev.patrickgold.florisboard.lib.io.loadTextAsset
 import org.florisboard.lib.compose.florisHorizontalScroll
-import org.florisboard.lib.compose.florisVerticalScroll
 import org.florisboard.lib.compose.stringRes
 
 @Composable
-fun ProjectLicenseScreen() = FlorisScreen {
-    title = stringRes(R.string.about__project_license__title)
-    scrollable = false
-
+fun ProjectLicenseScreen() = UnisonoPage(title = stringRes(R.string.about__project_license__title)) {
     val context = LocalContext.current
-
-    content {
-        // Forcing LTR because the Apache 2.0 License shipped and displayed
-        // is hard to read if rendered in RTL. Also it is in English so forcing
-        // LTR here makes most sense.
-        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-            SelectionContainer(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .florisVerticalScroll()
-                    .florisHorizontalScroll(),
-            ) {
-                val licenseText = FlorisRef.assets("license/project_license.txt").loadTextAsset(
-                    context
-                ).getOrElse {
-                    stringRes(R.string.about__project_license__error_license_text_failed, "error_message" to (it.message ?: ""))
-                }
-                Text(
-                    text = licenseText,
-                    fontFamily = FontFamily.Monospace,
-                    fontSize = 10.sp,
-                    softWrap = false,
-                )
+    val c = LocalUnisono.current
+    // Forcing LTR because the Apache 2.0 License shipped and displayed is hard to read if rendered in RTL.
+    // Also it is in English so forcing LTR here makes most sense.
+    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+        UCard {
+            SelectionContainer(Modifier.florisHorizontalScroll().padding(14.dp)) {
+                val licenseText = FlorisRef.assets("license/project_license.txt").loadTextAsset(context)
+                    .getOrElse {
+                        stringRes(R.string.about__project_license__error_license_text_failed, "error_message" to (it.message ?: ""))
+                    }
+                Text(text = licenseText, style = Unisono.Mono, color = c.textPrimary, softWrap = false)
             }
         }
     }

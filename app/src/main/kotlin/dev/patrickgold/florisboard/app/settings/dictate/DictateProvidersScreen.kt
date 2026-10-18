@@ -10,6 +10,22 @@
 
 package dev.patrickgold.florisboard.app.settings.dictate
 
+import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
+import dev.patrickgold.florisboard.app.apptheme.Unisono
+import dev.patrickgold.florisboard.app.main.UCard
+import dev.patrickgold.florisboard.app.main.UCheckRow
+import dev.patrickgold.florisboard.app.main.UChevron
+import dev.patrickgold.florisboard.app.main.UChoiceOption
+import dev.patrickgold.florisboard.app.main.UDialog
+import dev.patrickgold.florisboard.app.main.UDivider
+import dev.patrickgold.florisboard.app.main.UDot
+import dev.patrickgold.florisboard.app.main.UGroupLabel
+import dev.patrickgold.florisboard.app.main.UNavRow
+import dev.patrickgold.florisboard.app.main.USliderRow
+import dev.patrickgold.florisboard.app.main.UnisonoIcons
+import dev.patrickgold.florisboard.app.main.UnisonoPage
+import androidx.compose.ui.unit.sp
+import kotlin.math.roundToInt
 import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
@@ -78,6 +94,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.patrickgold.florisboard.R
@@ -136,453 +153,347 @@ object ProviderSetupHandoff {
 }
 
 /**
- * The central "AI providers" manager: configure an API key and model(s) for any number of providers
- * (the built-in [ProviderRegistry] presets plus user-defined custom endpoints) and choose which one is
- * active for transcription and which for rewording. Each provider keeps its own credentials in the
- * keyring ([ProviderAccounts]), so switching the active provider never loses another's key.
+ * The central "AI providers" manager, in the look of Entwurf 3: which provider transcribes and which
+ * cleans up (each picked in a card dialog, with "Add a provider" at its foot), the user's own providers
+ * (the built-in [ProviderRegistry] presets they set up plus custom endpoints), and the network settings.
+ * Each provider keeps its own credentials in the keyring ([ProviderAccounts]), so switching the active
+ * provider never loses another's key. A provider is edited in [ProviderEditorDialog].
  */
 @Composable
-fun DictateProvidersScreen() = FlorisScreen {
-    title = stringRes(R.string.dictate__providers_title)
-    iconSpaceReserved = true
-
+fun DictateProvidersScreen() = UnisonoPage(
+    title = stringRes(R.string.dictate__providers_title),
+    subtitle = stringRes(R.string.main__prov_subtitle),
+) {
     val prefs by FlorisPreferenceStore
+    val c = LocalUnisono.current
+    val navController = LocalNavController.current
+    val context = LocalContext.current
+    val accounts by prefs.dictate.providerAccounts.collectAsState()
+    val activeTranscriptionId by prefs.dictate.transcriptionProviderId.collectAsState()
+    val activeRewordingId by prefs.dictate.rewordingProviderId.collectAsState()
+    val scope = rememberCoroutineScope()
+    val isInstalled: (String) -> Boolean = { LocalModelManager.isInstalled(context, it) }
 
-    content {
-        val navController = LocalNavController.current
-        val context = LocalContext.current
-        val accounts by prefs.dictate.providerAccounts.collectAsState()
-        val activeTranscriptionId by prefs.dictate.transcriptionProviderId.collectAsState()
-        val activeRewordingId by prefs.dictate.rewordingProviderId.collectAsState()
-        val scope = rememberCoroutineScope()
-        val isInstalled: (String) -> Boolean = { LocalModelManager.isInstalled(context, it) }
+    // The provider currently being edited in the dialog (null = closed).
+    var editingId by remember { mutableStateOf<String?>(null) }
+    // Set when the editor was opened by the setup wizard to *create* an endpoint. Someone who adds a server
+    // while being asked how the app should transcribe means to use it, so saving it makes it active.
+    var activateOnSave by remember { mutableStateOf(false) }
+    // Set when the wizard sent the user here to pick an on-device model from the full list, the only
+    // situation where choosing one also switches the engine (issue #343).
+    var localFromSetup by remember { mutableStateOf(false) }
+    var openDialog by remember { mutableStateOf<String?>(null) }
 
-        // The provider currently being edited in the dialog (null = closed).
-        var editingId by remember { mutableStateOf<String?>(null) }
-        // Set when the editor was opened by the setup wizard to *create* an endpoint. Someone who adds a
-        // server while being asked how the app should transcribe means to use it, so saving it makes it
-        // active instead of leaving them to go and select it by hand.
-        var activateOnSave by remember { mutableStateOf(false) }
-        // Set when the wizard sent the user here to pick an on-device model from the full list, which is
-        // the only situation where choosing one also switches the engine (issue #343). During setup that
-        // is the whole question being asked. Later it would move a working configuration underneath
-        // someone who only came to download a second model — quietly, on a screen they may not look at
-        // again.
-        var localFromSetup by remember { mutableStateOf(false) }
+    fun writeKeyring(updated: ProviderAccounts) {
+        scope.launch { prefs.dictate.providerAccounts.set(updated) }
+    }
 
-        fun writeKeyring(updated: ProviderAccounts) {
-            scope.launch { prefs.dictate.providerAccounts.set(updated) }
-        }
-
-        // Arriving from the setup wizard: open the requested editor straight away, and consume the
-        // request so a later visit to this screen is an ordinary one.
-        LaunchedEffect(Unit) {
-            when (val target = ProviderSetupHandoff.openEditorFor) {
-                null -> Unit
-                ProviderSetupHandoff.ADD_CUSTOM -> {
-                    activateOnSave = true
-                    editingId = ProviderAccount.newCustomId()
-                }
-                else -> {
-                    editingId = target
-                    localFromSetup = target == ProviderRegistry.LOCAL.id
-                }
+    // Arriving from the setup wizard: open the requested editor straight away, and consume the request so
+    // a later visit to this screen is an ordinary one.
+    LaunchedEffect(Unit) {
+        when (val target = ProviderSetupHandoff.openEditorFor) {
+            null -> Unit
+            ProviderSetupHandoff.ADD_CUSTOM -> {
+                activateOnSave = true
+                editingId = ProviderAccount.newCustomId()
             }
-            ProviderSetupHandoff.openEditorFor = null
+            else -> {
+                editingId = target
+                localFromSetup = target == ProviderRegistry.LOCAL.id
+            }
         }
+        ProviderSetupHandoff.openEditorFor = null
+    }
 
-        // All custom endpoints stored in the keyring (built-ins are taken from the registry).
-        val customAccounts = accounts.accounts.values
-            .filter { it.isCustom }
-            .sortedBy { it.displayName.lowercase() }
+    // All custom endpoints stored in the keyring (built-ins are taken from the registry).
+    val customAccounts = accounts.accounts.values
+        .filter { it.isCustom }
+        .sortedBy { it.displayName.lowercase() }
 
-        PreferenceGroup(title = stringRes(R.string.dictate__providers_active_group)) {
-            // Custom picker (issue #104): the transcription provider list, plus an offline-fallback
-            // checkbox as an extra item at the bottom of the same dialog (hidden when the chosen
-            // provider is already the on-device one, where a fallback makes no sense).
-            // Both pickers offer only what can do the job right now, plus the current choice (see
-            // [ProviderListing.isPickable]); everything else is set up through "Add a provider" first,
-            // which the pickers link to. Offering every preset meant offering the chance to pick one
-            // that could only answer "no API key" at the moment of dictating.
-            TranscriptionProviderPreference(
-                entries = ProviderListing.transcriptionChoices(accounts, activeTranscriptionId, isInstalled),
-            )
-            // When the active transcription provider runs single-call multimodal (#130), rewording happens
-            // inside that one call, so the rewording provider here is currently unused — surfaced as a
-            // trailing info "i" on this row (same pattern as the Punctuation/Style prompt info).
-            RewordingProviderPreference(
-                entries = buildList {
-                    ProviderRegistry.presets
-                        .filter { it.capabilities.chat }
-                        .filter { ProviderListing.isPickable(it, accounts, activeRewordingId, isInstalled) }
-                        .forEach { add(it.id to it.displayName) }
-                    customAccounts.forEach { add(it.providerId to ProviderListing.customLabel(it)) }
-                },
-                showInfo = accounts.getOrEmpty(activeTranscriptionId).transcriptionViaChat,
+    // Both pickers offer only what can do the job right now, plus the current choice (see
+    // [ProviderListing.isPickable]); everything else is set up through "Add a provider" first.
+    val transcriptionEntries = ProviderListing.transcriptionChoices(accounts, activeTranscriptionId, isInstalled)
+    val rewordingEntries = buildList {
+        ProviderRegistry.presets
+            .filter { it.capabilities.chat }
+            .filter { ProviderListing.isPickable(it, accounts, activeRewordingId, isInstalled) }
+            .forEach { add(it.id to it.displayName) }
+        customAccounts.forEach { add(it.providerId to ProviderListing.customLabel(it)) }
+    }
+    // With single-call multimodal (#130) rewording happens inside the transcription call, so the rewording
+    // provider is unused; the row says so.
+    val singleCall = accounts.getOrEmpty(activeTranscriptionId).transcriptionViaChat
+
+    UGroupLabel(stringRes(R.string.main__prov_group_active))
+    UCard {
+        Box(Modifier.settingsSearchAnchor("dictate__providers_active_transcription")) {
+            ActiveProviderRow(
+                icon = UnisonoIcons.Mic,
+                label = stringRes(R.string.dictate__providers_active_transcription),
+                value = transcriptionEntries.firstOrNull { it.first == activeTranscriptionId }?.second ?: activeTranscriptionId,
+                dot = c.providerElevenLabs,
+                onClick = { openDialog = "transcription" },
             )
         }
+        UDivider()
+        Box(Modifier.settingsSearchAnchor("dictate__providers_active_rewording")) {
+            ActiveProviderRow(
+                icon = UnisonoIcons.Sparkle,
+                label = stringRes(R.string.dictate__providers_active_rewording),
+                value = rewordingEntries.firstOrNull { it.first == activeRewordingId }?.second ?: activeRewordingId,
+                dot = c.providerClaude,
+                note = if (singleCall) stringRes(R.string.dictate__providers_rewording_single_call_note) else null,
+                onClick = { openDialog = "rewording" },
+            )
+        }
+    }
 
-        PreferenceGroup(title = stringRes(R.string.dictate__providers_manage_group)) {
-            val keySet = stringRes(R.string.dictate__providers_status_key_set)
-            val noKey = stringRes(R.string.dictate__providers_status_no_key)
-            val activeIds = setOf(activeTranscriptionId, activeRewordingId)
+    if (openDialog == "transcription") {
+        val fallback by prefs.dictate.localFallbackEnabled.collectAsState()
+        val isLocal = ProviderRegistry.byId(activeTranscriptionId)?.transcriptionApi == TranscriptionApi.LOCAL_ONDEVICE
+        UDialog(title = stringRes(R.string.dictate__providers_active_transcription), onDismiss = { openDialog = null }) {
+            transcriptionEntries.forEachIndexed { i, (id, label) ->
+                if (i > 0) UDivider()
+                UChoiceOption(
+                    title = label,
+                    subtitle = null,
+                    selected = id == activeTranscriptionId,
+                    onClick = { scope.launch { prefs.dictate.transcriptionProviderId.set(id) } },
+                )
+            }
+            UDivider()
+            AddProviderOption {
+                openDialog = null
+                navController.navigate(Routes.Settings.DictateProvidersAdd)
+            }
+            // The offline fallback, only while the choice is not the on-device engine already.
+            if (!isLocal) {
+                UDivider()
+                UCheckRow(
+                    title = stringRes(R.string.dictate__local_fallback_title),
+                    subtitle = stringRes(R.string.dictate__local_fallback_summary),
+                    checked = fallback,
+                    onCheckedChange = { scope.launch { prefs.dictate.localFallbackEnabled.set(it) } },
+                )
+            }
+        }
+    }
+    if (openDialog == "rewording") {
+        UDialog(
+            title = stringRes(R.string.dictate__providers_active_rewording),
+            description = if (singleCall) stringRes(R.string.dictate__providers_rewording_single_call_note) else null,
+            onDismiss = { openDialog = null },
+        ) {
+            rewordingEntries.forEachIndexed { i, (id, label) ->
+                if (i > 0) UDivider()
+                UChoiceOption(
+                    title = label,
+                    subtitle = null,
+                    selected = id == activeRewordingId,
+                    onClick = { scope.launch { prefs.dictate.rewordingProviderId.set(id) } },
+                )
+            }
+            UDivider()
+            AddProviderOption {
+                openDialog = null
+                navController.navigate(Routes.Settings.DictateProvidersAdd)
+            }
+        }
+    }
 
-            // The user's own providers only, with on-device always among them (see
-            // [ProviderListing.isListed]); the other presets wait behind "Add a provider" at the end.
-            // On-device first, above the cloud providers like OpenAI (issue #228); the rest keep their
-            // registry display order (sortedByDescending is stable).
-            val orderedPresets = ProviderRegistry.presets
-                .filter { ProviderListing.isListed(it, accounts, activeIds, isInstalled) }
-                .sortedByDescending { it.transcriptionApi == TranscriptionApi.LOCAL_ONDEVICE }
-            fun roles(id: String): (@Composable () -> Unit)? =
-                if (id in activeIds) {
-                    { ActiveRoleIcons(id, activeTranscriptionId, activeRewordingId) }
+    UGroupLabel(stringRes(R.string.main__prov_group_mine))
+    UCard {
+        val noKey = stringRes(R.string.dictate__providers_status_no_key)
+        val keySet = stringRes(R.string.dictate__providers_status_key_set)
+        val activeIds = setOf(activeTranscriptionId, activeRewordingId)
+        // The user's own providers only, with on-device always among them (see [ProviderListing.isListed]);
+        // on-device first, then the registry's order. The other presets wait behind "Add a provider".
+        val orderedPresets = ProviderRegistry.presets
+            .filter { ProviderListing.isListed(it, accounts, activeIds, isInstalled) }
+            .sortedByDescending { it.transcriptionApi == TranscriptionApi.LOCAL_ONDEVICE }
+        orderedPresets.forEachIndexed { i, preset ->
+            if (i > 0) UDivider()
+            UNavRow(
+                title = preset.displayName,
+                subtitle = providerSummary(preset, accounts[preset.id], noKey),
+                icon = providerIcon(preset.id),
+                onClick = { editingId = preset.id },
+                trailing = { RoleMarks(preset.id, activeTranscriptionId, activeRewordingId) },
+            )
+        }
+        customAccounts.forEach { account ->
+            UDivider()
+            UNavRow(
+                title = ProviderListing.customLabel(account),
+                subtitle = if (account.hasKey || account.customBaseUrl.isNotBlank()) {
+                    account.customBaseUrl.ifBlank { keySet }
                 } else {
-                    null
-                }
-            orderedPresets.forEach { preset ->
-                val account = accounts[preset.id]
-                Preference(
-                    icon = providerIcon(preset.id),
-                    title = preset.displayName,
-                    summary = providerSummary(preset, account, noKey),
-                    trailing = roles(preset.id),
-                    onClick = { editingId = preset.id },
-                )
-            }
-
-            customAccounts.forEach { account ->
-                Preference(
-                    icon = Icons.Default.Dns,
-                    title = ProviderListing.customLabel(account),
-                    summary = if (account.hasKey || account.customBaseUrl.isNotBlank()) {
-                        account.customBaseUrl.ifBlank { keySet }
-                    } else {
-                        stringRes(R.string.dictate__providers_status_unconfigured)
-                    },
-                    trailing = roles(account.providerId),
-                    onClick = { editingId = account.providerId },
-                )
-            }
-
-            // Every other preset, and a server of one's own, one screen further (see
-            // [DictateAddProviderScreen]).
-            Preference(
-                icon = Icons.Default.Add,
-                modifier = Modifier.settingsSearchAnchor("dictate__providers_add"),
-                title = stringRes(R.string.dictate__providers_add),
-                onClick = { navController.navigate(Routes.Settings.DictateProvidersAdd) },
+                    stringRes(R.string.dictate__providers_status_unconfigured)
+                },
+                icon = Icons.Default.Dns,
+                onClick = { editingId = account.providerId },
+                trailing = { RoleMarks(account.providerId, activeTranscriptionId, activeRewordingId) },
             )
         }
+        UDivider()
+        Box(Modifier.settingsSearchAnchor("dictate__providers_add")) {
+            AddProviderOption { navController.navigate(Routes.Settings.DictateProvidersAdd) }
+        }
+    }
 
-        PreferenceGroup(title = stringRes(R.string.dictate__providers_network_group)) {
-            val proxyEnabled by prefs.dictate.proxyEnabled.collectAsState()
-            val proxyHost by prefs.dictate.proxyHost.collectAsState()
-            val proxyPort by prefs.dictate.proxyPort.collectAsState()
-            val proxyOff = stringRes(R.string.dictate__proxy_summary_off)
-            Preference(
-                icon = Icons.Default.Lan,
-                modifier = Modifier.settingsSearchAnchor("dictate__proxy_title"),
+    UGroupLabel(stringRes(R.string.main__prov_group_network))
+    UCard {
+        val proxyEnabled by prefs.dictate.proxyEnabled.collectAsState()
+        val proxyHost by prefs.dictate.proxyHost.collectAsState()
+        val proxyPort by prefs.dictate.proxyPort.collectAsState()
+        Box(Modifier.settingsSearchAnchor("dictate__proxy_title")) {
+            UNavRow(
                 title = stringRes(R.string.dictate__proxy_title),
-                summary = if (proxyEnabled && proxyHost.isNotBlank()) {
+                subtitle = if (proxyEnabled && proxyHost.isNotBlank()) {
                     "$proxyHost:$proxyPort"
                 } else {
-                    proxyOff
+                    stringRes(R.string.dictate__proxy_summary_off)
                 },
                 onClick = { navController.navigate(Routes.Settings.DictateProxy) },
             )
-            // One number for both halves of the wait (issue #337). Two minutes is right for a cloud
-            // provider and this exists for the other end of the range: a model on one's own machine
-            // can think for longer than that before the first byte of the answer arrives.
-            DialogSliderPreference(
-                pref = prefs.dictate.requestTimeout,
-                icon = Icons.Default.Timer,
-                modifier = Modifier.settingsSearchAnchor("dictate__request_timeout_title"),
-                title = stringRes(R.string.dictate__request_timeout_title),
-                summary = { stringRes(R.string.dictate__request_timeout_summary, "v" to it) },
-                valueLabel = { stringRes(R.string.unit__seconds__symbol, "v" to it) },
-                min = 30,
-                max = 600,
-                stepIncrement = 10,
-            )
         }
+        UDivider()
+        // One number for both halves of the wait (issue #337): right for a cloud provider at two minutes,
+        // and there for a model on one's own machine that thinks longer before the first byte arrives.
+        val timeout by prefs.dictate.requestTimeout.collectAsState()
+        var sliding by remember(timeout) { mutableStateOf(timeout.toFloat()) }
+        val shown = (sliding / 10f).roundToInt() * 10
+        USliderRow(
+            title = stringRes(R.string.dictate__request_timeout_title),
+            valueLabel = stringRes(R.string.unit__seconds__symbol, "v" to shown),
+            subtitle = stringRes(R.string.dictate__request_timeout_summary, "v" to shown),
+            value = sliding,
+            onValueChange = { sliding = it },
+            onValueChangeFinished = { scope.launch { prefs.dictate.requestTimeout.set(shown) } },
+            range = 30f..600f,
+            steps = (600 - 30) / 10 - 1,
+            modifier = Modifier.settingsSearchAnchor("dictate__request_timeout_title"),
+        )
+    }
 
-        editingId?.let { id ->
-            val preset = ProviderRegistry.byId(id)
-            ProviderEditorDialog(
-                preset = preset,
-                account = accounts.getOrEmpty(id),
-                onDismiss = {
+    editingId?.let { id ->
+        val preset = ProviderRegistry.byId(id)
+        ProviderEditorDialog(
+            preset = preset,
+            account = accounts.getOrEmpty(id),
+            onDismiss = {
+                editingId = null
+                activateOnSave = false
+                localFromSetup = false
+            },
+            onSave = { updated, makeActive ->
+                writeKeyring(accounts.put(updated))
+                // A server of the user's own speaks both halves of the OpenAI API, and someone who added one
+                // during setup meant it to be the way the app works from now on.
+                if (activateOnSave) {
+                    scope.launch {
+                        prefs.dictate.transcriptionProviderId.set(id)
+                        prefs.dictate.rewordingProviderId.set(id)
+                    }
+                } else if (makeActive && localFromSetup) {
+                    // Coming out of the setup wizard, picking an on-device model *is* answering "how should
+                    // this app transcribe" (issue #343). Only there: anywhere else it would switch a working
+                    // configuration under someone who came to try a second model.
+                    scope.launch { prefs.dictate.transcriptionProviderId.set(id) }
+                }
+                editingId = null
+                activateOnSave = false
+                localFromSetup = false
+            },
+            onDelete = if (preset == null) {
+                {
+                    writeKeyring(accounts.remove(id))
                     editingId = null
                     activateOnSave = false
                     localFromSetup = false
-                },
-                onSave = { updated, makeActive ->
-                    writeKeyring(accounts.put(updated))
-                    // A server of the user's own speaks both halves of the OpenAI API, and someone who
-                    // added one during setup meant it to be the way the app works from now on.
-                    if (activateOnSave) {
-                        scope.launch {
-                            prefs.dictate.transcriptionProviderId.set(id)
-                            prefs.dictate.rewordingProviderId.set(id)
-                        }
-                    } else if (makeActive && localFromSetup) {
-                        // Coming out of the setup wizard, picking an on-device model *is* answering "how
-                        // should this app transcribe" — the wizard's own two recommendations already work
-                        // that way, and the full list, one tap further on, used to leave the user with a
-                        // downloaded model and a "no API key" error (issue #343).
-                        //
-                        // Only there. Anywhere else this would switch a working configuration under
-                        // someone who came to try a second model, on a screen they might not look at
-                        // again. Rewording is left alone in any case: the on-device engine has no chat
-                        // side to offer.
-                        scope.launch { prefs.dictate.transcriptionProviderId.set(id) }
-                    }
-                    editingId = null
-                    activateOnSave = false
-                    localFromSetup = false
-                },
-                onDelete = if (preset == null) {
-                    {
-                        writeKeyring(accounts.remove(id))
-                        editingId = null
-                        activateOnSave = false
-                        localFromSetup = false
-                    }
-                } else {
-                    null
-                },
-            )
-        }
-
-    }
-}
-
-
-@Composable
-private fun RewordingProviderPreference(entries: List<Pair<String, String>>, showInfo: Boolean) {
-    val prefs by FlorisPreferenceStore
-    val navController = LocalNavController.current
-    val scope = rememberCoroutineScope()
-    val selectedId by prefs.dictate.rewordingProviderId.collectAsState()
-    var open by remember { mutableStateOf(false) }
-    var infoOpen by remember { mutableStateOf(false) }
-
-    Preference(
-        icon = Icons.Default.SmartToy,
-        modifier = Modifier.settingsSearchAnchor("dictate__providers_active_rewording"),
-        title = stringRes(R.string.dictate__providers_active_rewording),
-        summary = entries.firstOrNull { it.first == selectedId }?.second ?: selectedId,
-        // Trailing info "i" (only while single-call is active), mirroring the Punctuation/Style prompt.
-        trailing = if (showInfo) {
-            {
-                IconButton(onClick = { infoOpen = true }) {
-                    Icon(
-                        imageVector = Icons.Outlined.Info,
-                        contentDescription = stringRes(R.string.dictate__providers_rewording_single_call_note),
-                    )
                 }
-            }
-        } else {
-            null
-        },
-        onClick = { open = true },
-    )
-
-    if (open) {
-        var sel by remember { mutableStateOf(selectedId) }
-        JetPrefAlertDialog(
-            title = stringRes(R.string.dictate__providers_active_rewording),
-            confirmLabel = stringRes(R.string.action__ok),
-            dismissLabel = stringRes(R.string.action__cancel),
-            onConfirm = {
-                scope.launch { prefs.dictate.rewordingProviderId.set(sel) }
-                open = false
+            } else {
+                null
             },
-            onDismiss = { open = false },
-        ) {
-            val scrollState = rememberScrollState()
-            val scrollbarColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-            Column(
-                modifier = Modifier
-                    .heightIn(max = 320.dp)
-                    .persistentVerticalScrollbar(scrollState, scrollbarColor)
-                    .verticalScroll(scrollState)
-                    .padding(end = 6.dp),
-            ) {
-                entries.forEach { (id, label) ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { sel = id },
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        RadioButton(selected = sel == id, onClick = { sel = id })
-                        Text(label, modifier = Modifier.padding(start = 8.dp))
-                    }
-                }
-                AddProviderPickerRow(onClick = {
-                    open = false
-                    navController.navigate(Routes.Settings.DictateProvidersAdd)
-                })
+        )
+    }
+}
+
+/** An active-provider row: the job, the provider in use with its dot, and an optional note under it. */
+@Composable
+private fun ActiveProviderRow(
+    icon: ImageVector,
+    label: String,
+    value: String,
+    dot: Color,
+    onClick: () -> Unit,
+    note: String? = null,
+) {
+    val c = LocalUnisono.current
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 44.dp)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 18.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
+    ) {
+        Icon(icon, contentDescription = null, tint = c.textSecondary, modifier = Modifier.size(22.dp))
+        Column(Modifier.weight(1f)) {
+            Text(label, style = Unisono.Label, color = c.textSecondary)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                UDot(dot)
+                Text(value, style = Unisono.BodyStrong.copy(lineHeight = 24.sp), color = c.textPrimary, maxLines = 1)
             }
+            if (note != null) Text(note, style = Unisono.Label, color = c.textTertiary)
         }
-    }
-
-    if (infoOpen) {
-        JetPrefAlertDialog(
-            scrollModifier = florisDialogScroll(),
-            title = stringRes(R.string.dictate__providers_active_rewording),
-            confirmLabel = stringRes(R.string.action__ok),
-            onConfirm = { infoOpen = false },
-            onDismiss = { infoOpen = false },
-        ) {
-            Text(stringRes(R.string.dictate__providers_rewording_single_call_note))
-        }
+        UChevron()
     }
 }
 
-/**
- * Active-transcription-provider picker (issue #104). Opens a dialog listing the transcription-capable
- * providers as radio options, with the **offline fallback** toggle as an extra checkbox item at the
- * bottom of the same dialog. The checkbox is hidden when the chosen provider is the on-device one (a
- * local fallback is meaningless there). Both the selection and the toggle are committed on confirm.
- */
+/** "Add a provider", at the foot of the list and of both pickers. */
 @Composable
-private fun TranscriptionProviderPreference(entries: List<Pair<String, String>>) {
-    val prefs by FlorisPreferenceStore
-    val navController = LocalNavController.current
-    val scope = rememberCoroutineScope()
-    val selectedId by prefs.dictate.transcriptionProviderId.collectAsState()
-    val fallbackEnabled by prefs.dictate.localFallbackEnabled.collectAsState()
-    var open by remember { mutableStateOf(false) }
-
-    Preference(
-        icon = Icons.Default.Mic,
-        modifier = Modifier.settingsSearchAnchor("dictate__providers_active_transcription"),
-        title = stringRes(R.string.dictate__providers_active_transcription),
-        summary = entries.firstOrNull { it.first == selectedId }?.second ?: selectedId,
-        onClick = { open = true },
-    )
-
-    if (open) {
-        var sel by remember { mutableStateOf(selectedId) }
-        var fb by remember { mutableStateOf(fallbackEnabled) }
-        val selectionIsLocal =
-            ProviderRegistry.byId(sel)?.transcriptionApi == TranscriptionApi.LOCAL_ONDEVICE
-        JetPrefAlertDialog(
-            title = stringRes(R.string.dictate__providers_active_transcription),
-            confirmLabel = stringRes(R.string.action__ok),
-            dismissLabel = stringRes(R.string.action__cancel),
-            onConfirm = {
-                scope.launch {
-                    prefs.dictate.transcriptionProviderId.set(sel)
-                    prefs.dictate.localFallbackEnabled.set(fb)
-                }
-                open = false
-            },
-            onDismiss = { open = false },
-        ) {
-            val scrollState = rememberScrollState()
-            val scrollbarColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-            Column {
-                Column(
-                    modifier = Modifier
-                        .heightIn(max = 320.dp)
-                        .persistentVerticalScrollbar(scrollState, scrollbarColor)
-                        .verticalScroll(scrollState)
-                        .padding(end = 6.dp),
-                ) {
-                    entries.forEach { (id, label) ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { sel = id },
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            RadioButton(selected = sel == id, onClick = { sel = id })
-                            Text(label, modifier = Modifier.padding(start = 8.dp))
-                        }
-                    }
-                    AddProviderPickerRow(onClick = {
-                        open = false
-                        navController.navigate(Routes.Settings.DictateProvidersAdd)
-                    })
-                }
-                // Extra item at the bottom: offline fallback (only when the choice isn't already local).
-                if (!selectionIsLocal) {
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { fb = !fb }
-                            .padding(vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Checkbox(checked = fb, onCheckedChange = { fb = it })
-                        Column(modifier = Modifier.padding(start = 8.dp).weight(1f)) {
-                            Text(stringRes(R.string.dictate__local_fallback_title))
-                            Text(
-                                text = stringRes(R.string.dictate__local_fallback_summary),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-/**
- * The job icons at the end of a provider row: a microphone where it transcribes, the rewording icon where
- * it rewords — the same two icons the active-provider rows at the top of the screen carry, so the pair
- * reads as a pointer back up there. Nothing at all on a provider that is set up but not in use.
- */
-@Composable
-private fun ActiveRoleIcons(id: String, transcriptionId: String, rewordingId: String) {
-    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-        val tint = MaterialTheme.colorScheme.onSurfaceVariant
-        if (id == transcriptionId) {
-            Icon(
-                imageVector = Icons.Default.Mic,
-                contentDescription = stringRes(R.string.dictate__providers_active_transcription),
-                modifier = Modifier.size(20.dp),
-                tint = tint,
-            )
-        }
-        if (id == rewordingId) {
-            Icon(
-                imageVector = Icons.Default.SmartToy,
-                contentDescription = stringRes(R.string.dictate__providers_active_rewording),
-                modifier = Modifier.size(20.dp),
-                tint = tint,
-            )
-        }
-    }
-}
-
-/**
- * The "Add a provider" entry at the foot of both active-provider pickers, which since those pickers stopped
- * offering unconfigured presets is the way to one that is not set up yet. Indented to line up with the
- * radio buttons above it.
- */
-@Composable
-private fun AddProviderPickerRow(onClick: () -> Unit) {
+private fun AddProviderOption(onClick: () -> Unit) {
+    val c = LocalUnisono.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = 12.dp),
+            .padding(horizontal = 18.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        Icon(
-            imageVector = Icons.Default.Add,
-            contentDescription = null,
-            modifier = Modifier.padding(horizontal = 12.dp),
-        )
-        Text(stringRes(R.string.dictate__providers_add), modifier = Modifier.padding(start = 8.dp))
+        Icon(UnisonoIcons.Plus, contentDescription = null, tint = c.textPrimary, modifier = Modifier.size(22.dp))
+        Text(stringRes(R.string.dictate__providers_add), style = Unisono.BodyStrong, color = c.textPrimary)
+    }
+}
+
+/**
+ * The job marks at the end of a provider row: a microphone where it transcribes, the clean-up sparkle where
+ * it rewords — the icons of the two active rows above, so the pair points back up there. Then the chevron.
+ */
+@Composable
+private fun RoleMarks(id: String, transcriptionId: String, rewordingId: String) {
+    val c = LocalUnisono.current
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        if (id == transcriptionId) {
+            Icon(
+                UnisonoIcons.Mic,
+                contentDescription = stringRes(R.string.dictate__providers_active_transcription),
+                tint = c.textSecondary,
+                modifier = Modifier.size(18.dp),
+            )
+        }
+        if (id == rewordingId) {
+            Icon(
+                UnisonoIcons.Sparkle,
+                contentDescription = stringRes(R.string.dictate__providers_active_rewording),
+                tint = c.textSecondary,
+                modifier = Modifier.size(18.dp),
+            )
+        }
+        UChevron()
     }
 }
 

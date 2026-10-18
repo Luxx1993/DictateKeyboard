@@ -17,16 +17,16 @@
 package dev.patrickgold.florisboard.app.settings.advanced
 
 import android.text.format.Formatter
-import androidx.compose.material.icons.Icons
-import dev.patrickgold.florisboard.app.AppIconColor
-import androidx.compose.material.icons.filled.Archive
-import androidx.compose.material.icons.filled.CleaningServices
-import androidx.compose.material.icons.filled.FormatColorFill
-import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Preview
-import androidx.compose.material.icons.filled.SettingsBackupRestore
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,219 +35,234 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.vectorResource
-import dev.patrickgold.florisboard.BuildConfig
+import androidx.compose.ui.unit.dp
 import dev.patrickgold.florisboard.R
-import dev.patrickgold.florisboard.app.settings.search.settingsSearchAnchor
+import dev.patrickgold.florisboard.app.AppIconColor
 import dev.patrickgold.florisboard.app.AppTheme
+import dev.patrickgold.florisboard.app.FlorisPreferenceStore
 import dev.patrickgold.florisboard.app.LocalNavController
 import dev.patrickgold.florisboard.app.Routes
+import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
 import dev.patrickgold.florisboard.app.enumDisplayEntriesOf
+import dev.patrickgold.florisboard.app.main.UCard
+import dev.patrickgold.florisboard.app.main.UChoice
+import dev.patrickgold.florisboard.app.main.UChoiceRow
+import dev.patrickgold.florisboard.app.main.UDialog
+import dev.patrickgold.florisboard.app.main.UDivider
+import dev.patrickgold.florisboard.app.main.UGroupLabel
+import dev.patrickgold.florisboard.app.main.UNavRow
+import dev.patrickgold.florisboard.app.main.USwitchRow
+import dev.patrickgold.florisboard.app.main.UTextField
+import dev.patrickgold.florisboard.app.main.UnisonoPage
+import dev.patrickgold.florisboard.app.settings.search.settingsSearchAnchor
 import dev.patrickgold.florisboard.lib.FlorisLocale
 import dev.patrickgold.florisboard.lib.cache.AppCache
-import dev.patrickgold.florisboard.lib.compose.FlorisScreen
 import dev.patrickgold.jetpref.datastore.model.collectAsState
-import dev.patrickgold.jetpref.datastore.ui.ColorPickerPreference
-import dev.patrickgold.jetpref.datastore.ui.ListPreference
-import dev.patrickgold.jetpref.datastore.ui.TextFieldPreference
-import dev.patrickgold.jetpref.datastore.ui.Preference
-import dev.patrickgold.jetpref.datastore.ui.PreferenceGroup
-import dev.patrickgold.jetpref.datastore.ui.SwitchPreference
-import dev.patrickgold.jetpref.datastore.ui.isMaterialYou
-import dev.patrickgold.jetpref.datastore.ui.listPrefEntries
-import dev.patrickgold.jetpref.material.ui.JetPrefAlertDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.florisboard.lib.android.AndroidVersion
 import org.florisboard.lib.color.ColorMappings
-import org.florisboard.lib.compose.florisDialogScroll
 import org.florisboard.lib.compose.stringRes
 
-
+/** The remaining app settings in the look of Entwurf 3: appearance, name and icon, the cache, backup. */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun OtherScreen() = FlorisScreen {
-    title = stringRes(R.string.settings__other__title)
-
+fun OtherScreen() = UnisonoPage(title = stringRes(R.string.settings__other__title)) {
+    val prefs by FlorisPreferenceStore
     val navController = LocalNavController.current
     val context = LocalContext.current
+    val c = LocalUnisono.current
+    val scope = rememberCoroutineScope()
 
-    content {
-        val scope = rememberCoroutineScope()
-        // Walked rather than remembered: nothing counts the cache as it grows, and the walk is cheap
-        // enough to redo whenever this screen opens or the cache is emptied (issue #337).
-        var cacheBytes by remember { mutableStateOf(0L) }
-        var cacheGeneration by remember { mutableStateOf(0) }
-        var confirmClearCache by remember { mutableStateOf(false) }
-        LaunchedEffect(cacheGeneration) {
-            cacheBytes = withContext(Dispatchers.IO) { AppCache.sizeBytes(context) }
-        }
+    val theme by prefs.other.settingsTheme.collectAsState()
+    val accent by prefs.other.accentColor.collectAsState()
+    val language by prefs.other.settingsLanguage.collectAsState()
+    val userName by prefs.other.userName.collectAsState()
+    val iconColor by prefs.other.appIconColor.collectAsState()
+    val showIcon by prefs.other.showAppIcon.collectAsState()
+    var openDialog by remember { mutableStateOf<String?>(null) }
 
-        ListPreference(
-            prefs.other.settingsTheme,
-            icon = Icons.Default.Palette,
-            modifier = Modifier.settingsSearchAnchor("pref__other__settings_theme__label"),
+    // Walked rather than remembered: nothing counts the cache as it grows, and the walk is cheap enough to
+    // redo whenever this screen opens or the cache is emptied (issue #337).
+    var cacheBytes by remember { mutableStateOf(0L) }
+    var cacheGeneration by remember { mutableStateOf(0) }
+    LaunchedEffect(cacheGeneration) {
+        cacheBytes = withContext(Dispatchers.IO) { AppCache.sizeBytes(context) }
+    }
+
+    UCard {
+        val themeEntries = enumDisplayEntriesOf(AppTheme::class)
+        UChoiceRow(
             title = stringRes(R.string.pref__other__settings_theme__label),
-            entries = enumDisplayEntriesOf(AppTheme::class),
+            choices = themeEntries.map { UChoice(it.key, it.label) },
+            selected = theme,
+            onSelect = { v -> scope.launch { prefs.other.settingsTheme.set(v) } },
+            open = openDialog == "theme",
+            onOpenChange = { openDialog = if (it) "theme" else null },
+            modifier = Modifier.settingsSearchAnchor("pref__other__settings_theme__label"),
         )
-        ColorPickerPreference(
-            pref = prefs.other.accentColor,
-            modifier = Modifier.settingsSearchAnchor("pref__other__settings_accent_color__label"),
+        UDivider()
+        UNavRow(
             title = stringRes(R.string.pref__other__settings_accent_color__label),
-            defaultValueLabel = stringRes(R.string.action__default),
-            icon = Icons.Default.FormatColorFill,
-            defaultColors = ColorMappings.colors,
-            showAlphaSlider = false,
-            enableAdvancedLayout = true,
-            colorOverride = {
-                if (it.isMaterialYou(context)) {
-                    Color.Unspecified
+            onClick = { openDialog = "accent" },
+            modifier = Modifier.settingsSearchAnchor("pref__other__settings_accent_color__label"),
+            trailing = { Box(Modifier.size(20.dp).clip(CircleShape).background(accent)) },
+        )
+        UDivider()
+        val systemDefault = stringRes(R.string.settings__system_default)
+        val languageChoices = remember(systemDefault) {
+            listOf("auto", "ar", "bg", "bs", "ca", "ckb", "cs", "da", "de", "el", "en", "eo", "es", "fa", "fi", "fr", "hr", "hu", "in", "it", "iw", "ja", "ko-KR", "ku", "lv-LV", "mk", "nds-DE", "nl", "no", "pl", "pt", "pt-BR", "ru", "sk", "sl", "sr", "sv", "tr", "uk", "zgh", "zh-CN").map { tag ->
+                if (tag == "auto") {
+                    UChoice(tag, systemDefault)
                 } else {
-                    it
+                    val locale = FlorisLocale.fromTag(tag)
+                    UChoice(locale.languageTag(), locale.displayName(locale))
                 }
             }
-        )
-        ListPreference(
-            prefs.other.settingsLanguage,
-            icon = Icons.Default.Language,
-            modifier = Modifier.settingsSearchAnchor("pref__other__settings_language__label"),
+        }
+        UChoiceRow(
             title = stringRes(R.string.pref__other__settings_language__label),
-            entries = listPrefEntries {
-                listOf(
-                    "auto",
-                    "ar",
-                    "bg",
-                    "bs",
-                    "ca",
-                    "ckb",
-                    "cs",
-                    "da",
-                    "de",
-                    "el",
-                    "en",
-                    "eo",
-                    "es",
-                    "fa",
-                    "fi",
-                    "fr",
-                    "hr",
-                    "hu",
-                    "in",
-                    "it",
-                    "iw",
-                    "ja",
-                    "ko-KR",
-                    "ku",
-                    "lv-LV",
-                    "mk",
-                    "nds-DE",
-                    "nl",
-                    "no",
-                    "pl",
-                    "pt",
-                    "pt-BR",
-                    "ru",
-                    "sk",
-                    "sl",
-                    "sr",
-                    "sv",
-                    "tr",
-                    "uk",
-                    "zgh",
-                    "zh-CN",
-                ).map { languageTag ->
-                    if (languageTag == "auto") {
-                        entry(
-                            key = "auto",
-                            label = stringRes(R.string.settings__system_default),
-                        )
-                    } else {
-                        val locale = FlorisLocale.fromTag(languageTag)
-                        entry(locale.languageTag(), locale.displayName(locale))
-                    }
-                }
-            }
+            choices = languageChoices,
+            selected = language,
+            onSelect = { v -> scope.launch { prefs.other.settingsLanguage.set(v) } },
+            open = openDialog == "language",
+            onOpenChange = { openDialog = if (it) "language" else null },
+            modifier = Modifier.settingsSearchAnchor("pref__other__settings_language__label"),
         )
-        TextFieldPreference(
-            prefs.other.userName,
-            icon = Icons.Default.Person,
-            modifier = Modifier.settingsSearchAnchor("pref__other__user_name__label"),
+        UDivider()
+        UNavRow(
             title = stringRes(R.string.pref__other__user_name__label),
+            subtitle = userName.ifBlank { null },
+            onClick = { openDialog = "name" },
+            modifier = Modifier.settingsSearchAnchor("pref__other__user_name__label"),
         )
-        ListPreference(
-            prefs.other.appIconColor,
-            icon = ImageVector.vectorResource(R.drawable.ic_diktat_globe_notification),
-            modifier = Modifier.settingsSearchAnchor("pref__other__app_icon_color__label"),
+    }
+
+    UCard {
+        UChoiceRow(
             title = stringRes(R.string.pref__other__app_icon_color__label),
-            entries = listPrefEntries {
-                entry(AppIconColor.WHITE, stringRes(R.string.pref__other__app_icon_color__white))
-                entry(AppIconColor.BLACK, stringRes(R.string.pref__other__app_icon_color__black))
-            },
+            choices = listOf(
+                UChoice(AppIconColor.WHITE, stringRes(R.string.pref__other__app_icon_color__white)),
+                UChoice(AppIconColor.BLACK, stringRes(R.string.pref__other__app_icon_color__black)),
+            ),
+            selected = iconColor,
+            onSelect = { v -> scope.launch { prefs.other.appIconColor.set(v) } },
+            open = openDialog == "icon",
+            onOpenChange = { openDialog = if (it) "icon" else null },
+            modifier = Modifier.settingsSearchAnchor("pref__other__app_icon_color__label"),
         )
-        SwitchPreference(
-            prefs.other.showAppIcon,
-            icon = Icons.Default.Preview,
-            modifier = Modifier.settingsSearchAnchor("pref__other__show_app_icon__label"),
+        UDivider()
+        USwitchRow(
             title = stringRes(R.string.pref__other__show_app_icon__label),
-            summary = when {
-                AndroidVersion.ATLEAST_API29_Q -> stringRes(R.string.pref__other__show_app_icon__summary_atleast_q)
-                else -> null
+            subtitle = if (AndroidVersion.ATLEAST_API29_Q) {
+                stringRes(R.string.pref__other__show_app_icon__summary_atleast_q)
+            } else {
+                null
             },
-            enabledIf = { AndroidVersion.ATMOST_API28_P },
+            checked = showIcon,
+            enabled = AndroidVersion.ATMOST_API28_P,
+            onCheckedChange = { scope.launch { prefs.other.showAppIcon.set(it) } },
+            modifier = Modifier.settingsSearchAnchor("pref__other__show_app_icon__label"),
         )
-        // What the app made and can make again, such as a shared file on its way through (issue #337). Emptied on every cold start anyway, so the row exists for the
-        // hours in between — and it says how much there is, because a cleaning button that will not
-        // tell you what it cleans is a button nobody trusts.
-        Preference(
-            icon = Icons.Default.CleaningServices,
-            modifier = Modifier.settingsSearchAnchor("pref__other__clear_cache__label"),
+    }
+
+    // What the app made and can make again, such as a shared file on its way through (issue #337). Emptied
+    // on every cold start anyway, so the row exists for the hours in between, and it says how much there
+    // is, because a cleaning button that will not tell you what it cleans is a button nobody trusts.
+    UCard {
+        UNavRow(
             title = stringRes(R.string.pref__other__clear_cache__label),
-            summary = stringRes(
+            subtitle = stringRes(
                 R.string.pref__other__clear_cache__summary,
                 "size" to Formatter.formatShortFileSize(context, cacheBytes),
             ),
-            onClick = { confirmClearCache = true },
+            onClick = { openDialog = "cache" },
+            modifier = Modifier.settingsSearchAnchor("pref__other__clear_cache__label"),
         )
-        PreferenceGroup(title = stringRes(R.string.backup_and_restore__title)) {
-            Preference(
-                onClick = { navController.navigate(Routes.Settings.Backup) },
-                icon = Icons.Default.Archive,
-                modifier = Modifier.settingsSearchAnchor("backup_and_restore__back_up__title"),
-                title = stringRes(R.string.backup_and_restore__back_up__title),
-                summary = stringRes(R.string.backup_and_restore__back_up__summary),
-            )
-            Preference(
-                onClick = { navController.navigate(Routes.Settings.Restore) },
-                icon = Icons.Default.SettingsBackupRestore,
-                modifier = Modifier.settingsSearchAnchor("backup_and_restore__restore__title"),
-                title = stringRes(R.string.backup_and_restore__restore__title),
-                summary = stringRes(R.string.backup_and_restore__restore__summary),
-            )
-        }
+    }
 
-        if (confirmClearCache) {
-            JetPrefAlertDialog(
-                scrollModifier = florisDialogScroll(),
-                title = stringRes(R.string.pref__other__clear_cache__label),
-                confirmLabel = stringRes(R.string.pref__other__clear_cache__confirm),
-                onConfirm = {
+    UGroupLabel(stringRes(R.string.backup_and_restore__title))
+    UCard {
+        UNavRow(
+            title = stringRes(R.string.backup_and_restore__back_up__title),
+            subtitle = stringRes(R.string.backup_and_restore__back_up__summary),
+            onClick = { navController.navigate(Routes.Settings.Backup) },
+            modifier = Modifier.settingsSearchAnchor("backup_and_restore__back_up__title"),
+        )
+        UDivider()
+        UNavRow(
+            title = stringRes(R.string.backup_and_restore__restore__title),
+            subtitle = stringRes(R.string.backup_and_restore__restore__summary),
+            onClick = { navController.navigate(Routes.Settings.Restore) },
+            modifier = Modifier.settingsSearchAnchor("backup_and_restore__restore__title"),
+        )
+    }
+
+    when (openDialog) {
+        "accent" -> UDialog(
+            title = stringRes(R.string.pref__other__settings_accent_color__label),
+            onDismiss = { openDialog = null },
+        ) {
+            FlowRow(
+                modifier = Modifier.padding(horizontal = 14.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                for (swatch in ColorMappings.colors.distinct()) {
+                    val chosen = swatch.toArgb() == accent.toArgb()
+                    Box(
+                        Modifier
+                            .size(44.dp)
+                            .clip(CircleShape)
+                            .clickable { scope.launch { prefs.other.accentColor.set(swatch) } },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Box(Modifier.size(if (chosen) 30.dp else 34.dp).clip(CircleShape).background(swatch))
+                        if (chosen) Box(Modifier.size(38.dp).border(1.5.dp, c.action, CircleShape))
+                    }
+                }
+            }
+        }
+        "name" -> {
+            var draft by remember { mutableStateOf(userName) }
+            UDialog(
+                title = stringRes(R.string.pref__other__user_name__label),
+                onDismiss = {
+                    scope.launch { prefs.other.userName.set(draft.trim()) }
+                    openDialog = null
+                },
+            ) {
+                UTextField(
+                    label = stringRes(R.string.pref__other__user_name__label),
+                    placeholder = stringRes(R.string.main__greeting_name_hint),
+                    value = draft,
+                    onValueChange = { draft = it },
+                )
+            }
+        }
+        // Says what survives, not only what goes: "clear" next to an app that stores dictation history and
+        // recordings is a word worth defusing.
+        "cache" -> UDialog(
+            title = stringRes(R.string.pref__other__clear_cache__label),
+            description = stringRes(R.string.pref__other__clear_cache__message),
+            onDismiss = { openDialog = null },
+        ) {
+            UNavRow(
+                title = stringRes(R.string.pref__other__clear_cache__confirm),
+                onClick = {
                     scope.launch {
                         withContext(Dispatchers.IO) { AppCache.clear(context) }
                         cacheGeneration++
                     }
-                    confirmClearCache = false
+                    openDialog = null
                 },
-                dismissLabel = stringRes(android.R.string.cancel),
-                onDismiss = { confirmClearCache = false },
-            ) {
-                // Says what survives, not only what goes: "clear" next to a keyboard that stores
-                // dictation history and recordings is a word worth defusing.
-                Text(stringRes(R.string.pref__other__clear_cache__message))
-            }
+            )
         }
     }
 }

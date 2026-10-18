@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 Lukas Klenk (diktat)
+ * Copyright (C) 2026 Luxx1993 (diktat)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,10 +58,19 @@ import androidx.compose.foundation.selection.toggleable
 
 /** The headline every tab opens with, and its optional subtitle. */
 @Composable
-fun UPageHeader(title: String, subtitle: String? = null) {
+fun UPageHeader(title: String, subtitle: String? = null, onTitleClick: (() -> Unit)? = null) {
     val c = LocalUnisono.current
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Text(title, style = Unisono.PageTitle, color = c.textPrimary)
+        Text(
+            title,
+            modifier = if (onTitleClick != null) {
+                Modifier.clip(Unisono.RadiusMd).clickable(onClick = onTitleClick)
+            } else {
+                Modifier
+            },
+            style = Unisono.PageTitle,
+            color = c.textPrimary,
+        )
         if (subtitle != null) {
             Text(subtitle, style = Unisono.PageSubtitle, color = c.textSecondary)
         }
@@ -128,10 +137,11 @@ fun UNavRow(
     icon: ImageVector? = null,
     subtitle: String? = null,
     trailing: (@Composable RowScope.() -> Unit)? = null,
+    modifier: Modifier = Modifier,
 ) {
     val c = LocalUnisono.current
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 44.dp)
             .clickable(onClick = onClick)

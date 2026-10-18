@@ -380,7 +380,6 @@ Deze toestemming kan op elk moment worden gewijzigd in de systeeminstellingen.  
     <string name="dictate__bluetooth_mic_summary">Opnemen via een verbonden Bluetooth-headset indien beschikbaar</string>
     <string name="dictate__keep_screen_awake_title">Scherm aan houden</string>
     <string name="dictate__keep_screen_awake_summary">Voorkomen dat het scherm uitgaat tijdens het opnemen</string>
-    <string name="dictate__recording_animation_title">Opname-indicator</string>
     <string name="dictate__skip_silent_title">Stille opnames overslaan</string>
     <string name="dictate__skip_silent_summary">Voorkomt gehallucineerde tekst en overbodige API-aanroepen bij stille audio</string>
     <string name="dictate__trim_silent_gaps_title">Lange pauzes inkorten</string>

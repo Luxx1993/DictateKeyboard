@@ -10,6 +10,19 @@
 
 package dev.patrickgold.florisboard.app.settings.dictate
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.style.TextAlign
+import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
+import dev.patrickgold.florisboard.app.apptheme.Unisono
+import dev.patrickgold.florisboard.app.main.UCard
+import dev.patrickgold.florisboard.app.main.UDivider
+import dev.patrickgold.florisboard.app.main.UNavRow
+import dev.patrickgold.florisboard.app.main.USwitchRow
+import dev.patrickgold.florisboard.app.main.UnisonoIcons
+import dev.patrickgold.florisboard.app.main.UnisonoPage
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -107,17 +120,14 @@ import org.florisboard.lib.compose.florisDialogScroll
 import org.florisboard.lib.compose.stringRes
 
 /**
- * Transcription history / activity log (issue #140): a browsable, searchable list of recent dictations
- * (including failed ones whose audio can be recovered). Each row shares/copies/deletes; tapping it opens
- * a detail dialog with the full transcript, playback, audio export, share and pin. Pinned entries float
- * to the top, are marked, and survive pruning. Two opt-ins plus a single "storage limits" dialog with
- * free numeric input sit at the top; toolbar actions search and clear.
+ * Transcription history / activity log (issue #140) in the look of Entwurf 3: a searchable list of recent
+ * dictations (including failed ones whose audio can be recovered). Each row shares/copies/deletes; tapping
+ * it opens a detail dialog with the full transcript, playback, audio export, share and pin. Pinned entries
+ * float to the top, are marked, and survive pruning. Two opt-ins, the storage limits, the folder export and
+ * "clear all" sit in one card at the top. The export, detail and limits dialogs are still in the old look.
  */
 @Composable
-fun DictateHistoryScreen() = FlorisScreen {
-    title = stringRes(R.string.dictate__history_title)
-    scrollable = false
-
+fun DictateHistoryScreen() = UnisonoPage(title = stringRes(R.string.dictate__history_title)) {
     val context = LocalContext.current
     val prefs by FlorisPreferenceStore
     val scope = rememberCoroutineScope()
@@ -131,7 +141,6 @@ fun DictateHistoryScreen() = FlorisScreen {
 
     var confirmClear by remember { mutableStateOf(false) }
     var showLimits by remember { mutableStateOf(false) }
-    var searching by remember { mutableStateOf(false) }
     var query by remember { mutableStateOf("") }
 
     // --- Folder export (issue #379) -------------------------------------------------------------
@@ -188,238 +197,223 @@ fun DictateHistoryScreen() = FlorisScreen {
         }
     }
 
-    // When searching, the app-bar title is replaced by a full-width search field (so it takes no extra
-    // vertical space in the content below).
-    titleContent = if (searching) {
-        {
-            val focus = remember { FocusRequester() }
-            LaunchedEffect(Unit) { focus.requestFocus() }
-            TextField(
-                value = query,
-                onValueChange = { query = it },
-                modifier = Modifier.fillMaxWidth().focusRequester(focus),
-                singleLine = true,
-                placeholder = { Text(stringRes(R.string.dictate__history_search)) },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                ),
-            )
-        }
-    } else null
+    val c = LocalUnisono.current
 
-    actions {
-        FlorisIconButton(
-            onClick = { searching = !searching; if (!searching) query = "" },
-            icon = if (searching) Icons.Default.Close else Icons.Default.Search,
+    UCard {
+        USwitchRow(
+            title = stringRes(R.string.dictate__history_enable_title),
+            subtitle = stringRes(R.string.dictate__history_enable_summary),
+            checked = historyEnabled,
+            onCheckedChange = { scope.launch { prefs.dictate.historyEnabled.set(it) } },
         )
-        // Stands down while searching: the search field takes the whole title, and a third icon beside it
-        // leaves too little of it to type in.
-        if (!searching) {
-            FlorisIconButton(
-                // Not greyed out when history is off — a dead icon explains nothing (see issue #297).
-                // It opens and offers to switch history on, which is the thing the user would go looking for.
-                onClick = { if (historyEnabled) showExport = true else showHistoryOffNotice = true },
-                icon = Icons.Default.DriveFolderUpload,
-            )
-        }
-        FlorisIconButton(
+        UDivider()
+        USwitchRow(
+            title = stringRes(R.string.dictate__history_audio_title),
+            subtitle = stringRes(R.string.dictate__history_audio_summary),
+            checked = audioRetention,
+            enabled = historyEnabled,
+            onCheckedChange = { scope.launch { prefs.dictate.historyAudioRetention.set(it) } },
+        )
+        UDivider()
+        // All retention caps behind one row, in a dialog with free numeric input.
+        UNavRow(
+            title = stringRes(R.string.dictate__history_retention_title),
+            subtitle = "$maxEntries \u00b7 ${ageLabel(maxAgeDays)} \u00b7 $audioBudgetMb MB",
+            onClick = { if (historyEnabled) showLimits = true },
+        )
+        UDivider()
+        UNavRow(
+            title = stringRes(R.string.dictate__history_export_title),
+            // Not greyed out when history is off: it opens and offers to switch history on (issue #297).
+            onClick = { if (historyEnabled) showExport = true else showHistoryOffNotice = true },
+        )
+        UDivider()
+        UNavRow(
+            title = stringRes(R.string.dictate__history_clear_title),
             onClick = { if (entries.isNotEmpty()) confirmClear = true },
-            icon = Icons.Default.DeleteSweep,
         )
     }
 
-    content {
-        Column(modifier = Modifier.fillMaxSize()) {
-            // Two opt-ins: capture at all, and additionally keep the source audio.
-            HistoryToggleRow(
-                title = stringRes(R.string.dictate__history_enable_title),
-                summary = stringRes(R.string.dictate__history_enable_summary),
-                checked = historyEnabled,
-                onToggle = { scope.launch { prefs.dictate.historyEnabled.set(it) } },
-            )
-            HistoryToggleRow(
-                title = stringRes(R.string.dictate__history_audio_title),
-                summary = stringRes(R.string.dictate__history_audio_summary),
-                checked = audioRetention,
-                enabled = historyEnabled,
-                onToggle = { scope.launch { prefs.dictate.historyAudioRetention.set(it) } },
-            )
-            // All retention caps behind one row → a dialog with free numeric input.
-            OptionRow(
-                title = stringRes(R.string.dictate__history_retention_title),
-                value = "$maxEntries · ${ageLabel(maxAgeDays)} · $audioBudgetMb MB",
-                enabled = historyEnabled,
-                onClick = { showLimits = true },
-            )
-            HorizontalDivider()
+    val totalAudio = entries.sumOf { it.audioBytes }
+    if (totalAudio > 0L) {
+        Text(
+            text = stringRes(
+                R.string.dictate__history_disk_usage,
+                "size" to (formatHistorySize(totalAudio) ?: "0 KB"),
+            ),
+            style = Unisono.Label,
+            color = c.textTertiary,
+        )
+    }
 
-            val totalAudio = entries.sumOf { it.audioBytes }
-            if (totalAudio > 0L) {
-                Text(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    text = stringRes(
-                        R.string.dictate__history_disk_usage,
-                        "size" to (formatHistorySize(totalAudio) ?: "0 KB"),
-                    ),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+    if (entries.isNotEmpty()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(44.dp)
+                .clip(Unisono.Pill)
+                .background(c.sunken)
+                .padding(horizontal = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Icon(UnisonoIcons.Search, contentDescription = null, tint = c.textTertiary, modifier = Modifier.size(18.dp))
+            Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
+                if (query.isEmpty()) {
+                    Text(stringRes(R.string.dictate__history_search), style = Unisono.Body, color = c.textTertiary)
+                }
+                BasicTextField(
+                    value = query,
+                    onValueChange = { query = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    textStyle = Unisono.Body.copy(color = c.textPrimary),
+                    cursorBrush = SolidColor(c.textPrimary),
                 )
             }
+        }
+    }
 
-            if (filtered.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(
-                        text = stringRes(R.string.dictate__history_empty),
-                        modifier = Modifier.padding(horizontal = 32.dp),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+    if (filtered.isEmpty()) {
+        Text(
+            text = stringRes(R.string.dictate__history_empty),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp),
+            style = Unisono.Body,
+            color = c.textSecondary,
+            textAlign = TextAlign.Center,
+        )
+    } else {
+        UCard {
+            filtered.forEachIndexed { index, entry ->
+                if (index > 0) UDivider()
+                HistoryRow(
+                    entry = entry,
+                    onOpen = { detailEntryId = entry.id },
+                    onShare = { shareText(context, entry.text) },
+                    onCopy = {
+                        copyToClipboard(context, entry.text)
+                        Toast.makeText(context, R.string.dictate__history_copied, Toast.LENGTH_SHORT).show()
+                    },
+                    onDelete = { scope.launch { DictateHistoryStore.delete(context, entry) } },
+                )
+            }
+        }
+    }
+
+    // Deliberately resolved from `entries` rather than the filtered list, so an active search query
+    // cannot pull the dialog out from under the user. A deleted entry resolves to null and closes it.
+    val detailEntry = detailEntryId?.let { id -> entries.firstOrNull { it.id == id } }
+    detailEntry?.let { entry ->
+        DetailDialog(
+            entry = entry,
+            onShare = { shareText(context, entry.text) },
+            onExport = { DictateController.exportHistoryAudio(context, entry) },
+            onTogglePin = { scope.launch { DictateHistoryStore.setPinned(context, entry.id, !entry.pinned) } },
+            onDismiss = { detailEntryId = null },
+        )
+    }
+
+    if (showLimits) {
+        RetentionDialog(
+            entries = maxEntries,
+            ageDays = maxAgeDays,
+            budgetMb = audioBudgetMb,
+            onSave = { e, a, b ->
+                scope.launch {
+                    prefs.dictate.historyMaxEntries.set(e)
+                    prefs.dictate.historyMaxAgeDays.set(a)
+                    prefs.dictate.historyAudioBudgetMb.set(b)
                 }
-            } else {
-                val listState = rememberLazyListState()
-                val barColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .historyScrollbar(listState, barColor),
-                    state = listState,
-                ) {
-                    items(filtered, key = { it.id }) { entry ->
-                        Column(modifier = Modifier.animateItem()) {
-                            HistoryRow(
-                                entry = entry,
-                                onOpen = { detailEntryId = entry.id },
-                                onShare = { shareText(context, entry.text) },
-                                onCopy = {
-                                    copyToClipboard(context, entry.text)
-                                    Toast.makeText(context, R.string.dictate__history_copied, Toast.LENGTH_SHORT).show()
-                                },
-                                onDelete = { scope.launch { DictateHistoryStore.delete(context, entry) } },
-                            )
-                            HorizontalDivider()
-                        }
-                    }
+                showLimits = false
+            },
+            onDismiss = { showLimits = false },
+        )
+    }
+
+    if (showExport) {
+        ExportDialog(
+            folderName = exportFolderName,
+            folderSet = exportFolderUri.isNotBlank(),
+            folderWritable = exportFolderWritable,
+            exportAudio = exportAudio,
+            audioRetention = audioRetention,
+            lastFailure = exportLastFailure,
+            progress = bulkProgress,
+            result = bulkResult,
+            onPick = {
+                // Already consented once; changing folders does not ask again.
+                if (exportFolderUri.isBlank()) showExportWarning = true else exportFolderPicker.launch(null)
+            },
+            onDisconnect = {
+                scope.launch {
+                    DictateHistoryExporter.releaseGrant(context, prefs.dictate.historyExportFolderUri.get())
+                    prefs.dictate.historyExportFolderUri.set("")
+                    prefs.dictate.historyExportFolderName.set("")
+                    prefs.dictate.historyExportLastFailure.set(0L)
+                    bulkResult = null
                 }
-            }
-        }
-
-        // Deliberately resolved from `entries` rather than the filtered list, so an active search query
-        // cannot pull the dialog out from under the user. A deleted entry resolves to null and closes it.
-        val detailEntry = detailEntryId?.let { id -> entries.firstOrNull { it.id == id } }
-        detailEntry?.let { entry ->
-            DetailDialog(
-                entry = entry,
-                onShare = { shareText(context, entry.text) },
-                onExport = { DictateController.exportHistoryAudio(context, entry) },
-                onTogglePin = { scope.launch { DictateHistoryStore.setPinned(context, entry.id, !entry.pinned) } },
-                onDismiss = { detailEntryId = null },
-            )
-        }
-
-        if (showLimits) {
-            RetentionDialog(
-                entries = maxEntries,
-                ageDays = maxAgeDays,
-                budgetMb = audioBudgetMb,
-                onSave = { e, a, b ->
-                    scope.launch {
-                        prefs.dictate.historyMaxEntries.set(e)
-                        prefs.dictate.historyMaxAgeDays.set(a)
-                        prefs.dictate.historyAudioBudgetMb.set(b)
+            },
+            onToggleAudio = { scope.launch { prefs.dictate.historyExportAudio.set(it) } },
+            onExportAll = {
+                scope.launch {
+                    bulkResult = null
+                    bulkProgress = 0 to entries.size
+                    bulkResult = DictateHistoryExporter.exportAll(context, entries) { done, total ->
+                        bulkProgress = done to total
                     }
-                    showLimits = false
-                },
-                onDismiss = { showLimits = false },
-            )
-        }
+                    bulkProgress = null
+                }
+            },
+            onDismiss = { showExport = false; bulkResult = null },
+        )
+    }
 
-        if (showExport) {
-            ExportDialog(
-                folderName = exportFolderName,
-                folderSet = exportFolderUri.isNotBlank(),
-                folderWritable = exportFolderWritable,
-                exportAudio = exportAudio,
-                audioRetention = audioRetention,
-                lastFailure = exportLastFailure,
-                progress = bulkProgress,
-                result = bulkResult,
-                onPick = {
-                    // Already consented once; changing folders does not ask again.
-                    if (exportFolderUri.isBlank()) showExportWarning = true else exportFolderPicker.launch(null)
-                },
-                onDisconnect = {
-                    scope.launch {
-                        DictateHistoryExporter.releaseGrant(context, prefs.dictate.historyExportFolderUri.get())
-                        prefs.dictate.historyExportFolderUri.set("")
-                        prefs.dictate.historyExportFolderName.set("")
-                        prefs.dictate.historyExportLastFailure.set(0L)
-                        bulkResult = null
-                    }
-                },
-                onToggleAudio = { scope.launch { prefs.dictate.historyExportAudio.set(it) } },
-                onExportAll = {
-                    scope.launch {
-                        bulkResult = null
-                        bulkProgress = 0 to entries.size
-                        bulkResult = DictateHistoryExporter.exportAll(context, entries) { done, total ->
-                            bulkProgress = done to total
-                        }
-                        bulkProgress = null
-                    }
-                },
-                onDismiss = { showExport = false; bulkResult = null },
-            )
+    if (showExportWarning) {
+        JetPrefAlertDialog(
+            scrollModifier = florisDialogScroll(),
+            title = stringRes(R.string.dictate__history_export_warning_title),
+            confirmLabel = stringRes(R.string.dictate__history_export_choose),
+            onConfirm = {
+                showExportWarning = false
+                exportFolderPicker.launch(null)
+            },
+            dismissLabel = stringRes(android.R.string.cancel),
+            onDismiss = { showExportWarning = false },
+        ) {
+            Text(stringRes(R.string.dictate__history_export_warning_message))
         }
+    }
 
-        if (showExportWarning) {
-            JetPrefAlertDialog(
-                scrollModifier = florisDialogScroll(),
-                title = stringRes(R.string.dictate__history_export_warning_title),
-                confirmLabel = stringRes(R.string.dictate__history_export_choose),
-                onConfirm = {
-                    showExportWarning = false
-                    exportFolderPicker.launch(null)
-                },
-                dismissLabel = stringRes(android.R.string.cancel),
-                onDismiss = { showExportWarning = false },
-            ) {
-                Text(stringRes(R.string.dictate__history_export_warning_message))
-            }
+    if (showHistoryOffNotice) {
+        JetPrefAlertDialog(
+            scrollModifier = florisDialogScroll(),
+            title = stringRes(R.string.dictate__history_export_title),
+            confirmLabel = stringRes(R.string.dictate__history_export_enable_history),
+            onConfirm = {
+                scope.launch { prefs.dictate.historyEnabled.set(true) }
+                showHistoryOffNotice = false
+                showExport = true
+            },
+            dismissLabel = stringRes(android.R.string.cancel),
+            onDismiss = { showHistoryOffNotice = false },
+        ) {
+            Text(stringRes(R.string.dictate__history_export_needs_history))
         }
+    }
 
-        if (showHistoryOffNotice) {
-            JetPrefAlertDialog(
-                scrollModifier = florisDialogScroll(),
-                title = stringRes(R.string.dictate__history_export_title),
-                confirmLabel = stringRes(R.string.dictate__history_export_enable_history),
-                onConfirm = {
-                    scope.launch { prefs.dictate.historyEnabled.set(true) }
-                    showHistoryOffNotice = false
-                    showExport = true
-                },
-                dismissLabel = stringRes(android.R.string.cancel),
-                onDismiss = { showHistoryOffNotice = false },
-            ) {
-                Text(stringRes(R.string.dictate__history_export_needs_history))
-            }
-        }
-
-        if (confirmClear) {
-            JetPrefAlertDialog(
-                scrollModifier = florisDialogScroll(),
-                title = stringRes(R.string.dictate__history_clear_title),
-                confirmLabel = stringRes(R.string.dictate__history_clear_confirm),
-                onConfirm = {
-                    scope.launch { DictateHistoryStore.clearAll(context) }
-                    confirmClear = false
-                },
-                dismissLabel = stringRes(android.R.string.cancel),
-                onDismiss = { confirmClear = false },
-            ) {
-                Text(stringRes(R.string.dictate__history_clear_message))
-            }
+    if (confirmClear) {
+        JetPrefAlertDialog(
+            scrollModifier = florisDialogScroll(),
+            title = stringRes(R.string.dictate__history_clear_title),
+            confirmLabel = stringRes(R.string.dictate__history_clear_confirm),
+            onConfirm = {
+                scope.launch { DictateHistoryStore.clearAll(context) }
+                confirmClear = false
+            },
+            dismissLabel = stringRes(android.R.string.cancel),
+            onDismiss = { confirmClear = false },
+        ) {
+            Text(stringRes(R.string.dictate__history_clear_message))
         }
     }
 }
@@ -428,33 +422,6 @@ fun DictateHistoryScreen() = FlorisScreen {
 private fun ageLabel(days: Int): String =
     if (days <= 0) stringRes(R.string.dictate__history_age_never)
     else stringRes(R.string.dictate__history_age_days, "days" to days.toString())
-
-@Composable
-private fun HistoryToggleRow(
-    title: String,
-    summary: String,
-    checked: Boolean,
-    enabled: Boolean = true,
-    onToggle: (Boolean) -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = title, style = MaterialTheme.typography.bodyLarge)
-            Text(
-                text = summary,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-        Spacer(Modifier.width(16.dp))
-        Switch(checked = checked, onCheckedChange = onToggle, enabled = enabled)
-    }
-}
 
 /**
  * Everything the folder export (issue #379) needs, behind the one app-bar action: which folder, whether
@@ -613,36 +580,6 @@ private fun ExportDialog(
 }
 
 @Composable
-private fun OptionRow(
-    title: String,
-    value: String,
-    enabled: Boolean,
-    onClick: () -> Unit,
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(enabled = enabled) { onClick() }
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        val alpha = if (enabled) 1f else 0.38f
-        Text(
-            modifier = Modifier.weight(1f),
-            text = title,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = alpha),
-        )
-        Spacer(Modifier.width(16.dp))
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha),
-        )
-    }
-}
-
-@Composable
 private fun HistoryRow(
     entry: DictateHistoryEntry,
     onOpen: () -> Unit,
@@ -651,73 +588,73 @@ private fun HistoryRow(
     onDelete: () -> Unit,
 ) {
     val context = LocalContext.current
+    val c = LocalUnisono.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onOpen() }
-            .padding(start = 16.dp, top = 10.dp, bottom = 10.dp),
+            .padding(start = 18.dp, top = 10.dp, bottom = 10.dp, end = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column(modifier = Modifier.weight(1f)) {
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(
                 text = entry.text,
-                style = MaterialTheme.typography.bodyMedium,
-                color = if (entry.failed) MaterialTheme.colorScheme.error else Color.Unspecified,
+                style = Unisono.Body,
+                color = if (entry.failed) HISTORY_ERROR else c.textPrimary,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
             )
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 if (entry.pinned) {
                     Icon(
                         imageVector = Icons.Default.PushPin,
                         contentDescription = stringRes(R.string.emoji__history__pinned),
-                        modifier = Modifier.size(12.dp).padding(end = 2.dp),
-                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(12.dp),
+                        tint = c.textPrimary,
                     )
                 }
                 Text(
                     text = DateUtils.getRelativeDateTimeString(
                         context, entry.createdAt, DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0,
                     ).toString(),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = Unisono.Mono,
+                    color = c.textTertiary,
                 )
             }
             val meta = historyRowMeta(entry)
             if (meta.isNotEmpty()) {
-                Text(
-                    text = meta,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                Text(text = meta, style = Unisono.Mono, color = c.textTertiary)
             }
         }
-        // Uniform 44dp buttons with 24dp icons so share / copy / delete all read the same size. Share and
-        // copy are disabled for a failed entry (no committed text yet) until it is re-transcribed.
-        IconButton(onClick = onShare, enabled = !entry.failed, modifier = Modifier.size(44.dp)) {
+        // Share and copy are disabled for a failed entry (no committed text yet) until it is re-transcribed.
+        IconButton(onClick = onShare, enabled = !entry.failed, modifier = Modifier.size(40.dp)) {
             Icon(
                 imageVector = Icons.Default.Share,
                 contentDescription = stringRes(R.string.dictate__stats_share),
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(20.dp),
+                tint = c.textSecondary,
             )
         }
-        IconButton(onClick = onCopy, enabled = !entry.failed, modifier = Modifier.size(44.dp)) {
+        IconButton(onClick = onCopy, enabled = !entry.failed, modifier = Modifier.size(40.dp)) {
             Icon(
                 imageVector = Icons.Default.ContentCopy,
                 contentDescription = stringRes(R.string.dictate__history_copy),
-                modifier = Modifier.size(24.dp),
+                modifier = Modifier.size(20.dp),
+                tint = c.textSecondary,
             )
         }
-        IconButton(onClick = onDelete, modifier = Modifier.size(44.dp)) {
+        IconButton(onClick = onDelete, modifier = Modifier.size(40.dp)) {
             Icon(
                 imageVector = Icons.Default.DeleteOutline,
                 contentDescription = stringRes(R.string.dictate__history_delete),
-                modifier = Modifier.size(24.dp),
-                tint = MaterialTheme.colorScheme.error,
+                modifier = Modifier.size(20.dp),
+                tint = HISTORY_ERROR,
             )
         }
     }
 }
+
+private val HISTORY_ERROR = Color(0xFFB3443A)
 
 @Composable
 private fun DetailDialog(
@@ -970,35 +907,3 @@ private fun shareText(context: Context, text: String) {
     }
     context.startActivity(Intent.createChooser(intent, null))
 }
-
-/**
- * A correct, always-on thin scrollbar for a variable-height [LazyColumn] list. Unlike the shared
- * `florisScrollbar(LazyListState)` (which approximates every item as `viewport / itemCount` tall and so
- * mis-positions the thumb for tall rows), this estimates content height from the *actual* average size
- * of the currently-visible items, so the thumb tracks the real scroll fraction and reaches the bottom.
- */
-private fun Modifier.historyScrollbar(state: LazyListState, color: Color, width: Dp = 4.dp): Modifier =
-    drawWithContent {
-        drawContent()
-        val info = state.layoutInfo
-        val total = info.totalItemsCount
-        val visible = info.visibleItemsInfo
-        if (total == 0 || visible.isEmpty()) return@drawWithContent
-        val avgItem = visible.sumOf { it.size }.toFloat() / visible.size
-        val viewport = size.height
-        val content = avgItem * total
-        if (content <= viewport) return@drawWithContent // nothing to scroll
-        val first = visible.first()
-        val scrolled = (first.index * avgItem - first.offset).coerceAtLeast(0f)
-        val maxScroll = content - viewport
-        val fraction = (scrolled / maxScroll).coerceIn(0f, 1f)
-        val w = width.toPx()
-        val thumb = (viewport * viewport / content).coerceIn(w * 6f, viewport)
-        val y = fraction * (viewport - thumb)
-        drawRoundRect(
-            color = color,
-            topLeft = Offset(size.width - w, y),
-            size = Size(w, thumb),
-            cornerRadius = CornerRadius(w / 2f, w / 2f),
-        )
-    }

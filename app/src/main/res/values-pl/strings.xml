@@ -382,7 +382,6 @@
     <string name="dictate__bluetooth_mic_summary">Nagrywaj przez podłączony zestaw słuchawkowy Bluetooth, gdy jest dostępny</string>
     <string name="dictate__keep_screen_awake_title">Nie wygaszaj ekranu</string>
     <string name="dictate__keep_screen_awake_summary">Zapobiegaj wyłączaniu ekranu podczas nagrywania</string>
-    <string name="dictate__recording_animation_title">Wskaźnik nagrywania</string>
     <string name="dictate__skip_silent_title">Pomijaj ciche nagrania</string>
     <string name="dictate__skip_silent_summary">Unikaj zmyślonego tekstu i zbędnych wywołań API przy cichym nagraniu</string>
     <string name="dictate__trim_silent_gaps_title">Przycinaj długie pauzy</string>

@@ -381,7 +381,6 @@
     <string name="dictate__bluetooth_mic_summary">Gravar através de auscultadores Bluetooth ligados, quando disponíveis</string>
     <string name="dictate__keep_screen_awake_title">Manter o ecrã ligado</string>
     <string name="dictate__keep_screen_awake_summary">Impedir que o ecrã se desligue durante a gravação</string>
-    <string name="dictate__recording_animation_title">Indicador de gravação</string>
     <string name="dictate__skip_silent_title">Ignorar gravações silenciosas</string>
     <string name="dictate__skip_silent_summary">Evita texto alucinado e chamadas de API desnecessárias em áudio silencioso</string>
     <string name="dictate__trim_silent_gaps_title">Cortar pausas longas</string>

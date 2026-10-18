@@ -16,12 +16,12 @@
 
 ## Was diktat kann
 
-- **Schwebender Button „Wolke“** über jeder App, neben der Tastatur deiner Wahl (z. B. SwiftKey). Antippen zum
+- **Schwebender Button „Wolke“** über jeder App, mit jeder Tastatur. Antippen zum
   Starten und Stoppen oder gedrückt halten zum Aufnehmen, wählbar unter Einstellungen › Aufnahme.
 - **Langdiktat**: Lange Diktate werden schon während des Sprechens in Abschnitten transkribiert, geschnitten an
   Sprechpausen. Am Ende ist der Text fast sofort da.
-- **Spracheingabe für andere Tastaturen**: SwiftKeys Mikrofon-Taste und Apps, die Androids Spracherkennung nutzen,
-  diktieren über diktat.
+- **Spracheingabe für andere Tastaturen**: Tastaturen, deren Mikrofon-Taste auf die Spracheingabe umschaltet (zum
+  Beispiel SwiftKey), und Apps, die Androids Spracherkennung nutzen, diktieren über diktat.
 - **Stile**: Wie die KI aufräumt. Mitgeliefert sind Aufräumen, Wörtlich, E-Mail, Chat und Aktenvermerk. Eigene Stile
   lassen sich im Tab „Stile“ anlegen, bearbeiten und löschen. Der aktive Stil läuft nach jedem Diktat.
 - **Wörterbuch**: Eigene Wörter (Namen, Fachbegriffe), die das Sprachmodell richtig schreiben soll, und Ersetzungen,
@@ -44,7 +44,8 @@ Ollama · eigener OpenAI-kompatibler Server · On-device (offline)
 ## Oberfläche
 
 Warmer, ruhiger Look („Entwurf 3“): Papier und Tinte, Manrope und IBM Plex Mono, vier Tabs, hell und dunkel. Die
-Bilder sind die Design-Referenzen aus [`docs/design/entwurf-3/`](docs/design/entwurf-3/), nach denen die App gebaut ist.
+Bilder sind die Design-Referenzen aus [`docs/design/entwurf-3/`](docs/design/entwurf-3/), nach denen die App gebaut ist;
+Namen, Anbieter und Texte darin sind Beispiele.
 
 <p align="center">
   <img src="docs/design/entwurf-3/png/Main.png" width="200" alt="Start">
@@ -63,11 +64,11 @@ Lagune, Periwinkle, Salbei, Abendrot und Tinte.
 ## Einrichten
 
 1. APK installieren (siehe [Bauen](#bauen)) und öffnen.
-2. Anbieter wählen und API-Key eintragen, z. B. ElevenLabs für die Transkription und Anthropic für das Aufräumen.
-   Oder ein Offline-Modell laden.
+2. Anbieter wählen und API-Key eintragen, für die Transkription und für das Aufräumen, gern bei verschiedenen
+   Anbietern. Oder ein Offline-Modell laden.
 3. **Wolke**: Unter Einstellungen › Schwebender Button einschalten und in Android die Bedienungshilfe „diktat
    Floating-Button“ erlauben. Die Wolke erscheint, sobald ein Textfeld aktiv ist.
-4. **Optional, Mikrofon-Taste in SwiftKey**: Unter Einstellungen › Spracheingabe diktat als Eingabemethode
+4. **Optional, Mikrofon-Taste deiner Tastatur**: Unter Einstellungen › Spracheingabe diktat als Eingabemethode
    einschalten. Deine Tastatur bleibt, wie sie ist.
 
 ## Bauen

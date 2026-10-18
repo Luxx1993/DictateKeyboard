@@ -16,7 +16,9 @@
     <color name="dictate_overlay_icon">#FFFFFF</color>
     <!-- Rewording (AI) ring tint and the brief success-flash green -->
     <color name="dictate_overlay_rewording">#7C4DFF</color>
-    <color name="dictate_overlay_success">#43A047</color>
+    <color name="dictate_overlay_success">#357A5B</color>
+    <!-- Failed: the red the cloud tints with, so every style fails in the same colour. -->
+    <color name="dictate_overlay_error">#B3443A</color>
     <!-- Neutral background for the secondary cancel button shown while recording -->
     <color name="dictate_overlay_cancel">#4A4A4A</color>
     <!-- Surface of the long-press rewording menu -->

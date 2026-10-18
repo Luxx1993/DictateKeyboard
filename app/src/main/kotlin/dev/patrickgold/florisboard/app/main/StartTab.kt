@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 Lukas Klenk (diktat)
+ * Copyright (C) 2026 Luxx1993 (diktat)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import kotlinx.coroutines.launch
 import dev.patrickgold.florisboard.R
 import dev.patrickgold.florisboard.app.FlorisPreferenceStore
 import dev.patrickgold.florisboard.app.LocalNavController
@@ -69,8 +83,11 @@ internal fun StartTab() {
     val c = LocalUnisono.current
     val context = LocalContext.current
     val navController = LocalNavController.current
+    val scope = rememberCoroutineScope()
 
+    // The greeting is where the name is set: tap it. Without a name a quiet hint says so.
     val name by prefs.other.userName.collectAsState()
+    var editingName by remember { mutableStateOf(false) }
     UPageHeader(
         title = if (name.isBlank()) {
             stringRes(R.string.main__greeting)
@@ -78,7 +95,30 @@ internal fun StartTab() {
             stringRes(R.string.main__greeting_named, "name" to name.trim())
         },
         subtitle = stringRes(R.string.main__start_subtitle),
+        onTitleClick = { editingName = true },
     )
+    if (name.isBlank()) {
+        Text(
+            stringRes(R.string.main__greeting_set_name),
+            modifier = Modifier
+                .offset(y = (-16).dp)
+                .clip(Unisono.RadiusMd)
+                .clickable { editingName = true }
+                .padding(vertical = 4.dp),
+            style = Unisono.Caption,
+            color = c.textTertiary,
+        )
+    }
+    if (editingName) {
+        NameDialog(
+            initial = name,
+            onDismiss = { editingName = false },
+            onSave = { value ->
+                editingName = false
+                scope.launch { prefs.other.userName.set(value.trim()) }
+            },
+        )
+    }
 
     val words by prefs.dictate.statsWords.collectAsState()
     val monthIndex by prefs.dictate.statsMonthIndex.collectAsState()
@@ -261,4 +301,43 @@ private fun timeAgo(context: Context, createdAt: Long, now: Long = System.curren
         minutes < 24 * 60 -> context.getString(R.string.main__ago_hours).replace("{n}", (minutes / 60).toString())
         else -> DateFormat.getMediumDateFormat(context).format(createdAt)
     }
+}
+
+/** The name the greeting uses; empty greets without one. */
+@Composable
+private fun NameDialog(initial: String, onDismiss: () -> Unit, onSave: (String) -> Unit) {
+    val c = LocalUnisono.current
+    var value by rememberSaveable { mutableStateOf(initial) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringRes(R.string.pref__other__user_name__label)) },
+        text = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(Unisono.RadiusMd)
+                    .background(c.sunken)
+                    .padding(horizontal = 14.dp, vertical = 12.dp),
+            ) {
+                if (value.isEmpty()) {
+                    Text(stringRes(R.string.main__greeting_name_hint), style = Unisono.Body, color = c.textTertiary)
+                }
+                BasicTextField(
+                    value = value,
+                    onValueChange = { value = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    textStyle = Unisono.Body.copy(color = c.textPrimary),
+                    cursorBrush = SolidColor(c.textPrimary),
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Words,
+                        imeAction = ImeAction.Done,
+                    ),
+                    keyboardActions = KeyboardActions(onDone = { onSave(value) }),
+                )
+            }
+        },
+        confirmButton = { TextButton(onClick = { onSave(value) }) { Text(stringRes(R.string.main__styles_save)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringRes(R.string.action__cancel)) } },
+    )
 }

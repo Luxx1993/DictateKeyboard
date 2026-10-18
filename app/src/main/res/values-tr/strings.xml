@@ -379,7 +379,6 @@
     <string name="dictate__bluetooth_mic_summary">Mevcut olduğunda bağlı bir Bluetooth kulaklık üzerinden kaydet</string>
     <string name="dictate__keep_screen_awake_title">Ekranı açık tut</string>
     <string name="dictate__keep_screen_awake_summary">Kayıt sırasında ekranın kapanmasını engelle</string>
-    <string name="dictate__recording_animation_title">Kayıt göstergesi</string>
     <string name="dictate__skip_silent_title">Sessiz kayıtları atla</string>
     <string name="dictate__skip_silent_summary">Sessiz seste uydurma metni ve gereksiz API çağrılarını önler</string>
     <string name="dictate__trim_silent_gaps_title">Uzun duraklamaları kırp</string>

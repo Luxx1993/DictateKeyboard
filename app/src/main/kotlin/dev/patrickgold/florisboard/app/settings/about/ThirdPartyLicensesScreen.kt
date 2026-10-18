@@ -16,47 +16,39 @@
 
 package dev.patrickgold.florisboard.app.settings.about
 
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.mikepenz.aboutlibraries.ui.compose.LibraryDefaults
+import androidx.compose.ui.unit.dp
 import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
-import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
-import com.mikepenz.aboutlibraries.ui.compose.m3.chipColors
-import com.mikepenz.aboutlibraries.ui.compose.m3.libraryColors
 import dev.patrickgold.florisboard.R
-import dev.patrickgold.florisboard.lib.compose.FlorisScreen
-import org.florisboard.lib.compose.florisScrollbar
+import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
+import dev.patrickgold.florisboard.app.apptheme.Unisono
+import dev.patrickgold.florisboard.app.main.UCard
+import dev.patrickgold.florisboard.app.main.UDivider
+import dev.patrickgold.florisboard.app.main.UnisonoPage
 import org.florisboard.lib.compose.stringRes
 
+/** The libraries the app ships, as plain rows (name, version, licence); the page itself scrolls. */
 @Composable
-fun ThirdPartyLicensesScreen() = FlorisScreen {
-    title = stringRes(R.string.about__third_party_licenses__title)
-    scrollable = false
-    iconSpaceReserved = false
-
-    val lazyListState = rememberLazyListState()
+fun ThirdPartyLicensesScreen() = UnisonoPage(title = stringRes(R.string.about__third_party_licenses__title)) {
     val libs by produceLibraries()
-
-    content {
-        LibrariesContainer(
-            libraries = libs,
-            modifier = Modifier
-                .fillMaxSize()
-                .florisScrollbar(lazyListState, isVertical = true),
-            colors = LibraryDefaults.libraryColors(
-                libraryBackgroundColor = MaterialTheme.colorScheme.background,
-                licenseChipColors = LibraryDefaults.chipColors(
-                    MaterialTheme.colorScheme.primaryContainer,
-                    MaterialTheme.colorScheme.onPrimaryContainer,
-                ),
-                libraryContentColor = MaterialTheme.colorScheme.onBackground,
-                dialogConfirmButtonColor = MaterialTheme.colorScheme.primary,
-            ),
-            lazyListState = lazyListState,
-        )
+    val c = LocalUnisono.current
+    UCard {
+        libs?.libraries?.forEachIndexed { index, lib ->
+            if (index > 0) UDivider()
+            Column(Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 12.dp)) {
+                Text(lib.name, style = Unisono.Body, color = c.textPrimary)
+                val meta = listOfNotNull(
+                    lib.artifactVersion,
+                    lib.licenses.joinToString(", ") { it.name }.ifBlank { null },
+                ).joinToString(" \u00b7 ")
+                if (meta.isNotEmpty()) Text(meta, style = Unisono.Mono, color = c.textTertiary)
+            }
+        }
     }
 }

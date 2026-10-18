@@ -156,7 +156,7 @@
     <!-- Default example prompts seeded on a fresh install. -->
     <!-- Dictate strings -->
     <string name="quick_action__dictate_live_prompt">Live-Prompt</string>
-    <string name="about__made_by">diktat von Lukas Klenk\nBasiert auf Dictate Keyboard von DevEmperor</string>
+    <string name="about__made_by">diktat von Luxx1993\nBasiert auf Dictate Keyboard von DevEmperor</string>
     <string name="about__feedback__title">Feedback &amp; Support</string>
     <string name="about__feedback__summary">Eine E-Mail mit Fragen, Fehlern oder Ideen senden</string>
     <string name="about__feedback__email">contact@devemperor.net</string>
@@ -389,7 +389,6 @@
     <string name="dictate__bluetooth_mic_summary">Wenn verfügbar über ein verbundenes Bluetooth-Headset aufnehmen</string>
     <string name="dictate__keep_screen_awake_title">Bildschirm anlassen</string>
     <string name="dictate__keep_screen_awake_summary">Verhindern, dass sich der Bildschirm während der Aufnahme ausschaltet</string>
-    <string name="dictate__recording_animation_title">Aufnahme-Anzeige</string>
     <string name="dictate__skip_silent_title">Stille Aufnahmen überspringen</string>
     <string name="dictate__skip_silent_summary">Vermeidet Geistertext und unnötige API-Aufrufe bei stiller Aufnahme</string>
     <string name="dictate__trim_silent_gaps_title">Lange Pausen kürzen</string>
@@ -761,8 +760,30 @@
     <string name="main__tab_settings">Einstellungen</string>
     <string name="main__greeting_named">Hallo, {name}</string>
     <string name="pref__other__user_name__label">Dein Name für die Begrüßung</string>
+    <string name="main__back">Zurück</string>
+    <string name="main__done">Fertig</string>
+    <string name="main__fb_group_look">Aussehen</string>
+    <string name="main__fb_group_behaviour">Verhalten</string>
+    <string name="main__fb_group_after">Nach dem Diktat</string>
+    <string name="main__fb_more_colors">Weitere Farben</string>
+    <string name="main__fb_more_colors_summary">Jede Farbe; die Wolke mischt daraus ihre Palette</string>
+    <string name="main__fb_preview_note">Vorschau in Lagune; der Button nimmt deine Farbe an.</string>
+    <string name="main__rec_group_start">Aufnehmen</string>
+    <string name="main__rec_group_mic">Mikrofon</string>
+    <string name="main__rec_group_send">Vor dem Senden</string>
+    <string name="main__lang_subtitle">Die Sprachen, in denen du diktierst. Die aktive geht an den Anbieter; mit „Automatisch erkennen“ wählt er unter deinen.</string>
+    <string name="main__lang_mine">Deine Sprachen</string>
+    <string name="main__lang_add">Sprache hinzufügen</string>
+    <string name="main__lang_search">Sprache suchen</string>
+    <string name="main__lang_tap_hint">Tippe auf eine Sprache, um sie zu entfernen.</string>
+    <string name="main__prov_subtitle">Wer transkribiert und wer aufräumt, jeweils mit eigenem Schlüssel.</string>
+    <string name="main__prov_group_active">Im Einsatz</string>
+    <string name="main__prov_group_mine">Deine Anbieter</string>
+    <string name="main__prov_group_network">Netzwerk</string>
+    <string name="main__greeting_set_name">Namen eintragen</string>
+    <string name="main__greeting_name_hint">Dein Name</string>
     <string name="main__greeting">Hallo</string>
-    <string name="main__start_subtitle">Diktiere in jeder App über SwiftKey oder die Wolke.</string>
+    <string name="main__start_subtitle">Diktiere in jeder App über die Wolke oder die Mikrofon-Taste deiner Tastatur.</string>
     <string name="main__stat_words_total">Wörter gesamt</string>
     <string name="main__stat_words_month">Diesen Monat</string>
     <string name="main__stat_streak">Tage in Folge</string>
@@ -817,9 +838,9 @@
     <string name="main__settings_transcribe">Datei transkribieren</string>
     <string name="main__settings_history">Verlauf</string>
     <string name="main__settings_voice_input">Spracheingabe</string>
-    <string name="main__settings_voice_input_on">Mikrofon-Taste in SwiftKey</string>
-    <string name="main__settings_voice_input_off">Aus · Mikrofon-Taste in SwiftKey</string>
-    <string name="main__settings_voice_input_dialog">Schalte {app_name} unter „Bildschirmtastatur“ ein. SwiftKey nutzt es dann für die Mikrofon-Taste, deine Tastatur bleibt, wie sie ist.</string>
+    <string name="main__settings_voice_input_on">Mikrofon-Taste deiner Tastatur</string>
+    <string name="main__settings_voice_input_off">Aus · Mikrofon-Taste deiner Tastatur</string>
+    <string name="main__settings_voice_input_dialog">Schalte {app_name} unter „Bildschirmtastatur“ ein. Viele Tastaturen, zum Beispiel SwiftKey, schalten mit ihrer Mikrofon-Taste auf die Spracheingabe um und diktieren dann über {app_name}. Deine Tastatur bleibt, wie sie ist.</string>
     <string name="main__settings_voice_input_open">Eingabemethoden öffnen</string>
     <string name="main__settings_backup">Sichern und wiederherstellen</string>
     <string name="main__settings_all">Alle Einstellungen</string>

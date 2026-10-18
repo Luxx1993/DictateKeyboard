@@ -3,7 +3,7 @@
 Stand: 18.10.2026. Entstanden in einer Design-Session mit Claude (claude.ai). Dieses Dokument
 enthält alle Entscheidungen, damit die Umsetzung im Code ohne den ursprünglichen Chat weitergehen kann.
 
-Das ursprüngliche Design-Canvas (privat, nur für Lukas): https://claude.ai/artifact/Rs7wSSxyuCEvwaud7Puj2j
+Das ursprüngliche Design-Canvas (privat): https://claude.ai/artifact/Rs7wSSxyuCEvwaud7Puj2j
 
 ## Inhalt dieses Ordners
 
@@ -20,7 +20,7 @@ Das ursprüngliche Design-Canvas (privat, nur für Lukas): https://claude.ai/art
 
 ## 1. Ziel der App
 
-Lukas' eigene, anbieterunabhängige Diktier-App für Android, ein Fork von Dictate Keyboard
+Luxx1993s eigene, anbieterunabhängige Diktier-App für Android, ein Fork von Dictate Keyboard
 (Branch `diktat-edition`). Kernablauf: sprechen → KI räumt den Text auf → Text wird eingefügt.
 Bedient wird sie über den schwebenden Button („Wolke“) neben SwiftKey. Eigene API-Keys,
 aktuell ElevenLabs Scribe (Transkription) und Claude Haiku 5.5 (Aufräumen).
@@ -72,7 +72,7 @@ Alle Seitenüberschriften stehen auf derselben Kante: `padding-top: 40px`, Über
 Keine Wortmarken-Zeile über der Überschrift.
 
 - **Start** (`entwurf-3/Main.html`, dunkel `StartDunkel.html`, Galaxy-S24-Mockup `StartS24.html`)
-  - „Hallo, Lukas“ mit Untertitel „Diktiere in jeder App über SwiftKey oder die Wolke.“
+  - „Hallo“ (mit eingetragenem Namen „Hallo, Name“) und Untertitel „Diktiere in jeder App über die Wolke oder die Mikrofon-Taste deiner Tastatur.“
   - Statistik in drei Spalten: Wörter gesamt, Diesen Monat, Tage in Folge (Zahl 34 px, Manrope 300)
   - Karte „Aktive Anbieter“: Transkription (ElevenLabs Scribe, Punkt Bernstein) und Aufräumen (Claude Haiku 5.5, Punkt Rosenholz), jeweils mit Pfeil zu den Einstellungen
   - „Letzte Diktate“: 3 Einträge, Text zweizeilig gekürzt, Zeit in IBM Plex Mono, Kopieren-Button 44×44
@@ -171,6 +171,11 @@ farbige oder zweifarbige Logos; Pille um den aktiven Navigationseintrag; einger�
 - [x] In-App-Animation D (Compose) in „Datei transkribieren“; in Entwurf 3 weiterverwenden
 - [x] Entwurf 3 als neue Oberfläche umsetzen (Start, Wörterbuch, Stile, Einstellungen, hell und dunkel): `app/main/` mit `MainScreen`, Tabs, `UnisonoComponents`, `UnisonoIcons` (Pfade aus den HTML-Referenzen); Theme in `app/apptheme/Unisono.kt`
 - [ ] Entwurf 3 auf dem S24 ansehen (hell, dunkel) und Abstände nachziehen
+- [x] Unterseiten im Unisono-Look, Teil 1: Schwebender Button und Aufnahme (`UnisonoPage`, Karten, `UChoiceDialog` statt Material-Dialogen, Stil-Auswahl mit Vorschaubildern `res/drawable-xhdpi/preview_bubble_*.png`; Bausteine in `app/main/UnisonoSettings.kt`)
+- [x] Unterseiten Teil 2a: KI-Anbieter (Im Einsatz, Deine Anbieter, Netzwerk; Auswahl als `UDialog`) und Sprachen (aktive Sprache, Chips, Hinzufügen mit Suche). Der Anbieter-Editor-Dialog (`ProviderEditorDialog`) ist noch im alten Look
+- [x] Unterseiten Teil 2b: Statistik, Ersetzungen und Verlauf im Unisono-Look. Im Verlauf bleiben die Dialoge (Export, Detail, Limits) noch alt
+- [ ] Offen aus Teil 2: Prompts (`DictatePromptsScreen`, Editor und Ziehen zum Sortieren) und Prompt-Bibliothek, Anbieter-Editor-Dialog; die Stile-Seite deckt das Anlegen und Bearbeiten schon im neuen Look ab; Teil 3: Sonstige, Sichern, Über, Lizenzen, Einrichtung
+- [x] Unterseiten Teil 3: Sonstige, Sichern, Wiederherstellen, Über und die drei Lizenzseiten im Unisono-Look (neue Bausteine `UButton`, `UNotice`, `UTextField`). Die Einrichtung (`SetupScreen`) bekommt den Look über das Material-Theme (Farben, Schrift) und die neuen Rundungen; ihre Schritte sind nicht neu gebaut
 - [ ] Mitgelieferte Stile (Wörtlich, E-Mail, Chat, Aktenvermerk) als Standard-Prompts
 - [x] Wolken-Shader an den Prototyp angeglichen (`dictate/ui/AudioReactiveCloudOrbView.kt`, Bewegung in `CloudMotion.kt`, Paletten in `CloudPalette.kt`):
   dieselben Ebenen, Keyframes und Dauern wie `SchwebenderButton.html`. Gegen Screenshots des Prototyps (Chromium) mit einem

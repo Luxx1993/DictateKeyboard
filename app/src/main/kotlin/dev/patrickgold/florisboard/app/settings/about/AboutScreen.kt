@@ -16,101 +16,79 @@
 
 package dev.patrickgold.florisboard.app.settings.about
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.CallSplit
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.outlined.Description
-import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Policy
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import dev.patrickgold.florisboard.BuildConfig
 import dev.patrickgold.florisboard.R
-import dev.patrickgold.florisboard.app.settings.search.settingsSearchAnchor
 import dev.patrickgold.florisboard.app.LocalNavController
 import dev.patrickgold.florisboard.app.Routes
-import dev.patrickgold.florisboard.lib.compose.FlorisScreen
+import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
+import dev.patrickgold.florisboard.app.apptheme.Unisono
+import dev.patrickgold.florisboard.app.main.UCard
+import dev.patrickgold.florisboard.app.main.UDivider
+import dev.patrickgold.florisboard.app.main.UNavRow
+import dev.patrickgold.florisboard.app.main.UnisonoPage
+import dev.patrickgold.florisboard.app.settings.search.settingsSearchAnchor
 import dev.patrickgold.florisboard.lib.util.launchUrl
-import dev.patrickgold.jetpref.datastore.ui.Preference
 import org.florisboard.lib.android.stringRes
 import org.florisboard.lib.compose.stringRes
 
+/** About page in the look of Entwurf 3: app name and credit on top, links and licences in two cards. */
 @Composable
-fun AboutScreen() = FlorisScreen {
-    title = stringRes(R.string.about__title)
-
+fun AboutScreen() = UnisonoPage(title = stringRes(R.string.about__title)) {
     val navController = LocalNavController.current
     val context = LocalContext.current
-
+    val c = LocalUnisono.current
     val appVersion = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
 
-    content {
-        Column(
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 24.dp, bottom = 32.dp)
-        ) {
-            // The globe has no background of its own, so here it takes the screen's text colour rather than
-            // the launcher's white, which would vanish on a light screen.
-            Icon(
-                modifier = Modifier.requiredSize(64.dp),
-                imageVector = ImageVector.vectorResource(R.drawable.ic_diktat_globe_notification),
-                contentDescription = stringRes(R.string.app_name_full),
-                tint = MaterialTheme.colorScheme.onSurface,
-            )
-            Text(
-                text = stringRes(R.string.app_name_full),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(top = 16.dp),
-            )
-            Text(
-                text = stringRes(R.string.about__made_by),
-                fontSize = 14.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 8.dp),
-            )
-        }
-        Preference(
-            icon = Icons.Outlined.Info,
-            modifier = Modifier.settingsSearchAnchor("about__version__title"),
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        // The globe has no background of its own, so it takes the text colour rather than the launcher's white.
+        Icon(
+            modifier = Modifier.requiredSize(64.dp),
+            imageVector = ImageVector.vectorResource(R.drawable.ic_diktat_globe_notification),
+            contentDescription = stringRes(R.string.app_name_full),
+            tint = c.textPrimary,
+        )
+        Text(stringRes(R.string.app_name_full), style = Unisono.SectionTitle, color = c.textPrimary)
+        Text(
+            stringRes(R.string.about__made_by),
+            style = Unisono.Label,
+            color = c.textSecondary,
+            textAlign = TextAlign.Center,
+        )
+    }
+
+    UCard {
+        UNavRow(
             title = stringRes(R.string.about__version__title),
-            summary = appVersion,
+            subtitle = appVersion,
+            modifier = Modifier.settingsSearchAnchor("about__version__title"),
             onClick = {
                 try {
-                    val clipboard = context.getSystemService(android.content.ClipboardManager::class.java)
-                    clipboard.setPrimaryClip(android.content.ClipData.newPlainText(appVersion, appVersion))
+                    val clipboard = context.getSystemService(ClipboardManager::class.java)
+                    clipboard.setPrimaryClip(ClipData.newPlainText(appVersion, appVersion))
                     Toast.makeText(context, R.string.about__version_copied__title, Toast.LENGTH_SHORT).show()
                 } catch (e: Throwable) {
                     Toast.makeText(
@@ -121,32 +99,32 @@ fun AboutScreen() = FlorisScreen {
                 }
             },
         )
-        Preference(
-            icon = Icons.Default.History,
-            modifier = Modifier.settingsSearchAnchor("about__changelog__title"),
+        UDivider()
+        UNavRow(
             title = stringRes(R.string.about__changelog__title),
-            summary = stringRes(R.string.about__changelog__summary),
+            subtitle = stringRes(R.string.about__changelog__summary),
+            modifier = Modifier.settingsSearchAnchor("about__changelog__title"),
             onClick = { context.launchUrl(R.string.florisboard__changelog_url, "version" to BuildConfig.VERSION_NAME) },
         )
-        Preference(
-            icon = Icons.Default.Code,
-            modifier = Modifier.settingsSearchAnchor("about__repository__title"),
+        UDivider()
+        UNavRow(
             title = stringRes(R.string.about__repository__title),
-            summary = stringRes(R.string.about__repository__summary),
+            subtitle = stringRes(R.string.about__repository__summary),
+            modifier = Modifier.settingsSearchAnchor("about__repository__title"),
             onClick = { context.launchUrl(R.string.florisboard__repo_url) },
         )
-        Preference(
-            icon = Icons.Default.CallSplit,
-            modifier = Modifier.settingsSearchAnchor("about__based_on_floris__title"),
+        UDivider()
+        UNavRow(
             title = stringRes(R.string.about__based_on_floris__title),
-            summary = stringRes(R.string.about__based_on_floris__summary),
+            subtitle = stringRes(R.string.about__based_on_floris__summary),
+            modifier = Modifier.settingsSearchAnchor("about__based_on_floris__title"),
             onClick = { context.launchUrl(R.string.florisboard__upstream_repo_url) },
         )
-        Preference(
-            icon = Icons.Outlined.Email,
-            modifier = Modifier.settingsSearchAnchor("about__feedback__title"),
+        UDivider()
+        UNavRow(
             title = stringRes(R.string.about__feedback__title),
-            summary = stringRes(R.string.about__feedback__summary),
+            subtitle = stringRes(R.string.about__feedback__summary),
+            modifier = Modifier.settingsSearchAnchor("about__feedback__title"),
             onClick = {
                 val email = context.stringRes(R.string.about__feedback__email)
                 val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$email")).apply {
@@ -159,31 +137,33 @@ fun AboutScreen() = FlorisScreen {
                 }
             },
         )
-        Preference(
-            icon = Icons.Outlined.Policy,
-            modifier = Modifier.settingsSearchAnchor("about__privacy_policy__title"),
+        UDivider()
+        UNavRow(
             title = stringRes(R.string.about__privacy_policy__title),
-            summary = stringRes(R.string.about__privacy_policy__summary),
+            subtitle = stringRes(R.string.about__privacy_policy__summary),
+            modifier = Modifier.settingsSearchAnchor("about__privacy_policy__title"),
             onClick = { context.launchUrl(R.string.florisboard__privacy_policy_url) },
         )
-        Preference(
-            icon = Icons.Outlined.Description,
-            modifier = Modifier.settingsSearchAnchor("about__project_license__title"),
+    }
+
+    UCard {
+        UNavRow(
             title = stringRes(R.string.about__project_license__title),
-            summary = stringRes(R.string.about__project_license__summary, "license_name" to "Apache 2.0"),
+            subtitle = stringRes(R.string.about__project_license__summary, "license_name" to "Apache 2.0"),
+            modifier = Modifier.settingsSearchAnchor("about__project_license__title"),
             onClick = { navController.navigate(Routes.Settings.ProjectLicense) },
         )
-        Preference(
-            icon = Icons.Outlined.Description,
-            title = stringRes(id = R.string.about__third_party_licenses__title),
-            summary = stringRes(id = R.string.about__third_party_licenses__summary),
+        UDivider()
+        UNavRow(
+            title = stringRes(R.string.about__third_party_licenses__title),
+            subtitle = stringRes(R.string.about__third_party_licenses__summary),
             onClick = { navController.navigate(Routes.Settings.ThirdPartyLicenses) },
         )
-        Preference(
-            icon = Icons.Outlined.Description,
+        UDivider()
+        UNavRow(
+            title = stringRes(R.string.about__data_attributions__title),
+            subtitle = stringRes(R.string.about__data_attributions__summary),
             modifier = Modifier.settingsSearchAnchor("about__data_attributions__title"),
-            title = stringRes(id = R.string.about__data_attributions__title),
-            summary = stringRes(id = R.string.about__data_attributions__summary),
             onClick = { navController.navigate(Routes.Settings.DataAttributions) },
         )
     }

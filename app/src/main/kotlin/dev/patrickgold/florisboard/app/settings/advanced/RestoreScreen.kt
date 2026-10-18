@@ -19,7 +19,19 @@ package dev.patrickgold.florisboard.app.settings.advanced
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Box
+import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
+import dev.patrickgold.florisboard.app.apptheme.Unisono
+import dev.patrickgold.florisboard.app.main.UButton
+import dev.patrickgold.florisboard.app.main.UCard
+import dev.patrickgold.florisboard.app.main.UCheckRow
+import dev.patrickgold.florisboard.app.main.UChoiceOption
+import dev.patrickgold.florisboard.app.main.UDivider
+import dev.patrickgold.florisboard.app.main.UGroupLabel
+import dev.patrickgold.florisboard.app.main.UNotice
+import dev.patrickgold.florisboard.app.main.UnisonoPage
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -106,8 +118,8 @@ private class SecretPreservingReader(
 }
 
 @Composable
-fun RestoreScreen() = FlorisScreen {
-    title = stringRes(R.string.backup_and_restore__restore__title)
+fun RestoreScreen() = UnisonoPage(title = stringRes(R.string.backup_and_restore__restore__title)) {
+    val c = LocalUnisono.current
 
     val prefs by FlorisPreferenceStore
     val navController = LocalNavController.current
@@ -223,156 +235,112 @@ fun RestoreScreen() = FlorisScreen {
         }
     }
 
-    bottomBar {
-        FlorisButtonBar {
-            ButtonBarSpacer()
-            ButtonBarTextButton(
-                onClick = {
-                    restoreWorkspace?.close()
-                    navController.navigateUp()
-                },
-                text = stringRes(R.string.action__cancel),
-            )
-            ButtonBarButton(
-                onClick = {
-                    restoreScope.launch(Dispatchers.Main) {
-                        try {
-                            performRestore()
-                            context.showLongToast(R.string.backup_and_restore__restore__success)
-                            navController.navigateUp()
-                        } catch (e: Throwable) {
-                            e.printStackTrace()
-                            context.showLongToast(
-                                R.string.backup_and_restore__restore__failure,
-                                "error_message" to e.localizedMessage,
-                            )
-                        }
-                    }
-                },
-                text = stringRes(R.string.action__restore),
-                enabled = restoreWorkspace != null && restoreWorkspace?.restoreErrorId == null,
-            )
-        }
-    }
-
-    content {
-        FlorisOutlinedBox(
-            modifier = Modifier.defaultFlorisOutlinedBox(),
-            title = stringRes(R.string.backup_and_restore__restore__mode),
-        ) {
-            RadioListItem(
-                onClick = {
-                    importStrategy = ImportStrategy.Merge
-                },
-                selected = importStrategy == ImportStrategy.Merge,
-                text = stringRes(R.string.backup_and_restore__restore__mode_merge),
-            )
-            RadioListItem(
-                onClick = {
-                    importStrategy = ImportStrategy.Erase
-                },
-                selected = importStrategy == ImportStrategy.Erase,
-                text = stringRes(R.string.backup_and_restore__restore__mode_erase_and_overwrite),
-            )
-        }
-        FlorisOutlinedButton(
-            onClick = {
-                runCatching {
-                    restoreDataFromFileSystemLauncher.launch("*/*")
-                }.onFailure { error ->
-                    context.showLongToastSync(
-                        R.string.backup_and_restore__restore__failure,
-                        "error_message" to error.localizedMessage,
-                    )
-                }
-            },
-            modifier = Modifier
-                .padding(vertical = 16.dp)
-                .align(Alignment.CenterHorizontally),
-            text = stringRes(R.string.action__select_file),
+    UGroupLabel(stringRes(R.string.backup_and_restore__restore__mode))
+    UCard {
+        RadioListItem(
+            onClick = { importStrategy = ImportStrategy.Merge },
+            selected = importStrategy == ImportStrategy.Merge,
+            text = stringRes(R.string.backup_and_restore__restore__mode_merge),
         )
-        val workspace = restoreWorkspace
-        if (workspace == null) {
-            Text(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(horizontal = 16.dp),
-                text = stringRes(R.string.state__no_file_selected),
-                fontStyle = FontStyle.Italic,
-            )
-        } else {
-            FlorisOutlinedBox(
-                modifier = Modifier.defaultFlorisOutlinedBox(),
-                title = stringRes(R.string.backup_and_restore__restore__metadata),
-            ) {
-                Preference(
-                    icon = Icons.Default.Code,
-                    title = workspace.metadata.packageName,
+        UDivider()
+        RadioListItem(
+            onClick = { importStrategy = ImportStrategy.Erase },
+            selected = importStrategy == ImportStrategy.Erase,
+            text = stringRes(R.string.backup_and_restore__restore__mode_erase_and_overwrite),
+        )
+    }
+    UButton(
+        text = stringRes(R.string.action__select_file),
+        primary = false,
+        modifier = Modifier.fillMaxWidth(),
+        onClick = {
+            runCatching {
+                restoreDataFromFileSystemLauncher.launch("*/*")
+            }.onFailure { error ->
+                context.showLongToastSync(
+                    R.string.backup_and_restore__restore__failure,
+                    "error_message" to error.localizedMessage,
                 )
-                Preference(
-                    icon = Icons.Outlined.Info,
-                    title = "${workspace.metadata.versionName} (${workspace.metadata.versionCode})",
+            }
+        },
+    )
+    val workspace = restoreWorkspace
+    if (workspace == null) {
+        Text(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+            text = stringRes(R.string.state__no_file_selected),
+            style = Unisono.Label,
+            color = c.textTertiary,
+        )
+    } else {
+        UGroupLabel(stringRes(R.string.backup_and_restore__restore__metadata))
+        UCard {
+            Column(Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(workspace.metadata.packageName, style = Unisono.Mono, color = c.textPrimary)
+                Text(
+                    "${workspace.metadata.versionName} (${workspace.metadata.versionCode})",
+                    style = Unisono.Mono,
+                    color = c.textPrimary,
                 )
-                Preference(
-                    icon = Icons.Default.Schedule,
-                    title = remember(workspace.metadata.timestamp) {
+                Text(
+                    remember(workspace.metadata.timestamp) {
                         val formatter = DateFormat.getDateTimeInstance()
                         val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
                         calendar.timeInMillis = workspace.metadata.timestamp
                         formatter.format(calendar.time)
                     },
-                )
-                if (workspace.restoreErrorId != null) {
-                    Column(modifier = Modifier.padding(FlorisCardDefaults.ContentPadding)) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(9.dp)
-                                .padding(bottom = 8.dp)
-                                .background(MaterialTheme.colorScheme.error.copy(alpha = 0.56f))
-                        )
-                        Text(
-                            text = stringRes(workspace.restoreErrorId!!),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.error,
-                            fontStyle = FontStyle.Italic,
-                        )
-                    }
-                } else if (workspace.restoreWarningId != null) {
-                    Column(modifier = Modifier.padding(FlorisCardDefaults.ContentPadding)) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(9.dp)
-                                .padding(bottom = 8.dp)
-                                .background(LocalContentColor.current)
-                        )
-                        Text(
-                            text = stringRes(workspace.restoreWarningId!!),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = LocalContentColor.current,
-                            fontStyle = FontStyle.Italic,
-                        )
-                    }
-                }
-                // A plain statement of fact, not a warning: an archive can legitimately carry no keys, and
-                // the point is only that the user learns it here rather than after the device change.
-                if (workspace.restoreErrorId == null && workspace.restoreCredentialsMissing) {
-                    Text(
-                        modifier = Modifier.padding(FlorisCardDefaults.ContentPadding),
-                        text = stringRes(R.string.backup_and_restore__restore__metadata_note_no_credentials),
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontStyle = FontStyle.Italic,
-                    )
-                }
-            }
-            if (workspace.restoreErrorId == null) {
-                BackupFilesSelector(
-                    filesSelector = restoreFilesSelector,
-                    title = stringRes(R.string.backup_and_restore__restore__files),
-                    showCredentials = false,
+                    style = Unisono.Mono,
+                    color = c.textPrimary,
                 )
             }
         }
+        if (workspace.restoreErrorId != null) {
+            UNotice(stringRes(workspace.restoreErrorId!!), warning = true)
+        } else if (workspace.restoreWarningId != null) {
+            UNotice(stringRes(workspace.restoreWarningId!!), warning = true)
+        }
+        // A plain statement of fact, not a warning: an archive can legitimately carry no keys, and the
+        // point is only that the user learns it here rather than after the device change.
+        if (workspace.restoreErrorId == null && workspace.restoreCredentialsMissing) {
+            UNotice(stringRes(R.string.backup_and_restore__restore__metadata_note_no_credentials))
+        }
+        if (workspace.restoreErrorId == null) {
+            BackupFilesSelector(
+                filesSelector = restoreFilesSelector,
+                title = stringRes(R.string.backup_and_restore__restore__files),
+                showCredentials = false,
+            )
+        }
+    }
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        UButton(
+            text = stringRes(R.string.action__cancel),
+            primary = false,
+            modifier = Modifier.weight(1f),
+            onClick = {
+                restoreWorkspace?.close()
+                navController.navigateUp()
+            },
+        )
+        UButton(
+            text = stringRes(R.string.action__restore),
+            modifier = Modifier.weight(1f),
+            enabled = restoreWorkspace != null && restoreWorkspace?.restoreErrorId == null,
+            onClick = {
+                restoreScope.launch(Dispatchers.Main) {
+                    try {
+                        performRestore()
+                        context.showLongToast(R.string.backup_and_restore__restore__success)
+                        navController.navigateUp()
+                    } catch (e: Throwable) {
+                        e.printStackTrace()
+                        context.showLongToast(
+                            R.string.backup_and_restore__restore__failure,
+                            "error_message" to e.localizedMessage,
+                        )
+                    }
+                }
+            },
+        )
     }
 }
