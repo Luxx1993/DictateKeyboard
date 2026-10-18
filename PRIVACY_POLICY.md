@@ -3,7 +3,7 @@
 **Stand:** 18. Oktober 2026
 
 diktat ist eine Diktier-App für Android und ein privates Open-Source-Projekt
-([github.com/Luxx1993/DictateKeyboard](https://github.com/Luxx1993/DictateKeyboard)). Diese Seite beschreibt, was
+([github.com/Luxx1993/diktat](https://github.com/Luxx1993/diktat)). Diese Seite beschreibt, was
 mit deinen Daten passiert. Kurz gesagt: **diktat betreibt keinen Server und erhält keine Daten von dir.**
 
 ## Kurzfassung
@@ -52,7 +52,7 @@ einträgst. Was der Anbieter mit Aufnahme und Text macht, entscheidet er, nicht 
 
 **Downloads.** Offline-Modelle und das Pausen-Modell für das Langdiktat werden auf Knopfdruck von GitHub
 heruntergeladen, derzeit aus den Releases von Dictate Keyboard. Die Prompt-Bibliothek lädt ihre Liste aus diesem
-Repository. Dabei sieht GitHub deine IP-Adresse und welche Datei angefragt wurde, sonst
+Repository (Zweig `prompt-library`). Dabei sieht GitHub deine IP-Adresse und welche Datei angefragt wurde, sonst
 nichts.
 
 ## Sicherungen
@@ -79,5 +79,5 @@ wählst du dabei aus.
 
 ## Nachprüfbar
 
-Der gesamte Quellcode ist offen: [github.com/Luxx1993/DictateKeyboard](https://github.com/Luxx1993/DictateKeyboard).
+Der gesamte Quellcode ist offen: [github.com/Luxx1993/diktat](https://github.com/Luxx1993/diktat).
 Fragen und Hinweise bitte über die Issues dort.

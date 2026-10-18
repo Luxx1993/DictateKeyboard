@@ -311,7 +311,7 @@ object ProviderRegistry {
         // Attribution headers recommended by OpenRouter: both are used for app ranking and some routes
         // reject requests without an HTTP-Referer. The value is a stable identifier, not a real URL.
         extraHeaders = mapOf(
-            "HTTP-Referer" to "https://github.com/Luxx1993/DictateKeyboard",
+            "HTTP-Referer" to "https://github.com/Luxx1993/diktat",
             "X-Title" to "diktat",
         ),
         // Data residency (#403): the EU entry point decrypts in the EU and routes only to in-region
