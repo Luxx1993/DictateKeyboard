@@ -10,6 +10,21 @@
 
 package dev.patrickgold.florisboard.app.settings.dictate
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.style.TextAlign
+import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
+import dev.patrickgold.florisboard.app.apptheme.Unisono
+import dev.patrickgold.florisboard.app.main.UButton
+import dev.patrickgold.florisboard.app.main.UCard
+import dev.patrickgold.florisboard.app.main.UDialog
+import dev.patrickgold.florisboard.app.main.UDivider
+import dev.patrickgold.florisboard.app.main.UNavRow
+import dev.patrickgold.florisboard.app.main.UnisonoIcons
+import dev.patrickgold.florisboard.app.main.UnisonoPage
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -87,9 +102,8 @@ import org.florisboard.lib.compose.stringRes
  * manages, so imported prompts immediately show up in the user's list and on the keyboard chips.
  */
 @Composable
-fun DictatePromptLibraryScreen() = FlorisScreen {
-    title = stringRes(R.string.dictate__prompt_library_title)
-    scrollable = false
+fun DictatePromptLibraryScreen() = UnisonoPage(title = stringRes(R.string.dictate__prompt_library_title)) {
+    val c = LocalUnisono.current
 
     val context = LocalContext.current
     val db = remember { PromptsDatabaseHelper.getInstance(context) }
@@ -169,138 +183,140 @@ fun DictatePromptLibraryScreen() = FlorisScreen {
         }
     }
 
-    actions {
-        FlorisIconButton(
-            onClick = { scope.launch { refreshFromNetwork() } },
-            icon = Icons.Default.Refresh,
-        )
+    LaunchedEffect(Unit) { openLoad() }
+
+    val categories = remember(entries.toList()) {
+        entries.mapNotNull { it.category?.takeIf { c -> c.isNotBlank() } }.distinct().sorted()
+    }
+    val filtered = remember(entries.toList(), query, activeCategory) {
+        val q = query.trim().lowercase()
+        entries.filter { e ->
+            (activeCategory == null || e.category == activeCategory) &&
+                (q.isEmpty() ||
+                    e.name.lowercase().contains(q) ||
+                    e.description?.lowercase()?.contains(q) == true ||
+                    e.prompt.lowercase().contains(q))
+        }
     }
 
-    content {
-        LaunchedEffect(Unit) { openLoad() }
-
-        val categories = remember(entries.toList()) {
-            entries.mapNotNull { it.category?.takeIf { c -> c.isNotBlank() } }.distinct().sorted()
-        }
-        val filtered = remember(entries.toList(), query, activeCategory) {
-            val q = query.trim().lowercase()
-            entries.filter { e ->
-                (activeCategory == null || e.category == activeCategory) &&
-                    (q.isEmpty() ||
-                        e.name.lowercase().contains(q) ||
-                        e.description?.lowercase()?.contains(q) == true ||
-                        e.prompt.lowercase().contains(q))
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(44.dp)
+            .clip(Unisono.Pill)
+            .background(c.sunken)
+            .padding(horizontal = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Icon(UnisonoIcons.Search, contentDescription = null, tint = c.textTertiary, modifier = Modifier.size(18.dp))
+        Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
+            if (query.isEmpty()) {
+                Text(stringRes(R.string.dictate__prompt_library_search), style = Unisono.Body, color = c.textTertiary)
             }
-        }
-
-        Column(modifier = Modifier.fillMaxSize()) {
-            // Thin bar while a background refresh runs over already-shown content (not the first load).
-            if (refreshing && !loading) {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-            }
-            OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+            BasicTextField(
                 value = query,
                 onValueChange = { query = it },
+                modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                placeholder = { Text(stringRes(R.string.dictate__prompt_library_search)) },
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                textStyle = Unisono.Body.copy(color = c.textPrimary),
+                cursorBrush = SolidColor(c.textPrimary),
             )
+        }
+    }
 
-            if (categories.isNotEmpty()) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    FilterChip(
-                        selected = activeCategory == null,
-                        onClick = { activeCategory = null },
-                        label = { Text(stringRes(R.string.dictate__prompt_library_all)) },
-                    )
-                    categories.forEach { category ->
-                        FilterChip(
-                            selected = activeCategory == category,
-                            onClick = { activeCategory = if (activeCategory == category) null else category },
-                            label = { Text(category) },
-                        )
-                    }
-                }
-            }
-
-            when {
-                loading -> CenteredBox { CircularProgressIndicator() }
-                loadError -> CenteredBox {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Icon(
-                            Icons.Default.CloudOff,
-                            contentDescription = null,
-                            modifier = Modifier.size(48.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        Spacer(Modifier.height(12.dp))
-                        Text(
-                            text = stringRes(R.string.dictate__prompt_library_error),
-                            modifier = Modifier.padding(horizontal = 32.dp),
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        TextButton(onClick = { scope.launch { refreshFromNetwork() } }) {
-                            Text(stringRes(R.string.dictate__prompt_library_retry))
-                        }
-                    }
-                }
-                filtered.isEmpty() -> CenteredBox {
-                    Text(
-                        text = stringRes(R.string.dictate__prompt_library_empty),
-                        modifier = Modifier.padding(horizontal = 32.dp),
-                    )
-                }
-                else -> {
-                    val listState = rememberLazyListState()
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .florisScrollbar(listState, isVertical = true),
-                        state = listState,
-                    ) {
-                        items(filtered, key = { it.id }) { entry ->
-                            val added = isAdded(entry)
-                            LibraryRow(
-                                entry = entry,
-                                added = added,
-                                onClick = { preview = entry },
-                                onAdd = { addEntry(entry) },
-                            )
-                        }
-                    }
+    if (categories.isNotEmpty()) {
+        Row(
+            modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            LibraryChip(stringRes(R.string.dictate__prompt_library_all), activeCategory == null) { activeCategory = null }
+            categories.forEach { category ->
+                LibraryChip(category, activeCategory == category) {
+                    activeCategory = if (activeCategory == category) null else category
                 }
             }
         }
+    }
 
-        val current = preview
-        if (current != null) {
-            val added = isAdded(current)
-            PreviewDialog(
-                entry = current,
-                added = added,
-                onDismiss = { preview = null },
-                onAdd = {
-                    addEntry(current)
-                    preview = null
-                },
+    when {
+        loading -> Text(
+            "\u2026",
+            modifier = Modifier.fillMaxWidth().padding(24.dp),
+            style = Unisono.SectionTitle,
+            color = c.textTertiary,
+            textAlign = TextAlign.Center,
+        )
+        loadError -> UCard {
+            Text(
+                text = stringRes(R.string.dictate__prompt_library_error),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 16.dp),
+                style = Unisono.Body,
+                color = c.textSecondary,
+            )
+            UDivider()
+            UNavRow(
+                title = stringRes(R.string.dictate__prompt_library_retry),
+                onClick = { scope.launch { refreshFromNetwork() } },
             )
         }
+        filtered.isEmpty() -> Text(
+            text = stringRes(R.string.dictate__prompt_library_empty),
+            modifier = Modifier.fillMaxWidth().padding(24.dp),
+            style = Unisono.Body,
+            color = c.textSecondary,
+            textAlign = TextAlign.Center,
+        )
+        else -> UCard {
+            filtered.forEachIndexed { index, entry ->
+                if (index > 0) UDivider()
+                LibraryRow(
+                    entry = entry,
+                    added = isAdded(entry),
+                    onClick = { preview = entry },
+                    onAdd = { addEntry(entry) },
+                )
+            }
+        }
+    }
+
+    // The background refresh over already-shown content; also the way to pull a fresh copy by hand.
+    UButton(
+        text = stringRes(R.string.dictate__prompt_library_retry),
+        primary = false,
+        enabled = !refreshing,
+        modifier = Modifier.fillMaxWidth(),
+        onClick = { scope.launch { refreshFromNetwork() } },
+    )
+
+    val current = preview
+    if (current != null) {
+        PreviewDialog(
+            entry = current,
+            added = isAdded(current),
+            onDismiss = { preview = null },
+            onAdd = {
+                addEntry(current)
+                preview = null
+            },
+        )
     }
 }
 
 @Composable
-private fun CenteredBox(content: @Composable () -> Unit) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { content() }
+private fun LibraryChip(label: String, selected: Boolean, onClick: () -> Unit) {
+    val c = LocalUnisono.current
+    Text(
+        label,
+        modifier = Modifier
+            .clip(Unisono.Pill)
+            .background(if (selected) c.action else c.raised)
+            .border(0.5.dp, if (selected) c.action else c.borderSubtle, Unisono.Pill)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 8.dp),
+        style = Unisono.Caption,
+        color = if (selected) c.onAction else c.textPrimary,
+    )
 }
 
 @Composable
@@ -310,94 +326,57 @@ private fun LibraryRow(
     onClick: () -> Unit,
     onAdd: () -> Unit,
 ) {
+    val c = LocalUnisono.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
-            .padding(start = 16.dp, top = 10.dp, bottom = 10.dp),
+            .padding(start = 18.dp, top = 12.dp, bottom = 12.dp, end = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        // Three stacked lines: title with the category pill right beside it, then the author, then the
-        // short description (falling back to the raw prompt).
-        Column(modifier = Modifier.weight(1f)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    modifier = Modifier.weight(1f, fill = false),
-                    text = entry.name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                entry.category?.takeIf { it.isNotBlank() }?.let {
-                    Spacer(Modifier.width(8.dp))
-                    CategoryTag(it)
-                }
-            }
-            entry.author?.takeIf { it.isNotBlank() }?.let {
-                Text(
-                    text = stringRes(R.string.dictate__prompt_library_author, "author" to it),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
+        // Title with the category beside it, then the author, then the short description (falling back to
+        // the raw prompt).
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(entry.name, style = Unisono.BodyStrong, color = c.textPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            val meta = listOfNotNull(
+                entry.category?.takeIf { it.isNotBlank() },
+                entry.author?.takeIf { it.isNotBlank() }?.let {
+                    stringRes(R.string.dictate__prompt_library_author, "author" to it)
+                },
+            ).joinToString(" \u00b7 ")
+            if (meta.isNotEmpty()) Text(meta, style = Unisono.Mono, color = c.textTertiary)
             Text(
                 text = entry.description?.takeIf { it.isNotBlank() } ?: entry.prompt,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = Unisono.Label,
+                color = c.textSecondary,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
         }
-        Spacer(Modifier.width(8.dp))
-        if (entry.requiresSelection) {
-            PromptTypeBadge(Icons.Default.SelectAll)
-        }
-        if (entry.autoApply) {
-            Spacer(Modifier.width(4.dp))
-            PromptTypeBadge(Icons.Default.Autorenew)
-        }
-        Spacer(Modifier.width(8.dp))
         if (added) {
             Icon(
-                modifier = Modifier.padding(end = 16.dp).size(22.dp),
+                modifier = Modifier.size(22.dp),
                 imageVector = Icons.Default.Check,
                 contentDescription = stringRes(R.string.dictate__prompt_library_added),
-                tint = MaterialTheme.colorScheme.primary,
+                tint = c.success,
             )
         } else {
-            TextButton(onClick = onAdd, modifier = Modifier.padding(end = 8.dp)) {
-                Text(stringRes(R.string.dictate__prompt_library_add))
-            }
+            Text(
+                stringRes(R.string.dictate__prompt_library_add),
+                modifier = Modifier
+                    .clip(Unisono.Pill)
+                    .border(1.dp, c.borderStrong, Unisono.Pill)
+                    .clickable(onClick = onAdd)
+                    .padding(horizontal = 14.dp, vertical = 8.dp),
+                style = Unisono.Caption,
+                color = c.textPrimary,
+            )
         }
     }
 }
 
-/** A small pill showing a prompt's category (issue #105). */
-@Composable
-private fun CategoryTag(category: String) {
-    Surface(
-        shape = RoundedCornerShape(50),
-        color = MaterialTheme.colorScheme.secondaryContainer,
-    ) {
-        Text(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-            text = category,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSecondaryContainer,
-        )
-    }
-}
-
-@Composable
-private fun PromptTypeBadge(icon: androidx.compose.ui.graphics.vector.ImageVector) {
-    Icon(
-        modifier = Modifier.size(18.dp),
-        imageVector = icon,
-        contentDescription = null,
-        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-    )
-}
-
+/** Closing the dialog is "Fertig"; adding is its own row. Live even when the prompt is already in the list. */
 @Composable
 private fun PreviewDialog(
     entry: PromptLibraryEntry,
@@ -405,61 +384,36 @@ private fun PreviewDialog(
     onDismiss: () -> Unit,
     onAdd: () -> Unit,
 ) {
-    JetPrefAlertDialog(
-        scrollModifier = florisDialogScroll(),
-        title = entry.name,
-        // Live even when the prompt is already in the list (issue #303): duplicates are legal here, and
-        // a confirm button that reacts to nothing at all is what made the reporter conclude the app was
-        // broken. The label says what a second tap will do instead of pretending to be a status.
-        confirmLabel = if (added) {
-            stringRes(R.string.dictate__prompt_library_add_again)
-        } else {
-            stringRes(R.string.dictate__prompt_library_add)
-        },
-        onConfirm = onAdd,
-        dismissLabel = stringRes(R.string.dictate__prompt_library_close),
-        onDismiss = onDismiss,
-        allowOutsideDismissal = true,
-    ) {
-        Column {
-            entry.category?.takeIf { it.isNotBlank() }?.let {
-                CategoryTag(it)
-                Spacer(Modifier.height(8.dp))
-            }
+    val c = LocalUnisono.current
+    UDialog(title = entry.name, onDismiss = onDismiss) {
+        Column(
+            Modifier.padding(horizontal = 18.dp, vertical = 6.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            val flags = listOfNotNull(
+                entry.category?.takeIf { it.isNotBlank() },
+                if (entry.requiresSelection) stringRes(R.string.dictate__prompt_badge_selection) else null,
+                if (entry.autoApply) stringRes(R.string.dictate__prompt_badge_auto) else null,
+            ).joinToString(" \u00b7 ")
+            if (flags.isNotEmpty()) Text(flags, style = Unisono.Mono, color = c.textTertiary)
             if (!entry.description.isNullOrBlank()) {
-                Text(text = entry.description, style = MaterialTheme.typography.bodyMedium)
-                Spacer(Modifier.height(8.dp))
+                Text(entry.description, style = Unisono.Body, color = c.textPrimary)
             }
-            Text(
-                text = entry.prompt,
-                style = MaterialTheme.typography.bodySmall,
-                fontFamily = FontFamily.Monospace,
-            )
-            Spacer(Modifier.height(12.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                if (entry.requiresSelection) {
-                    Text(
-                        text = stringRes(R.string.dictate__prompt_badge_selection),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                }
-                if (entry.autoApply) {
-                    Text(
-                        text = stringRes(R.string.dictate__prompt_badge_auto),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                }
-            }
+            Text(entry.prompt, style = Unisono.Mono, color = c.textSecondary)
             if (!entry.author.isNullOrBlank()) {
-                Spacer(Modifier.height(8.dp))
                 Text(
-                    text = stringRes(R.string.dictate__prompt_library_author, "author" to entry.author),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    stringRes(R.string.dictate__prompt_library_author, "author" to entry.author),
+                    style = Unisono.Label,
+                    color = c.textTertiary,
                 )
             }
         }
+        UDivider()
+        UNavRow(
+            title = stringRes(
+                if (added) R.string.dictate__prompt_library_add_again else R.string.dictate__prompt_library_add,
+            ),
+            onClick = onAdd,
+        )
     }
 }
