@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="florisApp_windowBackground">#FF1F1F1F</color>
-    <color name="diktat_icon_ink">#F4F1EC</color>
+    <color name="florisApp_windowBackground">#FF121110</color>
+    <color name="diktat_icon_ink">#F2EEE8</color>
 </resources>
