@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 Lukas Klenk (diktat)
+ * Copyright (C) 2026 Luxx1993 (diktat)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

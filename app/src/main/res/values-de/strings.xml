@@ -156,7 +156,7 @@
     <!-- Default example prompts seeded on a fresh install. -->
     <!-- Dictate strings -->
     <string name="quick_action__dictate_live_prompt">Live-Prompt</string>
-    <string name="about__made_by">diktat von Lukas Klenk\nBasiert auf Dictate Keyboard von DevEmperor</string>
+    <string name="about__made_by">diktat von Luxx1993\nBasiert auf Dictate Keyboard von DevEmperor</string>
     <string name="about__feedback__title">Feedback &amp; Support</string>
     <string name="about__feedback__summary">Eine E-Mail mit Fragen, Fehlern oder Ideen senden</string>
     <string name="about__feedback__email">contact@devemperor.net</string>
