@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Schwebender Button</title>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+:root{--surface-canvas:#F4F1EC;--surface-raised:#FFFFFF;--surface-sunken:#ECE7E0;--text-primary:#1F1C1A;--text-secondary:#5E5852;--text-tertiary:#6F6962;--border-subtle:rgba(31,28,26,.08);--border-strong:rgba(31,28,26,.16);--action-primary:#1F1C1A;--status-success:#357A5B;--font-ui:"Manrope",system-ui,sans-serif;--radius-lg:16px;--elev-1:inset 0 0 0 .5px rgba(31,28,26,.08),0 1px 2px rgba(31,28,26,.04);--elev-2:0 0 0 1px rgba(31,28,26,.06),0 4px 8px -2px rgba(31,28,26,.05),0 12px 24px -8px rgba(31,28,26,.06);--glass:rgba(255,255,255,.6)}
+body{margin:0}
+.orb{--o0:#B8C7F9;--o1:#7A8FFB;--o2:#5C63FB;--o3:#E3EBFE;--o4:#C9B8F9;position:relative;flex-shrink:0;border-radius:50%;overflow:hidden;isolation:isolate;background:var(--o0);box-shadow:var(--elev-2);animation:breathe 9s ease-in-out infinite}
+.orb.lagune{--o0:#9AD7E6;--o1:#3FA9C8;--o2:#1E6F8E;--o3:#DDF4EF;--o4:#86D3B7}
+.orb.salbei{--o0:#B5D9A8;--o1:#6BA86F;--o2:#2F6A52;--o3:#EDF3CF;--o4:#D2E48F}
+.orb.abendrot{--o0:#EDBFCF;--o1:#C96F9D;--o2:#7B3F80;--o3:#F8E1D2;--o4:#EBA57E}
+.orb.tinte{--o0:#CFC8BF;--o1:#6F6962;--o2:#1F1C1A;--o3:#F4F1EC;--o4:#A59E96}
+.orb .sw{position:absolute;inset:-25%;animation:orbspin 140s linear infinite;will-change:transform}
+.orb .bl{position:absolute;border-radius:50%;filter:blur(var(--b,8px));will-change:transform}
+.orb .a{left:8%;top:8%;width:60%;height:58%;background:var(--o1);animation:dA 26s ease-in-out infinite alternate}
+.orb .b{left:44%;top:30%;width:56%;height:62%;background:var(--o2);animation:dB 32s ease-in-out infinite alternate}
+.orb .c{left:12%;top:58%;width:66%;height:38%;background:var(--o3);opacity:.7;animation:dC 21s ease-in-out infinite alternate}
+.orb .d{left:22%;top:24%;width:32%;height:32%;background:var(--o4);opacity:.9;animation:dD 18s ease-in-out infinite alternate}
+.orb .cl{position:absolute;inset:0;background:url(textures/smoke.svg) center/100% 100%;mix-blend-mode:overlay;opacity:.75;animation:orbspin 90s linear infinite reverse}
+.orb .gr{position:absolute;inset:0;border-radius:50%;background:url(textures/grain.svg) 0 0/var(--g,90px);mix-blend-mode:overlay;opacity:.8}
+.orb .hl{position:absolute;inset:0;border-radius:50%;background:radial-gradient(ellipse 20% 11% at 34% 17%,var(--glass) 0,rgba(255,255,255,0) 100%),radial-gradient(circle at 72% 82%,rgba(8,14,40,.28) 0,rgba(8,14,40,0) 52%),radial-gradient(circle at 50% 50%,rgba(255,255,255,0) 64%,rgba(255,255,255,.28) 100%)}
+.orb .gl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.orb.listen{animation:voice 7s ease-in-out infinite}
+.orb.listen .a,.orb.listen .b{animation-duration:12s}
+.orb .spin{position:absolute;inset:39%;border-radius:50%;border:2px solid rgba(255,255,255,.92);border-right-color:transparent;border-bottom-color:transparent;animation:orbspin 1.8s linear infinite}
+.orb .tn{position:absolute;inset:0;background:var(--status-success);mix-blend-mode:color;opacity:.9}
+@keyframes orbspin{to{transform:rotate(360deg)}}
+@keyframes breathe{50%{transform:scale(1.02)}}
+@keyframes voice{0%,100%{transform:scale(1.03)}22%{transform:scale(1.055)}38%{transform:scale(1.04)}61%{transform:scale(1.065)}80%{transform:scale(1.045)}}
+@keyframes dA{50%{transform:translate(12%,8%) scale(1.1) rotate(25deg)}100%{transform:translate(-6%,12%) scale(.94) rotate(-15deg)}}
+@keyframes dB{50%{transform:translate(-14%,-9%) scale(1.12) rotate(-30deg)}100%{transform:translate(7%,-4%) scale(.96) rotate(10deg)}}
+@keyframes dC{50%{transform:translate(10%,-12%) scale(1.08)}100%{transform:translate(-8%,-4%) scale(1.03)}}
+@keyframes dD{50%{transform:translate(28%,20%) scale(1.18)}100%{transform:translate(8%,34%) scale(.88)}}
+@media (prefers-reduced-motion:reduce){.orb,.orb *{animation:none!important}}
+</style>
+</helmet>
+<div style="width: 640px; height: 844px; box-sizing: border-box; background: var(--surface-canvas); color: var(--text-primary); font-family: var(--font-ui); padding: 56px 48px; display: flex; flex-direction: column; gap: 30px">
+  <header style="display: flex; flex-direction: column; gap: 8px">
+    <h1 style="margin: 0; font-size: 32px; line-height: 38px; font-weight: 300; letter-spacing: -0.02em">Schwebender Button</h1>
+    <p style="margin: 0; max-width: 60ch; font-size: 15px; line-height: 22px; color: var(--text-secondary)">Eine Glaskugel mit farbigem Rauch, ruhig über jeder App. Beim Sprechen hebt sie sich leicht, der Rauch zieht langsam weiter. Die Farbe wählst du in den Einstellungen.</p>
+  </header>
+
+  <section aria-label="Beim Diktieren" style="position: relative; height: 230px; border-radius: var(--radius-lg); background: var(--surface-raised); box-shadow: var(--elev-1); overflow: hidden">
+    <div aria-hidden="true" style="position: absolute; left: 24px; right: 210px; top: 28px; display: flex; flex-direction: column; gap: 12px">
+      <span style="width: 62%; height: 28px; border-radius: 14px; background: var(--surface-sunken)"></span>
+      <span style="align-self: flex-end; width: 48%; height: 28px; border-radius: 14px; background: var(--surface-sunken)"></span>
+      <span style="width: 74%; height: 28px; border-radius: 14px; background: var(--surface-sunken)"></span>
+    </div>
+    <div style="position: absolute; right: 40px; top: 50%; transform: translateY(-50%); width: 160px; height: 160px; display: flex; align-items: center; justify-content: center">
+      <span class="orb listen lagune" aria-hidden="true" style="width: 128px; height: 128px; --b: 11px; --g: 110px"><span class="sw"><span class="bl a"></span><span class="bl b"></span><span class="bl c"></span><span class="bl d"></span><span class="cl"></span></span><span class="gr"></span><span class="hl"></span></span>
+    </div>
+    <p style="position: absolute; left: 24px; bottom: 22px; margin: 0; max-width: 260px; padding: 12px 16px; border-radius: var(--radius-lg); background: var(--surface-canvas); box-shadow: var(--elev-1); font-size: 15px; line-height: 22px; color: var(--text-secondary)">Schick mir bitte die Unterlagen bis Freitag, dann…</p>
+  </section>
+
+  <section aria-label="Farben" style="display: flex; align-items: center; gap: 20px">
+    <h2 style="margin: 0; flex-grow: 1; font-size: 20px; line-height: 28px; font-weight: 500">Farben</h2>
+    <span style="display: flex; flex-direction: column; align-items: center; gap: 4px"><span class="orb lagune" aria-hidden="true" style="width: 40px; height: 40px; --b: 4px; --g: 60px; box-shadow: 0 0 0 2px var(--surface-canvas), 0 0 0 3.5px var(--action-primary)"><span class="sw"><span class="bl a"></span><span class="bl b"></span><span class="bl c"></span><span class="bl d"></span><span class="cl"></span></span><span class="gr"></span><span class="hl"></span></span><span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">Lagune</span></span>
+    <span style="display: flex; flex-direction: column; align-items: center; gap: 4px"><span class="orb" aria-hidden="true" style="width: 40px; height: 40px; --b: 4px; --g: 60px"><span class="sw"><span class="bl a"></span><span class="bl b"></span><span class="bl c"></span><span class="bl d"></span><span class="cl"></span></span><span class="gr"></span><span class="hl"></span></span><span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">Periwinkle</span></span>
+    <span style="display: flex; flex-direction: column; align-items: center; gap: 4px"><span class="orb salbei" aria-hidden="true" style="width: 40px; height: 40px; --b: 4px; --g: 60px"><span class="sw"><span class="bl a"></span><span class="bl b"></span><span class="bl c"></span><span class="bl d"></span><span class="cl"></span></span><span class="gr"></span><span class="hl"></span></span><span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">Salbei</span></span>
+    <span style="display: flex; flex-direction: column; align-items: center; gap: 4px"><span class="orb abendrot" aria-hidden="true" style="width: 40px; height: 40px; --b: 4px; --g: 60px"><span class="sw"><span class="bl a"></span><span class="bl b"></span><span class="bl c"></span><span class="bl d"></span><span class="cl"></span></span><span class="gr"></span><span class="hl"></span></span><span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">Abendrot</span></span>
+    <span style="display: flex; flex-direction: column; align-items: center; gap: 4px"><span class="orb tinte" aria-hidden="true" style="width: 40px; height: 40px; --b: 4px; --g: 60px"><span class="sw"><span class="bl a"></span><span class="bl b"></span><span class="bl c"></span><span class="bl d"></span><span class="cl"></span></span><span class="gr"></span><span class="hl"></span></span><span style="font-size: 12px; line-height: 16px; color: var(--text-secondary)">Tinte</span></span>
+  </section>
+
+  <section aria-label="Zustände" style="display: flex; flex-direction: column; gap: 4px">
+    <h2 style="margin: 0; font-size: 20px; line-height: 28px; font-weight: 500">Zustände</h2>
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px">
+      <figure style="margin: 0; display: flex; flex-direction: column; align-items: center; gap: 12px">
+        <div style="width: 110px; height: 110px; display: flex; align-items: center; justify-content: center">
+          <span class="orb lagune" aria-hidden="true" style="width: 90px; height: 90px; --b: 8px; --g: 90px"><span class="sw"><span class="bl a"></span><span class="bl b"></span><span class="bl c"></span><span class="bl d"></span><span class="cl"></span></span><span class="gr"></span><span class="hl"></span></span>
+        </div>
+        <figcaption style="display: flex; flex-direction: column; align-items: center; text-align: center"><span style="font-size: 15px; font-weight: 600">Bereit</span><span style="font-size: 13px; line-height: 19px; color: var(--text-secondary)">Tippen startet</span></figcaption>
+      </figure>
+      <figure style="margin: 0; display: flex; flex-direction: column; align-items: center; gap: 12px">
+        <div style="width: 110px; height: 110px; display: flex; align-items: center; justify-content: center">
+          <span class="orb listen lagune" aria-hidden="true" style="width: 90px; height: 90px; --b: 8px; --g: 90px"><span class="sw"><span class="bl a"></span><span class="bl b"></span><span class="bl c"></span><span class="bl d"></span><span class="cl"></span></span><span class="gr"></span><span class="hl"></span></span>
+        </div>
+        <figcaption style="display: flex; flex-direction: column; align-items: center; text-align: center"><span style="font-size: 15px; font-weight: 600">Hört zu</span><span style="font-size: 13px; line-height: 19px; color: var(--text-secondary)">Hebt sich mit der Stimme</span></figcaption>
+      </figure>
+      <figure style="margin: 0; display: flex; flex-direction: column; align-items: center; gap: 12px">
+        <div style="width: 110px; height: 110px; display: flex; align-items: center; justify-content: center">
+          <span class="orb lagune" aria-hidden="true" style="width: 90px; height: 90px; --b: 8px; --g: 90px"><span class="sw"><span class="bl a"></span><span class="bl b"></span><span class="bl c"></span><span class="bl d"></span><span class="cl"></span></span><span class="gr"></span><span class="hl"></span><span class="spin"></span></span>
+        </div>
+        <figcaption style="display: flex; flex-direction: column; align-items: center; text-align: center"><span style="font-size: 15px; font-weight: 600">Verarbeitet</span><span style="font-size: 13px; line-height: 19px; color: var(--text-secondary)">Schreibt und räumt auf</span></figcaption>
+      </figure>
+      <figure style="margin: 0; display: flex; flex-direction: column; align-items: center; gap: 12px">
+        <div style="width: 110px; height: 110px; display: flex; align-items: center; justify-content: center">
+          <span class="orb lagune" aria-hidden="true" style="width: 90px; height: 90px; --b: 8px; --g: 90px"><span class="sw"><span class="bl a"></span><span class="bl b"></span><span class="bl c"></span><span class="bl d"></span><span class="cl"></span></span><span class="gr"></span><span class="tn"></span><span class="hl"></span><span class="gl"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--surface-raised)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></span></span>
+        </div>
+        <figcaption style="display: flex; flex-direction: column; align-items: center; text-align: center"><span style="font-size: 15px; font-weight: 600">Fertig</span><span style="font-size: 13px; line-height: 19px; color: var(--text-secondary)">Text ist eingefügt</span></figcaption>
+      </figure>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":640,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

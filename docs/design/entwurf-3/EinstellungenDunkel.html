@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Einstellungen dunkel</title>
+
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+:root{--nav-pill:#34312D;color-scheme:dark;--surface-canvas:#121110;--surface-raised:#1B1A18;--surface-sunken:#2A2825;--text-primary:#F2EEE8;--text-secondary:#A9A29A;--text-tertiary:#857E77;--border-subtle:rgba(242,238,232,.08);--border-strong:rgba(242,238,232,.16);--action-primary:#F2EEE8;--action-on-primary:#121110;--font-ui:"Manrope",system-ui,sans-serif;--radius-md:10px;--radius-lg:16px;--radius-pill:999px;--elev-1:inset 0 0 0 .5px rgba(242,238,232,.08);--elev-2:0 0 0 1px rgba(242,238,232,.08);--glass:rgba(255,255,255,.35)}
+body{margin:0}
+.orb{--o0:#B8C7F9;--o1:#7A8FFB;--o2:#5C63FB;--o3:#E3EBFE;--o4:#C9B8F9;position:relative;flex-shrink:0;border-radius:50%;overflow:hidden;isolation:isolate;background:var(--o0);box-shadow:var(--elev-2)}
+.orb.lagune{--o0:#9AD7E6;--o1:#3FA9C8;--o2:#1E6F8E;--o3:#DDF4EF;--o4:#86D3B7}
+.orb.salbei{--o0:#B5D9A8;--o1:#6BA86F;--o2:#2F6A52;--o3:#EDF3CF;--o4:#D2E48F}
+.orb.abendrot{--o0:#EDBFCF;--o1:#C96F9D;--o2:#7B3F80;--o3:#F8E1D2;--o4:#EBA57E}
+.orb.tinte{--o0:#CFC8BF;--o1:#6F6962;--o2:#1F1C1A;--o3:#F4F1EC;--o4:#A59E96}
+.orb .sw{position:absolute;inset:-25%;animation:orbspin 140s linear infinite;will-change:transform}
+.orb .bl{position:absolute;border-radius:50%;filter:blur(var(--b,8px));will-change:transform}
+.orb .a{left:8%;top:8%;width:60%;height:58%;background:var(--o1);animation:dA 26s ease-in-out infinite alternate}
+.orb .b{left:44%;top:30%;width:56%;height:62%;background:var(--o2);animation:dB 32s ease-in-out infinite alternate}
+.orb .c{left:12%;top:58%;width:66%;height:38%;background:var(--o3);opacity:.7;animation:dC 21s ease-in-out infinite alternate}
+.orb .d{left:22%;top:24%;width:32%;height:32%;background:var(--o4);opacity:.9;animation:dD 18s ease-in-out infinite alternate}
+.orb .cl{position:absolute;inset:0;background:url(textures/smoke.svg) center/100% 100%;mix-blend-mode:overlay;opacity:.75;animation:orbspin 90s linear infinite reverse}
+.orb .gr{position:absolute;inset:0;border-radius:50%;background:url(textures/grain.svg) 0 0/var(--g,90px);mix-blend-mode:overlay;opacity:.8}
+.orb .hl{position:absolute;inset:0;border-radius:50%;background:radial-gradient(ellipse 20% 11% at 34% 17%,var(--glass) 0,rgba(255,255,255,0) 100%),radial-gradient(circle at 72% 82%,rgba(8,14,40,.28) 0,rgba(8,14,40,0) 52%),radial-gradient(circle at 50% 50%,rgba(255,255,255,0) 64%,rgba(255,255,255,.28) 100%)}
+.sws{width:44px;height:44px;border:0;padding:0;background:transparent;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.sws .orb,.sws .orb *{animation:none}
+.sws .orb{box-shadow:none}
+.sws[aria-pressed="true"] .orb{box-shadow:0 0 0 2px var(--surface-raised),0 0 0 3.5px var(--action-primary)}
+@keyframes orbspin{to{transform:rotate(360deg)}}
+@keyframes dA{50%{transform:translate(12%,8%) scale(1.1) rotate(25deg)}100%{transform:translate(-6%,12%) scale(.94) rotate(-15deg)}}
+@keyframes dB{50%{transform:translate(-14%,-9%) scale(1.12) rotate(-30deg)}100%{transform:translate(7%,-4%) scale(.96) rotate(10deg)}}
+@keyframes dC{50%{transform:translate(10%,-12%) scale(1.08)}100%{transform:translate(-8%,-4%) scale(1.03)}}
+@keyframes dD{50%{transform:translate(28%,20%) scale(1.18)}100%{transform:translate(8%,34%) scale(.88)}}
+@media (prefers-reduced-motion:reduce){.orb,.orb *{animation:none!important}}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: var(--surface-canvas); color: var(--text-primary); font-family: var(--font-ui); display: flex; flex-direction: column; overflow: hidden">
+  <main style="flex-grow: 1; min-height: 0; overflow: hidden; padding: 40px 20px 0; display: flex; flex-direction: column; gap: 16px">
+    <h1 style="margin: 0; font-size: 32px; line-height: 38px; font-weight: 300; letter-spacing: -0.02em">Einstellungen</h1>
+
+    <section aria-label="Schwebender Button" style="background: var(--surface-raised); border-radius: var(--radius-lg); box-shadow: var(--elev-1); display: flex; flex-direction: column">
+      <div style="padding: 16px; display: flex; align-items: center; gap: 14px">
+        <span class="orb lagune" aria-hidden="true" style="width: 56px; height: 56px; --b: 6px; --g: 80px"><span class="sw"><span class="bl a"></span><span class="bl b"></span><span class="bl c"></span><span class="bl d"></span><span class="cl"></span></span><span class="gr"></span><span class="hl"></span></span>
+        <span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 17px; line-height: 24px; font-weight: 600; white-space: nowrap">Schwebender Button</span>
+          <span style="font-size: 13px; line-height: 18px; color: var(--text-secondary)">Stil: Wolke · über jeder App</span>
+        </span>
+        <button type="button" role="switch" aria-checked="true" aria-label="Schwebender Button" style="width: 52px; height: 32px; border: 0; padding: 0; border-radius: var(--radius-pill); background: var(--action-primary); position: relative; cursor: pointer; flex-shrink: 0">
+          <span style="position: absolute; right: 4px; top: 4px; width: 24px; height: 24px; border-radius: 12px; background: var(--action-on-primary)"></span>
+        </button>
+      </div>
+      <div style="height: 1px; background: var(--border-subtle); margin: 0 18px"></div>
+      <div role="group" aria-label="Farbe der Wolke" style="display: flex; align-items: center; padding: 6px 8px 6px 18px">
+        <span style="flex-grow: 1; font-size: 15px; font-weight: 600">Farbe</span>
+        <button type="button" class="sws" aria-pressed="true" aria-label="Lagune"><span class="orb lagune" aria-hidden="true" style="width: 28px; height: 28px; --b: 3px; --g: 50px"><span class="sw"><span class="bl a"></span><span class="bl b"></span><span class="bl c"></span><span class="bl d"></span><span class="cl"></span></span><span class="gr"></span><span class="hl"></span></span></button>
+        <button type="button" class="sws" aria-pressed="false" aria-label="Periwinkle"><span class="orb" aria-hidden="true" style="width: 28px; height: 28px; --b: 3px; --g: 50px"><span class="sw"><span class="bl a"></span><span class="bl b"></span><span class="bl c"></span><span class="bl d"></span><span class="cl"></span></span><span class="gr"></span><span class="hl"></span></span></button>
+        <button type="button" class="sws" aria-pressed="false" aria-label="Salbei"><span class="orb salbei" aria-hidden="true" style="width: 28px; height: 28px; --b: 3px; --g: 50px"><span class="sw"><span class="bl a"></span><span class="bl b"></span><span class="bl c"></span><span class="bl d"></span><span class="cl"></span></span><span class="gr"></span><span class="hl"></span></span></button>
+        <button type="button" class="sws" aria-pressed="false" aria-label="Abendrot"><span class="orb abendrot" aria-hidden="true" style="width: 28px; height: 28px; --b: 3px; --g: 50px"><span class="sw"><span class="bl a"></span><span class="bl b"></span><span class="bl c"></span><span class="bl d"></span><span class="cl"></span></span><span class="gr"></span><span class="hl"></span></span></button>
+        <button type="button" class="sws" aria-pressed="false" aria-label="Tinte"><span class="orb tinte" aria-hidden="true" style="width: 28px; height: 28px; --b: 3px; --g: 50px"><span class="sw"><span class="bl a"></span><span class="bl b"></span><span class="bl c"></span><span class="bl d"></span><span class="cl"></span></span><span class="gr"></span><span class="hl"></span></span></button>
+      </div>
+    </section>
+
+    <section aria-label="Diktat" style="display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0 0 0 4px; font-size: 14px; line-height: 20px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.02em">Diktat</h2>
+      <div style="background: var(--surface-raised); border-radius: var(--radius-lg); box-shadow: var(--elev-1); display: flex; flex-direction: column">
+        <a href="#" style="display: flex; align-items: center; gap: 14px; padding: 12px 18px; text-decoration: none; color: var(--text-primary); min-height: 44px">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"></path></svg>
+          <span style="flex-grow: 1; display: flex; flex-direction: column"><span style="font-size: 16px; line-height: 24px; font-weight: 600">Sprachen</span><span style="font-size: 13px; line-height: 18px; color: var(--text-secondary)">Automatisch, Deutsch, Englisch</span></span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+        </a>
+        <div style="height: 1px; background: var(--border-subtle); margin: 0 18px"></div>
+        <a href="#" style="display: flex; align-items: center; gap: 14px; padding: 12px 18px; text-decoration: none; color: var(--text-primary); min-height: 44px">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18a4.5 4.5 0 0 1-.6-9A6 6 0 0 1 18 8.5a4.8 4.8 0 0 1-1 9.5z"></path></svg>
+          <span style="flex-grow: 1; display: flex; flex-direction: column"><span style="font-size: 16px; line-height: 24px; font-weight: 600">KI-Anbieter</span><span style="font-size: 13px; line-height: 18px; color: var(--text-secondary)">ElevenLabs Scribe · Claude Haiku 5.5</span></span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+        </a>
+        <div style="height: 1px; background: var(--border-subtle); margin: 0 18px"></div>
+        <a href="#" style="display: flex; align-items: center; gap: 14px; padding: 12px 18px; text-decoration: none; color: var(--text-primary); min-height: 44px">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h2M8 8v8M12 5v14M16 8v8M20 12h0"></path></svg>
+          <span style="flex-grow: 1; display: flex; flex-direction: column"><span style="font-size: 16px; line-height: 24px; font-weight: 600">Aufnahme</span><span style="font-size: 13px; line-height: 18px; color: var(--text-secondary)">Gedrückt halten, Stille kürzen</span></span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+        </a>
+      </div>
+    </section>
+
+    <section aria-label="Mehr" style="display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0 0 0 4px; font-size: 14px; line-height: 20px; font-weight: 700; color: var(--text-secondary); letter-spacing: 0.02em">Mehr</h2>
+      <div style="background: var(--surface-raised); border-radius: var(--radius-lg); box-shadow: var(--elev-1); display: flex; flex-direction: column">
+        <a href="#" style="display: flex; align-items: center; gap: 14px; padding: 12px 18px; text-decoration: none; color: var(--text-primary); min-height: 44px">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5M10 17v-5l4-1v5"></path><circle cx="9" cy="17" r="1"></circle><circle cx="13" cy="16" r="1"></circle></svg>
+          <span style="flex-grow: 1; font-size: 16px; line-height: 24px; font-weight: 600">Datei transkribieren</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+        </a>
+        <div style="height: 1px; background: var(--border-subtle); margin: 0 18px"></div>
+        <a href="#" style="display: flex; align-items: center; gap: 14px; padding: 12px 18px; text-decoration: none; color: var(--text-primary); min-height: 44px">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2.5"></rect><path d="M7 10h0M11 10h0M15 10h0M8 14h8"></path></svg>
+          <span style="flex-grow: 1; display: flex; flex-direction: column"><span style="font-size: 16px; line-height: 24px; font-weight: 600">Spracheingabe</span><span style="font-size: 13px; line-height: 18px; color: var(--text-secondary)">Mikrofon-Taste in SwiftKey</span></span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+        </a>
+        <div style="height: 1px; background: var(--border-subtle); margin: 0 18px"></div>
+        <a href="#" style="display: flex; align-items: center; gap: 14px; padding: 12px 18px; text-decoration: none; color: var(--text-primary); min-height: 44px">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"></path><path d="M3 4h18v3H3zM10 11h4"></path></svg>
+          <span style="flex-grow: 1; font-size: 16px; line-height: 24px; font-weight: 600">Sichern und wiederherstellen</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <nav aria-label="Hauptnavigation" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 12px 12px 24px; background: var(--surface-raised); border-top: 1px solid var(--border-subtle)">
+    <a href="StartDunkel.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: var(--text-tertiary); font-size: 12px; font-weight: 600">
+      <span style="width: 64px; height: 22px; display: flex; align-items: center; justify-content: center">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"></path></svg>
+      </span>Start</a>
+    <a href="WoerterbuchDunkel.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: var(--text-tertiary); font-size: 12px; font-weight: 600">
+      <span style="width: 64px; height: 22px; display: flex; align-items: center; justify-content: center">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"></path><path d="M5 17a3 3 0 0 1 3-3h11"></path></svg>
+      </span>Wörterbuch</a>
+    <a href="StileDunkel.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: var(--text-tertiary); font-size: 12px; font-weight: 600">
+      <span style="width: 64px; height: 22px; display: flex; align-items: center; justify-content: center">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text-tertiary)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 4.6L18 9.4l-4.2 1.8L12 16l-1.8-4.8L6 9.4l4.2-1.8z"></path><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"></path></svg>
+      </span>Stile</a>
+    <a href="EinstellungenDunkel.html" aria-current="page" style="display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: var(--text-primary); font-size: 12px; font-weight: 700">
+      <span style="width: 64px; height: 22px; display: flex; align-items: center; justify-content: center">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--text-primary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M12 2.5v3M12 18.5v3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M2.5 12h3M18.5 12h3M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"></path></svg>
+      </span>Einstellungen</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>
