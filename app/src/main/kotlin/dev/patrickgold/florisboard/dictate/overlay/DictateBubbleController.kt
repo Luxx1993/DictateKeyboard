@@ -25,6 +25,7 @@ import android.graphics.RadialGradient
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.SystemClock
@@ -65,7 +66,9 @@ import dev.patrickgold.florisboard.dictate.data.prompts.PromptModel
 import dev.patrickgold.florisboard.dictate.data.prompts.PromptsDatabaseHelper
 import dev.patrickgold.florisboard.dictate.data.prompts.snippetBody
 import dev.patrickgold.florisboard.dictate.ui.AudioReactiveCloudOrbView
+import dev.patrickgold.florisboard.dictate.ui.CloudColors
 import dev.patrickgold.florisboard.dictate.ui.CloudPalette
+import dev.patrickgold.florisboard.dictate.ui.GlassDrawable
 import dev.patrickgold.florisboard.dictate.ui.DictateAuroraOrbView
 import dev.patrickgold.florisboard.dictate.ui.DictateLatticeSphereView
 import dev.patrickgold.florisboard.lib.devtools.flogDebug
@@ -1690,16 +1693,53 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
 
     // --- Shared drawing helpers ------------------------------------------------------------------
 
-    private fun circle(colorRes: Int): GradientDrawable = GradientDrawable().apply {
-        shape = GradientDrawable.OVAL
-        setColor(color(colorRes))
+    /**
+     * A round surface in [colorRes]: glass in the cloud's palette for the button's own colours (see
+     * [glassTones]), a plain fill for anything else.
+     */
+    private fun circle(colorRes: Int): Drawable =
+        glassTones(colorRes)?.let { (l, m, d) -> GlassDrawable(l, m, d) }
+            ?: GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(color(colorRes))
+            }
+
+    /**
+     * The three tones of the glass surface for one of the button's colours, taken from the cloud's palette
+     * (docs/design/diktat-design.md §4) so the plain styles wear the cloud's colours rather than flat ones:
+     * at rest ground to deep tone, recording one step deeper, done green and failed red in the cloud's own
+     * tints. Null for a colour that is not one of the button's.
+     */
+    private fun glassTones(colorRes: Int): Triple<Int, Int, Int>? {
+        val p = palette()
+        return when (colorRes) {
+            R.color.dictate_overlay_accent -> Triple(p.o0, p.o1, p.o2)
+            R.color.dictate_overlay_recording -> Triple(p.o1, p.o2, darken(p.o2, 0.35f))
+            R.color.dictate_overlay_rewording -> Triple(p.o4, p.o1, p.o2)
+            R.color.dictate_overlay_success, R.color.dictate_overlay_error -> color(colorRes).let {
+                Triple(lighten(it, 0.40f), it, darken(it, 0.35f))
+            }
+            else -> null
+        }
+    }
+
+    private var paletteFor = 0
+    private var paletteCache: CloudColors = CloudPalette.DEFAULT.colors
+
+    /** The cloud palette of the chosen button colour, which every style draws its colours from. */
+    private fun palette(): CloudColors {
+        if (paletteFor != accentColor || paletteFor == 0) {
+            paletteCache = CloudPalette.forColor(accentColor)
+            paletteFor = accentColor
+        }
+        return paletteCache
     }
 
     /** The cancel/undo glyph, on whichever disc the current skin wants beside it. */
     private fun sideButtonIcon(resId: Int, pad: Int): ImageView = ImageView(context).apply {
         setImageResource(resId)
         setPadding(pad, pad, pad, pad)
-        background = skin?.sideButtonBackground() ?: circle(R.color.dictate_overlay_cancel)
+        background = skin?.sideButtonBackground() ?: circle(R.color.dictate_overlay_recording)
         imageTintList = ColorStateList.valueOf(skin?.sideButtonForeground ?: Color.WHITE)
         elevation = sdpf(6f)
     }
@@ -1725,12 +1765,17 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
     }
 
     /**
-     * Resolves a color resource — except the accent, which is overridden by the user's chosen button color
-     * so every skin's idle/accent visuals follow the preference without each call site needing to change.
+     * Resolves a color resource. The button's own colours come from the cloud palette of the chosen button
+     * colour, so every style follows it without each call site needing to change: the accent is the main
+     * tone, recording the deep tone, rewording the fourth blob's; done and failed are the cloud's green and
+     * red tints.
      */
-    private fun color(colorRes: Int): Int =
-        if (colorRes == R.color.dictate_overlay_accent) accentColor
-        else ContextCompat.getColor(context, colorRes)
+    private fun color(colorRes: Int): Int = when (colorRes) {
+        R.color.dictate_overlay_accent -> palette().o1
+        R.color.dictate_overlay_recording -> palette().o2
+        R.color.dictate_overlay_rewording -> palette().o4
+        else -> ContextCompat.getColor(context, colorRes)
+    }
 
     /** Mixes [color] towards white by [amount] (0..1) — the light inside the aurora orb (#253). */
     private fun lighten(color: Int, amount: Float): Int = Color.rgb(
@@ -1938,9 +1983,9 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
         override fun showFlash(kind: FlashKind) {
             when (kind) {
                 FlashKind.ERROR -> {
-                    setCore(R.color.dictate_overlay_recording)
+                    setCore(R.color.dictate_overlay_error)
                     showGlyph(R.drawable.ic_dictate_overlay_error)
-                    setSolidRing(R.color.dictate_overlay_recording)
+                    setSolidRing(R.color.dictate_overlay_error)
                 }
                 FlashKind.SUCCESS -> {
                     setCore(R.color.dictate_overlay_success)
@@ -1962,6 +2007,7 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
         private fun setCore(colorRes: Int) {
             core.background = circle(colorRes)
             icon.imageTintList = ColorStateList.valueOf(contrastForeground(color(colorRes)))
+            core.invalidateOutline()
         }
 
         private fun showGlyph(resId: Int) {
@@ -2073,11 +2119,7 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
         private val expandedContentWidth =
             waveMarginStart + waveWidth + waveMarginEnd + timerWidth + timerMarginEnd
 
-        private val bg = GradientDrawable().apply {
-            shape = GradientDrawable.RECTANGLE
-            cornerRadius = pillHeight / 2f
-            setColor(color(R.color.dictate_overlay_accent))
-        }
+        private val bg = glassTones(R.color.dictate_overlay_accent)!!.let { (l, m, d) -> GlassDrawable(l, m, d) }
         private val icon = ImageView(context).apply {
             setImageResource(R.drawable.ic_dictate_overlay_mic)
             imageTintList = ColorStateList.valueOf(contrastForeground(accentColor))
@@ -2229,7 +2271,7 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
             setExpanded(false)
             when (kind) {
                 FlashKind.ERROR -> {
-                    setColor(R.color.dictate_overlay_recording)
+                    setColor(R.color.dictate_overlay_error)
                     icon.setImageResource(R.drawable.ic_dictate_overlay_error)
                 }
                 FlashKind.SUCCESS -> {
@@ -2333,7 +2375,7 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
         }
 
         private fun setColor(colorRes: Int) {
-            bg.setColor(color(colorRes))
+            glassTones(colorRes)?.let { (l, m, d) -> bg.setTones(l, m, d) }
             val fg = contrastForeground(color(colorRes))
             icon.imageTintList = ColorStateList.valueOf(fg)
             timer.setTextColor(fg)
@@ -2415,7 +2457,7 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
             setGlow(0f)
             when (kind) {
                 FlashKind.ERROR -> {
-                    setCore(R.color.dictate_overlay_recording)
+                    setCore(R.color.dictate_overlay_error)
                     setGlyph(R.drawable.ic_dictate_overlay_error)
                 }
                 FlashKind.SUCCESS -> {
@@ -2569,7 +2611,7 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
             when (kind) {
                 FlashKind.ERROR -> {
                     icon.setImageResource(R.drawable.ic_dictate_overlay_error)
-                    orb.setMood(DictateAuroraOrbView.Mood.IDLE, color(R.color.dictate_overlay_recording))
+                    orb.setMood(DictateAuroraOrbView.Mood.IDLE, color(R.color.dictate_overlay_error))
                 }
                 FlashKind.SUCCESS -> {
                     icon.setImageResource(R.drawable.ic_dictate_overlay_check)
@@ -2759,7 +2801,7 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
             when (kind) {
                 FlashKind.ERROR -> {
                     showGlyph(R.drawable.ic_dictate_overlay_error)
-                    sphere.setMode(DictateLatticeSphereView.Mode.WEB, color(R.color.dictate_overlay_recording))
+                    sphere.setMode(DictateLatticeSphereView.Mode.WEB, color(R.color.dictate_overlay_error))
                 }
                 FlashKind.SUCCESS -> {
                     showGlyph(R.drawable.ic_dictate_overlay_check)

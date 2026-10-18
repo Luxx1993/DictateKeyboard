@@ -145,7 +145,7 @@ Einstellungen in `app/settings/dictate/DictateFloatingButtonScreen.kt`:
 - Ein/Aus, Bedienungshilfe-Dienst und Mikrofonfreigabe einrichten
 - **Wann zeigen**: sobald ein Feld Fokus hat · nur bei offener Tastatur (`DictateFloatingButtonShowWhen.kt`). Solange Dictates eigene Spracheingabe offen ist, tritt der Button zurück.
 - **App-Auswahl**: überall · nur in bestimmten Apps · überall außer in bestimmten Apps (`DictateFloatingButtonAppsScreen.kt`)
-- **Stil**: Ring, Pille, Kugel, **Wolke**, Aurora, Gitterkugel (`DictateFloatingButtonDesign.kt`) – Luxx1993s Wahl: Wolke
+- **Stil**: Ring, Pille, Kugel, **Wolke** (Standard), Aurora, Gitterkugel (`DictateFloatingButtonDesign.kt`). Alle Stile tragen die Farben der gewählten Wolken-Palette: Pille, Ring und Kugel eine Glasfläche (`dictate/ui/GlassDrawable.kt`) statt flacher Farbe, beim Aufnehmen eine Stufe tiefer statt Signalrot; Fertig und Fehler im Grün und Rot der Wolke.
 - Größe, an Rand einrasten, Farbe, ausblenden wenn untätig, **Position pro App merken**, Vibration beim Tippen
 - **Rückgängig-Taste**; **jedes Diktat in die Zwischenablage kopieren**
 - **Einfügen**: über die Eingabeverbindung der Bedienungshilfe, sonst den Feldinhalt, sonst Einfügen per Zwischenablage; drei Versuche. Nimmt die App den Text trotzdem nicht an, liegt er in der Zwischenablage **und** wartet zwei Minuten: Tippen ins Feld (gleiche App) oder auf die Wolke fügt ihn ein, doppelt eingefügt wird nicht. Scheitert auch das, bleibt nur die Zwischenablage. Das Log (`DictateOverlay`, Zeile `commit path=…`) nennt die App, nie den Text.
