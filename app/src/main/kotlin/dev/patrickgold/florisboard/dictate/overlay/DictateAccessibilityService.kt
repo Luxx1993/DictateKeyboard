@@ -184,7 +184,12 @@ class DictateAccessibilityService : AccessibilityService() {
             // transition on top of the accessibility framework's notification timeout (#222).
             AccessibilityEvent.TYPE_VIEW_FOCUSED,
             AccessibilityEvent.TYPE_VIEW_CLICKED,
-            -> updateEditableFocusImmediately()
+            -> {
+                updateEditableFocusImmediately()
+                // A dictation the field refused goes in when the user taps back into a field (see
+                // DictateController.retryPendingInsert); cheap when nothing is waiting.
+                if (editableFocused.value) DictateController.retryPendingInsert(this, fromFocus = true)
+            }
             // Only when the change could have moved the focus — see [windowsChangedMayMoveFocus] for the
             // burst that made the distinction necessary.
             AccessibilityEvent.TYPE_WINDOWS_CHANGED -> {
@@ -576,9 +581,12 @@ class DictateAccessibilityService : AccessibilityService() {
      */
     private fun logCommit(path: String, content: String, length: Int) {
         val legacy = if (legacyInsertionForced()) " legacy=forced" else ""
+        // The app's package, never anything from its field: which apps refuse a write is what decides
+        // where to look next.
+        val app = _foregroundPackage.value ?: "?"
         Log.i(
             LOG_TAG,
-            "commit path=$path content=$content started=${isInputStarted()}$legacy len=$length",
+            "commit path=$path content=$content started=${isInputStarted()}$legacy app=$app len=$length",
         )
     }
 
@@ -1320,8 +1328,10 @@ class DictateAccessibilityService : AccessibilityService() {
         private const val LOG_TAG = "DictateOverlay"
         // Floating-button commit reliability (#161): resolve + focus the field the user sees so the input
         // connection binds to it, retry briefly while the host app rebuilds its field right after a send.
-        private const val COMMIT_ATTEMPTS = 2
-        private const val COMMIT_RETRY_DELAY_MS = 60L
+        // Three tries, the last ones a little later: a field the app is still rebuilding after the tap on
+        // the button was the commonest refusal, and it is ready a moment after.
+        private const val COMMIT_ATTEMPTS = 3
+        private const val COMMIT_RETRY_DELAY_MS = 200L
         private const val FOCUS_SETTLE_MS = 40L
         // Read-back verification of the input-connection write (#277). The window is a little wider than
         // what was sent so a field that reformats around it still reads as changed.
@@ -1332,9 +1342,10 @@ class DictateAccessibilityService : AccessibilityService() {
         // path and writes the text a second time.
         private const val VERIFY_WAIT_MS = 250L
         private const val VERIFY_POLL_MS = 40L
-        // The ceiling on all of a commit's waiting together. This runs on the main thread, so the
-        // per-write waits above must not simply multiply with the paths tried and the retry.
-        private const val COMMIT_BUDGET_MS = 900L
+        // The ceiling on all of a commit's waiting together. The floating button commits off the main
+        // thread, but a caller may not, so the per-write waits above must not simply multiply with the
+        // paths tried and the retries. Raised with the third try, which needs room to verify as well.
+        private const val COMMIT_BUDGET_MS = 1_300L
         // How much of the field to ask the input connection for. Anything longer than this is treated as
         // unreadable rather than truncated — see [readWholeFieldFromConnection].
         private const val FIELD_READ_WINDOW = 8192

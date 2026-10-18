@@ -45,6 +45,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import dev.patrickgold.florisboard.R
 import dev.patrickgold.florisboard.app.FlorisPreferenceStore
 import dev.patrickgold.florisboard.app.LocalNavController
@@ -68,7 +80,9 @@ import org.florisboard.lib.compose.stringRes
  * active style is the one set to run after every dictation (auto-apply). With that switched off it stays
  * the chosen one ([activeStyleId][dev.patrickgold.florisboard.app.FlorisPreferenceModel.Dictate.activeStyleId]),
  * so the switch can bring it back. Only one style runs at a time from here: choosing another moves the
- * auto-apply over. Tapping a style card chooses it, holding it opens the editor.
+ * auto-apply over. Tapping a style card chooses it, holding it opens the editor; "Neuer Stil" writes a new
+ * one. Both edit in place ([StyleEditor]); the full prompt screen behind "Stile verwalten" keeps the rest
+ * (order, reasoning effort, import and export, the library).
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -114,7 +128,47 @@ internal fun StylesTab() {
         }
     }
 
-    fun edit(style: PromptModel) = navController.navigate(Routes.Settings.DictatePrompts(editPromptId = style.id))
+    // The style in the editor: a new one has id -1. Null while the editor is closed.
+    var editing by remember { mutableStateOf<PromptModel?>(null) }
+
+    fun edit(style: PromptModel) {
+        editing = style.copy()
+    }
+
+    editing?.let { draft ->
+        StyleEditor(
+            draft = draft,
+            onDismiss = { editing = null },
+            onSave = { name, prompt ->
+                editing = null
+                scope.launch {
+                    withContext(Dispatchers.IO) {
+                        if (draft.isPersisted()) {
+                            db.update(draft.copy(name = name, prompt = prompt))
+                        } else {
+                            val pos = (db.getAll().maxOfOrNull { it.pos } ?: -1) + 1
+                            db.add(PromptModel(-1, pos, name, prompt, requiresSelection = true, autoApply = false))
+                        }
+                    }
+                    DictateController.refreshPrompts(context)
+                    version++
+                }
+            },
+            onDelete = if (draft.isPersisted()) {
+                {
+                    editing = null
+                    scope.launch {
+                        withContext(Dispatchers.IO) { db.delete(draft.id) }
+                        if (prefs.dictate.activeStyleId.get() == draft.id) prefs.dictate.activeStyleId.set(-1)
+                        DictateController.refreshPrompts(context)
+                        version++
+                    }
+                }
+            } else {
+                null
+            },
+        )
+    }
 
     if (active == null) {
         Text(stringRes(R.string.main__styles_none_active), style = Unisono.Body, color = c.textSecondary)
@@ -225,7 +279,7 @@ internal fun StylesTab() {
                     ),
                 )
             }
-            .clickable { navController.navigate(Routes.Settings.DictatePrompts(editPromptId = PromptModel.ID_ADD_PROMPT)) },
+            .clickable { editing = PromptModel(-1, 0, "", "", requiresSelection = true, autoApply = false) },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {
@@ -248,5 +302,129 @@ internal fun StylesTab() {
             style = Unisono.Caption,
             color = c.textSecondary,
         )
+    }
+}
+
+/**
+ * Writing a style: its name and what the AI should do with the dictation. Saving needs both. [onDelete] is
+ * null for a style that does not exist yet; deleting asks once more.
+ */
+@Composable
+private fun StyleEditor(
+    draft: PromptModel,
+    onDismiss: () -> Unit,
+    onSave: (name: String, prompt: String) -> Unit,
+    onDelete: (() -> Unit)?,
+) {
+    val c = LocalUnisono.current
+    var name by rememberSaveable { mutableStateOf(draft.name.orEmpty()) }
+    var prompt by rememberSaveable { mutableStateOf(draft.prompt.orEmpty()) }
+    var confirmDelete by remember { mutableStateOf(false) }
+    val canSave = name.isNotBlank() && prompt.isNotBlank()
+
+    Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 20.dp)
+                .fillMaxWidth()
+                .clip(Unisono.RadiusLg)
+                .background(c.raised)
+                .padding(20.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(14.dp),
+        ) {
+            Text(
+                stringRes(if (draft.isPersisted()) R.string.main__styles_edit_title else R.string.main__styles_new),
+                style = Unisono.SectionTitle,
+                color = c.textPrimary,
+            )
+            EditorField(
+                label = stringRes(R.string.main__styles_field_name),
+                value = name,
+                onValueChange = { name = it },
+                singleLine = true,
+            )
+            EditorField(
+                label = stringRes(R.string.main__styles_field_prompt),
+                value = prompt,
+                onValueChange = { prompt = it },
+                singleLine = false,
+                hint = stringRes(R.string.main__styles_field_prompt_hint),
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (onDelete != null) {
+                    TextButton(onClick = { confirmDelete = true }) {
+                        Text(stringRes(R.string.action__delete), color = c.textSecondary)
+                    }
+                }
+                Box(Modifier.weight(1f))
+                TextButton(onClick = onDismiss) { Text(stringRes(R.string.action__cancel), color = c.textSecondary) }
+                Text(
+                    stringRes(R.string.main__styles_save),
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .clip(Unisono.Pill)
+                        .background(if (canSave) c.action else c.borderStrong)
+                        .clickable(enabled = canSave) { onSave(name.trim(), prompt.trim()) }
+                        .padding(horizontal = 18.dp, vertical = 10.dp),
+                    style = Unisono.Caption,
+                    color = c.onAction,
+                )
+            }
+        }
+    }
+
+    if (confirmDelete && onDelete != null) {
+        AlertDialog(
+            onDismissRequest = { confirmDelete = false },
+            text = { Text(stringRes(R.string.main__styles_delete_confirm, "name" to name.ifBlank { draft.name.orEmpty() })) },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmDelete = false
+                    onDelete()
+                }) { Text(stringRes(R.string.action__delete)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmDelete = false }) { Text(stringRes(R.string.action__cancel)) }
+            },
+        )
+    }
+}
+
+@Composable
+private fun EditorField(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    singleLine: Boolean,
+    hint: String? = null,
+) {
+    val c = LocalUnisono.current
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text(label, style = Unisono.Label.copy(fontWeight = FontWeight.SemiBold), color = c.textSecondary)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = if (singleLine) 48.dp else 160.dp)
+                .clip(Unisono.RadiusMd)
+                .background(c.sunken)
+                .padding(horizontal = 14.dp, vertical = 12.dp),
+        ) {
+            if (value.isEmpty() && hint != null) {
+                Text(hint, style = Unisono.Body, color = c.textTertiary)
+            }
+            BasicTextField(
+                value = value,
+                onValueChange = onValueChange,
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = singleLine,
+                textStyle = Unisono.Body.copy(color = c.textPrimary),
+                cursorBrush = SolidColor(c.textPrimary),
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences,
+                    imeAction = if (singleLine) ImeAction.Next else ImeAction.Default,
+                ),
+            )
+        }
     }
 }

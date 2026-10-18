@@ -233,6 +233,12 @@ object DictateController {
          * reason that resending can't fix (too large / unsupported format) so a long recording isn't lost.
          */
         SAVE_AUDIO,
+
+        /**
+         * The floating button's text was refused by the field: it is waiting to be inserted (see
+         * [retryPendingInsert]). Tapping the button, or tapping back into the field, inserts it.
+         */
+        INSERT,
     }
 
     /**
@@ -1392,6 +1398,8 @@ object DictateController {
      */
     private fun startRecording(context: Context, seedAccumulatedMs: Long = 0L) {
         if (_state.value is UiState.Recording) return
+        // A new dictation replaces one still waiting to be inserted; that one stays on the clipboard.
+        pendingInsert = null
         // The state only turns to Recording at the very end of [startJob], after audio focus, Bluetooth SCO
         // and the realtime socket. A second start inside that window (a second tap on a mic that has not
         // visibly reacted yet, the bubble and the keyboard at once) used to launch a second job, and both
@@ -2356,10 +2364,84 @@ object DictateController {
     private fun reportOverlayInsertFailure(context: Context, committed: Boolean, text: String): Boolean {
         if (committed || outputTarget != OutputTarget.OVERLAY || text.isEmpty()) return false
         copyToSystemClipboard(context, text)
+        // Not only on the clipboard: kept to be inserted the moment the field takes it, which is usually
+        // a moment later — the app was still rebuilding its field, or the user had tapped elsewhere.
+        pendingInsert = PendingInsert(
+            text = text,
+            atMs = SystemClock.elapsedRealtime(),
+            pkg = DictateAccessibilityService.foregroundPackage.value,
+        )
         _state.value = UiState.Error(
-            message = context.getString(R.string.dictate__error_overlay_insert_clipboard),
+            message = context.getString(R.string.dictate__error_overlay_insert_pending),
+            action = ErrorAction.INSERT,
         )
         return true
+    }
+
+    /** How long a refused dictation waits to be inserted before it is left on the clipboard alone. */
+    private const val PENDING_INSERT_MS = 120_000L
+
+    /** A floating-button dictation the field refused, see [reportOverlayInsertFailure]. */
+    private class PendingInsert(val text: String, val atMs: Long, val pkg: String?)
+
+    @Volatile
+    private var pendingInsert: PendingInsert? = null
+    private var insertRetryRunning = false
+
+    /**
+     * Tries again to insert the dictation the field refused, once: when the user taps the floating button
+     * ([fromFocus] false), or when an editable field takes focus or is tapped ([fromFocus] true). The
+     * latter only in the app the dictation was meant for and never into a password field, so a dictation
+     * does not turn up in a field it was not spoken for.
+     *
+     * Nothing is written when the text already stands in front of the cursor — the first write may have
+     * landed after all, and the same text twice is worse than none. After [PENDING_INSERT_MS] the text is
+     * given up on; it stays on the clipboard. Returns whether there was a pending text to try.
+     */
+    fun retryPendingInsert(context: Context, fromFocus: Boolean): Boolean {
+        val pending = pendingInsert ?: return false
+        if (SystemClock.elapsedRealtime() - pending.atMs > PENDING_INSERT_MS) {
+            dropPendingInsert()
+            return false
+        }
+        if (fromFocus) {
+            if (pending.pkg != null && pending.pkg != DictateAccessibilityService.foregroundPackage.value) return true
+            if (DictateAccessibilityService.focusedFieldIsPassword()) return true
+        }
+        if (insertRetryRunning) return true
+        insertRetryRunning = true
+        val appContext = context.applicationContext
+        scope.launch {
+            try {
+                outputTarget = OutputTarget.OVERLAY
+                val sink = sink(appContext)
+                val before = withContext(Dispatchers.IO) { sink.textBeforeCursor(pending.text.length + 2) }
+                val already = before != null && before.trimEnd().endsWith(pending.text.trimEnd())
+                val landed = already || run {
+                    val text = leadFor(appContext, pending.text) + pending.text
+                    writeToSink(sink, text)
+                }
+                if (landed && pendingInsert === pending) {
+                    dropPendingInsert()
+                } else if (!landed && !fromFocus && pendingInsert === pending) {
+                    // Asked for in so many words and still refused: stop holding the button for it, so the
+                    // next tap dictates again. The text stays on the clipboard.
+                    pendingInsert = null
+                    _state.value = UiState.Error(
+                        message = appContext.getString(R.string.dictate__error_overlay_insert_clipboard),
+                    )
+                }
+            } finally {
+                insertRetryRunning = false
+            }
+        }
+        return true
+    }
+
+    private fun dropPendingInsert() {
+        pendingInsert = null
+        val current = _state.value
+        if (current is UiState.Error && current.action == ErrorAction.INSERT) _state.value = UiState.Idle
     }
 
     private fun copyToSystemClipboard(context: Context, text: String) {

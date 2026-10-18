@@ -45,18 +45,11 @@ class PromptsDatabaseHelper private constructor(
                 "REQUIRES_SELECTION BOOLEAN, AUTO_APPLY BOOLEAN DEFAULT 0, REASONING_EFFORT TEXT, " +
                 "REASONING_EFFORT_CUSTOM TEXT, TRIGGER_WORD TEXT, LIBRARY_ID TEXT)"
         )
-        // Seed the example prompts for fresh installs only (existing users skip onCreate). These are
-        // the same defaults the legacy Dictate app shipped, resolved from string resources so they are
-        // localized (e.g. German) just like the original.
-        defaultSeeds().forEachIndexed { index, seed ->
-            val cv = ContentValues().apply {
-                put("POS", index)
-                put("NAME", context.getString(seed.nameRes))
-                put("PROMPT", context.getString(seed.promptRes))
-                put("REQUIRES_SELECTION", if (seed.requiresSelection) 1 else 0)
-                put("AUTO_APPLY", 0)
-            }
-            db.insert("PROMPTS", null, cv)
+        // Seed the five styles of Entwurf 3 for fresh installs (existing ones get them once through
+        // [addMissingStyles]), resolved from string resources so they are localized. Aufräumen is the
+        // active one: it runs after every dictation.
+        styleSeeds().forEachIndexed { index, seed ->
+            db.insert("PROMPTS", null, seed.toContentValues(index, autoApply = index == 0))
         }
     }
 
@@ -226,7 +219,43 @@ class PromptsDatabaseHelper private constructor(
         )
     }
 
-    private data class Seed(val nameRes: Int, val promptRes: Int, val requiresSelection: Boolean)
+    private data class Seed(val nameRes: Int, val promptRes: Int)
+
+    private fun Seed.toContentValues(pos: Int, autoApply: Boolean) = ContentValues().apply {
+        put("POS", pos)
+        put("NAME", context.getString(nameRes))
+        put("PROMPT", context.getString(promptRes))
+        // A style rewrites the dictation, so it works on text like every rewriting prompt.
+        put("REQUIRES_SELECTION", 1)
+        put("AUTO_APPLY", if (autoApply) 1 else 0)
+    }
+
+    /**
+     * Adds those of the five styles that are not there yet (by name), behind the user's own prompts, for an
+     * install that predates them. Nothing the user has is changed: Aufräumen only becomes the active style
+     * when no prompt runs automatically yet. Returns the id of Aufräumen when it was made active, else null.
+     */
+    fun addMissingStyles(): Int? {
+        val existing = getAll()
+        val names = existing.mapNotNull { it.name?.trim()?.lowercase() }.toSet()
+        val anyAutoApply = existing.any { it.autoApply }
+        var pos = (existing.maxOfOrNull { it.pos } ?: -1) + 1
+        var activated: Int? = null
+        val db = writableDatabase
+        db.beginTransaction()
+        try {
+            styleSeeds().forEachIndexed { index, seed ->
+                if (context.getString(seed.nameRes).trim().lowercase() in names) return@forEachIndexed
+                val makeActive = index == 0 && !anyAutoApply
+                val id = db.insert("PROMPTS", null, seed.toContentValues(pos++, autoApply = makeActive)).toInt()
+                if (makeActive && id >= 0) activated = id
+            }
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
+        }
+        return activated
+    }
 
     companion object {
         const val DATABASE_NAME = "prompts.db"
@@ -248,21 +277,16 @@ class PromptsDatabaseHelper private constructor(
                 instance ?: PromptsDatabaseHelper(context.applicationContext).also { instance = it }
             }
 
-        // A useful starter set covering all three prompt types: six rewrite-the-selection editors
-        // (requiresSelection = true), two free generators and two literal `[snippet]` prompts (both
-        // requiresSelection = false). Resolved lazily so the strings pick up the device locale at seed
-        // time.
-        private fun defaultSeeds() = listOf(
-            Seed(R.string.dictate__example_prompt_fix_grammar_name, R.string.dictate__example_prompt_fix_grammar_prompt, true),
-            Seed(R.string.dictate__example_prompt_improve_name, R.string.dictate__example_prompt_improve_prompt, true),
-            Seed(R.string.dictate__example_prompt_formal_name, R.string.dictate__example_prompt_formal_prompt, true),
-            Seed(R.string.dictate__example_prompt_friendly_name, R.string.dictate__example_prompt_friendly_prompt, true),
-            Seed(R.string.dictate__example_prompt_shorter_name, R.string.dictate__example_prompt_shorter_prompt, true),
-            Seed(R.string.dictate__example_prompt_translate_name, R.string.dictate__example_prompt_translate_prompt, true),
-            Seed(R.string.dictate__example_prompt_quote_name, R.string.dictate__example_prompt_quote_prompt, false),
-            Seed(R.string.dictate__example_prompt_funfact_name, R.string.dictate__example_prompt_funfact_prompt, false),
-            Seed(R.string.dictate__example_prompt_shrug_name, R.string.dictate__example_prompt_shrug_prompt, false),
-            Seed(R.string.dictate__example_prompt_signoff_name, R.string.dictate__example_prompt_signoff_prompt, false),
+        // The five styles of Entwurf 3 (docs/FUNKTIONEN.md §8), worded after Dictate Keyboard's own
+        // prompts: Aufräumen from "Remove Filler Words" and "Fix Grammar", Wörtlich from "Fix Grammar",
+        // E-Mail from "Turn Into Email", Chat from "Make Friendly" and "Make Shorter", Aktenvermerk from
+        // "Make Formal" and "To Bullet Points". Resolved lazily so they pick up the device locale.
+        private fun styleSeeds() = listOf(
+            Seed(R.string.dictate__style_cleanup_name, R.string.dictate__style_cleanup_prompt),
+            Seed(R.string.dictate__style_verbatim_name, R.string.dictate__style_verbatim_prompt),
+            Seed(R.string.dictate__style_email_name, R.string.dictate__style_email_prompt),
+            Seed(R.string.dictate__style_chat_name, R.string.dictate__style_chat_prompt),
+            Seed(R.string.dictate__style_memo_name, R.string.dictate__style_memo_prompt),
         )
     }
 }

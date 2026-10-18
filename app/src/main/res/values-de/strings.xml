@@ -154,26 +154,6 @@
     <string name="state__no_file_selected">Keine Datei ausgewählt</string>
 
     <!-- Default example prompts seeded on a fresh install. -->
-    <string name="dictate__example_prompt_fix_grammar_name">Grammatik korrigieren</string>
-    <string name="dictate__example_prompt_fix_grammar_prompt">Korrigiere alle Rechtschreib-, Grammatik- und Zeichensetzungsfehler im Text. Behalte Wortwahl, Ton und Sprache so weit wie möglich bei und füge keine neuen Informationen hinzu. Gib nur den korrigierten Text zurück, ohne Anführungszeichen oder Erklärungen.</string>
-    <string name="dictate__example_prompt_improve_name">Text verbessern</string>
-    <string name="dictate__example_prompt_improve_prompt">Schreibe den Text so um, dass er klarer und flüssiger zu lesen ist, und behalte dabei Bedeutung, Ton und Sprache bei. Füge keine neuen Informationen hinzu. Gib nur den verbesserten Text zurück, ohne Anführungszeichen oder Erklärungen.</string>
-    <string name="dictate__example_prompt_formal_name">Formell machen</string>
-    <string name="dictate__example_prompt_formal_prompt">Schreibe den Text in einem höflichen, professionellen und formellen Ton um. Behalte Bedeutung und Sprache bei und füge keine neuen Informationen hinzu. Gib nur den umgeschriebenen Text zurück, ohne Anführungszeichen oder Erklärungen.</string>
-    <string name="dictate__example_prompt_friendly_name">Freundlich machen</string>
-    <string name="dictate__example_prompt_friendly_prompt">Schreibe den Text in einem warmen, freundlichen und lockeren Ton um. Behalte Bedeutung und Sprache bei und füge keine neuen Informationen hinzu. Gib nur den umgeschriebenen Text zurück, ohne Anführungszeichen oder Erklärungen.</string>
-    <string name="dictate__example_prompt_shorter_name">Kürzer machen</string>
-    <string name="dictate__example_prompt_shorter_prompt">Mache den Text deutlich kürzer und prägnanter, behalte dabei aber alle wichtigen Informationen, den Ton und die Sprache bei. Gib nur den gekürzten Text zurück, ohne Anführungszeichen oder Erklärungen.</string>
-    <string name="dictate__example_prompt_translate_name">Ins Englische übersetzen</string>
-    <string name="dictate__example_prompt_translate_prompt">Übersetze den Text in natürliches, flüssiges Englisch. Behalte die ursprüngliche Bedeutung und den Ton bei. Gib nur die Übersetzung zurück, ohne Anführungszeichen oder Erklärungen.</string>
-    <string name="dictate__example_prompt_quote_name">Inspirierendes Zitat</string>
-    <string name="dictate__example_prompt_quote_prompt">Erzeuge ein einzelnes kurzes, originelles und inspirierendes Zitat. Gib nur das Zitat selbst zurück, ohne Autor, Anführungszeichen oder Erklärungen.</string>
-    <string name="dictate__example_prompt_funfact_name">Fun Fact</string>
-    <string name="dictate__example_prompt_funfact_prompt">Nenne einen überraschenden und tatsächlich wahren Fun Fact in einem einzigen Satz. Gib nur den Fakt zurück, ohne Einleitung oder Erklärung.</string>
-    <string name="dictate__example_prompt_shrug_name">Schulterzucken</string>
-    <string name="dictate__example_prompt_shrug_prompt">[¯\\_(ツ)_/¯]</string>
-    <string name="dictate__example_prompt_signoff_name">Grußformel</string>
-    <string name="dictate__example_prompt_signoff_prompt">[Beste Grüße,]</string>
     <!-- Dictate strings -->
     <string name="quick_action__dictate_live_prompt">Live-Prompt</string>
     <string name="about__made_by">Mit ❤️ erstellt von DevEmperor\nSoli deo gloria ✝️</string>
@@ -763,6 +743,17 @@
     <string name="dictate__legacy_action_copy">Kopieren</string>
     <string name="about__website__title">Website</string>
 
+    <!-- The five styles of Entwurf 3, seeded as prompts (docs/FUNKTIONEN.md §8) -->
+    <string name="dictate__style_cleanup_name">Aufräumen</string>
+    <string name="dictate__style_cleanup_prompt">Entferne Füllwörter, Versprecher, Wortabbrüche und Wiederholungen aus dem diktierten Text und setze Satzzeichen und Absätze. Korrigiere Rechtschreib- und Grammatikfehler. Behalte Wortwahl, Inhalt, Ton und Sprache bei und füge keine neuen Informationen hinzu. Gib nur den bereinigten Text zurück, ohne Anführungszeichen oder Erklärungen.</string>
+    <string name="dictate__style_verbatim_name">Wörtlich</string>
+    <string name="dictate__style_verbatim_prompt">Setze im diktierten Text nur Satzzeichen, Groß- und Kleinschreibung und Absätze. Ändere, ergänze oder entferne keine Wörter und formuliere nichts um. Behalte die Sprache bei. Gib nur den Text zurück, ohne Anführungszeichen oder Erklärungen.</string>
+    <string name="dictate__style_email_name">E-Mail</string>
+    <string name="dictate__style_email_prompt">Schreibe den Text als gut gegliederte, höfliche E-Mail mit passender Anrede und Grußformel. Behalte Kernaussage, Bedeutung und Sprache bei und erfinde keine Namen oder Fakten. Gib nur die E-Mail zurück, ohne Anführungszeichen oder Erklärungen.</string>
+    <string name="dictate__style_chat_name">Chat</string>
+    <string name="dictate__style_chat_prompt">Schreibe den Text als kurze, lockere Chat-Nachricht in einem warmen, freundlichen Ton. Fasse dich knapp, behalte aber alle wichtigen Informationen, die Bedeutung und die Sprache bei. Füge nichts Neues hinzu. Gib nur die Nachricht zurück, ohne Anführungszeichen oder Erklärungen.</string>
+    <string name="dictate__style_memo_name">Aktenvermerk</string>
+    <string name="dictate__style_memo_prompt">Formuliere den Text als sachlichen Aktenvermerk in nüchternem, förmlichem Verwaltungsdeutsch. Gliedere die Inhalte in knappe Stichpunkte und fasse Zusammengehöriges zusammen. Behalte alle Fakten, Namen, Daten und Beträge unverändert bei und füge keine neuen Informationen hinzu. Gib nur den Vermerk zurück, ohne Anführungszeichen oder Erklärungen.</string>
     <!-- Entwurf 3: main screen with four tabs (docs/design/diktat-design.md) -->
     <string name="main__tab_start">Start</string>
     <string name="main__tab_dictionary">Wörterbuch</string>
@@ -802,6 +793,12 @@
     <string name="main__styles_auto_apply">Nach jedem Diktat anwenden</string>
     <string name="main__styles_none_active">Noch kein aktiver Stil. Wähle unten einen aus.</string>
     <string name="main__styles_new">Neuer Stil</string>
+    <string name="main__styles_edit_title">Stil bearbeiten</string>
+    <string name="main__styles_field_name">Name</string>
+    <string name="main__styles_field_prompt">Was soll die KI mit deinem Diktat machen?</string>
+    <string name="main__styles_field_prompt_hint">Zum Beispiel: Formuliere den Text als kurze Notiz an mein Team. Behalte alle Fakten bei. Gib nur den Text zurück.</string>
+    <string name="main__styles_save">Speichern</string>
+    <string name="main__styles_delete_confirm">„{name}“ löschen?</string>
     <string name="main__styles_manage">Stile verwalten</string>
     <string name="main__settings_floating">Schwebender Button</string>
     <string name="main__settings_floating_on">Über jeder App</string>
@@ -827,6 +824,7 @@
     <string name="main__settings_backup">Sichern und wiederherstellen</string>
     <string name="main__settings_all">Alle Einstellungen</string>
     <string name="dictate__longform_button_note">Für den schwebenden Button beim Antippen. Lange Diktate werden schon während des Sprechens in Abschnitten transkribiert, geschnitten an deinen Pausen. Gedrückt halten und die Spracheingabe bleiben in einem Stück.</string>
+    <string name="dictate__error_overlay_insert_pending">Diese App hat den Text noch nicht angenommen. Tippe ins Feld oder auf die Wolke, dann wird er eingefügt. Er liegt auch in der Zwischenablage.</string>
     <string name="dictate__record_mode_title">Aufnahme mit dem Button</string>
     <string name="dictate__record_mode_tap">Antippen zum Starten, nochmal zum Beenden</string>
     <string name="dictate__record_mode_hold">Gedrückt halten zum Aufnehmen, loslassen zum Senden</string>

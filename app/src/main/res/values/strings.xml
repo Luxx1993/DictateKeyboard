@@ -763,28 +763,8 @@
          prompt types: rewrite-the-selection editors, free generators and literal [snippets]. Resolved
          from string resources so they are localized at seed time. -->
     <!-- Rewrite-the-selection prompts (operate on the highlighted / dictated text). -->
-    <string name="dictate__example_prompt_fix_grammar_name">Fix Grammar</string>
-    <string name="dictate__example_prompt_fix_grammar_prompt">Correct all spelling, grammar and punctuation mistakes in the text. Keep the original wording, tone and language as much as possible and do not add new information. Return only the corrected text, without quotation marks or explanations.</string>
-    <string name="dictate__example_prompt_improve_name">Improve Writing</string>
-    <string name="dictate__example_prompt_improve_prompt">Rewrite the text so it reads more clearly and flows better, while keeping its meaning, tone and language. Do not add new information. Return only the improved text, without quotation marks or explanations.</string>
-    <string name="dictate__example_prompt_formal_name">Make Formal</string>
-    <string name="dictate__example_prompt_formal_prompt">Rewrite the text in a polite, professional and formal tone. Keep its meaning and language and add no new information. Return only the rewritten text, without quotation marks or explanations.</string>
-    <string name="dictate__example_prompt_friendly_name">Make Friendly</string>
-    <string name="dictate__example_prompt_friendly_prompt">Rewrite the text in a warm, friendly and casual tone. Keep its meaning and language and add no new information. Return only the rewritten text, without quotation marks or explanations.</string>
-    <string name="dictate__example_prompt_shorter_name">Make Shorter</string>
-    <string name="dictate__example_prompt_shorter_prompt">Make the text noticeably shorter and more concise while keeping all important information, its tone and its language. Return only the shortened text, without quotation marks or explanations.</string>
-    <string name="dictate__example_prompt_translate_name">Translate to English</string>
-    <string name="dictate__example_prompt_translate_prompt">Translate the text into natural, fluent English. Keep the original meaning and tone. Return only the translation, without quotation marks or explanations.</string>
     <!-- Free generators (produce text on their own, no selection needed). -->
-    <string name="dictate__example_prompt_quote_name">Inspiring Quote</string>
-    <string name="dictate__example_prompt_quote_prompt">Generate a single short, original and inspiring quote. Return only the quote itself, without an author, quotation marks or any explanation.</string>
-    <string name="dictate__example_prompt_funfact_name">Fun Fact</string>
-    <string name="dictate__example_prompt_funfact_prompt">Share one surprising and genuinely true fun fact in a single sentence. Return only the fact, without any introduction or explanation.</string>
     <!-- Literal snippets (text in [brackets] is inserted as-is, no AI call). -->
-    <string name="dictate__example_prompt_shrug_name">Shrug</string>
-    <string name="dictate__example_prompt_shrug_prompt">[¯\\_(ツ)_/¯]</string>
-    <string name="dictate__example_prompt_signoff_name">Sign-off</string>
-    <string name="dictate__example_prompt_signoff_prompt">[Best regards,]</string>
     <string name="dictate__prompts_export" comment="Toolbar action: export prompts to a JSON file">Export prompts</string>
     <string name="dictate__prompts_import" comment="Toolbar action: import prompts from a JSON file">Import prompts</string>
     <string name="dictate__prompts_export_filename" comment="Default file name for the prompt export">dictate_prompts.json</string>
@@ -864,6 +844,17 @@
     <!-- Per-release notes. To announce a new version, add a changelog__vX_Y_Z string here and a matching
          entry in DictateChangelog.kt. changelog__current holds the notes for the initial 4.0.0 release. -->
 
+    <!-- The five styles of Entwurf 3, seeded as prompts (docs/FUNKTIONEN.md §8) -->
+    <string name="dictate__style_cleanup_name">Clean up</string>
+    <string name="dictate__style_cleanup_prompt">Remove filler words, slips of the tongue, broken-off words and repetitions from the dictated text and add punctuation and paragraphs. Correct spelling and grammar mistakes. Keep the wording, content, tone and language and add no new information. Return only the cleaned-up text, without quotation marks or explanations.</string>
+    <string name="dictate__style_verbatim_name">Verbatim</string>
+    <string name="dictate__style_verbatim_prompt">Add only punctuation, capitalisation and paragraphs to the dictated text. Do not change, add or remove any words and do not rephrase anything. Keep the language. Return only the text, without quotation marks or explanations.</string>
+    <string name="dictate__style_email_name">Email</string>
+    <string name="dictate__style_email_prompt">Rewrite the text as a well-structured, polite email with a suitable greeting and sign-off. Keep the core message, meaning and language, and do not invent names or facts. Return only the email, without quotation marks or explanations.</string>
+    <string name="dictate__style_chat_name">Chat</string>
+    <string name="dictate__style_chat_prompt">Rewrite the text as a short, casual chat message in a warm, friendly tone. Keep it brief, but keep all important information, the meaning and the language. Add nothing new. Return only the message, without quotation marks or explanations.</string>
+    <string name="dictate__style_memo_name">File note</string>
+    <string name="dictate__style_memo_prompt">Write the text as a factual file note in sober, formal administrative language. Organise the content into concise bullet points and group related points. Keep all facts, names, dates and amounts unchanged and add no new information. Return only the note, without quotation marks or explanations.</string>
     <!-- Entwurf 3: main screen with four tabs (docs/design/diktat-design.md) -->
     <string name="main__tab_start">Start</string>
     <string name="main__tab_dictionary">Dictionary</string>
@@ -903,6 +894,12 @@
     <string name="main__styles_auto_apply">Apply after every dictation</string>
     <string name="main__styles_none_active">No active style yet. Pick one below.</string>
     <string name="main__styles_new">New style</string>
+    <string name="main__styles_edit_title">Edit style</string>
+    <string name="main__styles_field_name">Name</string>
+    <string name="main__styles_field_prompt">What should the AI do with your dictation?</string>
+    <string name="main__styles_field_prompt_hint">For example: Write the text as a short note to my team. Keep all facts. Return only the text.</string>
+    <string name="main__styles_save">Save</string>
+    <string name="main__styles_delete_confirm">Delete “{name}”?</string>
     <string name="main__styles_manage">Manage styles</string>
     <string name="main__settings_floating">Floating button</string>
     <string name="main__settings_floating_on">Over every app</string>
@@ -928,6 +925,7 @@
     <string name="main__settings_backup">Back up and restore</string>
     <string name="main__settings_all">All settings</string>
     <string name="dictate__longform_button_note">For the floating button in tap mode. Long dictations are transcribed piece by piece while you speak, cut at your pauses. Holding to record and the voice input stay one-shot.</string>
+    <string name="dictate__error_overlay_insert_pending">This app wouldn\'t take the text yet. Tap into the field or on the cloud and it goes in; it\'s on your clipboard too.</string>
     <string name="dictate__record_mode_title">Recording with the button</string>
     <string name="dictate__record_mode_tap">Tap to start, tap again to stop</string>
     <string name="dictate__record_mode_hold">Hold to record, release to send</string>

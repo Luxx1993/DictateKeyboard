@@ -661,6 +661,12 @@ abstract class FlorisPreferenceModel : PreferenceModel() {
             default = DictateMappings.Empty,
             serializer = DictateMappings.Serializer,
         )
+        // Guard for the one-time addition of the five styles of Entwurf 3 to an install that predates them.
+        // See DictateLegacyMigrator.seedStylesIfNeeded.
+        val stylesSeeded = boolean(
+            key = "dictate__styles_seeded",
+            default = false,
+        )
         // The style the styles tab shows as active while none runs automatically, so switching "Nach jedem
         // Diktat anwenden" off and on again keeps the same one (-1 = none chosen yet).
         val activeStyleId = int(

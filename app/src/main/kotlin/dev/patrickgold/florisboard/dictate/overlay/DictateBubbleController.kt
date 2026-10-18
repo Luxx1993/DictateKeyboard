@@ -1514,7 +1514,8 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
         if (!DictateController.isPushToTalkActive(context)) return false
         val current = DictateController.state.value
         if (current is DictateController.UiState.Error &&
-            current.action == DictateController.ErrorAction.RESEND
+            (current.action == DictateController.ErrorAction.RESEND ||
+                current.action == DictateController.ErrorAction.INSERT)
         ) {
             return false
         }
@@ -1524,6 +1525,13 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
     private fun onTap() {
         if (prefs.dictate.floatingButtonHaptic.get()) vibrateTap()
         val current = DictateController.state.value
+        // The field refused the last dictation: a tap puts it in now, rather than starting a new one.
+        if (current is DictateController.UiState.Error &&
+            current.action == DictateController.ErrorAction.INSERT &&
+            DictateController.retryPendingInsert(context, fromFocus = false)
+        ) {
+            return
+        }
         // Recovery (#160): if the previous floating-button dictation failed but its recording was kept
         // (e.g. a flaky signal dropped the upload), a tap re-sends that audio instead of starting a new
         // recording — so the dictation isn't lost just because the bubble has no resend chip of its own.

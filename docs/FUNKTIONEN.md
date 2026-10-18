@@ -125,8 +125,8 @@ Ein Prompt hat:
 - Reihenfolge per langem Drücken und Ziehen; **Export/Import** als `dictate_prompts.json`.
 - **Prompt-Bibliothek** der Community zum Hinzufügen (`DictatePromptLibraryScreen.kt`, `dictate/data/prompts/PromptLibrary*.kt`).
 - Außerdem „Zeichensetzung & Stil“ für die Transkription selbst (keiner / Standard / eigener Text).
-- Mitgelieferte Stile aus dem Entwurf (Wörtlich, E-Mail, Chat, Aktenvermerk): im Entwurf gezeigt, **noch nicht** als Standard-Prompts im Code (Abschnitt 15).
-- **Tab „Stile“** (`app/main/StylesTab.kt`): zeigt alle Prompts außer Textbausteinen. Aktiv ist der Prompt mit „Automatisch anwenden“, sonst der zuletzt gewählte (`prefs.dictate.activeStyleId`). Der Schalter setzt „Automatisch anwenden“ nur auf diesen einen Stil; Tippen auf eine andere Karte macht sie aktiv, langes Drücken öffnet den Editor. „Neuer Stil“ öffnet den Editor für einen neuen Prompt.
+- **Mitgelieferte Stile** Aufräumen (aktiv), Wörtlich, E-Mail, Chat, Aktenvermerk: formuliert nach Dictate Keyboards eigenen Prompts (Füllwörter entfernen, Grammatik, E-Mail, freundlich/kürzer, formell/Stichpunkte), Wortlaut von Lukas freigegeben. Neue Installation: diese fünf statt der alten Beispiel-Prompts. Bestehende: einmalig ergänzt (`DictateLegacyMigrator.seedStylesIfNeeded`), eigene Prompts bleiben, Aufräumen wird nur aktiv, wenn noch kein Prompt automatisch läuft.
+- **Tab „Stile“** (`app/main/StylesTab.kt`): zeigt alle Prompts außer Textbausteinen. Aktiv ist der Prompt mit „Automatisch anwenden“, sonst der zuletzt gewählte (`prefs.dictate.activeStyleId`). Der Schalter setzt „Automatisch anwenden“ nur auf diesen einen Stil; Tippen auf eine andere Karte macht sie aktiv, langes Drücken (oder Tippen auf den aktiven Stil) öffnet den Editor im Tab: Name und Anweisung ändern, speichern, löschen. „Neuer Stil“ legt einen eigenen Stil an. Reihenfolge, Denkaufwand, Import/Export und Bibliothek bleiben unter „Stile verwalten“.
 
 ## 9. Wörterbuch
 
@@ -148,6 +148,7 @@ Einstellungen in `app/settings/dictate/DictateFloatingButtonScreen.kt`:
 - **Stil**: Ring, Pille, Kugel, **Wolke**, Aurora, Gitterkugel (`DictateFloatingButtonDesign.kt`) – Lukas' Wahl: Wolke
 - Größe, an Rand einrasten, Farbe, ausblenden wenn untätig, **Position pro App merken**, Vibration beim Tippen
 - **Rückgängig-Taste**; **jedes Diktat in die Zwischenablage kopieren**
+- **Einfügen**: über die Eingabeverbindung der Bedienungshilfe, sonst den Feldinhalt, sonst Einfügen per Zwischenablage; drei Versuche. Nimmt die App den Text trotzdem nicht an, liegt er in der Zwischenablage **und** wartet zwei Minuten: Tippen ins Feld (gleiche App) oder auf die Wolke fügt ihn ein, doppelt eingefügt wird nicht. Scheitert auch das, bleibt nur die Zwischenablage. Das Log (`DictateOverlay`, Zeile `commit path=…`) nennt die App, nie den Text.
 - **Menü am Button**: Datei transkribieren, Verlauf, Einstellungen (`overlay/BubbleMenuAction.kt`) – einzeln abschaltbar
 - Zustände der Wolke: Ruhe, Zuhören (folgt dem Mikrofonpegel), Denken, Erfolg, Fehler (`ui/AudioReactiveCloudOrbView.kt`)
 - Optik der Wolke und Paletten: siehe Design-Dokument Abschnitt 4. An den Prototyp **angeglichen** (5 Paletten, Farbe im Tab Einstellungen); dieselbe Wolke zeigen Spracheingabe und Erkennungsdienst.
@@ -216,6 +217,5 @@ Reihenfolge und Details: `CLAUDE.md` und `docs/design/diktat-design.md` Abschnit
 
 ## 15. Noch offen (Entscheidung von Lukas)
 
-- Mitgelieferte Stile (Wörtlich, E-Mail, Chat, Aktenvermerk): Wortlaut der Prompts festlegen.
 - Welche der vorhandenen Einstellungen bleiben in der neuen Oberfläche sichtbar, welche wandern unter „Mehr“?
 - Offline-Spracherkennung: laut Lukas **behalten**; Modellverwaltung muss in die neue Oberfläche passen.

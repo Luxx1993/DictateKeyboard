@@ -10,6 +10,9 @@
 
 package dev.patrickgold.florisboard.dictate.data.prefs
 
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.Dispatchers
+import dev.patrickgold.florisboard.dictate.data.prompts.PromptsDatabaseHelper
 import android.content.Context
 import androidx.compose.ui.graphics.Color
 import dev.patrickgold.florisboard.app.FlorisPreferenceStore
@@ -262,6 +265,24 @@ object DictateLegacyMigrator {
 
         prefs.dictate.providerAccounts.set(keyring)
         prefs.dictate.providerAccountsMigrated.set(true)
+    }
+
+    /**
+     * Adds the five styles of Entwurf 3 (Aufräumen, Wörtlich, E-Mail, Chat, Aktenvermerk) once to an install
+     * whose prompt database predates them; a fresh one is seeded with them when the database is created.
+     * The user's own prompts stay as they are, see [PromptsDatabaseHelper.addMissingStyles]. Idempotent via
+     * `prefs.dictate.stylesSeeded`.
+     */
+    suspend fun seedStylesIfNeeded(context: Context) {
+        val prefs by FlorisPreferenceStore
+        if (prefs.dictate.stylesSeeded.get()) return
+        val activated = withContext(Dispatchers.IO) {
+            runCatching { PromptsDatabaseHelper.getInstance(context).addMissingStyles() }
+        }
+        // A failed database write is tried again on the next start rather than marked as done.
+        if (activated.isFailure) return
+        activated.getOrNull()?.let { prefs.dictate.activeStyleId.set(it) }
+        prefs.dictate.stylesSeeded.set(true)
     }
 
     /**
