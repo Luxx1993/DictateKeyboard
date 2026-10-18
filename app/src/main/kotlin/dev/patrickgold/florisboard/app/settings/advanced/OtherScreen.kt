@@ -41,13 +41,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import dev.patrickgold.florisboard.BuildConfig
 import dev.patrickgold.florisboard.R
-import dev.patrickgold.florisboard.app.DictationOnly
 import dev.patrickgold.florisboard.app.settings.search.settingsSearchAnchor
 import dev.patrickgold.florisboard.app.AppTheme
 import dev.patrickgold.florisboard.app.LocalNavController
 import dev.patrickgold.florisboard.app.Routes
 import dev.patrickgold.florisboard.app.enumDisplayEntriesOf
-import dev.patrickgold.florisboard.ime.core.DisplayLanguageNamesIn
 import dev.patrickgold.florisboard.lib.FlorisLocale
 import dev.patrickgold.florisboard.lib.cache.AppCache
 import dev.patrickgold.florisboard.lib.compose.FlorisScreen
@@ -72,7 +70,6 @@ import org.florisboard.lib.compose.stringRes
 @Composable
 fun OtherScreen() = FlorisScreen {
     title = stringRes(R.string.settings__other__title)
-    previewFieldVisible = false
 
     val navController = LocalNavController.current
     val context = LocalContext.current
@@ -167,12 +164,8 @@ fun OtherScreen() = FlorisScreen {
                             label = stringRes(R.string.settings__system_default),
                         )
                     } else {
-                        val displayLanguageNamesIn by prefs.localization.displayLanguageNamesIn.collectAsState()
                         val locale = FlorisLocale.fromTag(languageTag)
-                        entry(locale.languageTag(), when (displayLanguageNamesIn) {
-                            DisplayLanguageNamesIn.SYSTEM_LOCALE -> locale.displayName()
-                            DisplayLanguageNamesIn.NATIVE_LOCALE -> locale.displayName(locale)
-                        })
+                        entry(locale.languageTag(), locale.displayName(locale))
                     }
                 }
             }
@@ -188,14 +181,6 @@ fun OtherScreen() = FlorisScreen {
             },
             enabledIf = { AndroidVersion.ATMOST_API28_P },
         )
-        if (DictationOnly.isVisible(Routes.Settings.PhysicalKeyboard)) {
-            Preference(
-                icon = ImageVector.vectorResource(R.drawable.ic_keyboard_keys),
-                modifier = Modifier.settingsSearchAnchor("physical_keyboard__title"),
-                title = stringRes(R.string.physical_keyboard__title),
-                onClick = { navController.navigate(Routes.Settings.PhysicalKeyboard) },
-            )
-        }
         // What the app made and can make again: a shared file on its way through, downloaded GIFs,
         // decoded images (issue #337). Emptied on every cold start anyway, so the row exists for the
         // hours in between — and it says how much there is, because a cleaning button that will not
@@ -210,17 +195,6 @@ fun OtherScreen() = FlorisScreen {
             ),
             onClick = { confirmClearCache = true },
         )
-        // Developer tools (FlorisBoard debug overlays + debug-log export) are a development-only
-        // leftover and must not ship in beta/release builds for a consumer keyboard (roadmap 11.5).
-        if (BuildConfig.DEBUG) {
-            Preference(
-                icon = Icons.Default.Adb,
-                modifier = Modifier.settingsSearchAnchor("devtools__title"),
-                title = stringRes(R.string.devtools__title),
-                onClick = { navController.navigate(Routes.Devtools.Home) },
-            )
-        }
-
         PreferenceGroup(title = stringRes(R.string.backup_and_restore__title)) {
             Preference(
                 onClick = { navController.navigate(Routes.Settings.Backup) },

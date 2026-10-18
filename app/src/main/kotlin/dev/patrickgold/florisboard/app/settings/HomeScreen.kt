@@ -58,13 +58,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.patrickgold.florisboard.R
-import dev.patrickgold.florisboard.app.DictationOnly
 import dev.patrickgold.florisboard.app.LocalNavController
 import dev.patrickgold.florisboard.app.PreferenceRecovery
 import dev.patrickgold.florisboard.app.Routes
 import dev.patrickgold.florisboard.dictate.data.stats.DictateStats
 import dev.patrickgold.florisboard.lib.compose.FlorisScreen
-import dev.patrickgold.florisboard.lib.util.InputMethodUtils
 import dev.patrickgold.jetpref.datastore.model.collectAsState
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -85,7 +83,6 @@ import org.florisboard.lib.compose.stringRes
 fun HomeScreen() = FlorisScreen {
     title = stringRes(R.string.settings__home__title)
     navigationIconVisible = false
-    previewFieldVisible = true
 
     val navController = LocalNavController.current
     val context = LocalContext.current
@@ -99,26 +96,6 @@ fun HomeScreen() = FlorisScreen {
 
     content {
         val isCollapsed by prefs.internal.homeIsBetaToolboxCollapsed.collectAsState()
-
-        val isFlorisBoardEnabled by InputMethodUtils.observeIsFlorisboardEnabled(foregroundOnly = true)
-        val isFlorisBoardSelected by InputMethodUtils.observeIsFlorisboardSelected(foregroundOnly = true)
-        // Diktat-Edition: there is no keyboard to enable or select, so neither banner applies.
-        val showImeBanners = !DictationOnly.enabled
-        if (showImeBanners && !isFlorisBoardEnabled) {
-            FlorisErrorCard(
-                modifier = Modifier.padding(8.dp),
-                showIcon = false,
-                text = stringRes(R.string.settings__home__ime_not_enabled),
-                onClick = { InputMethodUtils.showImeEnablerActivity(context) },
-            )
-        } else if (showImeBanners && !isFlorisBoardSelected) {
-            FlorisWarningCard(
-                modifier = Modifier.padding(8.dp),
-                showIcon = false,
-                text = stringRes(R.string.settings__home__ime_not_selected),
-                onClick = { InputMethodUtils.showImePicker(context) },
-            )
-        }
 
         // Settings that could not be read at start were kept instead of written over (#383). This is the
         // way back to them, offered until they are restored or discarded.
@@ -207,8 +184,6 @@ fun HomeScreen() = FlorisScreen {
             }
         }
 
-        // Milestone celebrations are shown on the keyboard (Smartbar nudge), consistent with rate/donate
-        // (issue #142) — see DictateController.showMilestoneNudge. Not surfaced here.
 
         /*Card(modifier = Modifier.padding(8.dp)) {
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
@@ -262,60 +237,6 @@ fun HomeScreen() = FlorisScreen {
                 }
             },
         )
-        // Diktat-Edition: everything below concerns only the full keyboard.
-        if (!DictationOnly.enabled) {
-            Preference(
-                icon = Icons.Default.Language,
-                title = stringRes(R.string.settings__localization__title),
-                onClick = { navController.navigate(Routes.Settings.Localization) },
-            )
-            Preference(
-                icon = Icons.Outlined.Palette,
-                title = stringRes(R.string.settings__theme__title),
-                onClick = { navController.navigate(Routes.Settings.Theme) },
-            )
-            Preference(
-                icon = Icons.Outlined.Keyboard,
-                title = stringRes(R.string.settings__keyboard__title),
-                onClick = { navController.navigate(Routes.Settings.Keyboard) },
-            )
-            Preference(
-                icon = Icons.Default.SmartButton,
-                title = stringRes(R.string.settings__smartbar__title),
-                onClick = { navController.navigate(Routes.Settings.Smartbar) },
-            )
-            Preference(
-                icon = Icons.Default.Spellcheck,
-                title = stringRes(R.string.settings__typing__title),
-                onClick = { navController.navigate(Routes.Settings.Typing) },
-            )
-            Preference(
-                icon = Icons.Default.Gesture,
-                title = stringRes(R.string.settings__gestures__title),
-                onClick = { navController.navigate(Routes.Settings.Gestures) },
-            )
-            Preference(
-                icon = Icons.AutoMirrored.Outlined.Assignment,
-                title = stringRes(R.string.settings__clipboard__title),
-                onClick = { navController.navigate(Routes.Settings.Clipboard) },
-            )
-            Preference(
-                icon = Icons.Default.SentimentSatisfiedAlt,
-                title = stringRes(R.string.settings__media__title),
-                onClick = { navController.navigate(Routes.Settings.Media) },
-            )
-            // With the other tools the Smartbar opens (issue #424): it is one, and not a dictation feature.
-            Preference(
-                icon = Icons.Outlined.Translate,
-                title = stringRes(R.string.settings__translation__title),
-                onClick = { navController.navigate(Routes.Settings.Translation) },
-            )
-            Preference(
-                icon = Icons.Default.Extension,
-                title = stringRes(R.string.ext__home__title),
-                onClick = { navController.navigate(Routes.Ext.Home) },
-            )
-        }
         Preference(
             icon = Icons.Outlined.Build,
             title = stringRes(R.string.settings__other__title),
@@ -329,7 +250,7 @@ fun HomeScreen() = FlorisScreen {
     }
 }
 
-/** Compact duration for the home stats card / milestone text: `3h`, `3h 12m`, `12m`, `45s`. */
+/** Compact duration for the home stats card: `3h`, `3h 12m`, `12m`, `45s`. */
 private fun homeDuration(totalSeconds: Long): String {
     val s = totalSeconds.coerceAtLeast(0L)
     val h = s / 3600

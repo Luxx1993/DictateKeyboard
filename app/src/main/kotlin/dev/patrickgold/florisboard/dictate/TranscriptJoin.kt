@@ -14,7 +14,6 @@ import android.content.Context
 import dev.patrickgold.florisboard.dictate.field.SEAM_FOLLOWING_DEFAULT
 import dev.patrickgold.florisboard.dictate.field.SEAM_PRECEDING_DEFAULT
 import dev.patrickgold.florisboard.dictate.field.seamSeparator
-import dev.patrickgold.florisboard.nlpManager
 
 /**
  * Puts the pieces a transcription arrives in back together (issue #356).
@@ -118,36 +117,19 @@ object TranscriptJoin {
 }
 
 /**
- * The tightening set to hand [TranscriptJoin], read from the active subtype's punctuation rule.
- *
- * The *keyboard's* rule rather than the dictation language's: with auto-detect the spoken language is
- * unknown until the text has already been assembled, and the transcript is on its way into a field whose
- * surrounding text follows exactly these conventions anyway.
- *
- * Only if the NLP stack is already up, which is why the [Lazy] is inspected instead of unwrapped.
- * Building it pulls in the clipboard, the editor, the keyboard resources and both language providers —
- * a whole keyboard, to learn how a language spaces its commas. Where it is not up there is no field with
- * conventions to match either (a shared file, a Wear request), so the conservative default is the honest
- * answer rather than a degraded one.
+ * The tightening set to hand [TranscriptJoin]: the default rule, since there is no keyboard whose
+ * punctuation rule could be asked.
  */
-internal fun Context.transcriptTighteningSymbols(): String = runCatching {
-    val nlp = nlpManager()
-    if (nlp.isInitialized()) nlp.value.getActivePunctuationRule().symbolsTighteningSpace else null
-}.getOrNull() ?: TranscriptJoin.DEFAULT_TIGHTENING_SYMBOLS
+internal fun Context.transcriptTighteningSymbols(): String = TranscriptJoin.DEFAULT_TIGHTENING_SYMBOLS
 
 /**
- * [TranscriptJoin.separatorBefore] with the active punctuation rule's phantom-space marks, on the same
- * terms as [transcriptTighteningSymbols]: the keyboard's rule when it is already up, the default otherwise.
+ * [TranscriptJoin.separatorBefore] with the default phantom-space marks, on the same terms as
+ * [transcriptTighteningSymbols].
  */
-internal fun Context.transcriptSeparatorBefore(textBefore: String?, piece: String): String {
-    val rule = runCatching {
-        val nlp = nlpManager()
-        if (nlp.isInitialized()) nlp.value.getActivePunctuationRule() else null
-    }.getOrNull()
-    return TranscriptJoin.separatorBefore(
+internal fun Context.transcriptSeparatorBefore(textBefore: String?, piece: String): String =
+    TranscriptJoin.separatorBefore(
         textBefore = textBefore,
         piece = piece,
-        precedingSymbols = rule?.symbolsPrecedingPhantomSpace ?: TranscriptJoin.DEFAULT_SEAM_PRECEDING,
-        followingSymbols = rule?.symbolsFollowingPhantomSpace ?: TranscriptJoin.DEFAULT_SEAM_FOLLOWING,
+        precedingSymbols = TranscriptJoin.DEFAULT_SEAM_PRECEDING,
+        followingSymbols = TranscriptJoin.DEFAULT_SEAM_FOLLOWING,
     )
-}

@@ -46,14 +46,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import dev.patrickgold.florisboard.R
 import dev.patrickgold.florisboard.app.apptheme.FlorisAppTheme
-import dev.patrickgold.florisboard.app.ext.ExtensionImportScreenType
 import dev.patrickgold.florisboard.app.setup.NotificationPermissionState
 import dev.patrickgold.florisboard.appContext
-import dev.patrickgold.florisboard.cacheManager
 import dev.patrickgold.florisboard.lib.FlorisLocale
-import dev.patrickgold.florisboard.lib.compose.LocalPreviewFieldController
-import dev.patrickgold.florisboard.lib.compose.PreviewKeyboardField
-import dev.patrickgold.florisboard.lib.compose.rememberPreviewFieldController
 import dev.patrickgold.florisboard.lib.util.AppVersionUtils
 import dev.patrickgold.jetpref.datastore.model.collectAsState
 import dev.patrickgold.jetpref.datastore.ui.ProvideDefaultDialogPrefStrings
@@ -81,7 +76,6 @@ val LocalNavController = staticCompositionLocalOf<NavController> {
 class FlorisAppActivity : ComponentActivity() {
     private val prefs by FlorisPreferenceStore
     private val appContext by appContext()
-    private val cacheManager by cacheManager()
     private var appTheme by mutableStateOf(AppTheme.AUTO)
     private var showAppIcon = true
     private var resourcesContext by mutableStateOf(this as Context)
@@ -162,21 +156,12 @@ class FlorisAppActivity : ComponentActivity() {
             intentToBeHandled = intent
             return
         }
-        if (intent.action == Intent.ACTION_VIEW && intent.data != null) {
-            intentToBeHandled = intent
-            return
-        }
-        if (intent.action == Intent.ACTION_SEND && intent.clipData != null) {
-            intentToBeHandled = intent
-            return
-        }
         intentToBeHandled = null
     }
 
     @Composable
     private fun AppContent() {
         val navController = rememberNavController()
-        val previewFieldController = rememberPreviewFieldController()
 
         val isImeSetUp by prefs.internal.isImeSetUp.collectAsState()
 
@@ -199,7 +184,6 @@ class FlorisAppActivity : ComponentActivity() {
 
         CompositionLocalProvider(
             LocalNavController provides navController,
-            LocalPreviewFieldController provides previewFieldController,
         ) {
             ProvideDefaultDialogPrefStrings(
                 confirmLabel = stringRes(R.string.action__ok),
@@ -220,26 +204,6 @@ class FlorisAppActivity : ComponentActivity() {
                         navController = navController,
                         startDestination = startDestination,
                     )
-                    PreviewKeyboardField(previewFieldController)
-                }
-                // Show the "What's new" surface once after an update (only when setup is complete, so
-                // it never competes with the onboarding flow). For the 5.0 milestone this is the
-                // full-screen tour; for other updates it stays the compact changelog dialog. The tour
-                // and dialog are mutually exclusive per update so they never both appear.
-                if (isImeSetUp) {
-                    val whatsNewContext = LocalContext.current
-                    // Every "What's new" tour the user hasn't seen yet (e.g. 4.x → 5.1 gets both 5.0 and
-                    // 5.1); empty means fall back to the compact changelog dialog for this update.
-                    val autoQueue = remember {
-                        AppVersionUtils.pendingTourVersions(
-                            whatsNewContext, prefs, WHATS_NEW_TOURS.map { it.version },
-                        )
-                    }
-                    if (autoQueue.isEmpty()) {
-                        ChangelogDialog()
-                    }
-                    // Always composed so Settings › About can re-open any tour; only auto-shows when queued.
-                    WhatsNewTour(autoQueue = autoQueue)
                 }
             }
         }
@@ -247,17 +211,7 @@ class FlorisAppActivity : ComponentActivity() {
         LaunchedEffect(intentToBeHandled) {
             val intent = intentToBeHandled
             if (intent != null) {
-                if (intent.action == Intent.ACTION_VIEW && intent.categories?.contains(Intent.CATEGORY_BROWSABLE) == true) {
-                    navController.handleDeepLink(intent)
-                } else {
-                    val data = if (intent.action == Intent.ACTION_VIEW) {
-                        intent.data!!
-                    } else {
-                        intent.clipData!!.getItemAt(0).uri
-                    }
-                    val workspace = runCatching { cacheManager.readFromUriIntoCache(data) }.getOrNull()
-                    navController.navigate(Routes.Ext.Import(ExtensionImportScreenType.EXT_ANY, workspace?.uuid))
-                }
+                navController.handleDeepLink(intent)
             }
             intentToBeHandled = null
         }

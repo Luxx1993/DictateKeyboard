@@ -79,7 +79,6 @@ import org.florisboard.lib.compose.stringRes
 @Composable
 fun DictateStatsScreen() = FlorisScreen {
     title = stringRes(R.string.dictate__stats_title)
-    previewFieldVisible = false
     iconSpaceReserved = false
 
     val prefs by FlorisPreferenceStore
@@ -95,7 +94,6 @@ fun DictateStatsScreen() = FlorisScreen {
         val streakCurrent by prefs.dictate.statsStreakCurrent.collectAsState()
         val streakBest by prefs.dictate.statsStreakBest.collectAsState()
         val daily by prefs.dictate.statsDaily.collectAsState()
-        val milestonesEnabled by prefs.dictate.statsMilestonesEnabled.collectAsState()
         val context = LocalContext.current
 
         var showResetDialog by remember { mutableStateOf(false) }
@@ -153,32 +151,6 @@ fun DictateStatsScreen() = FlorisScreen {
             ) {
                 Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.size(18.dp))
                 Text("  " + stringRes(R.string.dictate__stats_share))
-            }
-
-            // --- Milestone celebrations toggle (opt-out, lives on this page) ---
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    Icon(Icons.Default.Celebration, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(stringRes(R.string.dictate__stats_milestones_title), style = MaterialTheme.typography.bodyLarge)
-                        Text(
-                            stringRes(R.string.dictate__stats_milestones_summary),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    Switch(
-                        checked = milestonesEnabled,
-                        onCheckedChange = { scope.launch { prefs.dictate.statsMilestonesEnabled.set(it) } },
-                    )
-                }
             }
 
             // --- Tracking-since + reset ---

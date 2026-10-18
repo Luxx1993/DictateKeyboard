@@ -296,13 +296,12 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
                     accentColor = accent
                     rebuildSkin()
                 }
-                // The Dictate keyboard is on screen when it is the selected IME *and* an IME window is
-                // visible. While it is up it already has its own mic, so hide the bubble (unless the user
-                // opted in). Using the IME-visible signal (not the dictation state) means a keyboard-driven
-                // dictation keeps the bubble hidden, while a bubble-driven one — which opens no IME window —
-                // still keeps it shown.
+                // Dictate's own voice input is on screen when it is the selected IME *and* an IME window
+                // is visible. While it is up it already shows its own mic, so the bubble steps aside. Using
+                // the IME-visible signal (not the dictation state) means a bubble-driven dictation — which
+                // opens no IME window — still keeps it shown.
                 val dictateKeyboardShown = dictateKeyboard && imeVisible
-                val hiddenByOwnKeyboard = dictateKeyboardShown && !showWhen.besideDictateKeyboard
+                val hiddenByOwnKeyboard = dictateKeyboardShown
                 // The rule itself lives in [BubbleVisibility], where it can be asked without a phone. Note
                 // that a bubble is *removed* rather than faded: alpha or GONE is a request to a compositor
                 // we do not control, and that compositor is exactly the part behaving unexpectedly here.
@@ -577,9 +576,7 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
         }
         // Rewording only makes sense when not already recording/transcribing. A parked nudge is neither —
         // and used to make this menu open into nothing, the same way it blocked [applyPrompt] (#339).
-        if (state !is DictateController.UiState.Idle && state !is DictateController.UiState.Error &&
-            state !is DictateController.UiState.Promo
-        ) {
+        if (state !is DictateController.UiState.Idle && state !is DictateController.UiState.Error) {
             return
         }
         if (prefs.dictate.floatingButtonHaptic.get()) vibrateTap()

@@ -42,7 +42,6 @@ import dev.patrickgold.florisboard.app.settings.search.settingsSearchAnchor
 import dev.patrickgold.florisboard.dictate.DictateController
 import dev.patrickgold.florisboard.dictate.DictateLanguages
 import dev.patrickgold.florisboard.lib.compose.FlorisScreen
-import dev.patrickgold.florisboard.subtypeManager
 import dev.patrickgold.jetpref.datastore.model.collectAsState
 import dev.patrickgold.jetpref.material.ui.JetPrefAlertDialog
 import dev.patrickgold.jetpref.material.ui.JetPrefListItem
@@ -58,7 +57,6 @@ import org.florisboard.lib.compose.stringRes
 @Composable
 fun DictateLanguagesScreen() = FlorisScreen {
     title = stringRes(R.string.dictate__languages_title)
-    previewFieldVisible = true
 
     val prefs by FlorisPreferenceStore
 
@@ -92,15 +90,6 @@ fun DictateLanguagesScreen() = FlorisScreen {
             }
         }
 
-        val followsKeyboard by prefs.dictate.languageFollowsKeyboard.collectAsState()
-        val subtypeManager by context.subtypeManager()
-        fun setFollowsKeyboard(on: Boolean) {
-            scope.launch {
-                prefs.dictate.languageFollowsKeyboard.set(on)
-                if (on) DictateController.followKeyboardLanguage(subtypeManager.activeSubtype.primaryLocale.base)
-            }
-        }
-
         val detectLabel = stringRes(R.string.dictate__language_detect)
         fun languageLabel(code: String): String =
             if (code == DictateLanguages.DETECT) detectLabel else DictateLanguages.of(code).displayName()
@@ -128,20 +117,6 @@ fun DictateLanguagesScreen() = FlorisScreen {
             text = stringRes(R.string.dictate__languages_active_title),
             secondaryText = languageLabel(activeCode),
         )
-        // Issue #431. Turning it on follows the keyboard's current language straight away, so the effect
-        // is visible where the switch is; after that only a switch of the keyboard's language moves it.
-        JetPrefListItem(
-            modifier = Modifier
-                .settingsSearchAnchor("dictate__languages_follow_keyboard")
-                .clickable { setFollowsKeyboard(!followsKeyboard) },
-            icon = { Icon(Icons.Default.Keyboard, contentDescription = null) },
-            text = stringRes(R.string.dictate__languages_follow_keyboard),
-            secondaryText = stringRes(R.string.dictate__languages_follow_keyboard_summary),
-            trailing = {
-                Switch(checked = followsKeyboard, onCheckedChange = { setFollowsKeyboard(it) })
-            },
-        )
-
         if (showLanguagesPicker) {
             // Fixed for as long as the dialog is open: auto-detect and the user's own languages on top, so
             // what is on can be seen and taken off without scrolling, then everything else. A row never

@@ -14,21 +14,12 @@ import android.content.Context
 import androidx.compose.ui.graphics.Color
 import dev.patrickgold.florisboard.app.FlorisPreferenceStore
 import dev.patrickgold.florisboard.dictate.DictateLanguages
-import dev.patrickgold.florisboard.dictate.DictatePromptsLayout
 import dev.patrickgold.florisboard.dictate.provider.DictateProxyType
 import dev.patrickgold.florisboard.dictate.provider.ProviderAccount
 import dev.patrickgold.florisboard.dictate.provider.ProviderAccounts
 import dev.patrickgold.florisboard.dictate.provider.ProxyConfig
 import java.net.Proxy
 import java.util.Locale
-import dev.patrickgold.florisboard.ime.core.Subtype
-import dev.patrickgold.florisboard.ime.core.SubtypeJsonConfig
-import dev.patrickgold.florisboard.ime.keyboard.extCoreLayout
-import dev.patrickgold.florisboard.ime.keyboard.extCorePunctuationRule
-import dev.patrickgold.florisboard.ime.smartbar.quickaction.QuickAction
-import dev.patrickgold.florisboard.ime.smartbar.quickaction.keyData
-import dev.patrickgold.florisboard.ime.text.key.KeyCode
-import dev.patrickgold.florisboard.ime.text.keyboard.TextKeyData
 
 /**
  * One-time import of the legacy Dictate transcription settings (provider, API key, model) into the
@@ -144,7 +135,6 @@ object DictateLegacyMigrator {
             // but previously never written, so an upgrading user silently lost them. ---
             prefs.dictate.audioFocus.set(s.audioFocus)
             prefs.dictate.useBluetoothMic.set(s.useBluetoothMic)
-            prefs.dictate.instantRecording.set(s.instantRecording)
 
             // --- Dictation languages (roadmap 11.7). The legacy value is an *unordered* StringSet, so
             // rebuild a stable order ("detect" first, then the rest sorted) and map the legacy active
@@ -170,7 +160,6 @@ object DictateLegacyMigrator {
             // over to both new accent prefs so the look stays identical: theme.accentColor drives the
             // keyboard (FlorisImeTheme), other.accentColor the settings app. ---
             val legacyAccent = Color(s.accentColor)
-            prefs.theme.accentColor.set(legacyAccent)
             prefs.other.accentColor.set(legacyAccent)
 
             // --- Network proxy (roadmap 5.6): the legacy app stored one combined spec string
@@ -185,12 +174,6 @@ object DictateLegacyMigrator {
                 proxy.username?.let { prefs.dictate.proxyUsername.set(it) }
                 proxy.password?.let { prefs.dictate.proxyPassword.set(it) }
             }
-
-            // --- Rate/donate nudges (roadmap 9.7/9.8): carry over the "handled" flags so users who
-            // already rated/donated in the legacy app are never asked again. The old usage DB that
-            // tracked total audio time was dropped, so the new counter simply starts at 0. ---
-            prefs.dictate.hasRated.set(s.hasRatedInPlaystore)
-            prefs.dictate.hasDonated.set(s.hasDonated)
         }
 
         prefs.dictate.legacyImported.set(true)
@@ -282,64 +265,6 @@ object DictateLegacyMigrator {
     }
 
     /**
-     * Removes the live-prompt Smartbar action ([KeyCode.DICTATE_LIVE_PROMPT]) from the saved action
-     * arrangement. The live prompt is now a chip inside the prompt panel/row, so it no longer ships as a
-     * separate Smartbar button; this strips the action that the earlier injection added (and that the
-     * old default placed). Idempotent via `prefs.dictate.livePromptActionRemoved`. Power users can still
-     * re-add it manually from the Smartbar editor – the action itself is left intact.
-     */
-    suspend fun removeLivePromptActionIfNeeded(context: Context) {
-        val prefs by FlorisPreferenceStore
-        if (prefs.dictate.livePromptActionRemoved.get()) return
-        removeActionIfPresent(KeyCode.DICTATE_LIVE_PROMPT)
-        prefs.dictate.livePromptActionRemoved.set(true)
-    }
-
-    /**
-     * Ensures the AI prompt-panel action ([KeyCode.DICTATE_PROMPTS]) is present in the saved arrangement.
-     * Injected separately (own guard) so users who already ran the live-prompt migration still receive it.
-     */
-    suspend fun migratePromptsActionIfNeeded(context: Context) {
-        val prefs by FlorisPreferenceStore
-        if (prefs.dictate.promptsActionMigrated.get()) return
-        ensureActionPresent(TextKeyData.DICTATE_PROMPTS, KeyCode.DICTATE_PROMPTS)
-        prefs.dictate.promptsActionMigrated.set(true)
-    }
-
-    /**
-     * One-time re-engagement reset for the 4.0.0 relaunch: re-offers the rate & donate nudges to
-     * existing users. Many of them already acted on (or were long past) these prompts in an earlier
-     * version, so the "handled" flags were set and/or their audio counter sat well beyond the
-     * thresholds – meaning the nudges would never appear again. As the app has changed substantially,
-     * we clear [Dictate.hasRated]/[Dictate.hasDonated] and reset [Dictate.totalAudioSeconds] so the
-     * rate prompt (after [DictateController] RATE threshold) and then the donate prompt (after the
-     * DONATE threshold) surface once more as the user dictates with the new version. For a brand-new
-     * install this is a no-op (everything is already at its default). Idempotent via
-     * `prefs.dictate.promoReengagementDone`, so it fires exactly once.
-     */
-    suspend fun reofferRateAndDonateIfNeeded() {
-        val prefs by FlorisPreferenceStore
-        if (prefs.dictate.promoReengagementDone.get()) return
-        prefs.dictate.hasRated.set(false)
-        prefs.dictate.hasDonated.set(false)
-        prefs.dictate.totalAudioSeconds.set(0L)
-        prefs.dictate.promoReengagementDone.set(true)
-    }
-
-    /**
-     * One-time switch to the always-on prompt ROW layout, now the default. Existing users who were on the
-     * PANEL layout are moved to ROW once on update so the prompt chips are immediately visible; they can
-     * switch back in settings. A brand-new install is already on ROW (the new default), so this is a no-op
-     * for them. Idempotent via `prefs.dictate.promptsLayoutRowMigrated`.
-     */
-    suspend fun migratePromptsLayoutToRowIfNeeded() {
-        val prefs by FlorisPreferenceStore
-        if (prefs.dictate.promptsLayoutRowMigrated.get()) return
-        prefs.dictate.promptsLayout.set(DictatePromptsLayout.ROW)
-        prefs.dictate.promptsLayoutRowMigrated.set(true)
-    }
-
-    /**
      * One-time switch onto hold-to-record (issue #235), now the default.
      *
      * Same shape and same reasoning as the prompt-row switch above: a keyboard already in use would
@@ -375,199 +300,6 @@ object DictateLegacyMigrator {
             keyring.copy(accounts = keyring.accounts.mapValues { (_, account) -> account.copy(trustUserCerts = true) }),
         )
         prefs.dictate.trustUserCertificates.set(false)
-    }
-
-    /**
-     * One-time switch onto word learning (issues #318, #375), now the default.
-     *
-     * The same trade as the hold-to-record switch above, for the same reason: word learning shipped off,
-     * three screens deep, and a personal vocabulary that only the users who went looking for it ever get
-     * is most of the feature not existing. The reporter's words for it were that a core keyboard feature
-     * should not have to be discovered.
-     *
-     * This writes over a deliberate "off" — nothing distinguishes that from a default never touched — so
-     * the release carrying it **must** say so in its what's-new, with where to switch it back. What makes
-     * that defensible rather than merely noted: every learned word stays on the device, is listed one by
-     * one in Typing › User dictionaries › Learned words with a delete beside it, and nothing is learned in
-     * incognito mode, in password fields, or from anything that was not typed key by key.
-     *
-     * Deliberately does **not** also switch the internal user dictionary back on. Learning needs it —
-     * promotion writes there — but that dictionary changes which words are suggested, and reaching that
-     * far into someone's settings for a feature they did not ask for is a different thing from restoring
-     * a default. Where it is off, the Learned-words screen now says so and points at the switch.
-     */
-    suspend fun migrateWordLearningDefaultIfNeeded() {
-        val prefs by FlorisPreferenceStore
-        if (prefs.suggestion.learnTypedWordsDefaultMigrated.get()) return
-        prefs.suggestion.learnTypedWords.set(true)
-        prefs.suggestion.learnTypedWordsDefaultMigrated.set(true)
-    }
-
-    /**
-     * Drops the Devanagari digit row (१२३…) from saved Hindi subtypes (issue #315). Hindi is written with
-     * Western digits in practice, and the preset no longer asks for the localized row — but a subtype is
-     * persisted with its full layout map, so the old choice would otherwise survive forever.
-     *
-     * Only subtypes that still carry the untouched old default are rewritten; anyone who deliberately
-     * picked a digit row in the subtype editor keeps it.
-     */
-    suspend fun migrateHindiDefaultsIfNeeded() {
-        val prefs by FlorisPreferenceStore
-        if (prefs.localization.hindiDefaultsMigrated.get()) return
-        prefs.localization.hindiDefaultsMigrated.set(true)
-
-        val listRaw = prefs.localization.subtypes.get()
-        if (listRaw.isBlank() || !listRaw.contains(LEGACY_HINDI_CHARACTERS)) return
-        val subtypes = runCatching {
-            SubtypeJsonConfig.decodeFromString<List<Subtype>>(listRaw)
-        }.getOrNull() ?: return
-
-        var changed = false
-        val migrated = subtypes.map { subtype ->
-            val isUntouchedHindiDefault = subtype.primaryLocale.language == "hi" &&
-                subtype.layoutMap.characters == extCoreLayout(LEGACY_HINDI_CHARACTERS_ID) &&
-                subtype.layoutMap.numericRow == extCoreLayout(LEGACY_HINDI_NUMERIC_ROW_ID)
-            if (isUntouchedHindiDefault) {
-                changed = true
-                subtype.copy(
-                    layoutMap = subtype.layoutMap.copy(
-                        characters = extCoreLayout("hindi_varnamala"),
-                        numericRow = extCoreLayout("western_arabic"),
-                    ),
-                    // Five character rows plus a digit row plus the smartbar is too tall; match what
-                    // a new Hindi subtype gets from the preset.
-                    numberRow = false,
-                )
-            } else {
-                subtype
-            }
-        }
-        if (changed) {
-            prefs.localization.subtypes.set(SubtypeJsonConfig.encodeToString(migrated))
-        }
-    }
-
-    /**
-     * Points saved French subtypes at the new `french` punctuation rule (issue #329).
-     *
-     * French puts a space before `? ! ; :` — that is correct typography, not a slip — so punctuation
-     * tightening must leave those alone. The rule now says so, and the presets name it, but a preset only
-     * ever seeds a *new* subtype: every French keyboard that already exists still carries `default` and
-     * would have its spaces eaten the moment the setting is switched on.
-     *
-     * Only subtypes that still carry the untouched old default are rewritten; anyone who deliberately
-     * chose a punctuation rule in the subtype editor keeps it.
-     */
-    suspend fun migrateFrenchPunctuationRuleIfNeeded() {
-        val prefs by FlorisPreferenceStore
-        if (prefs.localization.frenchPunctuationMigrated.get()) return
-        prefs.localization.frenchPunctuationMigrated.set(true)
-
-        val listRaw = prefs.localization.subtypes.get()
-        if (listRaw.isBlank()) return
-        val subtypes = runCatching {
-            SubtypeJsonConfig.decodeFromString<List<Subtype>>(listRaw)
-        }.getOrNull() ?: return
-
-        var changed = false
-        val migrated = subtypes.map { subtype ->
-            val isUntouchedFrenchDefault = subtype.primaryLocale.language == "fr" &&
-                subtype.punctuationRule == extCorePunctuationRule(LEGACY_DEFAULT_PUNCTUATION_ID)
-            if (isUntouchedFrenchDefault) {
-                changed = true
-                subtype.copy(punctuationRule = extCorePunctuationRule(FRENCH_PUNCTUATION_ID))
-            } else {
-                subtype
-            }
-        }
-        if (changed) {
-            prefs.localization.subtypes.set(SubtypeJsonConfig.encodeToString(migrated))
-        }
-    }
-
-    /**
-     * Points saved Hindi subtypes at the new `devanagari` punctuation rule (issue #333).
-     *
-     * Hindi ends a sentence with the danda `।`, not a full stop, and until now nothing in this keyboard
-     * knew that: the double-tap shortcut wrote `. ` in every language, and the tightening and
-     * auto-space rules did not recognise a danda as the end of anything. The rule says so now and the
-     * presets name it — but a preset only ever seeds a *new* subtype, so every Hindi keyboard that
-     * already exists would keep the Latin one.
-     *
-     * Same shape and same restraint as [migrateFrenchPunctuationRuleIfNeeded]: only subtypes still
-     * carrying the untouched old default are rewritten.
-     */
-    suspend fun migrateDevanagariPunctuationRuleIfNeeded() {
-        val prefs by FlorisPreferenceStore
-        if (prefs.localization.devanagariPunctuationMigrated.get()) return
-        prefs.localization.devanagariPunctuationMigrated.set(true)
-
-        val listRaw = prefs.localization.subtypes.get()
-        if (listRaw.isBlank()) return
-        val subtypes = runCatching {
-            SubtypeJsonConfig.decodeFromString<List<Subtype>>(listRaw)
-        }.getOrNull() ?: return
-
-        var changed = false
-        val migrated = subtypes.map { subtype ->
-            val isUntouchedHindiDefault = subtype.primaryLocale.language == "hi" &&
-                subtype.punctuationRule == extCorePunctuationRule(LEGACY_DEFAULT_PUNCTUATION_ID)
-            if (isUntouchedHindiDefault) {
-                changed = true
-                subtype.copy(punctuationRule = extCorePunctuationRule(DEVANAGARI_PUNCTUATION_ID))
-            } else {
-                subtype
-            }
-        }
-        if (changed) {
-            prefs.localization.subtypes.set(SubtypeJsonConfig.encodeToString(migrated))
-        }
-    }
-
-    private const val LEGACY_DEFAULT_PUNCTUATION_ID = "default"
-    private const val FRENCH_PUNCTUATION_ID = "french"
-    private const val DEVANAGARI_PUNCTUATION_ID = "devanagari"
-
-    private const val LEGACY_HINDI_CHARACTERS_ID = "hindi_in"
-    private const val LEGACY_HINDI_NUMERIC_ROW_ID = "devanagari"
-    private const val LEGACY_HINDI_CHARACTERS = "org.florisboard.layouts:$LEGACY_HINDI_CHARACTERS_ID"
-
-    /**
-     * Injects [keyData] at the front of the saved dynamic action row unless an action with [code] is
-     * already present anywhere in the arrangement. New defaults do not retroactively merge into a
-     * persisted arrangement, so without this an upgrading user could never see/place the action.
-     */
-    private suspend fun ensureActionPresent(keyData: TextKeyData, code: Int) {
-        val prefs by FlorisPreferenceStore
-        val arrangement = prefs.smartbar.actionArrangement.get()
-        val alreadyPresent = arrangement.run { dynamicActions + hiddenActions + listOfNotNull(stickyAction) }
-            .any { it.keyData().code == code }
-        if (!alreadyPresent) {
-            val action = QuickAction.InsertKey(keyData)
-            prefs.smartbar.actionArrangement.set(
-                arrangement.copy(dynamicActions = listOf(action) + arrangement.dynamicActions),
-            )
-        }
-    }
-
-    /**
-     * Strips every action with [code] from the saved arrangement (sticky/dynamic/hidden). No-op if it is
-     * not present, so it is safe to run unconditionally behind a one-time guard.
-     */
-    private suspend fun removeActionIfPresent(code: Int) {
-        val prefs by FlorisPreferenceStore
-        val arrangement = prefs.smartbar.actionArrangement.get()
-        val matches = { action: QuickAction -> action.keyData().code == code }
-        val present = (arrangement.dynamicActions + arrangement.hiddenActions +
-            listOfNotNull(arrangement.stickyAction)).any(matches)
-        if (!present) return
-        prefs.smartbar.actionArrangement.set(
-            arrangement.copy(
-                stickyAction = arrangement.stickyAction?.takeUnless(matches),
-                dynamicActions = arrangement.dynamicActions.filterNot(matches),
-                hiddenActions = arrangement.hiddenActions.filterNot(matches),
-            ),
-        )
     }
 
     /**

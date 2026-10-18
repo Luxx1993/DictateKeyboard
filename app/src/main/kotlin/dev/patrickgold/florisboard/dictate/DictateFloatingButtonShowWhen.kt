@@ -21,35 +21,29 @@ package dev.patrickgold.florisboard.dictate
 enum class DictateFloatingButtonShowWhen {
     /**
      * As soon as an editable field holds focus, keyboard or not. This is what apps whose fields never call
-     * themselves editable and hardware-keyboard users depend on. Steps aside for the Dictate keyboard, which
-     * has a mic key of its own.
+     * themselves editable and hardware-keyboard users depend on. Steps aside while Dictate's own voice
+     * input is on screen, which shows a microphone of its own.
      */
     FIELD_SELECTED,
 
     /**
      * Only while an on-screen keyboard is open — any keyboard's input-method window. A messenger that gives
      * its composer focus the moment a chat opens no longer brings the button up over a chat being read.
-     * Steps aside for the Dictate keyboard like [FIELD_SELECTED].
+     * Steps aside for Dictate's own voice input like [FIELD_SELECTED].
      */
-    KEYBOARD_OPEN,
-
-    /** Like [FIELD_SELECTED], and also while the Dictate keyboard is up. */
-    ALSO_WITH_DICTATE_KEYBOARD;
+    KEYBOARD_OPEN;
 
     /** Whether a focused field needs an on-screen keyboard beside it before it counts. */
     val keyboardRequired: Boolean
         get() = this == KEYBOARD_OPEN
 
-    /** Whether the button stays up while the Dictate keyboard itself is on screen. */
-    val besideDictateKeyboard: Boolean
-        get() = this == ALSO_WITH_DICTATE_KEYBOARD
-
     companion object {
         /**
-         * The value the old `dictate__floating_button_show_with_dictate_keyboard` switch stood for, from its
-         * raw stored form. On was "also with the Dictate keyboard"; off, or anything unreadable, the default.
+         * The value a stored setting from before the keyboard was removed stands for: the old
+         * `dictate__floating_button_show_with_dictate_keyboard` switch, or the "also with the Dictate
+         * keyboard" entry that replaced it. Both meant "as soon as a field is selected" apart from a
+         * keyboard that no longer exists.
          */
-        fun fromShowWithDictateKeyboard(rawValue: String): DictateFloatingButtonShowWhen =
-            if (rawValue == "true") ALSO_WITH_DICTATE_KEYBOARD else FIELD_SELECTED
+        fun fromRemovedKeyboardOption(): DictateFloatingButtonShowWhen = FIELD_SELECTED
     }
 }

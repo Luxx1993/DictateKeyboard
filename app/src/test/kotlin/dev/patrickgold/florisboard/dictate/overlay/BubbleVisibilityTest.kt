@@ -19,7 +19,7 @@ import kotlin.test.assertTrue
  * When the floating button is on screen (issue #339).
  *
  * The reported failure is the first test: the button stood on the home screen after a finished
- * dictation, because the rate/donate nudge armed at the end of it left the state machine off idle — and
+ * dictation, because a nudge armed at the end of it left the state machine off idle — and
  * "not idle" was being read as "a dictation is running". The second test is the behaviour that must not
  * be traded away for it (#293): a recording keeps the button even after the user has left the app,
  * because the microphone is still open.
@@ -29,7 +29,6 @@ class BubbleVisibilityTest {
     private val recording = DictateController.UiState.Recording(startedAtMs = 0L)
     private val transcribing = DictateController.UiState.Transcribing(startedAtMs = 0L)
     private val rewording = DictateController.UiState.Rewording("Formal")
-    private val nudge = DictateController.UiState.Promo(DictateController.PromoKind.RATE)
     private val interrupted = DictateController.UiState.Interrupted(seconds = 12L)
     private val failed = DictateController.UiState.Error(
         message = "No internet connection",
@@ -59,8 +58,7 @@ class BubbleVisibilityTest {
     )
 
     @Test
-    fun `a parked nudge does not keep the button on a screen with no field`() {
-        assertFalse(shown(state = nudge))
+    fun `a parked state does not keep the button on a screen with no field`() {
         assertFalse(shown(state = interrupted))
         assertFalse(shown(state = failed))
         assertFalse(shown(state = DictateController.UiState.Idle))
@@ -76,7 +74,7 @@ class BubbleVisibilityTest {
     @Test
     fun `a focused field is enough on its own`() {
         assertTrue(shown(focused = true))
-        assertTrue(shown(state = nudge, focused = true))
+        assertTrue(shown(state = interrupted, focused = true))
         assertTrue(shown(state = failed, focused = true))
     }
 
@@ -86,7 +84,6 @@ class BubbleVisibilityTest {
         assertTrue(BubbleVisibility.pinsBubble(transcribing))
         assertTrue(BubbleVisibility.pinsBubble(rewording))
         assertFalse(BubbleVisibility.pinsBubble(DictateController.UiState.Idle))
-        assertFalse(BubbleVisibility.pinsBubble(nudge))
         assertFalse(BubbleVisibility.pinsBubble(interrupted))
         assertFalse(BubbleVisibility.pinsBubble(failed))
     }

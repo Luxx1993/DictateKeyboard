@@ -98,7 +98,6 @@ import org.florisboard.lib.compose.stringRes
 @Composable
 fun DictateFloatingButtonScreen() = FlorisScreen {
     title = stringRes(R.string.dictate__floating_button_title)
-    previewFieldVisible = true
     iconSpaceReserved = true
 
     val prefs by FlorisPreferenceStore
@@ -193,10 +192,6 @@ fun DictateFloatingButtonScreen() = FlorisScreen {
                     entry(
                         DictateFloatingButtonShowWhen.KEYBOARD_OPEN,
                         stringRes(R.string.dictate__floating_button_show_when_keyboard),
-                    )
-                    entry(
-                        DictateFloatingButtonShowWhen.ALSO_WITH_DICTATE_KEYBOARD,
-                        stringRes(R.string.dictate__floating_button_show_when_dictate_keyboard),
                     )
                 },
             )

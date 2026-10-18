@@ -36,7 +36,6 @@ import dev.patrickgold.florisboard.app.settings.search.settingsSearchAnchor
 import dev.patrickgold.florisboard.app.FlorisPreferenceStore
 import dev.patrickgold.florisboard.app.LocalNavController
 import dev.patrickgold.florisboard.app.Routes
-import dev.patrickgold.florisboard.dictate.DictatePromptsLayout
 import dev.patrickgold.florisboard.dictate.DictateReasoningEffort
 import dev.patrickgold.florisboard.dictate.data.prompts.DictatePromptDefaults
 import dev.patrickgold.florisboard.dictate.data.prompts.PromptsDatabaseHelper
@@ -58,7 +57,6 @@ import org.florisboard.lib.compose.stringRes
 @Composable
 fun DictateRewordingScreen() = FlorisScreen {
     title = stringRes(R.string.dictate__rewording_title)
-    previewFieldVisible = true
     iconSpaceReserved = true
 
     val prefs by FlorisPreferenceStore
@@ -73,26 +71,6 @@ fun DictateRewordingScreen() = FlorisScreen {
             modifier = Modifier.settingsSearchAnchor("dictate__rewording_enabled_title"),
             title = stringRes(R.string.dictate__rewording_enabled_title),
             summary = stringRes(R.string.dictate__rewording_enabled_summary),
-        )
-
-        ListPreference(
-            prefs.dictate.promptsLayout,
-            icon = Icons.Default.ViewAgenda,
-            modifier = Modifier.settingsSearchAnchor("dictate__prompts_layout_title"),
-            title = stringRes(R.string.dictate__prompts_layout_title),
-            entries = listPrefEntries {
-                entry(
-                    key = DictatePromptsLayout.PANEL,
-                    label = stringRes(R.string.dictate__prompts_layout_panel_label),
-                    description = stringRes(R.string.dictate__prompts_layout_panel_description),
-                )
-                entry(
-                    key = DictatePromptsLayout.ROW,
-                    label = stringRes(R.string.dictate__prompts_layout_row_label),
-                    description = stringRes(R.string.dictate__prompts_layout_row_description),
-                )
-            },
-            enabledIf = { prefs.dictate.rewordingEnabled isEqualTo true },
         )
 
         val promptCount by produceState(initialValue = -1) {

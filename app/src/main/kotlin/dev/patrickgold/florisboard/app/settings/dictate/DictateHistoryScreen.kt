@@ -112,14 +112,10 @@ import org.florisboard.lib.compose.stringRes
  * a detail dialog with the full transcript, playback, audio export, share and pin. Pinned entries float
  * to the top, are marked, and survive pruning. Two opt-ins plus a single "storage limits" dialog with
  * free numeric input sit at the top; toolbar actions search and clear.
- *
- * The in-keyboard history panel ([dev.patrickgold.florisboard.dictate.ui.DictateHistoryLayout]) is the
- * fast insert/re-transcribe surface; this screen is the full management view.
  */
 @Composable
 fun DictateHistoryScreen() = FlorisScreen {
     title = stringRes(R.string.dictate__history_title)
-    previewFieldVisible = false
     scrollable = false
 
     val context = LocalContext.current

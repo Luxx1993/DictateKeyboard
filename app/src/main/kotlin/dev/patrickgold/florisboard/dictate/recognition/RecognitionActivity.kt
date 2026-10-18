@@ -72,7 +72,7 @@ class RecognitionActivity : ComponentActivity() {
             // Read once — theme/accent don't change during the few seconds this popup is open (and this
             // avoids the jetpref collectAsState clashing by name with the runtime one used for the flows).
             val theme = remember { prefs.other.settingsTheme.get() }
-            val accent = remember { prefs.theme.accentColor.get() }
+            val accent = remember { prefs.other.accentColor.get() }
             FlorisAppTheme(theme) {
                 RecognitionPopup(cloud, accent)
             }

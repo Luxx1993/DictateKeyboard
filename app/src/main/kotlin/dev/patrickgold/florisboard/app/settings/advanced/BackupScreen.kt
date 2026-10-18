@@ -46,17 +46,11 @@ import dev.patrickgold.florisboard.app.FlorisPreferenceModel
 import dev.patrickgold.florisboard.app.FlorisPreferenceStore
 import dev.patrickgold.florisboard.app.LocalNavController
 import dev.patrickgold.florisboard.cacheManager
-import dev.patrickgold.florisboard.clipboardManager
 import dev.patrickgold.florisboard.dictate.data.history.DictateHistoryStore
 import dev.patrickgold.florisboard.dictate.data.prompts.PromptsDatabaseHelper
-import dev.patrickgold.florisboard.dictate.symbols.CustomSymbolsStore
-import dev.patrickgold.florisboard.ime.clipboard.provider.ClipboardFileStorage
-import dev.patrickgold.florisboard.ime.clipboard.provider.ItemType
 import dev.patrickgold.florisboard.lib.cache.CacheManager
 import dev.patrickgold.florisboard.lib.compose.FlorisScreen
 import dev.patrickgold.florisboard.lib.devtools.flogError
-import dev.patrickgold.florisboard.lib.ext.ExtensionManager
-import dev.patrickgold.florisboard.lib.io.FileRegistry
 import dev.patrickgold.florisboard.lib.io.ZipUtils
 import dev.patrickgold.jetpref.datastore.runtime.AndroidAppDataStorage
 import dev.patrickgold.jetpref.datastore.runtime.DataStoreWriter
@@ -80,15 +74,10 @@ import org.florisboard.lib.compose.stringRes
 import org.florisboard.lib.kotlin.io.subDir
 import org.florisboard.lib.kotlin.io.subFile
 import org.florisboard.lib.kotlin.io.writeJson
-import dev.patrickgold.florisboard.ime.dictionary.DictionaryManager
-import dev.patrickgold.florisboard.ime.dictionary.LearnedWordsStore
 
 object Backup {
     const val FILE_PROVIDER_AUTHORITY = "${BuildConfig.APPLICATION_ID}.provider.file"
     const val METADATA_JSON_NAME = "backup_metadata.json"
-    const val CLIPBOARD_TEXT_ITEMS_JSON_NAME = "clipboard_text_items.json"
-    const val CLIPBOARD_IMAGES_JSON_NAME = "clipboard_images.json"
-    const val CLIPBOARD_VIDEO_JSON_NAME = "clipboard_video.json"
     // Dictate-specific: the user's saved rewording prompts (the `prompts.db` table), exported as
     // JSON rather than the raw SQLite file so the archive stays WAL-/lock-/version-independent.
     const val DICTATE_PROMPTS_JSON_NAME = "dictate_prompts.json"
@@ -96,19 +85,6 @@ object Backup {
     // any retained audio WAVs go into DICTATE_HISTORY_AUDIO_DIR named by the entry id.
     const val DICTATE_HISTORY_JSON_NAME = "dictate_history.json"
     const val DICTATE_HISTORY_AUDIO_DIR = "dictate_history_audio"
-    // The user's own vocabulary (issue #318): the words they added by hand and the ones the keyboard
-    // picked up from their typing, plus the word pairs behind personal next-word prediction. Exported as
-    // JSON for the same reason as everything above — the archive stays independent of SQLite versions,
-    // WAL files and locks. Until this existed a device change silently threw the whole vocabulary away,
-    // which is the one thing the reporter of #318 asked for by name.
-    const val PERSONAL_DICTIONARY_JSON_NAME = "personal_dictionary.json"
-    const val LEARNED_WORDS_JSON_NAME = "learned_words.json"
-    const val LEARNED_BIGRAMS_JSON_NAME = "learned_bigrams.json"
-    const val DICTIONARY_DIR = "dictionary"
-    // The user's own symbol pages (issue #342). A setting, so it travels with the preferences, but a file of
-    // its own beside them, as on the device; an archive without it is one whose every key was the default.
-    const val CUSTOM_SYMBOLS_JSON_NAME = "custom_symbols.json"
-
     fun defaultFileName(metadata: Metadata): String {
         return "backup_${metadata.packageName}_${metadata.versionCode}_${metadata.timestamp}.zip"
     }
@@ -132,37 +108,9 @@ object Backup {
         var providerCredentials by mutableStateOf(true)
         var dictatePrompts by mutableStateOf(true)
         var dictateHistory by mutableStateOf(true)
-        var personalDictionary by mutableStateOf(true)
-        var imeKeyboard by mutableStateOf(true)
-        var imeTheme by mutableStateOf(true)
-        var clipboardTextItems by mutableStateOf(false)
-        var clipboardImageItems by mutableStateOf(false)
-        var clipboardVideoItems by mutableStateOf(false)
-
-        private var _clipboardData: MutableState<ToggleableState> = mutableStateOf(ToggleableState.Off)
-        val clipboardData: State<ToggleableState> = _clipboardData
-
-        fun updateCheckboxState() {
-            val newValue = if (
-                !clipboardVideoItems && !clipboardImageItems && !clipboardTextItems
-            ) {
-                ToggleableState.Off
-            } else if (
-                clipboardVideoItems && clipboardImageItems && clipboardTextItems
-            ) {
-                ToggleableState.On
-            } else {
-                ToggleableState.Indeterminate
-            }
-            _clipboardData.value = newValue
-        }
-
-        fun provideClipboardItems(): Boolean {
-            return clipboardTextItems || clipboardImageItems || clipboardVideoItems
-        }
 
         fun atLeastOneSelected(): Boolean {
-            return jetprefDatastore || dictatePrompts || dictateHistory || personalDictionary || imeKeyboard || imeTheme || clipboardTextItems || clipboardImageItems || clipboardVideoItems
+            return jetprefDatastore || dictatePrompts || dictateHistory
         }
     }
 
@@ -189,7 +137,6 @@ private class RedactingWriter(private val delegate: DataStoreWriter) : DataStore
 @Composable
 fun BackupScreen() = FlorisScreen {
     title = stringRes(R.string.backup_and_restore__back_up__title)
-    previewFieldVisible = false
 
     val navController = LocalNavController.current
     val context = LocalContext.current
@@ -240,12 +187,6 @@ fun BackupScreen() = FlorisScreen {
                 RedactingWriter(fileBasedStorage)
             }
             FlorisPreferenceStore.export(writer).getOrThrow()
-            CustomSymbolsStore.backupText(context)?.let { text ->
-                workspace.inputDir.subDir("dictate").let { dir ->
-                    dir.mkdirs()
-                    dir.subFile(Backup.CUSTOM_SYMBOLS_JSON_NAME).writeText(text)
-                }
-            }
         }
         if (backupFilesSelector.dictatePrompts) {
             val prompts = PromptsDatabaseHelper.getInstance(context).getAll()
@@ -275,70 +216,6 @@ fun BackupScreen() = FlorisScreen {
                         val extension = src.extension.ifEmpty { "wav" }
                         src.copyTo(audioDir.subFile("${entry.id}.$extension"), overwrite = true)
                     }
-                }
-            }
-        }
-        if (backupFilesSelector.personalDictionary) {
-            // Both halves of the user's vocabulary (issue #318): the entries they curated themselves and
-            // the ones the keyboard learned. Kept as separate files rather than merged, because a restore
-            // has to be able to tell them apart — a hand-added word is not up for pruning.
-            val dm = DictionaryManager.default().also { it.loadUserDictionariesIfNecessary() }
-            val personal = runCatching { dm.florisUserDictionaryDao()?.queryAll() }.getOrNull().orEmpty()
-            val learned = runCatching { LearnedWordsStore.exportWords(context) }.getOrDefault(emptyList())
-            val pairs = runCatching { LearnedWordsStore.exportBigrams(context) }.getOrDefault(emptyList())
-            workspace.inputDir.subDir(Backup.DICTIONARY_DIR).let { dir ->
-                dir.mkdirs()
-                dir.subFile(Backup.PERSONAL_DICTIONARY_JSON_NAME).writeJson(personal)
-                dir.subFile(Backup.LEARNED_WORDS_JSON_NAME).writeJson(learned)
-                dir.subFile(Backup.LEARNED_BIGRAMS_JSON_NAME).writeJson(pairs)
-            }
-        }
-        val workspaceFilesDir = workspace.inputDir.subDir("files")
-        if (backupFilesSelector.imeKeyboard) {
-            // copyRecursively() throws NoSuchFileException if the source dir is absent (e.g. no custom
-            // keyboard extension was ever imported), which would likewise abort the entire backup. Only
-            // copy when the dir actually exists.
-            context.filesDir.subDir(ExtensionManager.IME_KEYBOARD_PATH).let { dir ->
-                if (dir.exists()) {
-                    dir.copyRecursively(workspaceFilesDir.subDir(ExtensionManager.IME_KEYBOARD_PATH))
-                }
-            }
-        }
-        if (backupFilesSelector.imeTheme) {
-            context.filesDir.subDir(ExtensionManager.IME_THEME_PATH).let { dir ->
-                if (dir.exists()) {
-                    dir.copyRecursively(workspaceFilesDir.subDir(ExtensionManager.IME_THEME_PATH))
-                }
-            }
-        }
-
-        if (backupFilesSelector.provideClipboardItems()) {
-            val clipboardManager by context.clipboardManager()
-            val clipboardHistory = clipboardManager.currentHistory.all
-            val clipboardFilesDir = workspace.inputDir.subDir("clipboard")
-            clipboardFilesDir.mkdir()
-            if (backupFilesSelector.clipboardTextItems) {
-                clipboardFilesDir.subFile(Backup.CLIPBOARD_TEXT_ITEMS_JSON_NAME)
-                    .writeJson(clipboardHistory.filter { it.type == ItemType.TEXT })
-            }
-            if (backupFilesSelector.clipboardImageItems) {
-                clipboardFilesDir.subFile(Backup.CLIPBOARD_IMAGES_JSON_NAME)
-                    .writeJson(clipboardHistory.filter { it.type == ItemType.IMAGE })
-                for (item in clipboardHistory.filter { it.type == ItemType.IMAGE }) {
-                    val id = ContentUris.parseId(item.uri!!)
-                    ClipboardFileStorage.getFileForId(context, id).copyTo(
-                        clipboardFilesDir.subFile("${ClipboardFileStorage.CLIPBOARD_FILES_PATH}/$id")
-                    )
-                }
-            }
-            if (backupFilesSelector.clipboardVideoItems) {
-                clipboardFilesDir.subFile(Backup.CLIPBOARD_VIDEO_JSON_NAME)
-                    .writeJson(clipboardHistory.filter { it.type == ItemType.VIDEO })
-                for (item in clipboardHistory.filter { it.type == ItemType.VIDEO }) {
-                    val id = ContentUris.parseId(item.uri!!)
-                    ClipboardFileStorage.getFileForId(context, id).copyTo(
-                        clipboardFilesDir.subFile("${ClipboardFileStorage.CLIPBOARD_FILES_PATH}/$id")
-                    )
                 }
             }
         }
@@ -376,7 +253,7 @@ fun BackupScreen() = FlorisScreen {
                         FileProvider.getUriForFile(context, Backup.FILE_PROVIDER_AUTHORITY, backupWorkspace!!.zipFile)
                     val shareIntent = ShareCompat.IntentBuilder(context)
                         .setStream(uri)
-                        .setType(FileRegistry.BackupArchive.mediaType)
+                        .setType("application/zip")
                         .createChooserIntent()
                         .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     context.startActivity(shareIntent)
@@ -519,70 +396,6 @@ internal fun BackupFilesSelector(
             onClick = { filesSelector.dictateHistory = !filesSelector.dictateHistory },
             checked = filesSelector.dictateHistory,
             text = stringRes(R.string.dictate__history_title),
-        )
-        CheckboxListItem(
-            onClick = { filesSelector.personalDictionary = !filesSelector.personalDictionary },
-            checked = filesSelector.personalDictionary,
-            text = stringRes(R.string.backup_and_restore__back_up__files_personal_dictionary),
-        )
-        CheckboxListItem(
-            onClick = { filesSelector.imeKeyboard = !filesSelector.imeKeyboard },
-            checked = filesSelector.imeKeyboard,
-            text = stringRes(R.string.backup_and_restore__back_up__files_ime_keyboard),
-        )
-        CheckboxListItem(
-            onClick = { filesSelector.imeTheme = !filesSelector.imeTheme },
-            checked = filesSelector.imeTheme,
-            text = stringRes(R.string.backup_and_restore__back_up__files_ime_theme),
-        )
-
-        TriStateCheckboxListItem(
-            onClick = {
-                if (
-                    filesSelector.clipboardData.value == ToggleableState.Off ||
-                    filesSelector.clipboardData.value == ToggleableState.Indeterminate
-                ) {
-                    filesSelector.clipboardImageItems = true
-                    filesSelector.clipboardVideoItems = true
-                    filesSelector.clipboardTextItems = true
-                } else {
-                    filesSelector.clipboardImageItems = false
-                    filesSelector.clipboardVideoItems = false
-                    filesSelector.clipboardTextItems = false
-                }
-                filesSelector.updateCheckboxState()
-            },
-            state = filesSelector.clipboardData.value,
-            text = stringRes(R.string.backup_and_restore__back_up__files_clipboard_history),
-        )
-
-
-        CheckboxListItem(
-            onClick = {
-                filesSelector.clipboardTextItems = !filesSelector.clipboardTextItems
-                filesSelector.updateCheckboxState()
-            },
-            checked = filesSelector.clipboardTextItems,
-            text = stringRes(R.string.backup_and_restore__back_up__files_clipboard_history__clipboard_text_items),
-            isSecondaryListItem = true,
-        )
-        CheckboxListItem(
-            onClick = {
-                filesSelector.clipboardImageItems = !filesSelector.clipboardImageItems
-                filesSelector.updateCheckboxState()
-            },
-            checked = filesSelector.clipboardImageItems,
-            text = stringRes(R.string.backup_and_restore__back_up__files_clipboard_history__clipboard_image_items),
-            isSecondaryListItem = true,
-        )
-        CheckboxListItem(
-            onClick = {
-                filesSelector.clipboardVideoItems = !filesSelector.clipboardVideoItems
-                filesSelector.updateCheckboxState()
-            },
-            checked = filesSelector.clipboardVideoItems,
-            text = stringRes(R.string.backup_and_restore__back_up__files_clipboard_history__clipboard_video_items),
-            isSecondaryListItem = true,
         )
 
     }

@@ -23,11 +23,9 @@ import android.os.Debug
 import dev.patrickgold.florisboard.BuildConfig
 import dev.patrickgold.florisboard.R
 import dev.patrickgold.florisboard.app.FlorisPreferenceModel
-import dev.patrickgold.florisboard.extensionManager
 import dev.patrickgold.florisboard.lib.titlecase
 import dev.patrickgold.florisboard.lib.util.TimeUtils
 import dev.patrickgold.florisboard.lib.util.UnitUtils
-import dev.patrickgold.florisboard.subtypeManager
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -50,14 +48,6 @@ object Devtools {
             append(generateSystemInfoLog(context))
             appendLine()
             append(generateAppInfoLog(context))
-            if (prefs != null) {
-                appendLine()
-                append(generateFeatureConfigLog(prefs))
-            }
-            appendLine()
-            append(generateExtensionConfigLog(context))
-            appendLine()
-            append(generateActiveSubtypeConfigLog(context))
         }
     }
 
@@ -110,43 +100,6 @@ object Devtools {
             append("Build commit hash   : ").appendLine(BuildConfig.BUILD_COMMIT_HASH)
             append("Java heap memory    : ").appendLine(getAppJavaHeapMemoryUsage())
             append("Native heap memory  : ").appendLine(getAppNativeHeapMemoryUsage())
-        }
-    }
-
-    fun generateFeatureConfigLog(prefs: FlorisPreferenceModel, withTitle: Boolean = true): String {
-        return buildString {
-            if (withTitle) appendLine("======= FEATURE CONFIG =======")
-            append("Smartbar enabled            : ").appendLine(prefs.smartbar.enabled.get())
-            append("Suggestions enabled         : ").appendLine(prefs.suggestion.enabled.get())
-            append("Inline autofill enabled     : ").appendLine(prefs.suggestion.api30InlineSuggestionsEnabled.get())
-            append("Glide enabled               : ").appendLine(prefs.glide.enabled.get())
-            append("Internal clipboard enabled  : ").appendLine(prefs.clipboard.useInternalClipboard.get())
-        }
-    }
-
-    fun generateExtensionConfigLog(context: Context, withTitle: Boolean = true): String {
-        return buildString {
-            if (withTitle) appendLine("======= EXTENSION CONFIG =======")
-            appendLine("Theme extensions    : ")
-            context.extensionManager().value.themes.value.forEach { append("    ").appendLine(it.meta.id) }
-            appendLine("Language Packs      : ")
-            context.extensionManager().value.languagePacks.value.forEach { append("    ").appendLine(it.meta.id) }
-        }
-    }
-
-    fun generateActiveSubtypeConfigLog(context: Context, withTitle: Boolean = true): String {
-        return buildString {
-            if (withTitle) appendLine("======= ACTIVE SUBTYPE CONFIG =======")
-            context.subtypeManager().value.let { subtypeManager ->
-                appendLine("Active Subtype      : ")
-                append("    ")
-                appendLine(subtypeManager.activeSubtype.toShortString())
-                appendLine("Installed Subtypes    : ")
-                subtypeManager.subtypes.forEach { subtype ->
-                    append("    ").appendLine(subtype.toShortString())
-                }
-            }
-
         }
     }
 

@@ -46,7 +46,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.LaunchedEffect
 import dev.patrickgold.florisboard.R
-import dev.patrickgold.florisboard.app.DictationOnly
 import dev.patrickgold.florisboard.app.FlorisPreferenceStore
 import dev.patrickgold.florisboard.app.LocalNavController
 import dev.patrickgold.florisboard.lib.compose.FlorisScreen
@@ -75,7 +74,6 @@ private val POPULAR_TITLES = setOf(
 @Composable
 fun SettingsSearchScreen() = FlorisScreen {
     title = stringRes(R.string.settings__search__title)
-    previewFieldVisible = false
 
     val navController = LocalNavController.current
     val context = LocalContext.current
@@ -126,7 +124,7 @@ fun SettingsSearchScreen() = FlorisScreen {
                 emptyList()
             } else {
                 SettingsSearchIndex.entries.filter { e ->
-                    DictationOnly.isVisible(e.route) && (context.getString(e.titleRes).contains(q, ignoreCase = true) ||
+                    (context.getString(e.titleRes).contains(q, ignoreCase = true) ||
                         context.getString(e.sectionRes).contains(q, ignoreCase = true) ||
                         (e.parentRes != null && context.getString(e.parentRes).contains(q, ignoreCase = true)) ||
                         // Synonyms for a setting whose own name nobody would guess (issue #333). Matched,
@@ -175,7 +173,7 @@ fun SettingsSearchScreen() = FlorisScreen {
             }
             // Popular shortcuts.
             SectionHeader(stringRes(R.string.settings__search__popular))
-            SettingsSearchIndex.entries.filter { it.titleRes in POPULAR_TITLES && DictationOnly.isVisible(it.route) }.forEach { entry ->
+            SettingsSearchIndex.entries.filter { it.titleRes in POPULAR_TITLES }.forEach { entry ->
                 ResultRow(entry, onClick = { open(entry) })
             }
         } else if (results.isEmpty()) {

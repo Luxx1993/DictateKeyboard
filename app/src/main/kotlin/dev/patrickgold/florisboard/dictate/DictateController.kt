@@ -81,9 +81,6 @@ import dev.patrickgold.florisboard.dictate.provider.chatModelFor
 import dev.patrickgold.florisboard.dictate.provider.chatModelIsPresetDefault
 import dev.patrickgold.florisboard.dictate.provider.singleCallApplies
 import dev.patrickgold.florisboard.dictate.recognition.RecognitionSink
-import dev.patrickgold.florisboard.dictate.snippet.SnippetTriggers
-import dev.patrickgold.florisboard.ime.text.key.KeyVariation
-import dev.patrickgold.florisboard.keyboardManager
 import dev.patrickgold.florisboard.lib.util.AppVersionUtils
 import dev.patrickgold.florisboard.lib.util.VersionName
 import org.florisboard.lib.kotlin.curlyFormat
@@ -206,11 +203,6 @@ object DictateController {
          * offers to transcribe it or discard it. [seconds] is the captured length, shown for context.
          */
         data class Interrupted(val seconds: Long) : UiState
-        /**
-         * A one-time Smartbar nudge (roadmap 9.7/9.8). [message] overrides the kind's static text for
-         * nudges whose text is dynamic (the [PromoKind.MILESTONE] celebration, issue #142).
-         */
-        data class Promo(val kind: PromoKind, val message: String? = null) : UiState
     }
 
     /** Why an audio file is being kept for a one-tap re-send (drives the unified resend chip copy/tint). */
@@ -244,31 +236,11 @@ object DictateController {
     }
 
     /**
-     * Which one-time nudge is being shown. RATE/DONATE are usage-gated (see [maybePromptForReview]);
-     * CHANGELOG is shown right after an app update (see [maybePromptChangelog]) and opens the in-app
-     * "What's new" dialog instead of a web page.
+     * Where the active dictation's output goes: the accessibility-injected field of the floating button
+     * ([OutputTarget.OVERLAY], issue #88) or the system voice input ([OutputTarget.RECOGNITION_SERVICE]).
+     * Set when a dictation starts (the entry points carry their source); the two never drive concurrently.
      */
-    enum class PromoKind { RATE, DONATE, CHANGELOG, FLOATING_BUTTON, MILESTONE }
-
-    /**
-     * Where the active dictation's output goes: the keyboard editor ([OutputTarget.IME]) or the
-     * accessibility-injected field of the floating button ([OutputTarget.OVERLAY], issue #88). Set when a
-     * dictation starts (the mic-tap entry points carry their source); the two never drive concurrently.
-     */
-    enum class OutputTarget { IME, OVERLAY, RECOGNITION_SERVICE }
-
-    /**
-     * Temporary debug switch to preview the "Dictate was updated" Smartbar nudge. When true, the nudge
-     * is offered on every keyboard open (the real version gate never triggers on debug builds, whose
-     * version name carries an unparseable suffix). MUST be false for any committed/shipped build.
-     */
-    private const val DEBUG_FORCE_CHANGELOG_NUDGE = false
-
-    /** Forces the floating-button spotlight regardless of gates (testing only). MUST be false for shipped builds. */
-    private const val DEBUG_FORCE_FB_SPOTLIGHT = false
-
-    /** This build's release, patch level dropped — the bucket the once-per-release nudges are keyed on. */
-    private val FEATURE_VERSION_NAME = VersionName.featureVersionOf(BuildConfig.VERSION_NAME)
+    enum class OutputTarget { OVERLAY, RECOGNITION_SERVICE }
 
     private val prefs by FlorisPreferenceStore
 
@@ -496,7 +468,7 @@ object DictateController {
      * next one will go. Anything reading it to decide ownership therefore has to check for a live
      * dictation as well (see [foreignDictationInFlight]).
      */
-    private var outputTarget = OutputTarget.IME
+    private var outputTarget = OutputTarget.OVERLAY
 
     // Haptic feedback (#166) fires on dictation state transitions. Started lazily on the first dictation
     // (so we have an application context for the vibrator), then it observes for the whole process life.
@@ -509,7 +481,6 @@ object DictateController {
      */
     private fun pressAlreadyBuzzed(): Boolean = when (outputTarget) {
         OutputTarget.OVERLAY -> prefs.dictate.floatingButtonHaptic.get()
-        OutputTarget.IME -> prefs.inputFeedback.hapticEnabled.get()
         OutputTarget.RECOGNITION_SERVICE -> false
     }
 
@@ -752,9 +723,6 @@ object DictateController {
     /** How long the key shows a lock after latching, before dissolving into its ordinary icon. */
     const val PUSH_TO_TALK_LOCK_FLASH_MS = 600L
 
-    private const val RATE_THRESHOLD_SECONDS = 180L   // 3 min
-    private const val DONATE_THRESHOLD_SECONDS = 300L // 5 min (user choice; legacy used 10 min)
-
     /**
      * Single entry point for the mic button: starts recording, or stops and transcribes. [target]
      * selects where the finished text goes — the keyboard editor for the in-keyboard mic (default), or
@@ -770,7 +738,7 @@ object DictateController {
      * suits it better because text appears while the finger is still down. Long-form segmented is
      * excluded by the caller: holding a finger down for a ten-minute dictation defeats the point.
      */
-    fun onPushToTalkDown(context: Context, target: OutputTarget = OutputTarget.IME) {
+    fun onPushToTalkDown(context: Context, target: OutputTarget = OutputTarget.OVERLAY) {
         // Idempotent: the gesture layer can be torn down and restarted mid-press (a recomposition with a
         // new pointerInput key), and re-entering here would otherwise restart the clock — making a long
         // hold look like a tap — and start a second recording. The window is widest with real-time on,
@@ -901,7 +869,7 @@ object DictateController {
      */
     @Volatile private var discardingBar = false
 
-    fun onMicClick(context: Context, target: OutputTarget = OutputTarget.IME) {
+    fun onMicClick(context: Context, target: OutputTarget = OutputTarget.OVERLAY) {
         // The bar is a leftover from a discard that is still animating — acting on it would stop a
         // recording that no longer exists.
         if (discardingBar) return
@@ -919,23 +887,6 @@ object DictateController {
         }
     }
 
-    /**
-     * Toggles a prompt in the recording-time queue (ROW layout): while a recording/transcription is in
-     * flight, tapping a prompt chip enqueues it (or removes it if already queued) instead of applying it
-     * immediately. The queue is applied in tap order to the finished transcript (see [applyPendingPrompts]).
-     * No-op outside the recording/transcribing states or for non-persisted prompts.
-     */
-    fun togglePendingPrompt(prompt: PromptModel) {
-        if (_state.value !is UiState.Recording && _state.value !is UiState.Transcribing) return
-        if (!prompt.isPersisted()) return
-        val current = _pendingPrompts.value
-        _pendingPrompts.value = if (current.any { it.id == prompt.id }) {
-            current.filterNot { it.id == prompt.id }
-        } else {
-            current + prompt
-        }
-    }
-
     /** Toggles pause/resume of the in-progress recording. No-op outside the recording state. */
     fun togglePause() {
         val current = _state.value as? UiState.Recording ?: return
@@ -950,52 +901,9 @@ object DictateController {
         }
     }
 
-    /** The active dictation language (defaults to auto-detect); read live from the JetPref store. */
-    fun activeLanguage(): DictateLanguage = DictateLanguages.of(prefs.dictate.activeInputLanguage.get())
-
-    /** Advances the active language to the next entry in the user's selected subset (no-op if ≤1). */
-    fun cycleLanguage() {
-        val selection = DictateLanguages.parseSelection(prefs.dictate.inputLanguages.get())
-        if (selection.size <= 1) return
-        val currentCode = prefs.dictate.activeInputLanguage.get()
-        val idx = selection.indexOfFirst { it.code == currentCode }
-        val next = selection[(idx + 1) % selection.size] // idx == -1 (unknown) → starts at index 0
-        scope.launch { prefs.dictate.activeInputLanguage.set(next.code) }
-    }
-
     /** Sets the active dictation language explicitly (from the recording bar's language picker). */
     fun setLanguage(code: String) {
         scope.launch { prefs.dictate.activeInputLanguage.set(code) }
-    }
-
-    /**
-     * Makes [id] the active transcription provider, from the keyboard's own picker (issue #431). On this
-     * scope rather than the panel's, which leaves composition the moment the choice closes it.
-     */
-    fun setTranscriptionProvider(id: String) {
-        scope.launch { prefs.dictate.transcriptionProviderId.set(id) }
-    }
-
-    /**
-     * The keyboard's language was just switched from [previous] to [locale] — or, with no [previous], the
-     * setting that follows it was just turned on (issue #431). With [prefs.dictate.languageFollowsKeyboard]
-     * on, dictation follows, if the language is one the user dictates in ([DictateLanguages.forKeyboard]).
-     *
-     * Called from the switch itself and never from a subtype flow: that flow also answers when the keyboard
-     * starts, first with the default subtype and then with the stored one, and following *that* would undo
-     * a hand-picked language every time the process comes back. For the same reason a switch that lands on
-     * the same language — the only subtype, or a second layout for it — changes nothing. Mid-dictation it
-     * behaves like the language chip on the recording bar: a batch dictation is sent in the new language, a
-     * live one keeps its own.
-     */
-    fun followKeyboardLanguage(locale: Locale, previous: Locale? = null) {
-        if (!prefs.dictate.languageFollowsKeyboard.get()) return
-        val selectionRaw = prefs.dictate.inputLanguages.get()
-        val match = DictateLanguages.forKeyboard(locale, selectionRaw) ?: return
-        // Compared as the dictation language each side implies, not as locales: Hindi's varnamala and
-        // transliteration layouts carry different tags and are still one spoken language.
-        if (previous != null && DictateLanguages.forKeyboard(previous, selectionRaw) == match) return
-        if (match.code != prefs.dictate.activeInputLanguage.get()) setLanguage(match.code)
     }
 
     /**
@@ -1033,9 +941,6 @@ object DictateController {
         scope.launch {
             val loaded = withContext(Dispatchers.IO) { promptsDb(appContext).getAll() }
             _prompts.value = loaded
-            // The same read also feeds the typed snippet triggers (issue #283), so an edit made in the
-            // settings is live on the very next keystroke.
-            SnippetTriggers.update(loaded)
         }
     }
 
@@ -1221,17 +1126,6 @@ object DictateController {
     }
 
     /**
-     * Declines the kept audio (whether from a failed transcription or an interrupted recording): drops
-     * the audio and returns the Smartbar to idle. Shared dismiss (✗) for both resend chips.
-     */
-    fun dismissRetainedAudio() {
-        discardRetainedAudio()
-        if (_state.value is UiState.Error || _state.value is UiState.Interrupted) {
-            _state.value = UiState.Idle
-        }
-    }
-
-    /**
      * System voice input entry points (issue #67), driven by [DictateRecognitionService]. They record via
      * the normal pipeline but latch [OutputTarget.RECOGNITION_SERVICE], so the finished text is handed back
      * to the calling app through the recognition callback instead of being written into a field. Always
@@ -1348,9 +1242,6 @@ object DictateController {
             }
         }
     }
-
-    /** Kept for the legacy in-keyboard panel; identical to [cancelRecording]. */
-    fun abortRecording() = cancelRecording()
 
     /**
      * Starts listening for [Intent.ACTION_SCREEN_OFF] while a recording is in progress (issue #147). When
@@ -1795,34 +1686,6 @@ object DictateController {
      * the file picker is foreground) and unambiguous.
      */
     fun pendingTranscriptionDir(context: Context): File = File(context.cacheDir, "dictate_pending")
-
-    /**
-     * Called by the IME when the keyboard (re-)appears on a field: if [FileTranscriptionActivity]
-     * stashed a picked file, transcribe it now and commit into the focused field. Returns true if a
-     * transcription was started, so the caller can skip instant-recording.
-     *
-     * Safe to call from multiple lifecycle hooks: the pending file is *claimed* (moved out of the
-     * pending dir) before transcription starts, so a second call finds nothing and is a no-op.
-     */
-    fun consumePendingFileTranscription(context: Context): Boolean {
-        if (_state.value !is UiState.Idle) return false
-        val pending = pendingTranscriptionDir(context).listFiles()?.firstOrNull { it.isFile && it.length() > 0L }
-            ?: return false
-        // Claim it: move out of the pending dir so it cannot be picked up twice, then clean the dir.
-        val claimed = File(context.cacheDir, "dictate_import_${pending.name}")
-        claimed.delete()
-        if (!pending.renameTo(claimed)) {
-            pending.copyTo(claimed, overwrite = true)
-            pending.delete()
-        }
-        pendingTranscriptionDir(context).deleteRecursively()
-        if (!claimed.exists() || claimed.length() == 0L) return false
-        // The keyboard is the one picking this file up, on its own field (issue #409).
-        claimKeyboardOutput()
-        // A deliberately picked file is transcribed as-is (no silence gate — see issue #93).
-        transcribe(context, claimed, gate = false, source = DictateHistorySource.IMPORT)
-        return true
-    }
 
     /**
      * Shared transcription path for both recorded and picked audio: resolves provider/key/model,
@@ -2447,7 +2310,6 @@ object DictateController {
                 rememberLastDictation(appContext, outputText)
                 if (capture?.isReplay != true) {
                     DictateStats.recordDictation(prefs, outputText, recordedSeconds)
-                    if (recordedSeconds > 0L) creditAudioSeconds(recordedSeconds)
                 }
                 recordHistory(appContext, outputText, originalForHistory, recordedSeconds, capture, reworded = isLive)
                 discardRetainedAudio()
@@ -2465,7 +2327,6 @@ object DictateController {
         lastDictationLead = lead
         if (capture?.isReplay != true) {
             DictateStats.recordDictation(prefs, dictated, recordedSeconds)
-            if (recordedSeconds > 0L) creditAudioSeconds(recordedSeconds)
         }
         recordHistory(appContext, dictated, originalForHistory, recordedSeconds, capture, reworded = isLive)
         discardRetainedAudio()
@@ -2477,9 +2338,6 @@ object DictateController {
         // "a dictation is running" and stayed on screen over every app for good (#339). The nudges are
         // not lost: the keyboard asks for them again on every open, and a milestone stays pending until
         // it is actually shown.
-        if (outputTarget == OutputTarget.IME && !showMilestoneNudge(appContext)) {
-            maybePromptForReview()
-        }
     }
 
     /** Copies [text] to the system clipboard — the floating-button always-copy safety net (issue #214). */
@@ -2553,9 +2411,6 @@ object DictateController {
     fun isRealtimeActive(context: Context? = null): Boolean =
         realtimeApiForActiveAccount() != null ||
             (context != null && localStreamingModelDir(context.applicationContext) != null)
-
-    /** True while a real-time streaming recording is actually in progress (a session is open). */
-    fun isRealtimeRecording(): Boolean = realtimeSession != null
 
     /**
      * Opens a realtime session for the active account and returns a PCM sink to hand [RecordingController]
@@ -2892,7 +2747,7 @@ object DictateController {
      */
     private fun isSegmentedMode(context: Context): Boolean =
         prefs.dictate.longformMode.get().isEnabled &&
-            outputTarget == OutputTarget.IME &&
+            false &&
             !livePromptArmed &&
             !isRealtimeActive(context) &&
             !transcriptionAccount().transcriptionViaChat
@@ -2973,21 +2828,6 @@ object DictateController {
                 // contiguous so the ordered drain never stalls.
                 onSegmentResult(appContext, idx, "", generation)
             }
-        }
-    }
-
-    /**
-     * Cancel-button behaviour: in long-form mode, tapping the trash button ends the recording but keeps
-     * everything transcribed so far — the already-committed segments are finalized and saved to history as
-     * usual; only the current, not-yet-cut chunk is thrown away instead of being transcribed (#183).
-     * Outside long-form it aborts the whole recording ([cancelRecording]). Used by both the Smartbar and
-     * the legacy layout so the trash button behaves consistently.
-     */
-    fun cancelOrDiscardSegment(context: Context) {
-        if (segmentedActive && _state.value is UiState.Recording) {
-            stopSegmentedAndFinalize(context, discardFinal = true)
-        } else {
-            cancelRecording()
         }
     }
 
@@ -3264,7 +3104,6 @@ object DictateController {
      * This single seam keeps the rest of the engine editor-agnostic.
      */
     private fun sink(context: Context): DictationSink = when (outputTarget) {
-        OutputTarget.IME -> ImeDictationSink(context)
         OutputTarget.OVERLAY -> AccessibilitySink()
         // System voice input (#67): the finished text is handed back to the OS via the RecognitionService
         // callback (the calling app/keyboard inserts it), not written into a field ourselves.
@@ -3447,7 +3286,7 @@ object DictateController {
             _state.value = UiState.Idle
             return
         }
-        if (target != null) outputTarget = target else claimKeyboardOutput()
+        if (target != null) outputTarget = target
         if (r.reason == RetainReason.INTERRUPTED) scope.launch { clearInterruptedAudioPref() }
         livePromptArmed = r.wasLive
         // A user-initiated resend of already-captured audio is sent as-is (no silence gate — issue #93).
@@ -3520,34 +3359,6 @@ object DictateController {
         name
     }.getOrNull()
 
-    /**
-     * Continues an interrupted recording instead of sending it: the kept audio becomes a carry-over
-     * segment and a fresh recording starts, with the timer seeded so it shows the running total. When the
-     * user finally stops, the carry-over and the new segment are merged into one audio and transcribed
-     * together (see [stopAndTranscribe]); if the keyboard closes again first, both are merged back into
-     * the persisted interrupted file (see [stashRecording]). No-op unless the interrupted chip is
-     * showing with a usable file.
-     */
-    fun continueInterruptedRecording(context: Context) {
-        if (_state.value !is UiState.Interrupted) return
-        val r = retained
-        if (r == null || r.reason != RetainReason.INTERRUPTED || !r.file.exists() || r.file.length() == 0L) {
-            discardRetainedAudio()
-            _state.value = UiState.Idle
-            return
-        }
-        // Claim the interrupted audio as the carry-over and clear the offer/marker, then record on top.
-        retained = null
-        carryOverAudio = r.file
-        carryOverSeconds = r.seconds
-        scope.launch { clearInterruptedAudioPref() }
-        _state.value = UiState.Idle
-        livePromptArmed = r.wasLive
-        // coerceAtLeast(1) keeps the "continuation" path (non-zero seed) so the carry-over is not dropped
-        // by the normal-start cleanup, even for a sub-second carried-over segment.
-        startRecording(context, seedAccumulatedMs = (r.seconds * 1000L).coerceAtLeast(1L))
-    }
-
     /** Deletes the carry-over recording segment (if any) and forgets it. */
     private fun discardCarryOver() {
         carryOverAudio?.takeIf { it.exists() }?.delete()
@@ -3560,60 +3371,6 @@ object DictateController {
     /** Stable on-disk location for an interrupted recording: in filesDir so it survives the cache wipe. */
     private fun interruptedAudioFile(context: Context): File =
         File(context.applicationContext.filesDir, "dictate_interrupted.wav")
-
-    /**
-     * Called when the keyboard window is hidden or the IME service is torn down (see
-     * [FlorisImeService.onWindowHidden] / [FlorisImeService.onDestroy]) — but only ends a dictation the
-     * keyboard actually owns. A recording driven by the floating button or the system voice-input service
-     * is none of the keyboard's business and is left running (#293): rotating the device tears the target
-     * app's window down and takes the keyboard with it, which used to end a bubble dictation that had
-     * nothing to do with any of it. Their teardown signals are their own service going away and the screen
-     * turning off.
-     */
-    fun stashRecordingOnHide(context: Context) {
-        if (foreignDictationInFlight()) return
-        stashRecording(context)
-    }
-
-    /**
-     * True while a dictation the keyboard does not own is starting or running: the floating button (#88)
-     * or the system voice-input service (#67). Both deliberately outlive the keyboard window — that
-     * independence is the floating button's whole purpose.
-     *
-     * The live-dictation half of the check is not optional: [outputTarget] is latched by every start and
-     * never reset, so on its own it would also silence the keyboard's ordinary idle teardown for the rest
-     * of the process's life after a single bubble dictation. [startJob] covers the gap between the tap and
-     * [UiState.Recording], during which audio focus, Bluetooth SCO and the realtime socket are still
-     * opening — a rotation landing there would otherwise cancel a dictation that had just begun.
-     */
-    private fun foreignDictationInFlight(): Boolean =
-        outputTarget != OutputTarget.IME && (
-            startJob?.isActive == true ||
-                _state.value is UiState.Recording ||
-                _state.value is UiState.Transcribing ||
-                _state.value is UiState.Rewording
-            )
-
-    /**
-     * Claims the output latch for the keyboard, for an action the *keyboard* started.
-     *
-     * [outputTarget] is set by every start and never reset (see [foreignDictationInFlight]), so after a
-     * single floating-button or system-voice-input dictation it keeps pointing at the accessibility sink
-     * or the recognition bridge for the rest of the process's life. A later keyboard action that reads
-     * and writes the field through [sink] then works on a surface that is no longer there, and does it
-     * silently: [RecognitionSink] reports an empty selection and an empty field, so a prompt sees nothing
-     * to rewrite and returns, and a re-insert hands its text to a bridge with no receiver left. Both look
-     * exactly like a dead button (issue #409) — the report this fixes described it as "takes no action
-     * unless audio was transcribed in that session", which is precisely the moment the latch is IME again.
-     *
-     * A foreign dictation that is genuinely in flight keeps the latch: it owns the output it is about to
-     * produce, and taking it away mid-flight would deliver that text into the keyboard's field instead
-     * (the ownership rule from issue #293).
-     */
-    private fun claimKeyboardOutput() {
-        if (foreignDictationInFlight()) return
-        outputTarget = OutputTarget.IME
-    }
 
     /**
      * The floating button's service is going away (switched off in the system settings, unbound by the
@@ -3662,17 +3419,6 @@ object DictateController {
         livePromptArmed = false
         _pendingPrompts.value = emptyList()
         _state.value = UiState.Idle
-
-        // Interrupted-recording recovery is disabled while instant recording is on (issue #120): every
-        // keyboard open auto-starts a recording, so a stashed segment would only block the next open.
-        // Discard the finalized audio instead of keeping it (the user is told about this trade-off when
-        // enabling instant recording, and the whole feature only applies with instant recording off).
-        if (prefs.dictate.instantRecording.get()) {
-            audioFile?.takeIf { it.exists() }?.delete()
-            discardCarryOver()
-            scope.launch { clearInterruptedAudioPref() }
-            return
-        }
 
         val carry = carryOverAudio
         carryOverAudio = null
@@ -3732,25 +3478,6 @@ object DictateController {
         }
     }
 
-    /**
-     * On keyboard open, restores the "recording interrupted — send it?" offer if an interrupted audio
-     * file is waiting. Returns true when the offer is now shown, so the caller can skip instant-recording.
-     * No-op unless idle. A stale marker without a usable file is cleared.
-     */
-    fun maybeOfferInterruptedRecording(context: Context): Boolean {
-        if (_state.value !is UiState.Idle) return false
-        if (!prefs.dictate.interruptedAudioPending.get()) return false
-        val file = interruptedAudioFile(context)
-        if (!file.exists() || file.length() == 0L) {
-            scope.launch { clearInterruptedAudioPref() }
-            return false
-        }
-        val seconds = prefs.dictate.interruptedAudioSeconds.get()
-        retained = RetainedAudio(file, RetainReason.INTERRUPTED, prefs.dictate.interruptedAudioLive.get(), seconds)
-        _state.value = UiState.Interrupted(seconds)
-        return true
-    }
-
     /** Clears the persisted interrupted-audio marker (best-effort; the file itself is handled separately). */
     private suspend fun clearInterruptedAudioPref() {
         if (prefs.dictate.interruptedAudioPending.get()) {
@@ -3782,27 +3509,6 @@ object DictateController {
      */
     fun hasLastDictation(): Boolean =
         prefs.dictate.rememberLastDictation.get() && prefs.dictate.lastDictation.get().isNotEmpty()
-
-    /** Whether the history feature is enabled — gates the history Smartbar button's enabled state (#140). */
-    fun isHistoryEnabled(): Boolean = prefs.dictate.historyEnabled.get()
-
-    /**
-     * Re-inserts the last successful dictation into the focused field (issue #111). The cached text is
-     * committed verbatim (no auto-formatting/auto-enter, which already ran on the original) and is kept,
-     * so it can be re-inserted repeatedly until the next dictation replaces it. No-op while a
-     * recording/transcription/rewording is in flight, or when there is nothing cached.
-     */
-    fun reinsertLastDictation(context: Context) {
-        if (_state.value is UiState.Recording || _state.value is UiState.Transcribing ||
-            _state.value is UiState.Rewording
-        ) return
-        if (!prefs.dictate.rememberLastDictation.get()) return
-        val text = prefs.dictate.lastDictation.get()
-        if (text.isEmpty()) return
-        claimKeyboardOutput()
-        sink(context).commitText(text)
-        clearError()
-    }
 
     /**
      * Undo (issue #133): removes the last successful dictation from the focused field again — the
@@ -3962,204 +3668,11 @@ object DictateController {
      * Android's speech recognition says nothing about what the words are for, so that request is logged.
      */
     private suspend fun isSensitiveDictationField(context: Context): Boolean = when (outputTarget) {
-        OutputTarget.IME -> runCatching {
-            val state = context.keyboardManager().value.activeState
-            state.isIncognitoMode || state.keyVariation == KeyVariation.PASSWORD
-        }.getOrDefault(false)
         // Off the main thread like every other accessibility round trip (see [writeToSink]).
         OutputTarget.OVERLAY -> withContext(Dispatchers.IO) {
             runCatching { DictateAccessibilityService.focusedFieldIsPassword() }.getOrDefault(false)
         }
         OutputTarget.RECOGNITION_SERVICE -> recognitionFieldSensitive
-    }
-
-    /**
-     * Commits a stored history entry's text into the focused field (issue #140), verbatim like
-     * [reinsertLastDictation] — no auto-formatting/auto-enter (those already ran). Used by the in-keyboard
-     * history panel's per-row insert. No-op while a recording/transcription/rewording is in flight.
-     */
-    fun insertHistoryText(context: Context, text: String) {
-        if (_state.value is UiState.Recording || _state.value is UiState.Transcribing ||
-            _state.value is UiState.Rewording
-        ) return
-        if (text.isEmpty()) return
-        claimKeyboardOutput()
-        sink(context).commitText(text)
-        clearError()
-    }
-
-    /**
-     * Re-transcribes a stored entry's retained audio (issue #140) and commits the fresh result into the
-     * field, then overwrites the entry's text in place. The history-owned file is copied to a cache temp
-     * first so the shared transcribe path's finally-delete can't remove it. Marked as a replay so stats
-     * aren't double-counted. No-op when the entry has no retained audio or a dictation is in flight.
-     *
-     * The temp copy keeps the stored extension (#322). It used to be `.wav` unconditionally, which for
-     * an imported voice note renamed Ogg bytes into a WAV and told the provider so.
-     */
-    fun retranscribeHistoryEntry(context: Context, entry: DictateHistoryEntry) {
-        if (_state.value is UiState.Recording || _state.value is UiState.Transcribing ||
-            _state.value is UiState.Rewording
-        ) return
-        val path = entry.audioPath ?: return
-        val src = File(path)
-        if (!src.exists() || src.length() == 0L) return
-        val temp = File(context.cacheDir, "dictate_history_replay.${src.extension.ifEmpty { "wav" }}")
-        runCatching { src.copyTo(temp, overwrite = true) }.getOrElse { return }
-        claimKeyboardOutput()
-        clearError()
-        // A failed entry's first successful re-transcribe SHOULD count stats (it was never counted); an
-        // already-successful entry's re-transcribe must not double-count → isReplay only when not failed.
-        transcribe(
-            context, temp, entry.durationSecs, gate = false,
-            isReplay = !entry.failed, source = entry.source, replayHistoryId = entry.id,
-        )
-    }
-
-    // --- Rate / Donate nudges (roadmap 9.7/9.8) -------------------------------------------------
-
-    /**
-     * Shows a one-time rate or donate nudge in the Smartbar once the user has accumulated enough
-     * transcribed audio, mirroring the legacy app: rate after [RATE_THRESHOLD_SECONDS], donate after
-     * [DONATE_THRESHOLD_SECONDS]. Each is shown until acted on (a flag is then set); accepting or
-     * declining donate also marks rate as done, so a donor is never asked to rate. No-op unless idle.
-     * Called when the keyboard appears so it never interrupts an in-flight recording/transcription.
-     */
-    fun maybePromptForReview() {
-        if (_state.value !is UiState.Idle) return
-        // Credit running out comes first: it is the only nudge that is about to stop the app working,
-        // and asking someone to rate Dictate minutes before it refuses to transcribe is poor timing.
-        val total = prefs.dictate.totalAudioSeconds.get()
-        val kind = when {
-            total > DONATE_THRESHOLD_SECONDS && !prefs.dictate.hasDonated.get() -> PromoKind.DONATE
-            total > RATE_THRESHOLD_SECONDS && total <= DONATE_THRESHOLD_SECONDS && !prefs.dictate.hasRated.get() -> PromoKind.RATE
-            else -> return
-        }
-        _state.value = UiState.Promo(kind)
-    }
-
-    /**
-     * If a saved-time / dictation-count milestone is pending (issue #142), shows it as a one-time Smartbar
-     * celebration and returns true (consuming the pending marker). Returns false — leaving anything pending
-     * intact — when idle-state is not held or nothing is pending / celebrations are off.
-     */
-    private suspend fun showMilestoneNudge(context: Context): Boolean {
-        if (_state.value !is UiState.Idle) return false
-        val milestone = DictateStats.consumePendingMilestone(prefs) ?: return false
-        _state.value = UiState.Promo(PromoKind.MILESTONE, message = milestoneMessage(context, milestone))
-        return true
-    }
-
-    /** Short, single-line celebration text for the milestone nudge (kept compact for the Smartbar). */
-    private fun milestoneMessage(context: Context, milestone: DictateStats.Milestone): String = when (milestone.kind) {
-        DictateStats.Milestone.Kind.TIME_MINUTES ->
-            context.getString(R.string.dictate__promo_milestone_time, "${milestone.value / 60}h")
-        DictateStats.Milestone.Kind.DICTATIONS ->
-            context.getString(R.string.dictate__promo_milestone_count, NumberFormat.getIntegerInstance().format(milestone.value))
-    }
-
-    /**
-     * Shows a one-time "Dictate was updated" nudge in the Smartbar right after an app update, so users
-     * who rarely open the settings still learn about new versions and can jump straight to the changelog.
-     * Tapping it opens the app, where the "What's new" dialog appears (it shares the same
-     * [AppVersionUtils.shouldShowChangelog] gate). A dedicated per-version flag
-     * ([dev.patrickgold.florisboard.app.AppPrefs.Dictate.changelogNudgeVersion]) keeps the keyboard nudge
-     * from reappearing without suppressing the in-app dialog, and vice versa. No-op unless idle.
-     */
-    fun maybePromptChangelog(context: Context) {
-        if (_state.value !is UiState.Idle) return
-        if (!DEBUG_FORCE_CHANGELOG_NUDGE) {
-            if (!AppVersionUtils.shouldShowChangelog(context, prefs)) return
-            if (prefs.dictate.changelogNudgeVersion.get() == BuildConfig.VERSION_NAME) return
-        }
-        _state.value = UiState.Promo(PromoKind.CHANGELOG)
-    }
-
-    /**
-     * Shows a one-time Smartbar spotlight for the floating dictation button to users who have not enabled
-     * it yet, so existing users discover the feature. Tapping it deep-links straight to the floating-button
-     * settings screen (where the accessibility opt-in + disclosure live — it is never auto-enabled).
-     * Gated by a per-release flag; skipped once the user has enabled it or opened its screen. No-op unless idle.
-     *
-     * "Per release" means per *feature* release: a patch is meant to install unnoticed, and a spotlight
-     * reappearing the day after one would announce it just as loudly as an update notice would.
-     */
-    fun maybePromptFloatingButton(context: Context) {
-        if (_state.value !is UiState.Idle) return
-        if (!DEBUG_FORCE_FB_SPOTLIGHT) {
-            if (prefs.dictate.floatingButtonEnabled.get() || prefs.dictate.floatingButtonHintSeen.get()) return
-            if (prefs.dictate.floatingButtonSpotlightVersion.get() == FEATURE_VERSION_NAME) return
-        }
-        _state.value = UiState.Promo(PromoKind.FLOATING_BUTTON)
-    }
-
-    /**
-     * Acts on the active promo and marks it done: RATE/DONATE open the Play Store / PayPal page,
-     * CHANGELOG opens the app (which then shows the "What's new" dialog), FLOATING_BUTTON deep-links to its
-     * settings screen. No-op otherwise.
-     */
-    fun acceptPromo(context: Context) {
-        val kind = (_state.value as? UiState.Promo)?.kind ?: return
-        runCatching {
-            val intent = when (kind) {
-                PromoKind.RATE -> Intent(Intent.ACTION_VIEW,
-                    Uri.parse("https://play.google.com/store/apps/details?id=net.devemperor.dictate"))
-                PromoKind.DONATE -> Intent(Intent.ACTION_VIEW, Uri.parse("https://paypal.me/DevEmperor"))
-                PromoKind.CHANGELOG -> Intent(context, FlorisAppActivity::class.java)
-                PromoKind.FLOATING_BUTTON -> Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("ui://florisboard/settings/dictate/floating-button"),
-                    context,
-                    FlorisAppActivity::class.java,
-                ).addCategory(Intent.CATEGORY_BROWSABLE)
-                PromoKind.MILESTONE -> Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("ui://florisboard/settings/dictate/stats"),
-                    context,
-                    FlorisAppActivity::class.java,
-                ).addCategory(Intent.CATEGORY_BROWSABLE)
-            }
-            context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-        }
-        markPromoDone(kind)
-        _state.value = UiState.Idle
-    }
-
-    /** Dismisses the active promo without opening anything, but still marks it done. No-op otherwise. */
-    fun declinePromo() {
-        val kind = (_state.value as? UiState.Promo)?.kind ?: return
-        markPromoDone(kind)
-        _state.value = UiState.Idle
-    }
-
-    /** Persists the "handled" flags: declining/accepting donate also marks rate as done. */
-    private fun markPromoDone(kind: PromoKind) {
-        scope.launch {
-            when (kind) {
-                PromoKind.RATE -> prefs.dictate.hasRated.set(true)
-                PromoKind.DONATE -> {
-                    prefs.dictate.hasDonated.set(true)
-                    prefs.dictate.hasRated.set(true)
-                }
-                // Remember this version so the keyboard nudge shows only once per update. The in-app
-                // dialog stays governed by versionLastChangelog, so tapping/dismissing here never hides it.
-                PromoKind.CHANGELOG -> prefs.dictate.changelogNudgeVersion.set(BuildConfig.VERSION_NAME)
-                // Show the floating-button spotlight only once per feature release (see the gate).
-                PromoKind.FLOATING_BUTTON -> prefs.dictate.floatingButtonSpotlightVersion.set(FEATURE_VERSION_NAME)
-                // The milestone was already consumed when shown; nothing further to persist.
-                PromoKind.MILESTONE -> Unit
-                // The flag was already set when shown, so the nudge cannot come back on the next
-                // keyboard open whether it was acted on or waved away. A purchase clears it again.
-            }
-        }
-    }
-
-    /**
-     * Adds [seconds] to the cumulative audio counter that gates the nudges. Suspends until the new value
-     * is written to the in-memory cache, so a [maybePromptForReview] called right after sees the update.
-     */
-    private suspend fun creditAudioSeconds(seconds: Long) {
-        prefs.dictate.totalAudioSeconds.set(prefs.dictate.totalAudioSeconds.get() + seconds)
     }
 
     // --- Rewording / GPT engine (roadmap section 4) ---------------------------------------------
@@ -4181,9 +3694,7 @@ object DictateController {
         // A nudge is a notice, not work: it must not swallow an action the user asked for. Left over from
         // #339, where a rate/donate chip parked the state machine and the floating button's long-press
         // menu quietly did nothing. Interrupted stays out — an offer of kept audio hangs on it.
-        if (_state.value !is UiState.Idle && _state.value !is UiState.Error &&
-            _state.value !is UiState.Promo
-        ) {
+        if (_state.value !is UiState.Idle && _state.value !is UiState.Error) {
             return
         }
         // Tapping a prompt is the other moment a rewording is certain (#189). The head start is only the
@@ -4194,7 +3705,7 @@ object DictateController {
         // accessibility sink rather than the keyboard's editor. Every other caller is a keyboard surface
         // (the Smartbar strip, the always-on row, the prompt panel) and says so, rather than inheriting
         // whichever surface dictated last — see [claimKeyboardOutput].
-        if (target != null) outputTarget = target else claimKeyboardOutput()
+        if (target != null) outputTarget = target
         val appContext = context.applicationContext
         val sink = sink(appContext)
         val raw = prompt.prompt.orEmpty()
@@ -4268,7 +3779,7 @@ object DictateController {
      * Starts (or stops) a *live prompt* recording: the spoken transcript is sent to the rewording
      * model as an instruction instead of being inserted verbatim. Toggles like the mic button.
      */
-    fun startLivePrompt(context: Context, target: OutputTarget = OutputTarget.IME) {
+    fun startLivePrompt(context: Context, target: OutputTarget = OutputTarget.OVERLAY) {
         when (_state.value) {
             is UiState.Recording -> {
                 livePromptArmed = true

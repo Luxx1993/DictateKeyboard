@@ -47,22 +47,14 @@ import dev.patrickgold.florisboard.app.FlorisPreferenceModel
 import dev.patrickgold.florisboard.app.FlorisPreferenceStore
 import dev.patrickgold.florisboard.app.LocalNavController
 import dev.patrickgold.florisboard.cacheManager
-import dev.patrickgold.florisboard.clipboardManager
 import dev.patrickgold.florisboard.dictate.data.history.DictateHistoryEntry
 import dev.patrickgold.florisboard.dictate.data.history.DictateHistoryStore
 import dev.patrickgold.florisboard.dictate.data.prompts.PromptModel
 import dev.patrickgold.florisboard.dictate.data.prompts.PromptsDatabaseHelper
 import dev.patrickgold.florisboard.dictate.provider.ProviderAccounts
 import dev.patrickgold.florisboard.dictate.provider.hasNoSecrets
-import dev.patrickgold.florisboard.dictate.symbols.CustomSymbols
-import dev.patrickgold.florisboard.dictate.symbols.CustomSymbolsJson
-import dev.patrickgold.florisboard.dictate.symbols.CustomSymbolsStore
-import dev.patrickgold.florisboard.ime.clipboard.provider.ClipboardFileStorage
-import dev.patrickgold.florisboard.ime.clipboard.provider.ClipboardItem
-import dev.patrickgold.florisboard.ime.clipboard.provider.ItemType
 import dev.patrickgold.florisboard.lib.cache.CacheManager
 import dev.patrickgold.florisboard.lib.compose.FlorisScreen
-import dev.patrickgold.florisboard.lib.ext.ExtensionManager
 import dev.patrickgold.florisboard.lib.io.ZipUtils
 import dev.patrickgold.jetpref.datastore.runtime.AndroidAppDataStorage
 import dev.patrickgold.jetpref.datastore.runtime.DataStoreReader
@@ -88,11 +80,6 @@ import org.florisboard.lib.kotlin.io.deleteContentsRecursively
 import org.florisboard.lib.kotlin.io.readJson
 import org.florisboard.lib.kotlin.io.subDir
 import org.florisboard.lib.kotlin.io.subFile
-import dev.patrickgold.florisboard.ime.dictionary.DictionaryManager
-import dev.patrickgold.florisboard.ime.dictionary.LearnedBigramEntry
-import dev.patrickgold.florisboard.ime.dictionary.LearnedWordEntry
-import dev.patrickgold.florisboard.ime.dictionary.LearnedWordsStore
-import dev.patrickgold.florisboard.ime.dictionary.UserDictionaryEntry
 import dev.patrickgold.florisboard.lib.FlorisLocale
 
 object Restore {
@@ -121,7 +108,6 @@ private class SecretPreservingReader(
 @Composable
 fun RestoreScreen() = FlorisScreen {
     title = stringRes(R.string.backup_and_restore__restore__title)
-    previewFieldVisible = false
 
     val prefs by FlorisPreferenceStore
     val navController = LocalNavController.current
@@ -207,14 +193,6 @@ fun RestoreScreen() = FlorisScreen {
                 }
                 FlorisPreferenceStore.import(importStrategy, reader).getOrThrow()
             }
-            // The symbol pages are one setting (issue #342): restored whole, never merged key by key. An
-            // archive without them had every key at its default, which only Erase takes literally.
-            val symbolsFile = workspace.outputDir.subDir("dictate").subFile(Backup.CUSTOM_SYMBOLS_JSON_NAME)
-            val restoredSymbols = symbolsFile.takeIf { it.exists() }?.readText()?.let(CustomSymbolsJson::decode)
-            when {
-                restoredSymbols != null -> CustomSymbolsStore.set(context, restoredSymbols)
-                shouldReset -> CustomSymbolsStore.set(context, CustomSymbols())
-            }
         }
         if (restoreFilesSelector.dictatePrompts) {
             val promptsFile = workspace.outputDir.subDir("dictate").subFile(Backup.DICTATE_PROMPTS_JSON_NAME)
@@ -241,115 +219,6 @@ fun RestoreScreen() = FlorisScreen {
                 DictateHistoryStore.importEntries(
                     context, entries, audioDir.takeIf { it.exists() }, replace = shouldReset,
                 )
-            }
-        }
-        if (restoreFilesSelector.personalDictionary) {
-            // Older backups have no such directory → skipped, same as every other component here.
-            val dictionaryDir = workspace.outputDir.subDir(Backup.DICTIONARY_DIR)
-            val personalFile = dictionaryDir.subFile(Backup.PERSONAL_DICTIONARY_JSON_NAME)
-            if (personalFile.exists()) {
-                val dm = DictionaryManager.default().also { it.loadUserDictionariesIfNecessary() }
-                val dao = dm.florisUserDictionaryDao()
-                if (dao != null) {
-                    if (shouldReset) dao.deleteAll()
-                    for (entry in personalFile.readJson<List<UserDictionaryEntry>>()) {
-                        val locale = entry.locale?.let { runCatching { FlorisLocale.fromTag(it) }.getOrNull() }
-                        // Merge mode must not create a second row for a word that is already there;
-                        // a restore is usually adding one device's vocabulary to another's, not
-                        // replacing it.
-                        if (dao.queryExact(entry.word, locale).isEmpty()) {
-                            dao.insert(entry.copy(id = 0))
-                        }
-                    }
-                }
-            }
-            val learnedFile = dictionaryDir.subFile(Backup.LEARNED_WORDS_JSON_NAME)
-            val pairsFile = dictionaryDir.subFile(Backup.LEARNED_BIGRAMS_JSON_NAME)
-            if (learnedFile.exists() || pairsFile.exists()) {
-                // [wipeAll], not [forgetAll]: a reset restore replaces the vocabulary wholesale, and
-                // sparing promoted rows here would leave two vocabularies merged into one (issue #375).
-                if (shouldReset) LearnedWordsStore.wipeAll(context)
-                LearnedWordsStore.importAll(
-                    context = context,
-                    words = if (learnedFile.exists()) learnedFile.readJson<List<LearnedWordEntry>>() else emptyList(),
-                    bigrams = if (pairsFile.exists()) pairsFile.readJson<List<LearnedBigramEntry>>() else emptyList(),
-                )
-            }
-        }
-        val workspaceFilesDir = workspace.outputDir.subDir("files")
-        if (restoreFilesSelector.imeKeyboard) {
-            val srcDir = workspaceFilesDir.subDir(ExtensionManager.IME_KEYBOARD_PATH)
-            val dstDir = context.filesDir.subDir(ExtensionManager.IME_KEYBOARD_PATH)
-            if (shouldReset) {
-                dstDir.deleteContentsRecursively()
-            }
-            if (srcDir.exists()) {
-                srcDir.copyRecursively(dstDir, overwrite = true)
-            }
-        }
-        if (restoreFilesSelector.imeTheme) {
-            val srcDir = workspaceFilesDir.subDir(ExtensionManager.IME_THEME_PATH)
-            val dstDir = context.filesDir.subDir(ExtensionManager.IME_THEME_PATH)
-            if (shouldReset) {
-                dstDir.deleteContentsRecursively()
-            }
-            if (srcDir.exists()) {
-                srcDir.copyRecursively(dstDir, overwrite = true)
-            }
-        }
-        val clipboardManager = context.clipboardManager().value
-        if (shouldReset) {
-            clipboardManager.clearFullHistory()
-            ClipboardFileStorage.resetClipboardFileStorage(context)
-        }
-
-        if (restoreFilesSelector.provideClipboardItems()) {
-            val clipboardFilesDir = workspace.outputDir.subDir("clipboard")
-
-            if (restoreFilesSelector.clipboardTextItems) {
-                val clipboardItems = clipboardFilesDir.subFile(Backup.CLIPBOARD_TEXT_ITEMS_JSON_NAME)
-                if (clipboardItems.exists()) {
-                    val clipboardItemsList = clipboardItems.readJson<List<ClipboardItem>>()
-                    clipboardManager.restoreHistory(items = clipboardItemsList.filter { it.type == ItemType.TEXT })
-                }
-            }
-            if (restoreFilesSelector.clipboardImageItems) {
-                val clipboardItems = clipboardFilesDir.subFile(Backup.CLIPBOARD_IMAGES_JSON_NAME)
-                if (clipboardItems.exists()) {
-                    val clipboardItemsList = clipboardItems.readJson<List<ClipboardItem>>()
-                    for (item in clipboardItemsList.filter { it.type == ItemType.IMAGE }) {
-                        ClipboardFileStorage.insertFileFromBackupIfNotExisting(
-                            context,
-                            clipboardFilesDir.subFile(
-                                relPath = "${ClipboardFileStorage.CLIPBOARD_FILES_PATH}/${
-                                    item.uri!!.path!!.split(
-                                        '/'
-                                    ).last()
-                                }"
-                            )
-                        )
-                    }
-                    clipboardManager.restoreHistory(items = clipboardItemsList.filter { it.type == ItemType.IMAGE })
-                }
-            }
-            if (restoreFilesSelector.clipboardVideoItems) {
-                val clipboardItems = clipboardFilesDir.subFile(Backup.CLIPBOARD_VIDEO_JSON_NAME)
-                if (clipboardItems.exists()) {
-                    val clipboardItemsList = clipboardItems.readJson<List<ClipboardItem>>()
-                    for (item in clipboardItemsList.filter { it.type == ItemType.VIDEO }) {
-                        ClipboardFileStorage.insertFileFromBackupIfNotExisting(
-                            context,
-                            clipboardFilesDir.subFile(
-                                relPath = "${ClipboardFileStorage.CLIPBOARD_FILES_PATH}/${
-                                    item.uri!!.path!!.split(
-                                        '/'
-                                    ).last()
-                                }"
-                            )
-                        )
-                    }
-                    clipboardManager.restoreHistory(items = clipboardItemsList.filter { it.type == ItemType.VIDEO })
-                }
             }
         }
     }
