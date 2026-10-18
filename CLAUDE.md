@@ -51,7 +51,7 @@ Alle Design-Entscheidungen stehen in **`docs/design/diktat-design.md`**. Das ist
 
 ## Nächste Aufgaben
 
-1. App-Icon: Icon, Themen-Icon und Umschalter weiß/schwarz sind drin. Als Nächstes Splash-Animation A, dann In-App-Animation D.
+1. App-Icon: Icon, Themen-Icon, Umschalter weiß/schwarz und Splash-Animation A sind drin. Als Nächstes In-App-Animation D.
 2. Entwurf 3 als neue Oberfläche umsetzen.
 3. Wolken-Shader an den Prototyp angleichen.
 4. Später: Anbieter Gladia, Preset Cerebras, AssemblyAI Sync API.

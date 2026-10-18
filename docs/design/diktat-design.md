@@ -117,24 +117,28 @@ orthografische Projektion, Strichstärke abhängig von der Tiefe z (smoothstep),
 Im adaptiven Icon (108 dp) wird das 48er-Raster auf die sichtbaren 72 dp gelegt (Skalierung 1,5, Versatz 18),
 die Kugel ist damit ca. 62 dp groß und liegt in der 66-dp-Schutzzone.
 
-### Umsetzung in Android (Punkte 1, 2 und 5 erledigt, 3 und 4 offen)
+### Umsetzung in Android (Punkte 1, 2, 3 und 5 erledigt, 4 offen)
 
 1. **Adaptives Icon** – *erledigt.* `mipmap-anydpi-v26/app_icon.xml` (weiß) und `app_icon_black.xml` (schwarz):
    `background` = `@android:color/transparent`, `foreground` = `ic_diktat_globe_white` bzw. `_black`,
    `monochrome` = `ic_diktat_globe_monochrome`. Die alten WebP-Vordergründe, `app_icon_round` und die Farbe
    `ic_app_icon_background` sind raus. Die Dateien in `app/src/main/res/drawable/ic_diktat_globe_*.xml` sind Kopien aus
    `icon/export/android/`; nach einer Änderung am Generator neu kopieren.
-   Zusätzlich erzeugt der Generator `ic_diktat_globe_themed` (Linienfarbe `@color/diktat_icon_ink`: Tinte hell, Papier
-   dunkel) für den Splash-Screen und `ic_diktat_globe_notification` (24 dp) für Benachrichtigungen, die Einstellungszeile
-   und die Info-Seite (dort in der Textfarbe getönt, weil Weiß auf hellem Grund verschwände).
-   Der Splash-Screen zeigt bis zur Animation A die statische Kugel ohne Hintergrundplatte (`Theme.SplashScreen`).
+   Zusätzlich erzeugt der Generator `ic_diktat_globe_notification` (24 dp) für Benachrichtigungen, die Einstellungszeile
+   und die Info-Seite (dort in der Textfarbe getönt, weil Weiß auf hellem Grund verschwände), und `ic_diktat_globe_themed`
+   (statisch, Linienfarbe `@color/diktat_icon_ink`; derzeit nicht in der App).
 2. **Umschalter „Icon weiß / Icon schwarz“** – *erledigt:* Einstellungen › Weitere › App-Icon, Code in `app/AppIcon.kt`,
    Einstellung `other__app_icon_color`. Ursprünglicher Plan: Zweiter Alias neben dem bestehenden
    `dev.patrickgold.florisboard.SettingsLauncherAlias` (Manifest) mit schwarzem Icon (`app_icon_black.xml`), standardmäßig deaktiviert;
    beim Umschalten per `PackageManager.setComponentEnabledSetting` den einen Alias an-, den anderen ausschalten.
    Achtung: Die vorhandene Funktion „App-Icon ausblenden“ (`lib/android/.../PackageManager.kt`, `SETTINGS_ACTIVITY_NAME`, nur API ≤ 28) muss den jeweils aktiven Alias berücksichtigen.
    Automatisch je nach Hintergrundbild wechseln kann Android nicht; Weiß ist Standard.
-3. **Animation A beim Öffnen** (Android 12+ Splash): `windowSplashScreenAnimatedIcon` als AnimatedVectorDrawable,
+3. **Animation A beim Öffnen** – *erledigt:* `res/drawable/avd_diktat_globe_splash.xml` (vom Generator,
+   `android_avd_splash`), im Theme `FlorisAppTheme.Splash` mit 1000 ms. Die Welle dreht sich in 1 s um 60° mit ease-out
+   (kubisch) und **endet genau auf dem Launcher-Icon** (Start bei −60°), damit der Übergang in die App ohne Sprung ist.
+   60 Wellenstücke à 6°, je 21 Keyframes für Pfad und Strichstärke; Ring statisch; Linienfarbe `@color/diktat_icon_ink`
+   (Tinte hell, Papier dunkel), kein Icon-Hintergrund (`Theme.SplashScreen`). Unter Android 12 zeigt die Compat-Bibliothek
+   die Kugel statisch. Ursprünglicher Plan: `windowSplashScreenAnimatedIcon` als AnimatedVectorDrawable,
    höchstens ~1000 ms. Bewegung: die Welle dreht sich um die Kugel (in `lat_anim(..., mode='A')` wächst nur der Längenversatz).
    Für 1 s etwa 60° Drehung mit ease-out. Linienfarbe hell/dunkel je nach Splash-Hintergrund (Farbressource mit `values-night`).
    Umsetzungsidee: Welle als z. B. 60 kurze Segmente (`M x y L x y`), je Segment eine Folge von pathData-Morphs plus strokeWidth-Animation; Ring statisch.
@@ -158,7 +162,7 @@ farbige oder zweifarbige Logos; Pille um den aktiven Navigationseintrag; einger�
 
 - [x] App-Icon (Abschnitt 5, Punkte 1, 2, 5) eingebaut
 - [ ] Auf dem Galaxy S24 prüfen, ob der transparente Hintergrund wirklich ohne Fläche erscheint (One UI legt bei manchen Launcher-Einstellungen eine eigene Fläche unter Icons)
-- [ ] Splash-Animation A
+- [x] Splash-Animation A (auf dem S24 ansehen)
 - [ ] In-App-Animation D (Compose) an passender Stelle (z. B. Verarbeitungsanzeige)
 - [ ] Entwurf 3 als neue Oberfläche umsetzen (Start, Wörterbuch, Stile, Einstellungen, hell und dunkel)
 - [ ] Wolken-Shader an den Prototyp angleichen, Farbwahl mit 5 Paletten

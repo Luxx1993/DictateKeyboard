@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- The globe without a plate behind it, as on the launcher (docs/design/diktat-design.md §5). -->
+    <!-- The globe without a plate behind it, as on the launcher, playing animation A on Android 12+
+         (docs/design/diktat-design.md §5). Older versions show it still. -->
     <style name="FlorisAppTheme.Splash" parent="Theme.SplashScreen">
         <item name="postSplashScreenTheme">@style/FlorisAppTheme</item>
         <item name="windowSplashScreenBackground">@color/florisApp_windowBackground</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_diktat_globe_themed</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/avd_diktat_globe_splash</item>
+        <item name="windowSplashScreenAnimationDuration">1000</item>
 
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
     </style>
