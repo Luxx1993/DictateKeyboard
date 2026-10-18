@@ -36,7 +36,6 @@ object DictationOnly {
         Routes.Settings.PhysicalKeyboard,
         Routes.Settings.Translation,
         Routes.Settings.DictateLayout,
-        Routes.Settings.DictateWear,
     )
 
     fun isVisible(route: Any): Boolean =

@@ -306,10 +306,9 @@ dependencies {
     implementation(projects.lib.color)
     implementation(projects.lib.dictateCore)
     implementation(projects.lib.compose)
-
-    // Wearable Data Layer: settings sync + tethered transcription with the Wear OS app (#106).
-    implementation(libs.play.services.wearable)
+    // Scan text (ML Kit) awaits its Task with this; goes with Scan in the next step.
     implementation(libs.kotlinx.coroutines.play.services)
+
     implementation(projects.lib.kotlin)
     implementation(projects.lib.snygg)
 
