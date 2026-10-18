@@ -108,7 +108,6 @@ class FlorisApplication : Application() {
             DictateLegacyMigrator.migrateIfNeeded(this@FlorisApplication)
             DictateLegacyMigrator.seedDeviceLanguageIfNeeded()
             DictateLegacyMigrator.migrateProviderKeyringIfNeeded()
-            DictateLegacyMigrator.migratePushToTalkDefaultIfNeeded()
             DictateLegacyMigrator.migrateTrustUserCertsToAccountsIfNeeded()
             preferenceStoreLoaded.value = true
         }

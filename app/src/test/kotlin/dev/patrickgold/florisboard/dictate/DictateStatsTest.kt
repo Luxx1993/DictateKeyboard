@@ -29,4 +29,21 @@ class DictateStatsTest {
     fun wordCountTreatsUnspacedCjkAsOneToken() {
         assertEquals(1, DictateStats.wordCount("你好世界"))
     }
+
+    @Test
+    fun monthCountEndsWithItsMonth() {
+        val oct31 = java.time.LocalDate.of(2026, 10, 31).toEpochDay()
+        val month = DictateStats.monthIndex(oct31)
+        assertEquals(2026 * 12 + 9, month)
+        assertEquals(120L, DictateStats.wordsThisMonth(month, 120L, today = oct31))
+        assertEquals(0L, DictateStats.wordsThisMonth(month, 120L, today = oct31 + 1))
+    }
+
+    @Test
+    fun streakLapsesAfterAMissedDay() {
+        val today = 20_000L
+        assertEquals(4, DictateStats.currentStreak(today, 4, today))
+        assertEquals(4, DictateStats.currentStreak(today - 1, 4, today))
+        assertEquals(0, DictateStats.currentStreak(today - 2, 4, today))
+    }
 }

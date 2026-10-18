@@ -169,6 +169,8 @@ farbige oder zweifarbige Logos; Pille um den aktiven Navigationseintrag; einger�
 - [ ] Auf dem Galaxy S24 prüfen, ob der transparente Hintergrund wirklich ohne Fläche erscheint (One UI legt bei manchen Launcher-Einstellungen eine eigene Fläche unter Icons)
 - [x] Splash-Animation A (auf dem S24 ansehen)
 - [x] In-App-Animation D (Compose) in „Datei transkribieren“; in Entwurf 3 weiterverwenden
-- [ ] Entwurf 3 als neue Oberfläche umsetzen (Start, Wörterbuch, Stile, Einstellungen, hell und dunkel)
-- [ ] Wolken-Shader an den Prototyp angleichen, Farbwahl mit 5 Paletten
+- [x] Entwurf 3 als neue Oberfläche umsetzen (Start, Wörterbuch, Stile, Einstellungen, hell und dunkel): `app/main/` mit `MainScreen`, Tabs, `UnisonoComponents`, `UnisonoIcons` (Pfade aus den HTML-Referenzen); Theme in `app/apptheme/Unisono.kt`
+- [ ] Entwurf 3 auf dem S24 ansehen (hell, dunkel) und Abstände nachziehen
+- [ ] Mitgelieferte Stile (Wörtlich, E-Mail, Chat, Aktenvermerk) als Standard-Prompts
+- [ ] Wolken-Shader an den Prototyp angleichen. Die Farbwahl mit 5 Paletten steht im Tab Einstellungen (`CloudPalette`) und speichert den Hauptton in `floatingButtonColor`; der Shader nutzt die vollen Paletten noch nicht
 - [ ] Später: Anbieter Gladia, Preset Cerebras, AssemblyAI Sync API

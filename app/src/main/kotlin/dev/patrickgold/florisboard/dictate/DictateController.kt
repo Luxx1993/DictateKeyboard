@@ -840,11 +840,11 @@ object DictateController {
     }
 
     /**
-     * True when the mic should behave as hold-to-record: the user enabled it and the upcoming recording
-     * is not long-form segmented, which cannot sensibly be held down for its whole duration.
+     * True when the button should behave as hold-to-record: the user chose [DictateRecordMode.HOLD] and the
+     * upcoming recording is not long-form segmented, which cannot sensibly be held down for its whole duration.
      */
     fun isPushToTalkActive(context: Context): Boolean =
-        prefs.dictate.pushToTalk.get() && !isSegmentedMode(context.applicationContext)
+        prefs.dictate.recordMode.get() == DictateRecordMode.HOLD && !isSegmentedMode(context.applicationContext)
 
     /**
      * True when a tap on the mic would start a fresh recording — everything except a recording already

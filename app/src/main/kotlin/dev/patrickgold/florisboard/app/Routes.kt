@@ -36,6 +36,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
+import dev.patrickgold.florisboard.app.main.MainScreen
 import dev.patrickgold.florisboard.app.settings.HomeScreen
 import dev.patrickgold.florisboard.app.settings.search.SettingsSearchScreen
 import dev.patrickgold.florisboard.app.settings.about.AboutScreen
@@ -88,6 +89,11 @@ object Routes {
         @Serializable
         object Screen
     }
+
+    /** The four tabs of Entwurf 3, the app's start screen. */
+    @Serializable
+    @Deeplink("main")
+    object Main
 
     object Settings {
         @Serializable
@@ -216,6 +222,7 @@ object Routes {
         ) {
             composable<Setup.Screen> { SetupScreen() }
 
+            composableWithDeepLink(Main::class) { MainScreen() }
             composableWithDeepLink(Settings.Home::class) { HomeScreen() }
             composableWithDeepLink(Settings.Search::class) { SettingsSearchScreen() }
 

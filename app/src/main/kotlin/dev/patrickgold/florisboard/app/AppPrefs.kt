@@ -23,6 +23,7 @@ import dev.patrickgold.florisboard.app.setup.NotificationPermissionState
 import dev.patrickgold.florisboard.dictate.DictateFloatingButtonAppScope
 import dev.patrickgold.florisboard.dictate.DictateFloatingButtonDesign
 import dev.patrickgold.florisboard.dictate.DictateFloatingButtonShowWhen
+import dev.patrickgold.florisboard.dictate.DictateRecordMode
 import dev.patrickgold.florisboard.dictate.DictateLongformMode
 import dev.patrickgold.florisboard.dictate.audio.AudioSpeedUp
 import dev.patrickgold.florisboard.dictate.audio.DictateAudioSource
@@ -242,27 +243,12 @@ abstract class FlorisPreferenceModel : PreferenceModel() {
             key = "dictate__long_press_send_local_model",
             default = false,
         )
-        // Hold-to-record instead of tap-to-start/tap-to-stop (issue #235): press and hold the mic, speak,
-        // release to send — slide left to discard, slide up to latch. Long-form segmented ignores it: a
-        // ten-minute dictation cannot be held down.
-        //
-        // ON by default since 2026-09-06. It shipped off because it takes the mic's *idle* long-press,
-        // which is how you pick a file to transcribe (#88) — but that has its own way in since #301: share
-        // the file to Dictate, or use the import row in the Dictate settings. Holding to speak is what
-        // almost everyone reaches for; transcribing a file is the rarer errand and no longer depends on
-        // this gesture. The send-button hold for the on-device model (#228) is not affected, since that
-        // one is only reachable while a recording is already running.
-        val pushToTalk = boolean(
-            key = "dictate__push_to_talk",
-            default = true,
-        )
-        // Guard for the one-time switch of existing users onto hold-to-record (the new default above).
-        // Fires once, so a keyboard already in use ends up behaving like a fresh install rather than
-        // keeping a default nobody chose; the setting is one tap away in Dictate › Recording for anyone
-        // who wants the old behaviour. See DictateLegacyMigrator.migratePushToTalkDefaultIfNeeded.
-        val pushToTalkDefaultMigrated = boolean(
-            key = "dictate__push_to_talk_default_migrated",
-            default = false,
+        // How the floating button records: tap to start and tap again to stop, or hold to record and release
+        // to send. Replaces the keyboard-era switch `dictate__push_to_talk`, which only the removed keyboard
+        // read; migrate() drops it. Tap by default, as the button has always worked.
+        val recordMode = enum(
+            key = "dictate__record_mode",
+            default = DictateRecordMode.TAP,
         )
         // Minutes the on-device model may sit idle before it is unloaded from RAM to free memory (models
         // are ~100 MB up to ~700 MB). It is always also freed immediately on an Android memory-pressure
@@ -562,6 +548,10 @@ abstract class FlorisPreferenceModel : PreferenceModel() {
         val statsStreakBest = int(key = "dictate__stats_streak_best", default = 0)
         // Compact rolling per-day word counts for the 7-day chart: "epochDay:words;epochDay:words;…".
         val statsDaily = string(key = "dictate__stats_daily", default = "")
+        // Words of the current calendar month, for "Diesen Monat" on the start tab. The month is kept as
+        // year * 12 + month (0-based), so a new month starts the count again on its first dictation.
+        val statsMonthIndex = int(key = "dictate__stats_month_index", default = 0)
+        val statsMonthWords = long(key = "dictate__stats_month_words", default = 0L)
         // Comma-separated dictation language codes the user cycles through on the recording bar
         // (see DictateLanguages; "detect" = auto-detect). Default mirrors the legacy app.
         val inputLanguages = string(
@@ -670,6 +660,12 @@ abstract class FlorisPreferenceModel : PreferenceModel() {
             default = DictateMappings.Empty,
             serializer = DictateMappings.Serializer,
         )
+        // The style the styles tab shows as active while none runs automatically, so switching "Nach jedem
+        // Diktat anwenden" off and on again keeps the same one (-1 = none chosen yet).
+        val activeStyleId = int(
+            key = "dictate__active_style_id",
+            default = -1,
+        )
         // Run the spoken-formatting-cues → Markdown pass automatically on every transcript.
         val autoFormattingEnabled = boolean(
             key = "dictate__auto_formatting_enabled",
@@ -750,6 +746,11 @@ abstract class FlorisPreferenceModel : PreferenceModel() {
             key = "other__app_icon_color",
             default = AppIconColor.WHITE,
         )
+        // The name the start tab greets with ("Hallo, Lukas"); blank greets without one.
+        val userName = string(
+            key = "other__user_name",
+            default = "",
+        )
     }
 
     override fun migrate(entry: PreferenceMigrationEntry): PreferenceMigrationEntry {
@@ -779,6 +780,9 @@ abstract class FlorisPreferenceModel : PreferenceModel() {
                     rawValue = DictateFloatingButtonShowWhen.fromRemovedKeyboardOption().name,
                 )
             }
+            // The keyboard's hold-to-record switch and its one-time default flip, replaced by recordMode.
+            "dictate__push_to_talk", "dictate__push_to_talk_default_migrated" -> entry.reset()
+
             "dictate__floating_button_show_when" -> {
                 if (entry.rawValue == "ALSO_WITH_DICTATE_KEYBOARD") {
                     entry.transform(rawValue = DictateFloatingButtonShowWhen.fromRemovedKeyboardOption().name)

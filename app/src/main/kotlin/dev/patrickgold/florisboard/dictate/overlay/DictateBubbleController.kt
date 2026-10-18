@@ -970,6 +970,21 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
                 onLongPress()
             }
         }
+        // Hold-to-record (Einstellungen › Aufnahme): decided per press, since a press that lands on a
+        // running dictation or on a failure waiting to be re-sent keeps the tap meaning it always had.
+        var holdMode = false
+        var holdStarted = false
+        var holdStartedAt = 0L
+        val holdStart = Runnable {
+            if (!moved) {
+                holdStarted = true
+                holdStartedAt = SystemClock.uptimeMillis()
+                if (prefs.dictate.floatingButtonHaptic.get()) vibrateTap()
+                startingDictation {
+                    DictateController.onPushToTalkDown(context, DictateController.OutputTarget.OVERLAY)
+                }
+            }
+        }
         view.setOnTouchListener { v, e ->
             val lp = params ?: return@setOnTouchListener false
             when (e.action) {
@@ -983,15 +998,24 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
                     snapAnim?.cancel()
                     cancelDim()
                     applyDim(false) // wake the bubble on touch
-                    v.postDelayed(longPress, longPressTimeout)
+                    holdStarted = false
+                    holdMode = holdModeApplies()
+                    if (holdMode) {
+                        v.postDelayed(holdStart, HOLD_START_MS)
+                    } else {
+                        v.postDelayed(longPress, longPressTimeout)
+                    }
                     true
                 }
                 MotionEvent.ACTION_MOVE -> {
                     val dx = e.rawX - downX
                     val dy = e.rawY - downY
+                    // A finger that slips while holding to record stays a recording, not a drag.
+                    if (holdStarted) return@setOnTouchListener true
                     if (!moved && hypot(dx, dy) > slop) {
                         moved = true
                         v.removeCallbacks(longPress) // a drag cancels the pending long-press
+                        v.removeCallbacks(holdStart) // and the pending hold-to-record
                     }
                     if (moved) {
                         val maxX = (screenWidth() - v.width).coerceAtLeast(0)
@@ -1012,8 +1036,16 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
                 }
                 MotionEvent.ACTION_UP -> {
                     v.removeCallbacks(longPress)
+                    v.removeCallbacks(holdStart)
                     when {
+                        // Let go: send, unless the hold was too short to have said anything.
+                        holdStarted -> DictateController.onPushToTalkUp(
+                            context,
+                            send = SystemClock.uptimeMillis() - holdStartedAt >= HOLD_MIN_SEND_MS,
+                        )
                         longPressFired -> Unit // handled by the long-press (prompt menu)
+                        // In hold mode a short tap does what holding does in tap mode: the prompt menu.
+                        !moved && holdMode -> onLongPress()
                         !moved -> onTap()
                         // When snapping is off the bubble stays where it was dropped (already clamped within
                         // the screen by ACTION_MOVE); otherwise it animates to the nearer side edge.
@@ -1025,6 +1057,9 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
                 }
                 MotionEvent.ACTION_CANCEL -> {
                     v.removeCallbacks(longPress)
+                    v.removeCallbacks(holdStart)
+                    if (holdStarted) DictateController.cancelPushToTalk()
+                    holdStarted = false
                     true
                 }
                 else -> false
@@ -1467,6 +1502,22 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
                 vibrator.vibrate(VibrationEffect.createOneShot(20, VibrationEffect.DEFAULT_AMPLITUDE))
             }
         }
+    }
+
+    /**
+     * Whether this press records while held: hold mode is chosen and the press would start a fresh
+     * dictation. A press on a running dictation stops it, and one on a failure with a kept recording
+     * re-sends it, the same as in tap mode.
+     */
+    private fun holdModeApplies(): Boolean {
+        if (!DictateController.isPushToTalkActive(context)) return false
+        val current = DictateController.state.value
+        if (current is DictateController.UiState.Error &&
+            current.action == DictateController.ErrorAction.RESEND
+        ) {
+            return false
+        }
+        return DictateController.canStartRecording()
     }
 
     private fun onTap() {
@@ -2721,6 +2772,15 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
         private const val SUCCESS_HOLD_MS = 1700L
         private const val TICK_MS = 50L
         private const val AUTO_DIM_DELAY_MS = 3500L
+
+        /**
+         * Hold mode: how long the finger has to rest before recording starts. Short enough to feel instant,
+         * long enough that a drag or a tap never opens the microphone.
+         */
+        private const val HOLD_START_MS = 150L
+
+        /** Hold mode: a release sooner than this after the start is a hold given up on, not a dictation. */
+        private const val HOLD_MIN_SEND_MS = 400L
 
         /**
          * How far the bubble's visible shape parks from the screen edge, in dp. The wider of the two gaps

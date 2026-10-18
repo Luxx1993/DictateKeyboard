@@ -91,7 +91,7 @@ Hinweise:
 
 Alle in `app/settings/dictate/DictateScreen.kt`:
 
-- **Halten zum Aufnehmen** (Push-to-Talk) statt zweimal tippen – wirkte nur an der Mikrofon-Taste der Tastatur; am schwebenden Button noch nicht angebunden (Abschnitt 13)
+- **Aufnahme mit dem Button** (`prefs.dictate.recordMode`, `DictateRecordMode`): **Antippen** zum Starten, nochmal zum Beenden (Standard) oder **Gedrückt halten** zum Aufnehmen, loslassen zum Senden. Wirkt am schwebenden Button (`DictateBubbleController.attachTouch`). Im Halten-Modus öffnet kurzes Tippen das Prompt-Menü, Ziehen vor dem Start verschiebt den Button. Ersetzt den alten Tastatur-Schalter `dictate__push_to_talk`.
 - **Echtzeit-Transkription** (Streaming, wenn der Anbieter es kann)
 - **Langdiktat**: aus / manuell („Weiter“-Taste schneidet Abschnitte) / automatisch (Sprachpausen-Erkennung mit Silero-VAD und Smart Turn v3) – lief nur in der Tastatur, **ohne Wirkung** seit sie entfernt ist (Abschnitt 13)
 - Andere Audio-Wiedergabe pausieren; Bluetooth-Mikrofon; Audioquelle wählen; Bildschirm anlassen
@@ -125,7 +125,8 @@ Ein Prompt hat:
 - Reihenfolge per langem Drücken und Ziehen; **Export/Import** als `dictate_prompts.json`.
 - **Prompt-Bibliothek** der Community zum Hinzufügen (`DictatePromptLibraryScreen.kt`, `dictate/data/prompts/PromptLibrary*.kt`).
 - Außerdem „Zeichensetzung & Stil“ für die Transkription selbst (keiner / Standard / eigener Text).
-- Mitgelieferte Stile aus dem Entwurf (Wörtlich, E-Mail, Chat, Aktenvermerk): im Entwurf gezeigt, **geplant** als Voreinstellungen – ob sie im Code schon als Standard-Prompts existieren, ist nicht geprüft.
+- Mitgelieferte Stile aus dem Entwurf (Wörtlich, E-Mail, Chat, Aktenvermerk): im Entwurf gezeigt, **noch nicht** als Standard-Prompts im Code (Abschnitt 15).
+- **Tab „Stile“** (`app/main/StylesTab.kt`): zeigt alle Prompts außer Textbausteinen. Aktiv ist der Prompt mit „Automatisch anwenden“, sonst der zuletzt gewählte (`prefs.dictate.activeStyleId`). Der Schalter setzt „Automatisch anwenden“ nur auf diesen einen Stil; Tippen auf eine andere Karte macht sie aktiv, langes Drücken öffnet den Editor. „Neuer Stil“ öffnet den Editor für einen neuen Prompt.
 
 ## 9. Wörterbuch
 
@@ -135,6 +136,7 @@ Zwei getrennte Dinge (im Entwurf in einem Tab „Wörterbuch“):
 2. **Ersetzungen / Mappings** (`DictateMappingsScreen.kt`, `DictateMappings.kt`): Suchen-und-Ersetzen auf dem fertigen Text, exakt und lokal. Pro Regel: Groß-/Kleinschreibung beachten, nur ganze Wörter.
 
 Status: **vorhanden**. Das persönliche Wörterbuch der Tastatur ist **entfernt** (auch der Import eigener Wörter dorthin).
+Tab „Wörterbuch“ (`app/main/DictionaryTab.kt`): Feld zum Suchen und Hinzufügen, Wörter als Chips (Tippen = entfernen), Ersetzungen als Liste, Tippen öffnet den Ersetzungen-Bildschirm. Import/Export und Token-Anzeige bleiben unter Alle Einstellungen › Diktat.
 
 ## 10. Schwebender Button („Wolke“)
 
@@ -161,7 +163,7 @@ Einstellungen in `app/settings/dictate/DictateFloatingButtonScreen.kt`:
 
 - Diktate, Wörter, Zeichen, gesprochene Zeit, Wörter pro Diktat, Sprechtempo (WPM), Umformulierungen, **gesparte Zeit gegenüber Tippen**, **Tage in Folge** (mit Bestwert), Aktivität der letzten 7 Tage, Zurücksetzen, Teilen
 - Code: `dictate/data/stats/DictateStats.kt`, `app/settings/dictate/DictateStatsScreen.kt`
-- Der Entwurf zeigt auf der Startseite: Wörter gesamt, Diesen Monat, Tage in Folge. „Diesen Monat“ ist als eigene Zahl im Code nicht geprüft.
+- Die Startseite zeigt Wörter gesamt, Diesen Monat (neu: `statsMonthIndex`/`statsMonthWords`, zählt ab dem ersten Diktat des Monats, ältere Diktate zählen nicht nachträglich) und Tage in Folge (0, sobald ein Tag ausgelassen wurde).
 - Status: **vorhanden**.
 
 ## 13. Tastatur und Zubehör entfernen
@@ -196,9 +198,10 @@ Updates des Originals lassen sich damit praktisch nicht mehr übernehmen (so gew
 - **Spalte `trigger` in der Prompt-Datenbank**: das Tipp-Kürzel ist weg, die Spalte bleibt, damit keine Datenbank-Migration nötig ist.
 - **Import aus der alten Dictate-App** (`DictateLegacyMigrator`): keine Tastatur, nur Übernahme alter Einstellungen.
 
+**Entschieden:** Halten zum Aufnehmen bleibt und ist am schwebenden Button angebunden, wählbar unter Einstellungen ›
+Aufnahme (Antippen oder Gedrückt halten, Abschnitt 5).
+
 **Offen (Entscheidung von Lukas):**
-- **Halten zum Aufnehmen**: steht im Soll („Gedrückt halten“), lief aber nur an der Mikrofon-Taste der Tastatur. Die Logik im
-  `DictateController` ist erhalten, am schwebenden Button aber nicht angebunden. Anbinden oder Einstellung streichen?
 - **Langdiktat**: lief nur in der Tastatur und ist jetzt ohne Wirkung (`isSegmentedMode` liefert immer `false`). Die
   Einstellung ist noch sichtbar. An den Button anbinden oder samt Code entfernen?
 - Nicht auf einem Gerät getestet (kein Emulator im Container). Vor dem nächsten Schritt einmal auf dem S24 prüfen:
@@ -209,7 +212,7 @@ Updates des Originals lassen sich damit praktisch nicht mehr übernehmen (so gew
 Reihenfolge und Details: `CLAUDE.md` und `docs/design/diktat-design.md` Abschnitt 7.
 
 1. App-Icon „Welle um die Welt“: Icon, Themen-Icon, Umschalter weiß/schwarz, Splash-Animation A und In-App-Animation D (in „Datei transkribieren“) **vorhanden**
-2. Neue Oberfläche „Entwurf 3“ (Start, Wörterbuch, Stile, Einstellungen)
+2. Neue Oberfläche „Entwurf 3“ (Start, Wörterbuch, Stile, Einstellungen): **vorhanden** (`app/main/`), Startbildschirm der App; die alte Einstellungsliste ist „Alle Einstellungen“. Auf dem S24 noch nicht angesehen.
 3. Wolken-Shader an den Prototyp angleichen
 4. Anbieter Gladia, Preset Cerebras, AssemblyAI Sync API
 

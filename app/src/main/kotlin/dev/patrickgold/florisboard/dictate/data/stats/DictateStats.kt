@@ -55,7 +55,25 @@ object DictateStats {
         if (d.statsFirstUseEpochMs.get() == 0L) d.statsFirstUseEpochMs.set(nowMs)
         updateStreak(d, today)
         addDailyWords(d, today, words)
+        val month = monthIndex(today)
+        val before = if (d.statsMonthIndex.get() == month) d.statsMonthWords.get() else 0L
+        d.statsMonthIndex.set(month)
+        d.statsMonthWords.set(before + words)
     }
+
+    /** The calendar month of [epochDay] as year * 12 + month (0-based); see `statsMonthIndex`. */
+    fun monthIndex(epochDay: Long): Int = LocalDate.ofEpochDay(epochDay).let { it.year * 12 + it.monthValue - 1 }
+
+    /** Words dictated in the month of [today]: the stored count, or 0 once that month is over. */
+    fun wordsThisMonth(storedIndex: Int, storedWords: Long, today: Long = LocalDate.now().toEpochDay()): Long =
+        if (storedIndex == monthIndex(today)) storedWords else 0L
+
+    /**
+     * The streak as of [today]: the stored run only counts while it is still alive, that is when the last
+     * dictation was today or yesterday.
+     */
+    fun currentStreak(lastDay: Long, stored: Int, today: Long = LocalDate.now().toEpochDay()): Int =
+        if (lastDay == today || lastDay == today - 1L) stored else 0
 
     /** Records that one AI rewording/prompt pass ran. */
     suspend fun recordRewording(prefs: FlorisPreferenceModel) {
@@ -76,6 +94,8 @@ object DictateStats {
         d.statsStreakCurrent.set(0)
         d.statsStreakBest.set(0)
         d.statsDaily.set("")
+        d.statsMonthIndex.set(0)
+        d.statsMonthWords.set(0L)
     }
 
     /** Whitespace-delimited word count; CJK text (no spaces) collapses to a single token, which is fine. */

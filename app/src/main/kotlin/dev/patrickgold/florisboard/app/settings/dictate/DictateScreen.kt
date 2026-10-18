@@ -33,6 +33,7 @@ import java.text.DecimalFormat
 import kotlin.math.roundToInt
 import dev.patrickgold.jetpref.material.ui.JetPrefAlertDialog
 import dev.patrickgold.florisboard.dictate.DictateLongformMode
+import dev.patrickgold.florisboard.dictate.DictateRecordMode
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.Bolt
@@ -307,15 +308,15 @@ fun DictateRecordingScreen() = FlorisScreen {
     val prefs by FlorisPreferenceStore
 
     content {
-        SwitchPreference(
-            prefs.dictate.pushToTalk,
+        ListPreference(
+            prefs.dictate.recordMode,
             icon = Icons.Default.TouchApp,
-            modifier = Modifier.settingsSearchAnchor("dictate__push_to_talk_title"),
-            title = stringRes(R.string.dictate__push_to_talk_title),
-            // Off, the row says what holding the mic does *instead* — otherwise the shortcut this
-            // setting would take away is nowhere to be found.
-            summaryOn = stringRes(R.string.dictate__push_to_talk_summary),
-            summaryOff = stringRes(R.string.dictate__push_to_talk_summary_off),
+            modifier = Modifier.settingsSearchAnchor("dictate__record_mode_title"),
+            title = stringRes(R.string.dictate__record_mode_title),
+            entries = listPrefEntries {
+                entry(DictateRecordMode.TAP, stringRes(R.string.dictate__record_mode_tap))
+                entry(DictateRecordMode.HOLD, stringRes(R.string.dictate__record_mode_hold))
+            },
         )
         // One row, three states: off, stream and show it live, stream and only show the result (#345).
         RealtimeTranscriptionPreference(

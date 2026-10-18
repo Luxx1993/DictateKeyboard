@@ -34,7 +34,9 @@ APK unter `app/build/outputs/apk/debug/`. Debug-Builds sind mit einem Debug-Schl
 - `dictate/overlay/` – schwebender Button (Accessibility-Service, Bubble-Controller)
 - `dictate/ui/AudioReactiveCloudOrbView.kt` – AGSL-Shader der Wolke
 - `dictate/ui/DiktatGlobe.kt` – Icon-Kugel als Compose-Komponente, Animation D
-- `app/settings/` – Compose-Einstellungen (`HomeScreen.kt`, `dictate/DictateProvidersScreen.kt` …)
+- `app/main/` – Oberfläche Entwurf 3: `MainScreen.kt` (4 Tabs, Startbildschirm), `StartTab`, `DictionaryTab`, `StylesTab`, `SettingsTab`, Bausteine `UnisonoComponents.kt`, Icons `UnisonoIcons.kt`
+- `app/apptheme/Unisono.kt` – Farben, Schriften, Textstile des Unisono-Looks
+- `app/settings/` – Compose-Einstellungen (`HomeScreen.kt` = „Alle Einstellungen“, `dictate/DictateProvidersScreen.kt` …)
 - `app/src/main/AndroidManifest.xml` – Launcher-Aliase `dev.patrickgold.florisboard.SettingsLauncherAlias` (weiß) und `…AliasBlack` (schwarz), Splash-Theme `FlorisAppTheme.Splash`
 - `app/src/main/res/mipmap-anydpi-v26/app_icon.xml` / `app_icon_black.xml` – adaptives Icon „Welle um die Welt“ (weiß/schwarz), Umschalter in `app/AppIcon.kt`
 
@@ -53,9 +55,9 @@ Alle Design-Entscheidungen stehen in **`docs/design/diktat-design.md`**. Das ist
 ## Nächste Aufgaben
 
 1. App-Icon ist fertig (Icon, Themen-Icon, Umschalter, Animation A im Splash, Animation D als `DiktatGlobe` in „Datei transkribieren“).
-2. Entwurf 3 als neue Oberfläche umsetzen.
+2. Entwurf 3 ist umgesetzt (`app/main/`: Start, Wörterbuch, Stile, Einstellungen); auf dem S24 ansehen und nachziehen.
 3. Wolken-Shader an den Prototyp angleichen.
 4. Später: Anbieter Gladia, Preset Cerebras, AssemblyAI Sync API.
-5. Offen aus dem Entfernen: „Halten zum Aufnehmen“ und Langdiktat am Button anbinden oder streichen (FUNKTIONEN.md 13).
+5. Offen aus dem Entfernen: Langdiktat am Button anbinden oder streichen (FUNKTIONEN.md 13). Halten/Antippen ist wählbar (Einstellungen › Aufnahme).
 
 Details und Reihenfolge: Abschnitt 5 und 7 in `docs/design/diktat-design.md`.

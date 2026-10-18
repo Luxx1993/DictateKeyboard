@@ -419,7 +419,7 @@ private fun PreferenceUiScope<FlorisPreferenceModel>.steps(
                     this@steps.prefs.internal.openFloatingButtonAfterSetup.set(true)
                     this@steps.prefs.internal.isImeSetUp.set(true)
                 }
-                navController.navigate(Routes.Settings.Home) {
+                navController.navigate(Routes.Main) {
                     popUpTo(Routes.Setup.Screen) { inclusive = true }
                 }
             }
@@ -451,7 +451,7 @@ private fun PreferenceUiScope<FlorisPreferenceModel>.steps(
             }
             StepButton(label = stringRes(R.string.setup__finish_up__finish_btn)) {
                 scope.launch { this@steps.prefs.internal.isImeSetUp.set(true) }
-                navController.navigate(Routes.Settings.Home) {
+                navController.navigate(Routes.Main) {
                     popUpTo(Routes.Setup.Screen) {
                         inclusive = true
                     }

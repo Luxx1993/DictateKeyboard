@@ -169,7 +169,7 @@ class FlorisAppActivity : ComponentActivity() {
         // would rebuild the graph and reset the back stack (which is why finishing setup used to drop
         // any onward navigation). Completing setup navigates explicitly instead.
         val startDestination = remember {
-            if (isImeSetUp) Routes.Settings.Home::class else Routes.Setup.Screen::class
+            if (isImeSetUp) Routes.Main::class else Routes.Setup.Screen::class
         }
 
         // After the onboarding's optional floating-button step finishes setup, jump on to the

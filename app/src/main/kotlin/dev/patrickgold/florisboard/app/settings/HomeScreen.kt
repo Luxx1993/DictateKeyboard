@@ -81,8 +81,8 @@ import org.florisboard.lib.compose.stringRes
 
 @Composable
 fun HomeScreen() = FlorisScreen {
-    title = stringRes(R.string.settings__home__title)
-    navigationIconVisible = false
+    // Reached from Einstellungen › Alle Einstellungen since the tabs of Entwurf 3 became the start screen.
+    title = stringRes(R.string.main__settings_all)
 
     val navController = LocalNavController.current
     val context = LocalContext.current

@@ -383,9 +383,6 @@
     <string name="dictate__bluetooth_mic_summary">Enregistrer via un casque Bluetooth connecté lorsqu\'il est disponible</string>
     <string name="dictate__keep_screen_awake_title">Garder l\'écran allumé</string>
     <string name="dictate__keep_screen_awake_summary">Empêcher l\'écran de s\'éteindre pendant l\'enregistrement</string>
-    <string name="dictate__push_to_talk_title">Maintenir pour enregistrer</string>
-    <string name="dictate__push_to_talk_summary">Maintenez le micro, relâchez pour envoyer</string>
-    <string name="dictate__push_to_talk_summary_off">Désactivé — maintenir le micro transcrit un fichier audio à la place</string>
     <string name="dictate__recording_animation_title">Indicateur d\'enregistrement</string>
     <string name="dictate__skip_silent_title">Ignorer les enregistrements silencieux</string>
     <string name="dictate__skip_silent_summary">Évite le texte halluciné et les appels API inutiles sur un audio silencieux</string>

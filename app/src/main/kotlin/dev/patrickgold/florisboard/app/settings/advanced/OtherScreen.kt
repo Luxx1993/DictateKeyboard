@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.FormatColorFill
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Preview
 import androidx.compose.material.icons.filled.SettingsBackupRestore
 import androidx.compose.material3.Text
@@ -52,6 +53,7 @@ import dev.patrickgold.florisboard.lib.compose.FlorisScreen
 import dev.patrickgold.jetpref.datastore.model.collectAsState
 import dev.patrickgold.jetpref.datastore.ui.ColorPickerPreference
 import dev.patrickgold.jetpref.datastore.ui.ListPreference
+import dev.patrickgold.jetpref.datastore.ui.TextFieldPreference
 import dev.patrickgold.jetpref.datastore.ui.Preference
 import dev.patrickgold.jetpref.datastore.ui.PreferenceGroup
 import dev.patrickgold.jetpref.datastore.ui.SwitchPreference
@@ -169,6 +171,12 @@ fun OtherScreen() = FlorisScreen {
                     }
                 }
             }
+        )
+        TextFieldPreference(
+            prefs.other.userName,
+            icon = Icons.Default.Person,
+            modifier = Modifier.settingsSearchAnchor("pref__other__user_name__label"),
+            title = stringRes(R.string.pref__other__user_name__label),
         )
         ListPreference(
             prefs.other.appIconColor,

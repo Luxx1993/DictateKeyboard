@@ -114,7 +114,8 @@ import org.json.JSONObject
 @Composable
 fun DictatePromptsScreen(
     // When deep-linked from a long-pressed prompt chip on the keyboard, the id of the prompt whose
-    // editor should open automatically once the list has loaded (-1 = none, the normal entry).
+    // editor should open automatically once the list has loaded (-1 = none, the normal entry;
+    // PromptModel.ID_ADD_PROMPT = the editor for a new prompt).
     editPromptId: Int = -1,
 ) = FlorisScreen {
     title = stringRes(R.string.dictate__prompts_title)
@@ -223,7 +224,14 @@ fun DictatePromptsScreen(
         // the editor, even though the route arg stays put).
         var deepLinkEditHandled by remember { mutableStateOf(false) }
         LaunchedEffect(editPromptId, prompts.size) {
-            if (editPromptId < 0 || deepLinkEditHandled) return@LaunchedEffect
+            if (deepLinkEditHandled) return@LaunchedEffect
+            // "Neuer Stil" on the styles tab: open the editor for a new prompt straight away.
+            if (editPromptId == PromptModel.ID_ADD_PROMPT) {
+                editorTarget = PromptModel(-1, 0, "", "", requiresSelection = true, autoApply = false)
+                deepLinkEditHandled = true
+                return@LaunchedEffect
+            }
+            if (editPromptId < 0) return@LaunchedEffect
             val target = prompts.firstOrNull { it.id == editPromptId } ?: return@LaunchedEffect
             editorTarget = target.copy()
             deepLinkEditHandled = true

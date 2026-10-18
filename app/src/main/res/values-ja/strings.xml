@@ -379,9 +379,6 @@
     <string name="dictate__bluetooth_mic_summary">利用可能な場合、接続済みのBluetoothヘッドセットで録音します</string>
     <string name="dictate__keep_screen_awake_title">画面をオンのままにする</string>
     <string name="dictate__keep_screen_awake_summary">録音中に画面が消えないようにします</string>
-    <string name="dictate__push_to_talk_title">押している間だけ録音</string>
-    <string name="dictate__push_to_talk_summary">マイクを押したまま話し、離すと送信</string>
-    <string name="dictate__push_to_talk_summary_off">オフ — マイク長押しで音声ファイルを文字起こしします</string>
     <string name="dictate__recording_animation_title">録音インジケーター</string>
     <string name="dictate__skip_silent_title">無音の録音をスキップ</string>
     <string name="dictate__skip_silent_summary">無音の録音での幻覚テキストや無駄なAPI呼び出しを回避します</string>
