@@ -19,6 +19,7 @@ package dev.patrickgold.florisboard.app.apptheme
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
@@ -62,6 +63,11 @@ fun FlorisAppTheme(
         MaterialTheme(
             colorScheme = Unisono.colorScheme(tokens),
             typography = Unisono.Typography,
+            shapes = Shapes(
+                small = Unisono.RadiusMd,
+                medium = Unisono.RadiusLg,
+                large = Unisono.RadiusLg,
+            ),
             content = content,
         )
     }

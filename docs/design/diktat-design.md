@@ -175,6 +175,7 @@ farbige oder zweifarbige Logos; Pille um den aktiven Navigationseintrag; einger�
 - [x] Unterseiten Teil 2a: KI-Anbieter (Im Einsatz, Deine Anbieter, Netzwerk; Auswahl als `UDialog`) und Sprachen (aktive Sprache, Chips, Hinzufügen mit Suche). Der Anbieter-Editor-Dialog (`ProviderEditorDialog`) ist noch im alten Look
 - [x] Unterseiten Teil 2b: Statistik, Ersetzungen und Verlauf im Unisono-Look. Im Verlauf bleiben die Dialoge (Export, Detail, Limits) noch alt
 - [ ] Offen aus Teil 2: Prompts (`DictatePromptsScreen`, Editor und Ziehen zum Sortieren) und Prompt-Bibliothek, Anbieter-Editor-Dialog; die Stile-Seite deckt das Anlegen und Bearbeiten schon im neuen Look ab; Teil 3: Sonstige, Sichern, Über, Lizenzen, Einrichtung
+- [x] Unterseiten Teil 3: Sonstige, Sichern, Wiederherstellen, Über und die drei Lizenzseiten im Unisono-Look (neue Bausteine `UButton`, `UNotice`, `UTextField`). Die Einrichtung (`SetupScreen`) bekommt den Look über das Material-Theme (Farben, Schrift) und die neuen Rundungen; ihre Schritte sind nicht neu gebaut
 - [ ] Mitgelieferte Stile (Wörtlich, E-Mail, Chat, Aktenvermerk) als Standard-Prompts
 - [x] Wolken-Shader an den Prototyp angeglichen (`dictate/ui/AudioReactiveCloudOrbView.kt`, Bewegung in `CloudMotion.kt`, Paletten in `CloudPalette.kt`):
   dieselben Ebenen, Keyframes und Dauern wie `SchwebenderButton.html`. Gegen Screenshots des Prototyps (Chromium) mit einem
