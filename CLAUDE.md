@@ -33,6 +33,7 @@ APK unter `app/build/outputs/apk/debug/`. Debug-Builds sind mit einem Debug-Schl
 - `app/src/main/kotlin/dev/patrickgold/florisboard/dictate/` – Diktat-Logik (Anbieter, Aufnahme, Overlay)
 - `dictate/overlay/` – schwebender Button (Accessibility-Service, Bubble-Controller)
 - `dictate/ui/AudioReactiveCloudOrbView.kt` – AGSL-Shader der Wolke
+- `dictate/ui/DiktatGlobe.kt` – Icon-Kugel als Compose-Komponente, Animation D
 - `app/settings/` – Compose-Einstellungen (`HomeScreen.kt`, `dictate/DictateProvidersScreen.kt` …)
 - `app/src/main/AndroidManifest.xml` – Launcher-Aliase `dev.patrickgold.florisboard.SettingsLauncherAlias` (weiß) und `…AliasBlack` (schwarz), Splash-Theme `FlorisAppTheme.Splash`
 - `app/src/main/res/mipmap-anydpi-v26/app_icon.xml` / `app_icon_black.xml` – adaptives Icon „Welle um die Welt“ (weiß/schwarz), Umschalter in `app/AppIcon.kt`
@@ -51,7 +52,7 @@ Alle Design-Entscheidungen stehen in **`docs/design/diktat-design.md`**. Das ist
 
 ## Nächste Aufgaben
 
-1. App-Icon: Icon, Themen-Icon, Umschalter weiß/schwarz und Splash-Animation A sind drin. Als Nächstes In-App-Animation D.
+1. App-Icon ist fertig (Icon, Themen-Icon, Umschalter, Animation A im Splash, Animation D als `DiktatGlobe` in „Datei transkribieren“).
 2. Entwurf 3 als neue Oberfläche umsetzen.
 3. Wolken-Shader an den Prototyp angleichen.
 4. Später: Anbieter Gladia, Preset Cerebras, AssemblyAI Sync API.

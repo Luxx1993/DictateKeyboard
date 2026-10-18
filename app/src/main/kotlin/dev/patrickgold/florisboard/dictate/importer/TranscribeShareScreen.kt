@@ -48,7 +48,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -92,6 +91,7 @@ import dev.patrickgold.florisboard.dictate.provider.OpenAiCompatibleClient
 import dev.patrickgold.florisboard.dictate.provider.ProviderRegistry
 import dev.patrickgold.florisboard.dictate.provider.TranscriptionApi
 import dev.patrickgold.florisboard.dictate.provider.chatModelFor
+import dev.patrickgold.florisboard.dictate.ui.DiktatGlobe
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -360,6 +360,10 @@ fun TranscribeShareScreen(uris: List<Uri>, onClose: () -> Unit) {
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
+                    // The globe turning while the file is worked on: animation D of the app icon
+                    // (docs/design/diktat-design.md §5).
+                    DiktatGlobe(modifier = Modifier.size(96.dp))
+                    Spacer(Modifier.height(24.dp))
                     // One line saying which step is running, over the bar that shows how far it has
                     // got (issue #337). The percentage only exists where something can be counted;
                     // everywhere else the bar keeps moving without claiming a number.
@@ -427,7 +431,7 @@ fun TranscribeShareScreen(uris: List<Uri>, onClose: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
+                DiktatGlobe(modifier = Modifier.size(20.dp))
                 Text(
                     text = status.ifBlank { stringRes(R.string.dictate__status_rewording) },
                     style = MaterialTheme.typography.bodySmall,

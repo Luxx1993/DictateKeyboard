@@ -117,7 +117,7 @@ orthografische Projektion, Strichstärke abhängig von der Tiefe z (smoothstep),
 Im adaptiven Icon (108 dp) wird das 48er-Raster auf die sichtbaren 72 dp gelegt (Skalierung 1,5, Versatz 18),
 die Kugel ist damit ca. 62 dp groß und liegt in der 66-dp-Schutzzone.
 
-### Umsetzung in Android (Punkte 1, 2, 3 und 5 erledigt, 4 offen)
+### Umsetzung in Android (alle Punkte erledigt)
 
 1. **Adaptives Icon** – *erledigt.* `mipmap-anydpi-v26/app_icon.xml` (weiß) und `app_icon_black.xml` (schwarz):
    `background` = `@android:color/transparent`, `foreground` = `ic_diktat_globe_white` bzw. `_black`,
@@ -143,7 +143,12 @@ die Kugel ist damit ca. 62 dp groß und liegt in der 66-dp-Schutzzone.
    Für 1 s etwa 60° Drehung mit ease-out. Linienfarbe hell/dunkel je nach Splash-Hintergrund (Farbressource mit `values-night`).
    Umsetzungsidee: Welle als z. B. 60 kurze Segmente (`M x y L x y`), je Segment eine Folge von pathData-Morphs plus strokeWidth-Animation; Ring statisch.
    `windowSplashScreenIconBackgroundColor` transparent bzw. Theme ohne Icon-Hintergrund.
-4. **Animation D in der App**, solange diktiert oder verarbeitet wird: Welle dreht sich, gleichzeitig atmet die Amplitude,
+4. **Animation D in der App** – *erledigt:* Compose-Komponente `DiktatGlobe` (`dictate/ui/DiktatGlobe.kt`), Geometrie als
+   Kotlin-Port des Generators in `DiktatGlobeGeometry` (Unit-Test vergleicht mit Werten aus `diktat_icon.py`). Zeichnet pro
+   Frame 240 Stücke mit tiefenabhängiger Strichstärke, Farbe = Textfarbe des Themes; bei „Animationen entfernen“ statisch.
+   Eingesetzt in „Datei transkribieren“: groß (96 dp) während der Transkription, klein (20 dp) statt des Kreisels während
+   des Umformulierens. Weitere Stellen (z. B. Start in Entwurf 3) mit `DiktatGlobe(animate = …)`.
+   Ursprüngliche Vorgabe: solange diktiert oder verarbeitet wird: Welle dreht sich, gleichzeitig atmet die Amplitude,
    vorne und hinten **gegenläufig** (vorne höher = hinten flacher), Ausschlag nur bis 65 %.
    Formel in `lat_anim(..., mode='D')`: Schleife 6 s (eine Schleife = 120° Drehung, volle Umdrehung 18 s), zwei Atemzüge pro Schleife.
    Am besten als Compose-`Canvas`, der pro Frame projiziert und die Segmente mit tiefenabhängiger Strichstärke zeichnet (kein Video, keine Bitmap).
@@ -163,7 +168,7 @@ farbige oder zweifarbige Logos; Pille um den aktiven Navigationseintrag; einger�
 - [x] App-Icon (Abschnitt 5, Punkte 1, 2, 5) eingebaut
 - [ ] Auf dem Galaxy S24 prüfen, ob der transparente Hintergrund wirklich ohne Fläche erscheint (One UI legt bei manchen Launcher-Einstellungen eine eigene Fläche unter Icons)
 - [x] Splash-Animation A (auf dem S24 ansehen)
-- [ ] In-App-Animation D (Compose) an passender Stelle (z. B. Verarbeitungsanzeige)
+- [x] In-App-Animation D (Compose) in „Datei transkribieren“; in Entwurf 3 weiterverwenden
 - [ ] Entwurf 3 als neue Oberfläche umsetzen (Start, Wörterbuch, Stile, Einstellungen, hell und dunkel)
 - [ ] Wolken-Shader an den Prototyp angleichen, Farbwahl mit 5 Paletten
 - [ ] Später: Anbieter Gladia, Preset Cerebras, AssemblyAI Sync API
