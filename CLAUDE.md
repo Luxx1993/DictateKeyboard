@@ -24,7 +24,7 @@ Kernablauf: sprechen → KI räumt den Text auf → Text wird eingefügt. Lukas 
 ## Repository
 
 - README, Datenschutz (`PRIVACY_POLICY.md`), `SECURITY.md` und die Links in der App gelten für diktat und zeigen auf
-  `Luxx1993/diktat`. Das Repository heißt `diktat` (vorher `DictateKeyboard`); die Fork-Verbindung zu `DevEmperor/DictateKeyboard` bleibt (Remote `upstream` zum Abgleich).
+  `Luxx1993/unisono-diktat`. Das Repository heißt `unisono-diktat` (vorher `DictateKeyboard`); die Fork-Verbindung zu `DevEmperor/DictateKeyboard` bleibt (Remote `upstream` zum Abgleich).
 - Herkunft bleibt genannt: README „Herkunft und Lizenz“, `NOTICE` (eigener Block oben, Originale unverändert), Über-Seite
   „Basiert auf Dictate Keyboard“. Apache 2.0 verlangt das.
 - Noch an DevEmperor gebunden: Downloads der Offline- und Smart-Turn-Modelle (`LocalModelCatalog.REL`, Releases von

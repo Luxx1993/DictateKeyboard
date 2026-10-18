@@ -335,7 +335,7 @@ private fun EmptyState() {
 
 // --- helpers --------------------------------------------------------------------------------------
 
-private const val PROJECT_URL = "https://github.com/Luxx1993/diktat"
+private const val PROJECT_URL = "https://github.com/Luxx1993/unisono-diktat"
 private val BAR_MAX_HEIGHT = 64.dp
 
 private fun shareStats(context: android.content.Context, text: String) {

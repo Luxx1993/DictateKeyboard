@@ -3,7 +3,7 @@
 diktat hält deine API-Keys und kann über den schwebenden Button Text in andere Apps schreiben. Eine
 Sicherheitslücke bitte deshalb **nicht als öffentliches Issue** melden, sondern privat über GitHub:
 
-> **[→ Sicherheitslücke privat melden](https://github.com/Luxx1993/diktat/security/advisories/new)**
+> **[→ Sicherheitslücke privat melden](https://github.com/Luxx1993/unisono-diktat/security/advisories/new)**
 
 Hilfreich sind: was du getan hast, was passiert ist, Android-Version, Gerät und die diktat-Version aus Einstellungen
 › Alle Einstellungen › Über.

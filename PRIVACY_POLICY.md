@@ -3,7 +3,7 @@
 **Stand:** 18. Oktober 2026
 
 diktat ist eine Diktier-App für Android und ein privates Open-Source-Projekt
-([github.com/Luxx1993/diktat](https://github.com/Luxx1993/diktat)). Diese Seite beschreibt, was
+([github.com/Luxx1993/unisono-diktat](https://github.com/Luxx1993/unisono-diktat)). Diese Seite beschreibt, was
 mit deinen Daten passiert. Kurz gesagt: **diktat betreibt keinen Server und erhält keine Daten von dir.**
 
 ## Kurzfassung
@@ -79,5 +79,5 @@ wählst du dabei aus.
 
 ## Nachprüfbar
 
-Der gesamte Quellcode ist offen: [github.com/Luxx1993/diktat](https://github.com/Luxx1993/diktat).
+Der gesamte Quellcode ist offen: [github.com/Luxx1993/unisono-diktat](https://github.com/Luxx1993/unisono-diktat).
 Fragen und Hinweise bitte über die Issues dort.
