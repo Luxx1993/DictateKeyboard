@@ -38,6 +38,7 @@ APK unter `app/build/outputs/apk/debug/`. Debug-Builds sind mit einem Debug-Schl
 
 ## Design
 
+Was die App kann (Funktionen, Anbieter, Einstellungen, Status je Funktion): **`docs/FUNKTIONEN.md`**.
 Alle Design-Entscheidungen stehen in **`docs/design/diktat-design.md`**. Das ist die maßgebliche Quelle. Kurz:
 
 - **Oberfläche „Entwurf 3“**: warmer Unisono-Look (Papier `#F4F1EC`, Tinte `#1F1C1A`, Manrope und IBM Plex Mono),
