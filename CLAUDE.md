@@ -20,6 +20,8 @@ Kernablauf: sprechen → KI räumt den Text auf → Text wird eingefügt. Lukas 
 - **Lukas' Vorgabe: Tastatur und alles Zugehörige soll so weit wie möglich raus.** Bisher nur ausgeblendet; das Entfernen
   ist geplant (`docs/FUNKTIONEN.md` Abschnitt 13). Updates vom Original lassen sich danach kaum noch übernehmen, das ist gewollt.
   Schrittweise vorgehen, nach jedem Schritt bauen.
+  Ausnahme: Hängt ein gewünschter Teil im Code an einer Tastatur-Funktion und liefe sonst nicht, bleibt nur dieser Teil drin;
+  im Zweifel entfernen, bauen, prüfen und Behaltenes mit Grund in FUNKTIONEN.md Abschnitt 13 notieren.
 
 ## Bauen
 

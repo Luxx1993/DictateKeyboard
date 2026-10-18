@@ -179,6 +179,12 @@ Zu entfernen (Status: **geplant**, in Schritten, nach jedem Schritt Build prüfe
 1. Tastatur-IME, Rechtschreibprüfung, Wear (`dictate/wear/`), Übersetzung (`dictate/translate/`), GIFs (`dictate/gif/`), Sticker (`dictate/sticker/`), Scan (`dictate/scan/`), Dictate-Tastaturoberfläche (`dictate/ui/` soweit nur Tastatur).
 2. Die dazugehörigen Einstellungsseiten, Ressourcen, Sprachdateien und Abhängigkeiten (nativer Übersetzer, Wear-Module).
 3. Dictate Cloud (Guthaben-Seiten, Abrechnung) als nicht im Soll.
+
+**Bleibt wegen Abhängigkeit:** (noch leer, Claude Code trägt hier ein, was er aus diesem Grund behalten musste)
+**Regel (Lukas):** Tastatur-Funktionen werden entfernt, außer ein gewünschter Teil hängt im Code daran und liefe sonst nicht.
+Dann bleibt der Teil drin, der dafür gebraucht wird (nicht mehr). Im Zweifel: entfernen, bauen, prüfen; geht etwas Gewünschtes kaputt, den Teil
+zurückholen und hier unter „Bleibt wegen Abhängigkeit“ mit Grund notieren.
+
 Bleiben muss alles, was der Kernablauf braucht (Abschnitt 2: Button, Spracheingabe-Methode, Erkennungsdienst, Datei transkribieren).
 
 Preis: Das **Übernehmen von Updates des Originals** wird dadurch schwer. Das nimmt Lukas' Vorgabe in Kauf.
