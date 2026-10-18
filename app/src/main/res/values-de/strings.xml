@@ -762,7 +762,7 @@
     <string name="main__greeting_named">Hallo, {name}</string>
     <string name="pref__other__user_name__label">Dein Name für die Begrüßung</string>
     <string name="main__greeting">Hallo</string>
-    <string name="main__start_subtitle">Diktiere in jeder App über SwiftKey oder die Wolke.</string>
+    <string name="main__start_subtitle">Diktiere in jeder App über die Wolke oder die Mikrofon-Taste deiner Tastatur.</string>
     <string name="main__stat_words_total">Wörter gesamt</string>
     <string name="main__stat_words_month">Diesen Monat</string>
     <string name="main__stat_streak">Tage in Folge</string>
@@ -817,9 +817,9 @@
     <string name="main__settings_transcribe">Datei transkribieren</string>
     <string name="main__settings_history">Verlauf</string>
     <string name="main__settings_voice_input">Spracheingabe</string>
-    <string name="main__settings_voice_input_on">Mikrofon-Taste in SwiftKey</string>
-    <string name="main__settings_voice_input_off">Aus · Mikrofon-Taste in SwiftKey</string>
-    <string name="main__settings_voice_input_dialog">Schalte {app_name} unter „Bildschirmtastatur“ ein. SwiftKey nutzt es dann für die Mikrofon-Taste, deine Tastatur bleibt, wie sie ist.</string>
+    <string name="main__settings_voice_input_on">Mikrofon-Taste deiner Tastatur</string>
+    <string name="main__settings_voice_input_off">Aus · Mikrofon-Taste deiner Tastatur</string>
+    <string name="main__settings_voice_input_dialog">Schalte {app_name} unter „Bildschirmtastatur“ ein. Viele Tastaturen, zum Beispiel SwiftKey, schalten mit ihrer Mikrofon-Taste auf die Spracheingabe um und diktieren dann über {app_name}. Deine Tastatur bleibt, wie sie ist.</string>
     <string name="main__settings_voice_input_open">Eingabemethoden öffnen</string>
     <string name="main__settings_backup">Sichern und wiederherstellen</string>
     <string name="main__settings_all">Alle Einstellungen</string>

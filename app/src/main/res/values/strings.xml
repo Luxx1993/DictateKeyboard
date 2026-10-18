@@ -863,7 +863,7 @@
     <string name="main__greeting_named">Hello, {name}</string>
     <string name="pref__other__user_name__label">Your name, for the greeting</string>
     <string name="main__greeting">Hello</string>
-    <string name="main__start_subtitle">Dictate in any app with SwiftKey or the cloud.</string>
+    <string name="main__start_subtitle">Dictate in any app with the cloud or your keyboard\'s microphone key.</string>
     <string name="main__stat_words_total">Words in total</string>
     <string name="main__stat_words_month">This month</string>
     <string name="main__stat_streak">Days in a row</string>
@@ -918,9 +918,9 @@
     <string name="main__settings_transcribe">Transcribe a file</string>
     <string name="main__settings_history">History</string>
     <string name="main__settings_voice_input">Voice input</string>
-    <string name="main__settings_voice_input_on">Microphone key in SwiftKey</string>
-    <string name="main__settings_voice_input_off">Off · microphone key in SwiftKey</string>
-    <string name="main__settings_voice_input_dialog">Switch on {app_name} under on-screen keyboards. SwiftKey then uses it for its microphone key; your keyboard stays as it is.</string>
+    <string name="main__settings_voice_input_on">Your keyboard\'s microphone key</string>
+    <string name="main__settings_voice_input_off">Off · your keyboard\'s microphone key</string>
+    <string name="main__settings_voice_input_dialog">Switch on {app_name} under on-screen keyboards. Many keyboards, SwiftKey for one, switch to the voice input with their microphone key and then dictate through {app_name}. Your keyboard stays as it is.</string>
     <string name="main__settings_voice_input_open">Open input methods</string>
     <string name="main__settings_backup">Back up and restore</string>
     <string name="main__settings_all">All settings</string>

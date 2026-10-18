@@ -753,7 +753,7 @@ abstract class FlorisPreferenceModel : PreferenceModel() {
             key = "other__app_icon_color",
             default = AppIconColor.WHITE,
         )
-        // The name the start tab greets with ("Hallo, Lukas"); blank greets without one.
+        // The name the start tab greets with ("Hallo, <Name>"); blank greets without one.
         val userName = string(
             key = "other__user_name",
             default = "",
