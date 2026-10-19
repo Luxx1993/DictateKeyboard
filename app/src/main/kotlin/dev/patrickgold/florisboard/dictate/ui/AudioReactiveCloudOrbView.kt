@@ -199,15 +199,20 @@ internal class AudioReactiveCloudOrbView @JvmOverloads constructor(
         val layerTurn = (2.0 * PI * seconds / CloudMotion.LAYER_TURN_SECONDS).toFloat()
         val smokeTurn = (2.0 * PI * seconds / CloudMotion.SMOKE_TURN_SECONDS).toFloat()
 
+        // A little see-through, so the glass reads as glass over whatever is behind it; the swatches stay solid.
+        val layer = if (still) -1 else canvas.saveLayerAlpha(
+            0f, 0f, width.toFloat(), height.toFloat(), (ORB_ALPHA * 255).toInt(),
+        )
         canvas.save()
         canvas.translate(cx - box / 2f, cy - box / 2f)
         canvas.scale(scale, scale, box / 2f, box / 2f)
         if (renderer != null) {
-            renderer.draw(canvas, box, colors, blobs, layerTurn, smokeTurn, tint, currentTint, box * scale)
+            renderer.draw(canvas, box, colors, blobs, layerTurn, smokeTurn, seconds, tint, currentTint, box * scale)
         } else {
             drawFallback(canvas, box, blobs, layerTurn)
         }
         canvas.restore()
+        if (layer >= 0) canvas.restoreToCount(layer)
 
         if (mode == Mode.THINKING) drawSpinner(canvas, cx, cy, box * scale, motionEnabled)
 
@@ -242,7 +247,7 @@ internal class AudioReactiveCloudOrbView @JvmOverloads constructor(
         seconds += deltaSeconds
         val listening = mode == Mode.LISTENING
         CloudMotion.BLOBS.forEachIndexed { i, spec ->
-            blobPhases[i] += deltaSeconds / if (listening) spec.listenSeconds else spec.idleSeconds
+            blobPhases[i] += deltaSeconds * if (listening) 1f / spec.listenSeconds else IDLE_SPEED_UP / spec.idleSeconds
         }
 
         // Listening rises with the voice (the prototype's 1.03–1.065); everything else breathes.
@@ -323,6 +328,7 @@ internal class AudioReactiveCloudOrbView @JvmOverloads constructor(
             blobs: List<CloudMotion.Blob>,
             layerTurn: Float,
             smokeTurn: Float,
+            time: Float,
             tint: FloatArray,
             tintStrength: Float,
             pixelSize: Float,
@@ -341,6 +347,7 @@ internal class AudioReactiveCloudOrbView @JvmOverloads constructor(
             setColor("u_o4", colors.o4)
             shader.setFloatUniform("u_layerTurn", layerTurn)
             shader.setFloatUniform("u_smokeTurn", smokeTurn)
+            shader.setFloatUniform("u_time", time)
             shader.setFloatUniform("u_blur", CloudMotion.BLUR)
             // About 160 grains across the sphere, as the prototype's grain tile gives, but never below a pixel.
             shader.setFloatUniform("u_grain", max(1f, pixelSize / GRAIN_ACROSS) * box / max(pixelSize, 1f))
@@ -365,9 +372,15 @@ internal class AudioReactiveCloudOrbView @JvmOverloads constructor(
         private const val TINT_RATE = 7f
         private const val MAX_DELTA_SECONDS = 0.05f
         private const val PAUSED_ALPHA = 0.45f
+
+        /** How opaque the sphere is on the floating button: slightly see-through. */
+        private const val ORB_ALPHA = 0.88f
+
+        /** Idle blobs drift this many times faster than the prototype's keyframes. */
+        private const val IDLE_SPEED_UP = 2f
         private const val FALLBACK_FRAME_MS = 33L
-        /** Idle moves no faster than a breath; 20 frames a second keep it smooth at a fraction of the cost. */
-        private const val IDLE_FRAME_MS = 50L
+        /** The smoke is quicker now; 30 frames a second keep it smooth at a fraction of the full cost. */
+        private const val IDLE_FRAME_MS = 33L
         private const val SPINNER_TURN_SECONDS = 1.8f
         private const val GRAIN_ACROSS = 160f
 
@@ -402,6 +415,7 @@ internal class AudioReactiveCloudOrbView @JvmOverloads constructor(
             uniform float3 u_o4;
             uniform float u_layerTurn;
             uniform float u_smokeTurn;
+            uniform float u_time;
             uniform float u_blur;
             uniform float u_grain;
             uniform float3 u_tint;
@@ -485,9 +499,16 @@ internal class AudioReactiveCloudOrbView @JvmOverloads constructor(
 
                 // Smoke on the same layer (half again the sphere), turning back on it. The prototype's
                 // texture measures 0.74 grey at about half opacity, overlaid at 75 %, so it lightens.
+                // Smoke that moves: the field is bent by two slowly drifting noises and rises as it turns, so it
+                // curls and drifts like smoke in a glass ball instead of only turning. Strong enough to be
+                // seen at the size of the button.
                 float2 s = turn(c, -(u_layerTurn - u_smokeTurn)) / 1.5 + 0.5;
-                float smoke = fbm3(s * 5.6);
-                col = mix(col, overlay(col, 0.736 + (smoke - 0.5) * 0.45), 0.39);
+                float2 warp = float2(
+                    fbm3(s * 3.0 + float2(u_time * 0.16, -u_time * 0.10)),
+                    fbm3(s * 3.0 + float2(-u_time * 0.12, u_time * 0.18) + 7.3)
+                ) - 0.5;
+                float smoke = fbm3(s * 5.0 + warp * 2.2 + float2(0.0, -u_time * 0.22));
+                col = mix(col, overlay(col, clamp(0.70 + (smoke - 0.5) * 1.1, 0.0, 1.0)), 0.58);
 
                 // Grain, fixed on the sphere: 0.73 grey, ±0.06, half opacity, overlaid at 80 %.
                 float g = hash(floor(fragCoord / u_grain));
