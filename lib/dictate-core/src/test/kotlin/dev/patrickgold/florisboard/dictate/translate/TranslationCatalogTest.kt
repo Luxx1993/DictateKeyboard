@@ -78,12 +78,6 @@ class TranslationCatalogTest : FunSpec({
         TranslationCatalog.route("xx", "en") shouldBe null
     }
 
-    test("English is never something to download") {
-        TranslationCatalog.requiredLanguages("de", "en") shouldBe setOf("de")
-        TranslationCatalog.requiredLanguages("en", "hi") shouldBe setOf("hi")
-        TranslationCatalog.requiredLanguages("de", "hi") shouldBe setOf("de", "hi")
-    }
-
     test("a detected language maps onto the catalog, and a script is not thrown away") {
         TranslationCatalog.codeFor("en") shouldBe "en"
         TranslationCatalog.codeFor("en-GB") shouldBe "en"

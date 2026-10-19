@@ -27,25 +27,6 @@ enum class RealtimeApi {
     XAI,
 }
 
-/**
- * Streaming (real-time) speech-to-text capability (issue #128), the live counterpart to the one-shot
- * [TranscriptionProvider]. Instead of uploading a finished file and awaiting one result, the caller opens
- * a session, pushes microphone PCM as it is captured, and receives interim + final transcript pieces over
- * a WebSocket. Every supporting provider (OpenAI realtime, Soniox, Deepgram, AssemblyAI, ElevenLabs,
- * Gemini Live, Mistral Voxtral, xAI) reduces to this same shape; only the wire framing differs per provider.
- *
- * A provider client may implement this alongside [TranscriptionProvider]/[LlmProvider]; the dictation
- * engine uses the streaming path only when the user has real-time mode on AND the selected provider
- * supports it, otherwise it falls back to the batch [TranscriptionProvider].
- */
-interface RealtimeTranscriptionProvider {
-    /**
-     * Opens a live transcription session and starts connecting. [callbacks] are invoked as the session
-     * progresses (on background threads — the caller must marshal to the UI thread itself). The returned
-     * [RealtimeSession] is the handle to feed audio and end the session.
-     */
-    fun openSession(request: RealtimeRequest, callbacks: RealtimeCallbacks): RealtimeSession
-}
 
 /** Parameters for a realtime session. [sampleRate] is the rate of the PCM fed via [RealtimeSession.sendAudio]. */
 data class RealtimeRequest(

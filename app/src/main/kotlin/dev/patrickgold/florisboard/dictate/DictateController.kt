@@ -775,10 +775,6 @@ object DictateController {
         return false
     }
 
-    /** Slide-down progress towards the lock, 0..1 — drives how far the lock target fills. */
-    fun onPushToTalkLockSlide(progress: Float) {
-        if (_pushToTalkPhase.value.isHolding) _lockSlideProgress.value = progress.coerceIn(0f, 1f)
-    }
 
     /** Aborts a held recording outright — the gesture was taken over (bubble drag) or the system cancelled it. */
     fun cancelPushToTalk() {
@@ -904,10 +900,6 @@ object DictateController {
         }
     }
 
-    /** Sets the active dictation language explicitly (from the recording bar's language picker). */
-    fun setLanguage(code: String) {
-        scope.launch { prefs.dictate.activeInputLanguage.set(code) }
-    }
 
     /**
      * The languages to hand to a model whose language field takes a *list* (OpenAI's gpt-transcribe

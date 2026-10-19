@@ -72,7 +72,6 @@ class CacheManager(context: Context) {
             }
         }
 
-        fun getWorkspaceByUuid(uuid: String) = runBlocking { getWorkspaceByUuidAsync(uuid).await() }
 
         fun getWorkspaceByUuidAsync(uuid: String): Deferred<T?> = scope.async {
             workspacesGuard.withLock {
@@ -88,9 +87,7 @@ class CacheManager(context: Context) {
             dir.mkdirs()
         }
 
-        fun isOpen() = dir.exists()
 
-        fun isClosed() = !dir.exists()
 
         override fun close() {
             dir.deleteRecursively()

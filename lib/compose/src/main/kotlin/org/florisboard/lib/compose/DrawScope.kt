@@ -26,25 +26,6 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.DrawScope.Companion.DefaultBlendMode
 import androidx.compose.ui.graphics.drawscope.Stroke
 
-fun DrawScope.drawBorder(
-    color: Color,
-    stroke: Stroke,
-    topLeft: Offset = Offset.Zero,
-    size: Size = this.size.offsetSize(topLeft),
-    @FloatRange(from = 0.0, to = 1.0) alpha: Float = 1.0f,
-    colorFilter: ColorFilter? = null,
-    blendMode: BlendMode = DefaultBlendMode,
-) {
-    drawRect(
-        color = color,
-        topLeft = topLeft + Offset(stroke.width / 2, stroke.width / 2),
-        size = size.copy(size.width - stroke.width, size.height - stroke.width),
-        alpha = alpha,
-        style = stroke,
-        colorFilter = colorFilter,
-        blendMode = blendMode,
-    )
-}
 
 private fun Size.offsetSize(offset: Offset): Size =
     Size(this.width - offset.x, this.height - offset.y)

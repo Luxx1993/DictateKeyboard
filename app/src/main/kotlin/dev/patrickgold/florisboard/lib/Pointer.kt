@@ -67,21 +67,6 @@ class PointerMap<P : Pointer>(val capacity: Int = 4, init: (Int) -> P) : Iterabl
         }
     }
 
-    /**
-     * Finds a pointer by given [id].
-     *
-     * @param id The id of the pointer which should be found.
-     *
-     * @return The pointer with given [id] or null.
-     */
-    fun findById(id: Int): P? {
-        for (pointer in pointers) {
-            if (pointer.id == id) {
-                return pointer
-            }
-        }
-        return null
-    }
 
     /**
      * Gets a pointer from the internal array based on the internal array index. This method
@@ -104,22 +89,6 @@ class PointerMap<P : Pointer>(val capacity: Int = 4, init: (Int) -> P) : Iterabl
         return PointerIterator(this)
     }
 
-    /**
-     * Removes a pointer with given [id] and returns a boolean result.
-     *
-     * @param id The id of the pointer to remove. If the id is not existent, noting happens.
-     *
-     * @return True if a pointer was removed, false otherwise.
-     */
-    fun removeById(id: Int): Boolean {
-        for (pointer in pointers) {
-            if (pointer.id == id) {
-                pointer.reset()
-                return true
-            }
-        }
-        return false
-    }
 
     /**
      * Returns the size of this map (only counting active pointers). This value is anywhere

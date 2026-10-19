@@ -57,44 +57,6 @@ data class FieldText(
         return start..end
     }
 
-    /**
-     * A suggestion taken: the word at the cursor becomes [word], with the cursor after it and ready for
-     * the next word — past the space that follows if there is one, after a new one at the end of the
-     * text, and straight after the word when a punctuation mark follows it. Between words (a next-word
-     * prediction) the word is simply inserted.
-     */
-    fun replaceWord(word: String): FieldText {
-        val range = wordRange()
-        val replaced = text.replaceRange(range.first, range.last, word)
-        val end = range.first + word.length
-        return when {
-            end == replaced.length -> FieldText("$replaced ", end + 1)
-            replaced[end].isWhitespace() -> FieldText(replaced, end + 1)
-            else -> FieldText(replaced, end)
-        }
-    }
 
-    /**
-     * The [deleteBefore] characters in front of the cursor replaced by [replacement] — the one operation a
-     * live dictation preview needs (the same minimal diff the app path applies through the editor).
-     */
-    fun replaceBeforeCursor(deleteBefore: Int, replacement: String): FieldText {
-        val from = (cursor - deleteBefore).coerceAtLeast(0)
-        return FieldText(text.replaceRange(from, cursor, replacement), from + replacement.length)
-    }
 }
 
-/**
- * An autocorrection made in a field when Space was typed: [original] at [start] became [corrected], and
- * the space after it. One Backspace straight afterwards takes it back — the same one-keystroke undo the
- * app path has (issue #150) — but only while the field still reads exactly that.
- */
-data class FieldAutoCorrection(val start: Int, val original: String, val corrected: String) {
-    /** The field with the correction undone, or `null` when the text has moved on since. */
-    fun undo(field: FieldText): FieldText? {
-        val end = start + corrected.length + 1
-        if (field.selection != null || field.cursor != end || end > field.text.length) return null
-        if (field.text.substring(start, end) != "$corrected ") return null
-        return FieldText(field.text.replaceRange(start, end, original), start + original.length)
-    }
-}

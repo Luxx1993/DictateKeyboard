@@ -23,13 +23,6 @@ import android.os.VibratorManager
 import android.util.Log
 import kotlin.math.roundToInt
 
-fun Context.systemVibratorOrNull(): Vibrator? {
-    return if (AndroidVersion.ATLEAST_API31_S) {
-        this.systemServiceOrNull(VibratorManager::class)?.defaultVibrator
-    } else {
-        this.systemServiceOrNull(Vibrator::class)
-    }?.takeIf { it.hasVibrator() }
-}
 
 /**
  * The shortest pulse worth asking for. A linear resonant actuator — what phones have used for years —

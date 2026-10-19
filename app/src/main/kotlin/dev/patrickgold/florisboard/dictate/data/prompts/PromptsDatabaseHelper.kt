@@ -137,30 +137,7 @@ class PromptsDatabaseHelper private constructor(
         return models
     }
 
-    /**
-     * Returns all persisted prompts plus the synthetic UI buttons in display order:
-     * instant prompt, select-all, [persisted prompts…], add prompt.
-     */
-    fun getAllForKeyboard(): List<PromptModel> {
-        val persisted = getAll()
-        val result = ArrayList<PromptModel>(persisted.size + 3)
-        result.add(PromptModel(PromptModel.ID_INSTANT_PROMPT, Int.MIN_VALUE, null, null, false, false))
-        result.add(PromptModel(PromptModel.ID_SELECT_ALL, Int.MIN_VALUE + 1, null, null, false, false))
-        result.addAll(persisted)
-        result.add(PromptModel(PromptModel.ID_ADD_PROMPT, Int.MAX_VALUE, null, null, false, false))
-        return result
-    }
 
-    fun getAutoApplyIds(): List<Int> {
-        val db = readableDatabase
-        val ids = ArrayList<Int>()
-        db.rawQuery("SELECT ID FROM PROMPTS WHERE AUTO_APPLY = 1 ORDER BY POS ASC", null).use { cursor ->
-            if (cursor.moveToFirst()) {
-                do { ids.add(cursor.getInt(0)) } while (cursor.moveToNext())
-            }
-        }
-        return ids
-    }
 
     fun count(): Int {
         val db = readableDatabase

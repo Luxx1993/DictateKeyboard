@@ -186,7 +186,6 @@ class FlorisStepState private constructor(
 
     fun getCurrentAuto(): State<Int> = currentAuto
 
-    fun getCurrentManual(): State<Int> = currentManual
 
     fun setCurrentAuto(value: Int) {
         currentAuto.value = value

@@ -86,27 +86,6 @@ fun Modifier.florisHorizontalScroll(
     }
 }
 
-/**
- * Scroll modifier for dialog content, with a scrollbar that stays visible instead of fading out.
- *
- * Dialogs are the one place where a fading scrollbar fails at its job: content below the fold looks
- * like the end of the dialog, and there is no page-level context to suggest otherwise. Pass this as
- * `scrollModifier` to a `JetPrefAlertDialog` — it replaces the default scroll, and the bar draws only
- * once the content actually overflows.
- */
-@Composable
-fun florisDialogScroll(maxHeight: Dp = DialogContentMaxHeight): Modifier {
-    val state = rememberScrollState()
-    val color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-    return Modifier
-        // Cap first, so a long list scrolls inside a reasonably sized dialog instead of stretching one
-        // to the full height of the screen.
-        .heightIn(max = maxHeight)
-        .persistentVerticalScrollbar(state, color)
-        .verticalScroll(state)
-        // Inside the bar: keeps rows and trailing icons off it. The bar itself stays at the outer edge.
-        .padding(end = DialogScrollbarGap)
-}
 
 /**
  * Draws a permanent scrollbar down the right edge. Must be applied *before* the scroll modifier, so

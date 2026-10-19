@@ -119,78 +119,8 @@ fun FlorisSimpleCard(
     }
 }
 
-@Composable
-fun FlorisErrorCard(
-    text: String,
-    modifier: Modifier = Modifier,
-    showIcon: Boolean = true,
-    contentPadding: PaddingValues = FlorisCardDefaults.ContentPadding,
-    onClick: (() -> Unit)? = null,
-) {
-    FlorisSimpleCard(
-        modifier = modifier,
-        backgroundColor = Color.Red,
-        contentColor = Color.White,
-        onClick = onClick,
-        icon = if (showIcon) ({ Icon(
-            modifier = Modifier
-                .padding(all = FlorisCardDefaults.IconSpacing)
-                .requiredSize(FlorisCardDefaults.IconRequiredSize),
-            imageVector = Icons.Default.ErrorOutline,
-            contentDescription = null,
-        ) }) else null,
-        text = text,
-        contentPadding = contentPadding,
-    )
-}
 
-@Composable
-fun FlorisWarningCard(
-    text: String,
-    modifier: Modifier = Modifier,
-    showIcon: Boolean = true,
-    contentPadding: PaddingValues = FlorisCardDefaults.ContentPadding,
-    onClick: (() -> Unit)? = null,
-) {
-    FlorisSimpleCard(
-        modifier = modifier,
-        backgroundColor = Color.Yellow,
-        contentColor = Color.Black,
-        onClick = onClick,
-        icon = if (showIcon) ({ Icon(
-            modifier = Modifier
-                .padding(all = FlorisCardDefaults.IconSpacing)
-                .requiredSize(FlorisCardDefaults.IconRequiredSize),
-            imageVector = Icons.Outlined.Warning,
-            contentDescription = null,
-        ) }) else null,
-        text = text,
-        contentPadding = contentPadding,
-    )
-}
 
-@Composable
-fun FlorisInfoCard(
-    text: String,
-    modifier: Modifier = Modifier,
-    showIcon: Boolean = true,
-    contentPadding: PaddingValues = FlorisCardDefaults.ContentPadding,
-    onClick: (() -> Unit)? = null,
-) {
-    FlorisSimpleCard(
-        modifier = modifier,
-        onClick = onClick,
-        icon = if (showIcon) ({ Icon(
-            modifier = Modifier
-                .padding(all = FlorisCardDefaults.IconSpacing)
-                .requiredSize(FlorisCardDefaults.IconRequiredSize),
-            imageVector = Icons.Default.Info,
-            contentDescription = null,
-        ) }) else null,
-        text = text,
-        contentPadding = contentPadding,
-    )
-}
 
 @Composable
 fun FlorisOutlinedBox(
@@ -301,8 +231,3 @@ fun FlorisOutlinedBox(
     }
 }
 
-fun Modifier.defaultFlorisOutlinedBox(): Modifier {
-    return this
-        .fillMaxWidth()
-        .padding(vertical = 8.dp, horizontal = 16.dp)
-}

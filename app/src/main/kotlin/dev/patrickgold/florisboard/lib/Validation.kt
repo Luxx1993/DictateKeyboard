@@ -62,18 +62,7 @@ sealed class ValidationResult {
         private val args: List<CurlyArg> = emptyList(),
     ) : ValidationResult() {
 
-        fun hasHintMessage(): Boolean {
-            return hintMessageId != null || hintMessageStr != null
-        }
 
-        @Composable
-        fun hintMessage(): String {
-            return when {
-                hintMessageId != null -> stringRes(hintMessageId).curlyFormat(args)
-                hintMessageStr != null -> hintMessageStr.curlyFormat(args)
-                else -> ""
-            }
-        }
     }
 
     data class Invalid(
@@ -82,9 +71,6 @@ sealed class ValidationResult {
         private val args: List<CurlyArg> = emptyList(),
     ) : ValidationResult() {
 
-        fun hasErrorMessage(): Boolean {
-            return errorMessageId != null || errorMessageStr != null
-        }
 
         @Composable
         fun errorMessage(): String {
@@ -111,12 +97,6 @@ sealed class ValidationResult {
     }
 }
 
-@Composable
-fun <T : Any> rememberValidationResult(rule: ValidationRule<T>, value: T): ValidationResult {
-    return remember(value) {
-        rule.validator.invoke(ValidationResult.Companion, value)
-    }
-}
 
 data class ValidationRule<T : Any>(
     val klass: KClass<*>,
@@ -143,6 +123,3 @@ fun <T : Any> ValidationRule(scope: ValidationRuleBuilder<T>.() -> Unit): Valida
     return builder.build()
 }
 
-fun <T : Any> validate(rule: ValidationRule<T>, value: T): ValidationResult {
-    return rule.validator.invoke(ValidationResult.Companion, value)
-}
