@@ -120,30 +120,6 @@ fun AboutScreen() = UnisonoPage(title = stringRes(R.string.about__title)) {
             modifier = Modifier.settingsSearchAnchor("about__based_on_floris__title"),
             onClick = { context.launchUrl(R.string.florisboard__upstream_repo_url) },
         )
-        UDivider()
-        UNavRow(
-            title = stringRes(R.string.about__feedback__title),
-            subtitle = stringRes(R.string.about__feedback__summary),
-            modifier = Modifier.settingsSearchAnchor("about__feedback__title"),
-            onClick = {
-                val email = context.stringRes(R.string.about__feedback__email)
-                val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$email")).apply {
-                    putExtra(Intent.EXTRA_SUBJECT, context.stringRes(R.string.about__feedback__subject))
-                }
-                try {
-                    context.startActivity(intent)
-                } catch (e: Throwable) {
-                    Toast.makeText(context, email, Toast.LENGTH_LONG).show()
-                }
-            },
-        )
-        UDivider()
-        UNavRow(
-            title = stringRes(R.string.about__privacy_policy__title),
-            subtitle = stringRes(R.string.about__privacy_policy__summary),
-            modifier = Modifier.settingsSearchAnchor("about__privacy_policy__title"),
-            onClick = { context.launchUrl(R.string.florisboard__privacy_policy_url) },
-        )
     }
 
     UCard {
