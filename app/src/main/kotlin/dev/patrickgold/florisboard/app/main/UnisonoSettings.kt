@@ -11,6 +11,9 @@
 package dev.patrickgold.florisboard.app.main
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.foundation.text.KeyboardOptions
@@ -103,6 +106,67 @@ fun UnisonoPage(
         }
         Column(Modifier.padding(bottom = 8.dp)) { UPageHeader(title, subtitle) }
         content()
+    }
+}
+
+/**
+ * [UnisonoPage] for long lists: the same back arrow and headline, but the content is a lazy list so only
+ * the rows in view are composed. The first item is the header; [content] adds the rest.
+ */
+@Composable
+fun UnisonoLazyPage(
+    title: String,
+    subtitle: String? = null,
+    content: LazyListScope.() -> Unit,
+) {
+    val c = LocalUnisono.current
+    val navController = LocalNavController.current
+    LazyColumn(
+        Modifier
+            .fillMaxSize()
+            .background(c.canvas)
+            .windowInsetsPadding(WindowInsets.statusBars),
+        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 32.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        item {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Box(
+                    Modifier
+                        .size(44.dp)
+                        .clip(CircleShape)
+                        .clickable { navController.popBackStack() },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        UnisonoIcons.Arrow,
+                        contentDescription = stringRes(R.string.main__back),
+                        tint = c.textPrimary,
+                        modifier = Modifier.size(22.dp).rotate(180f),
+                    )
+                }
+                Column(Modifier.padding(bottom = 8.dp)) { UPageHeader(title, subtitle) }
+            }
+        }
+        content()
+    }
+}
+
+/** The square tick box of [UCheckRow], for rows that bring their own click handling. */
+@Composable
+fun UCheckMark(checked: Boolean) {
+    val c = LocalUnisono.current
+    Box(
+        Modifier
+            .size(22.dp)
+            .clip(Unisono.RadiusMd)
+            .background(if (checked) c.action else c.raised)
+            .border(1.5.dp, if (checked) c.action else c.borderStrong, Unisono.RadiusMd),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (checked) {
+            Text("✓", style = Unisono.Caption, color = c.onAction)
+        }
     }
 }
 
@@ -261,18 +325,7 @@ fun UCheckRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        Box(
-            Modifier
-                .size(22.dp)
-                .clip(Unisono.RadiusMd)
-                .background(if (checked) c.action else c.raised)
-                .border(1.5.dp, if (checked) c.action else c.borderStrong, Unisono.RadiusMd),
-            contentAlignment = Alignment.Center,
-        ) {
-            if (checked) {
-                Text("✓", style = Unisono.Caption, color = c.onAction)
-            }
-        }
+        UCheckMark(checked)
         Column(Modifier.weight(1f)) {
             Text(title, style = Unisono.BodyStrong.copy(lineHeight = 24.sp), color = c.textPrimary)
             if (subtitle != null) Text(subtitle, style = Unisono.Label, color = c.textSecondary)

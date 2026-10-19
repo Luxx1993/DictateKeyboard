@@ -10,6 +10,22 @@
 
 package dev.patrickgold.florisboard.app.settings.dictate
 
+import androidx.compose.foundation.background
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.SolidColor
+import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
+import dev.patrickgold.florisboard.app.apptheme.Unisono
+import dev.patrickgold.florisboard.app.main.UCard
+import dev.patrickgold.florisboard.app.main.UChip
+import dev.patrickgold.florisboard.app.main.UDivider
+import dev.patrickgold.florisboard.app.main.UNavRow
+import dev.patrickgold.florisboard.app.main.UnisonoIcons
+import dev.patrickgold.florisboard.app.main.UnisonoPage
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -64,114 +80,122 @@ import org.florisboard.lib.compose.stringRes
  * look at one provider does not cost the search.
  */
 @Composable
-fun DictateAddProviderScreen() = FlorisScreen {
-    title = stringRes(R.string.dictate__providers_add)
-    iconSpaceReserved = true
-
+fun DictateAddProviderScreen() = UnisonoPage(title = stringRes(R.string.dictate__providers_add)) {
     val prefs by FlorisPreferenceStore
+    val c = LocalUnisono.current
+    val navController = LocalNavController.current
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val accounts by prefs.dictate.providerAccounts.collectAsState()
+    val transcriptionId by prefs.dictate.transcriptionProviderId.collectAsState()
+    val rewordingId by prefs.dictate.rewordingProviderId.collectAsState()
+    val isInstalled: (String) -> Boolean = { LocalModelManager.isInstalled(context, it) }
 
-    content {
-        val navController = LocalNavController.current
-        val context = LocalContext.current
-        val scope = rememberCoroutineScope()
-        val accounts by prefs.dictate.providerAccounts.collectAsState()
-        val transcriptionId by prefs.dictate.transcriptionProviderId.collectAsState()
-        val rewordingId by prefs.dictate.rewordingProviderId.collectAsState()
-        val isInstalled: (String) -> Boolean = { LocalModelManager.isInstalled(context, it) }
+    var query by rememberSaveable { mutableStateOf("") }
+    var filters by remember { mutableStateOf(emptySet<ProviderListing.Filter>()) }
+    var editingId by remember { mutableStateOf<String?>(null) }
 
-        var query by rememberSaveable { mutableStateOf("") }
-        var filters by remember { mutableStateOf(emptySet<ProviderListing.Filter>()) }
-        var editingId by remember { mutableStateOf<String?>(null) }
+    val activeIds = setOf(transcriptionId, rewordingId)
+    val shown = ProviderRegistry.presets
+        .filterNot { ProviderListing.isListed(it, accounts, activeIds, isInstalled) }
+        .filter { ProviderListing.matches(it, query, filters) }
 
-        val activeIds = setOf(transcriptionId, rewordingId)
-        val shown = ProviderRegistry.presets
-            .filterNot { ProviderListing.isListed(it, accounts, activeIds, isInstalled) }
-            .filter { ProviderListing.matches(it, query, filters) }
-
-        OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            value = query,
-            onValueChange = { query = it },
-            singleLine = true,
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-            placeholder = { Text(stringRes(R.string.dictate__providers_search)) },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            ProviderListing.Filter.entries.forEach { filter ->
-                val selected = filter in filters
-                FilterChip(
-                    selected = selected,
-                    onClick = { filters = if (selected) filters - filter else filters + filter },
-                    label = {
-                        Text(
-                            stringRes(
-                                when (filter) {
-                                    ProviderListing.Filter.TRANSCRIPTION -> R.string.dictate__providers_cap_stt
-                                    ProviderListing.Filter.REWORDING -> R.string.dictate__providers_cap_chat
-                                    ProviderListing.Filter.REALTIME -> R.string.dictate__realtime_title
-                                    ProviderListing.Filter.EU -> R.string.dictate__providers_filter_eu
-                                },
-                            ),
-                        )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(44.dp)
+            .clip(Unisono.Pill)
+            .background(c.sunken)
+            .padding(horizontal = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Icon(UnisonoIcons.Search, contentDescription = null, tint = c.textTertiary, modifier = Modifier.size(18.dp))
+        Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
+            if (query.isEmpty()) {
+                Text(stringRes(R.string.dictate__providers_search), style = Unisono.Body, color = c.textTertiary)
+            }
+            BasicTextField(
+                value = query,
+                onValueChange = { query = it },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                textStyle = Unisono.Body.copy(color = c.textPrimary),
+                cursorBrush = SolidColor(c.textPrimary),
+            )
+        }
+    }
+    Row(
+        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        ProviderListing.Filter.entries.forEach { filter ->
+            val selected = filter in filters
+            UChip(
+                label = stringRes(
+                    when (filter) {
+                        ProviderListing.Filter.TRANSCRIPTION -> R.string.dictate__providers_cap_stt
+                        ProviderListing.Filter.REWORDING -> R.string.dictate__providers_cap_chat
+                        ProviderListing.Filter.REALTIME -> R.string.dictate__realtime_title
+                        ProviderListing.Filter.EU -> R.string.dictate__providers_filter_eu
                     },
+                ),
+                selected = selected,
+                onClick = { filters = if (selected) filters - filter else filters + filter },
+            )
+        }
+    }
+
+    if (shown.isNotEmpty()) {
+        UCard {
+            shown.forEachIndexed { index, preset ->
+                if (index > 0) UDivider()
+                UNavRow(
+                    title = preset.displayName,
+                    subtitle = providerCapabilities(preset),
+                    icon = providerIcon(preset.id),
+                    onClick = { editingId = preset.id },
                 )
             }
         }
-
-        shown.forEach { preset ->
-            Preference(
-                icon = providerIcon(preset.id),
-                title = preset.displayName,
-                summary = providerCapabilities(preset),
-                onClick = { editingId = preset.id },
-            )
-        }
-        if (shown.isEmpty() && (query.isNotBlank() || filters.isNotEmpty())) {
-            Text(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
-                text = stringRes(R.string.dictate__providers_add_none),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-
-        // Outside the search and the filters on purpose: a server of one's own can be anything, so no
-        // name or property could rule it out.
-        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-        Preference(
-            icon = Icons.Default.Dns,
-            modifier = Modifier.settingsSearchAnchor("dictate__providers_add_custom"),
-            title = stringRes(R.string.dictate__providers_add_custom),
-            summary = stringRes(R.string.dictate__providers_add_custom_summary),
-            onClick = { editingId = ProviderAccount.newCustomId() },
+    } else if (query.isNotBlank() || filters.isNotEmpty()) {
+        Text(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 16.dp),
+            text = stringRes(R.string.dictate__providers_add_none),
+            style = Unisono.Body,
+            color = c.textSecondary,
         )
+    }
 
-        editingId?.let { id ->
-            val preset = ProviderRegistry.byId(id)
-            ProviderEditorDialog(
-                preset = preset,
-                account = accounts.getOrEmpty(id),
-                onDismiss = { editingId = null },
-                onSave = { updated, _ ->
-                    val next = accounts.put(updated)
-                    scope.launch { prefs.dictate.providerAccounts.set(next) }
-                    editingId = null
-                    // A server of one's own is listed as soon as it exists; a preset once it can be used.
-                    if (preset == null || ProviderListing.isSetUp(preset, next, isInstalled)) {
-                        navController.popBackStack()
-                    }
-                },
-                // Nothing to delete: a server being added here does not exist until it is saved.
-                onDelete = null,
-            )
-        }
+    // Outside the search and the filters on purpose: a server of one's own can be anything, so no name or
+    // property could rule it out.
+    UCard {
+        UNavRow(
+            title = stringRes(R.string.dictate__providers_add_custom),
+            subtitle = stringRes(R.string.dictate__providers_add_custom_summary),
+            icon = Icons.Default.Dns,
+            onClick = { editingId = ProviderAccount.newCustomId() },
+            modifier = Modifier.settingsSearchAnchor("dictate__providers_add_custom"),
+        )
+    }
+
+    editingId?.let { id ->
+        val preset = ProviderRegistry.byId(id)
+        ProviderEditorDialog(
+            preset = preset,
+            account = accounts.getOrEmpty(id),
+            onDismiss = { editingId = null },
+            onSave = { updated, _ ->
+                val next = accounts.put(updated)
+                scope.launch { prefs.dictate.providerAccounts.set(next) }
+                editingId = null
+                // A server of one's own is listed as soon as it exists; a preset once it can be used.
+                if (preset == null || ProviderListing.isSetUp(preset, next, isInstalled)) {
+                    navController.popBackStack()
+                }
+            },
+            // Nothing to delete: a server being added here does not exist until it is saved.
+            onDelete = null,
+        )
     }
 }

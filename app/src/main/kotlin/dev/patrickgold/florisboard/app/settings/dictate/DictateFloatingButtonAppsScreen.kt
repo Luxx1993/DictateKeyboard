@@ -10,17 +10,37 @@
 
 package dev.patrickgold.florisboard.app.settings.dictate
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
+import dev.patrickgold.florisboard.app.apptheme.Unisono
+import dev.patrickgold.florisboard.app.main.UCaption
+import dev.patrickgold.florisboard.app.main.UCard
+import dev.patrickgold.florisboard.app.main.UCheckMark
+import dev.patrickgold.florisboard.app.main.UChoiceOption
+import dev.patrickgold.florisboard.app.main.UDivider
+import dev.patrickgold.florisboard.app.main.UnisonoIcons
+import dev.patrickgold.florisboard.app.main.UnisonoLazyPage
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -71,153 +91,152 @@ import org.florisboard.lib.compose.stringRes
  * reads it — a greyed-out list of a hundred apps would be a worse lie than no list at all (#297).
  */
 @Composable
-fun DictateFloatingButtonAppsScreen() = FlorisScreen {
-    title = stringRes(R.string.dictate__floating_button_apps_title)
-    scrollable = false
-
+fun DictateFloatingButtonAppsScreen() {
     val prefs by FlorisPreferenceStore
+    val c = LocalUnisono.current
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val scope by prefs.dictate.floatingButtonAppScope.collectAsState()
+    val apps by prefs.dictate.floatingButtonApps.collectAsState()
+    val anchors by prefs.dictate.floatingButtonPositions.collectAsState()
+    val selected = apps.toSet()
 
-    content {
-        val context = LocalContext.current
-        val coroutineScope = rememberCoroutineScope()
-        val scope by prefs.dictate.floatingButtonAppScope.collectAsState()
-        val apps by prefs.dictate.floatingButtonApps.collectAsState()
-        val anchors by prefs.dictate.floatingButtonPositions.collectAsState()
-        val selected = apps.toSet()
+    var searchTerm by remember { mutableStateOf("") }
 
-        var searchTerm by remember { mutableStateOf(TextFieldValue()) }
+    // Apps the button has actually been used in, from the remembered positions (#323). They are here because
+    // package visibility is limited to launchable apps: without this, an app with no launcher entry could
+    // never be ticked, and in "only the apps below" that means never reachable at all.
+    val known = remember(anchors) { anchors.entries.map { it.pkg }.toSet() + selected }
+    val installed by produceState<List<InstalledApp>?>(initialValue = null, known) {
+        value = withContext(Dispatchers.IO) { loadInstalledApps(context, known) }
+    }
 
-        // Apps the button has actually been used in, from the remembered positions (#323). They are here
-        // because package visibility is limited to launchable apps: without this, an app with no launcher
-        // entry could never be ticked, and in "only the apps below" that means never reachable at all.
-        val known = remember(anchors) { anchors.entries.map { it.pkg }.toSet() + selected }
-        val installed by produceState<List<InstalledApp>?>(initialValue = null, known) {
-            value = withContext(Dispatchers.IO) { loadInstalledApps(context, known) }
+    // Sorted once, against the selection the screen opened with: ticking a box must not make the row jump
+    // out from under the finger, but opening the screen should still put your own choices on top.
+    val initiallySelected = remember { selected }
+    val ordered = remember(installed) {
+        installed?.sortedWith(compareBy({ it.pkg !in initiallySelected }, { it.label.lowercase() }))
+    }
+    val filtered = remember(ordered, searchTerm) {
+        val term = searchTerm.trim().lowercase()
+        when {
+            ordered == null -> null
+            term.isEmpty() -> ordered
+            else -> ordered.filter { it.label.lowercase().contains(term) || it.pkg.lowercase().contains(term) }
         }
+    }
 
-        // Sorted once, against the selection the screen opened with: ticking a box must not make the row
-        // jump out from under the finger, but opening the screen should still put your own choices on top.
-        val initiallySelected = remember { selected }
-        val ordered = remember(installed) {
-            installed?.sortedWith(
-                compareBy({ it.pkg !in initiallySelected }, { it.label.lowercase() }),
-            )
-        }
-        val filtered = remember(ordered, searchTerm.text) {
-            val term = searchTerm.text.trim().lowercase()
-            when {
-                ordered == null -> null
-                term.isEmpty() -> ordered
-                else -> ordered.filter {
-                    it.label.lowercase().contains(term) || it.pkg.lowercase().contains(term)
+    // A lazy page: a phone can hold hundreds of apps, and only the rows in view are composed.
+    UnisonoLazyPage(title = stringRes(R.string.dictate__floating_button_apps_title)) {
+        item {
+            UCard {
+                DictateFloatingButtonAppScope.entries.forEachIndexed { index, entry ->
+                    if (index > 0) UDivider()
+                    UChoiceOption(
+                        title = stringRes(entry.labelRes()),
+                        subtitle = null,
+                        selected = scope == entry,
+                        onClick = { coroutineScope.launch { prefs.dictate.floatingButtonAppScope.set(entry) } },
+                    )
                 }
             }
         }
+        item { UCaption(stringRes(R.string.dictate__floating_button_apps_note)) }
 
-        val state = rememberLazyListState()
-        Column(modifier = Modifier.fillMaxSize()) {
-            LazyColumn(
-                modifier = Modifier
-                    .weight(1f)
-                    .florisScrollbar(state, isVertical = true),
-                state = state,
-            ) {
-                item {
-                    Column {
-                        for (entry in DictateFloatingButtonAppScope.entries) {
-                            JetPrefListItem(
-                                modifier = Modifier.rippleClickable {
-                                    coroutineScope.launch {
-                                        prefs.dictate.floatingButtonAppScope.set(entry)
-                                    }
-                                },
-                                icon = {
-                                    RadioButton(selected = scope == entry, onClick = null)
-                                },
-                                text = stringRes(entry.labelRes()),
-                            )
+        if (scope != DictateFloatingButtonAppScope.ALL) {
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(44.dp)
+                        .clip(Unisono.Pill)
+                        .background(c.sunken)
+                        .padding(horizontal = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    Icon(UnisonoIcons.Search, contentDescription = null, tint = c.textTertiary, modifier = Modifier.size(18.dp))
+                    Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
+                        if (searchTerm.isEmpty()) {
+                            Text(stringRes(R.string.dictate__floating_button_apps_search), style = Unisono.Body, color = c.textTertiary)
                         }
-                        Text(
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                            text = stringRes(R.string.dictate__floating_button_apps_note),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = LocalContentColor.current.copy(alpha = 0.72f),
-                        )
-                    }
-                }
-                if (scope != DictateFloatingButtonAppScope.ALL) {
-                    item {
-                        TextField(
-                            modifier = Modifier.fillMaxWidth(),
+                        BasicTextField(
                             value = searchTerm,
                             onValueChange = { searchTerm = it },
-                            placeholder = {
-                                Text(stringRes(R.string.dictate__floating_button_apps_search))
-                            },
-                            leadingIcon = {
-                                Icon(imageVector = Icons.Default.Search, contentDescription = null)
-                            },
+                            modifier = Modifier.fillMaxWidth(),
                             singleLine = true,
-                            shape = RectangleShape,
-                            colors = TextFieldDefaults.colors(
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent,
-                                disabledIndicatorColor = Color.Transparent,
-                            ),
+                            textStyle = Unisono.Body.copy(color = c.textPrimary),
+                            cursorBrush = SolidColor(c.textPrimary),
                         )
                     }
-                    when {
-                        filtered == null -> item {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(32.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center,
-                            ) {
-                                CircularProgressIndicator()
-                            }
-                        }
-                        filtered.isEmpty() -> item {
-                            Text(
-                                modifier = Modifier.padding(16.dp),
-                                text = stringRes(
-                                    R.string.dictate__floating_button_apps_none,
-                                    "search_term" to searchTerm.text,
-                                ),
-                                color = LocalContentColor.current.copy(alpha = 0.54f),
-                            )
-                        }
-                        else -> items(filtered, key = { it.pkg }) { app ->
-                            JetPrefListItem(
-                                modifier = Modifier.rippleClickable {
-                                    coroutineScope.launch {
-                                        prefs.dictate.floatingButtonApps.set(apps.toggled(app.pkg))
-                                    }
-                                },
-                                icon = {
-                                    if (app.icon != null) {
-                                        FlorisCanvasIcon(
-                                            drawable = app.icon,
-                                            modifier = Modifier.size(32.dp),
-                                        )
-                                    } else {
-                                        Spacer(modifier = Modifier.size(32.dp))
-                                    }
-                                },
-                                text = app.label,
-                                secondaryText = app.pkg,
-                                singleLineSecondaryText = true,
-                                trailing = {
-                                    Checkbox(checked = app.pkg in selected, onCheckedChange = null)
-                                },
-                            )
-                        }
+                }
+            }
+            when {
+                filtered == null -> item {
+                    Text(
+                        "\u2026",
+                        modifier = Modifier.fillMaxWidth().padding(24.dp),
+                        style = Unisono.SectionTitle,
+                        color = c.textTertiary,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+                filtered.isEmpty() -> item {
+                    Text(
+                        modifier = Modifier.padding(16.dp),
+                        text = stringRes(R.string.dictate__floating_button_apps_none, "search_term" to searchTerm),
+                        style = Unisono.Body,
+                        color = c.textSecondary,
+                    )
+                }
+                else -> itemsIndexed(filtered, key = { _, app -> app.pkg }) { index, app ->
+                    // The rows of one card, drawn per row so the list can stay lazy: only the first and the
+                    // last are rounded, and a hairline separates the others.
+                    val shape = RoundedCornerShape(
+                        topStart = if (index == 0) 16.dp else 0.dp,
+                        topEnd = if (index == 0) 16.dp else 0.dp,
+                        bottomStart = if (index == filtered.lastIndex) 16.dp else 0.dp,
+                        bottomEnd = if (index == filtered.lastIndex) 16.dp else 0.dp,
+                    )
+                    Column(Modifier.clip(shape).background(c.raised)) {
+                        if (index > 0) UDivider()
+                        AppRow(
+                            app = app,
+                            checked = app.pkg in selected,
+                            onClick = {
+                                coroutineScope.launch {
+                                    prefs.dictate.floatingButtonApps.set(apps.toggled(app.pkg))
+                                }
+                            },
+                        )
                     }
-                    item { Spacer(modifier = Modifier.height(16.dp)) }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun AppRow(app: InstalledApp, checked: Boolean, onClick: () -> Unit) {
+    val c = LocalUnisono.current
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 18.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
+    ) {
+        if (app.icon != null) {
+            FlorisCanvasIcon(drawable = app.icon, modifier = Modifier.size(32.dp))
+        } else {
+            Spacer(modifier = Modifier.size(32.dp))
+        }
+        Column(Modifier.weight(1f)) {
+            Text(app.label, style = Unisono.Body, color = c.textPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(app.pkg, style = Unisono.Mono, color = c.textTertiary, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        }
+        UCheckMark(checked)
     }
 }
 
