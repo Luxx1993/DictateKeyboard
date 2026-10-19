@@ -235,7 +235,7 @@ private fun ActivityCard(bars: List<DictateStats.DayBar>) {
 
 // --- helpers --------------------------------------------------------------------------------------
 
-private const val PROJECT_URL = "https://github.com/Luxx1993/unisono-diktat"
+private const val PROJECT_URL = "https://github.com/Luxx1993/DictateKeyboard"
 private val BAR_MAX_HEIGHT = 64.dp
 
 private fun shareStats(context: android.content.Context, text: String) {

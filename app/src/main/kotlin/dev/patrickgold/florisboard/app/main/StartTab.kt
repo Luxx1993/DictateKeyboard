@@ -96,6 +96,7 @@ internal fun StartTab() {
         },
         subtitle = stringRes(R.string.main__start_subtitle),
         onTitleClick = { editingName = true },
+        globe = true,
     )
     if (name.isBlank()) {
         Text(

@@ -33,6 +33,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import org.florisboard.lib.compose.stringRes
+import kotlinx.coroutines.launch
+import dev.patrickgold.florisboard.dictate.ui.DiktatGlobe
+import dev.patrickgold.florisboard.app.FlorisPreferenceStore
+import dev.patrickgold.florisboard.app.AppTheme
+import dev.patrickgold.florisboard.R
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,25 +63,59 @@ import androidx.compose.foundation.selection.toggleable
  * an inset divider.
  */
 
-/** The headline every tab opens with, and its optional subtitle. */
+/**
+ * The headline every tab opens with, and its optional subtitle. With [globe] the animated app icon sits at
+ * the right edge; tapping it switches between the light and the dark look.
+ */
 @Composable
-fun UPageHeader(title: String, subtitle: String? = null, onTitleClick: (() -> Unit)? = null) {
+fun UPageHeader(
+    title: String,
+    subtitle: String? = null,
+    onTitleClick: (() -> Unit)? = null,
+    globe: Boolean = false,
+) {
     val c = LocalUnisono.current
-    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Text(
-            title,
-            modifier = if (onTitleClick != null) {
-                Modifier.clip(Unisono.RadiusMd).clickable(onClick = onTitleClick)
-            } else {
-                Modifier
-            },
-            style = Unisono.PageTitle,
-            color = c.textPrimary,
-        )
-        if (subtitle != null) {
-            Text(subtitle, style = Unisono.PageSubtitle, color = c.textSecondary)
+    Row(verticalAlignment = Alignment.Top) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text(
+                title,
+                modifier = if (onTitleClick != null) {
+                    Modifier.clip(Unisono.RadiusMd).clickable(onClick = onTitleClick)
+                } else {
+                    Modifier
+                },
+                style = Unisono.PageTitle,
+                color = c.textPrimary,
+            )
+            if (subtitle != null) {
+                Text(subtitle, style = Unisono.PageSubtitle, color = c.textSecondary)
+            }
         }
+        if (globe) ThemeGlobe(Modifier.padding(start = 12.dp, top = 2.dp))
     }
+}
+
+/** The animated app icon as the light/dark switch: it sets the app theme to the opposite of what is shown. */
+@Composable
+private fun ThemeGlobe(modifier: Modifier = Modifier) {
+    val prefs by FlorisPreferenceStore
+    val c = LocalUnisono.current
+    val scope = rememberCoroutineScope()
+    DiktatGlobe(
+        modifier = modifier
+            .size(40.dp)
+            .clip(CircleShape)
+            .clickable(
+                role = Role.Button,
+                onClickLabel = stringRes(R.string.main__theme_toggle),
+            ) {
+                scope.launch {
+                    prefs.other.settingsTheme.set(if (c.isDark) AppTheme.LIGHT else AppTheme.DARK)
+                }
+            }
+            .padding(4.dp),
+        color = c.textPrimary,
+    )
 }
 
 /** A raised card with the hairline border of `--elev-1`. */

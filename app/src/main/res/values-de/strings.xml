@@ -750,6 +750,7 @@
     <string name="main__prov_group_mine">Deine Anbieter</string>
     <string name="main__prov_group_network">Netzwerk</string>
     <string name="main__greeting_set_name">Namen eintragen</string>
+    <string name="main__theme_toggle">Zwischen hell und dunkel wechseln</string>
     <string name="main__greeting_name_hint">Dein Name</string>
     <string name="main__greeting">Hallo</string>
     <string name="main__start_subtitle">Diktiere in jeder App über die Wolke oder die Mikrofon-Taste deiner Tastatur.</string>

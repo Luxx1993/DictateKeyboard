@@ -97,6 +97,7 @@ internal fun StylesTab() {
     UPageHeader(
         title = stringRes(R.string.main__tab_styles),
         subtitle = stringRes(R.string.main__styles_subtitle),
+        globe = true,
     )
 
     var styles by remember { mutableStateOf<List<PromptModel>>(emptyList()) }

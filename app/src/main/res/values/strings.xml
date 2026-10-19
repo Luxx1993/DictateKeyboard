@@ -853,6 +853,7 @@
     <string name="main__prov_group_mine">Your providers</string>
     <string name="main__prov_group_network">Network</string>
     <string name="main__greeting_set_name">Add your name</string>
+    <string name="main__theme_toggle">Switch between light and dark</string>
     <string name="main__greeting_name_hint">Your name</string>
     <string name="main__greeting">Hello</string>
     <string name="main__start_subtitle">Dictate in any app with the cloud or your keyboard\'s microphone key.</string>

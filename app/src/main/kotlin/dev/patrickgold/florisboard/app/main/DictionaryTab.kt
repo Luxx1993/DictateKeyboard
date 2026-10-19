@@ -73,6 +73,7 @@ internal fun DictionaryTab() {
     UPageHeader(
         title = stringRes(R.string.main__tab_dictionary),
         subtitle = stringRes(R.string.main__dictionary_subtitle),
+        globe = true,
     )
 
     val raw by prefs.dictate.customWords.collectAsState()
