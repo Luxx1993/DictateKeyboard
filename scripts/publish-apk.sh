@@ -87,4 +87,7 @@ git -C "$tmp" add Dictate-Diktat-arm64.apk README.md
 git -C "$tmp" -c user.name="${GIT_AUTHOR_NAME:-$(git config user.name)}" -c user.email="${GIT_AUTHOR_EMAIL:-$(git config user.email)}" \
   commit -q -m "diktat als arm64-Debug-APK (Commit $commit)"
 git -C "$tmp" push -q --force origin apk-neu:refs/heads/apk
+# Der Hilfszweig ist nur lokal; wer ihn stehen lässt, lässt den nächsten Lauf scheitern ("a branch named apk-neu already exists").
+git worktree remove --force "$tmp" 2>/dev/null || true
+git branch -D apk-neu -q 2>/dev/null || true
 echo "Fertig: https://github.com/Luxx1993/unisono-diktat/raw/apk/Dictate-Diktat-arm64.apk ($size, Schlüssel $new_key, SHA-256 $sha)"
