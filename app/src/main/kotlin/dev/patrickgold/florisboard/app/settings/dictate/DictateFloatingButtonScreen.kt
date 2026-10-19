@@ -192,7 +192,6 @@ fun DictateFloatingButtonScreen() = UnisonoPage(title = stringRes(R.string.main_
         UCard {
             UChoiceRow(
                 title = stringRes(R.string.dictate__floating_button_design_title),
-                description = stringRes(R.string.main__fb_preview_note),
                 choices = listOf(
                     designChoice(DictateFloatingButtonDesign.CLOUD, R.string.dictate__floating_button_design_cloud, R.string.dictate__floating_button_design_cloud_summary),
                     designChoice(DictateFloatingButtonDesign.PILL, R.string.dictate__floating_button_design_pill, R.string.dictate__floating_button_design_pill_summary),
