@@ -573,6 +573,65 @@ object ProviderRegistry {
     )
 
     /**
+     * AssemblyAI Sync API: the same account and key as [ASSEMBLYAI], but one request instead of
+     * upload-create-poll, which is what a dictation wants (see [TranscriptionApi.ASSEMBLYAI_SYNC]).
+     * Clips up to 20 minutes / 256 MB over HTTP; a request past the server's 30-second deadline answers
+     * 504. Endpoints (global, US and EU data residency) and the model id `universal-3-5-pro` read from
+     * AssemblyAI's sync-stt docs on 2026-10-19; the docs name no other model.
+     */
+    val ASSEMBLYAI_SYNC = ProviderPreset(
+        id = "assemblyai_sync",
+        displayName = "AssemblyAI Sync",
+        baseUrl = "https://sync.assemblyai.com/",
+        capabilities = STT_ONLY,
+        transcriptionApi = TranscriptionApi.ASSEMBLYAI_SYNC,
+        supportsDynamicModels = false,
+        apiKeyUrl = "https://www.assemblyai.com/dashboard/api-keys",
+        defaultTranscriptionModel = "universal-3-5-pro",
+        curatedTranscriptionModels = listOf("universal-3-5-pro"),
+        allowsCustomBaseUrl = true,
+        regions = listOf(
+            ProviderRegion("global", "https://sync.assemblyai.com/"),
+            ProviderRegion("us", "https://sync.us.assemblyai.com/"),
+            ProviderRegion("eu", "https://sync.eu.assemblyai.com/"),
+        ),
+    )
+
+    /**
+     * Gladia v2 (async: upload, create, poll — see [TranscriptionApi.GLADIA_ASYNC]). French company,
+     * strong on European languages. `solaria-1` is the default generalist (100+ languages, auto-detect);
+     * `solaria-3` covers English, French, German, Spanish and Italian, one language per request, so a
+     * language has to be pinned for it. Model ids read from Gladia's docs on 2026-10-19.
+     */
+    val GLADIA = ProviderPreset(
+        id = "gladia",
+        displayName = "Gladia",
+        baseUrl = "https://api.gladia.io/",
+        capabilities = STT_ONLY,
+        transcriptionApi = TranscriptionApi.GLADIA_ASYNC,
+        supportsDynamicModels = false,
+        apiKeyUrl = "https://app.gladia.io/apikeys",
+        defaultTranscriptionModel = "solaria-1",
+        curatedTranscriptionModels = listOf("solaria-1", "solaria-3"),
+    )
+
+    /**
+     * Cerebras: very fast inference of open models behind a plain OpenAI-compatible API, so it is
+     * rewording-only here, like DeepSeek. Base URL, key page and the two model ids (`gpt-oss-120b`,
+     * `qwen-3.8-27b`) read from Cerebras' own docs on 2026-10-19; their live `/models` list is merged on top.
+     */
+    val CEREBRAS = ProviderPreset(
+        id = "cerebras",
+        displayName = "Cerebras",
+        baseUrl = "https://api.cerebras.ai/v1/",
+        capabilities = CHAT_ONLY,
+        supportsDynamicModels = true,
+        apiKeyUrl = "https://cloud.cerebras.ai",
+        defaultChatModel = "gpt-oss-120b",
+        curatedChatModels = listOf("gpt-oss-120b", "qwen-3.8-27b"),
+    )
+
+    /**
      * Azure Speech with Microsoft's own MAI-Transcribe models (issue #349).
      *
      * MAI-Transcribe was already reachable here through OpenRouter, and the reporter's question was
@@ -914,8 +973,8 @@ object ProviderRegistry {
     /** All built-in presets in display order. The custom option is added by the UI on top of these. */
     val presets: List<ProviderPreset> = listOf(
         OPENAI, GROQ, OPENROUTER, GEMINI, ANTHROPIC, TOGETHER, DEEPINFRA, MISTRAL, SONIOX,
-        ELEVENLABS, DEEPGRAM, ASSEMBLYAI, AZURE, XAI, DEEPSEEK, SILICONFLOW, SCALEWAY, OVHCLOUD,
-        OLLAMA, LOCAL,
+        ELEVENLABS, DEEPGRAM, ASSEMBLYAI, ASSEMBLYAI_SYNC, GLADIA, AZURE, XAI, DEEPSEEK, CEREBRAS,
+        SILICONFLOW, SCALEWAY, OVHCLOUD, OLLAMA, LOCAL,
     )
 
     fun byId(id: String): ProviderPreset? = presets.firstOrNull { it.id == id }
@@ -945,7 +1004,7 @@ object ProviderRegistry {
      * needs it too: 16 kHz mono WAV is 32 kB per second, so 25 MB is reached after 13 minutes
      * 39 seconds — which is what made a 14-minute dictation fail outright (#281).
      *
-     * Figures read from each provider's own documentation on 2026-08-17:
+     * Figures read from each provider's own documentation on 2026-08-17 (AssemblyAI Sync, 2026-10-19):
      *  - OpenAI 25 MB.
      *  - Dictate Cloud 25 MB — but for its own reason, not a borrowed one. The figure used to be
      *    justified as "it proxies to OpenAI, so it inherits the ceiling", and that reasoning has
@@ -995,6 +1054,7 @@ object ProviderRegistry {
         "elevenlabs" -> 3L * 1024 * 1024 * 1024
         "deepgram", "ovhcloud" -> 2L * 1024 * 1024 * 1024
         "assemblyai" -> 2252L * 1024 * 1024
+        "assemblyai_sync" -> 256L * 1024 * 1024
         else -> 0L
     }
 

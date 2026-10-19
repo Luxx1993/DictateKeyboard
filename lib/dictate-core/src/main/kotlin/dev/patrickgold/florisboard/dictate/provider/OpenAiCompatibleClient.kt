@@ -250,6 +250,8 @@ class OpenAiCompatibleClient(
         TranscriptionApi.ELEVENLABS_MULTIPART -> transcribeElevenLabs(request, onRetry)
         TranscriptionApi.DEEPGRAM -> transcribeDeepgram(request, onRetry)
         TranscriptionApi.ASSEMBLYAI_ASYNC -> transcribeAssemblyAi(request, onRetry)
+        TranscriptionApi.ASSEMBLYAI_SYNC -> transcribeAssemblySync(request, onRetry)
+        TranscriptionApi.GLADIA_ASYNC -> transcribeGladia(request, onRetry)
         TranscriptionApi.AZURE_FAST_TRANSCRIPTION -> transcribeAzure(request, onRetry)
         TranscriptionApi.XAI_STT -> transcribeXai(request, onRetry)
         // On-device transcription never uses this HTTP client; the dictation flow routes local providers
@@ -705,6 +707,107 @@ class OpenAiCompatibleClient(
                             DictateApiException.Kind.TIMEOUT,
                             "AssemblyAI transcription timed out",
                         )
+                    }
+                    delay(SONIOX_POLL_INTERVAL_MS)
+                    waitedMs += SONIOX_POLL_INTERVAL_MS
+                }
+            }
+        }
+    }
+
+    /**
+     * AssemblyAI Sync API: a single multipart POST whose answer is the transcript. The raw key goes in
+     * `Authorization` (a `Bearer ` prefix is optional) and `X-AAI-Model` is required on every request.
+     * Endpoint, headers and response shape read from AssemblyAI's sync-stt docs on 2026-10-19.
+     */
+    private suspend fun transcribeAssemblySync(
+        request: TranscriptionRequest,
+        onRetry: (attempt: Int) -> Unit,
+    ): TranscriptionResult {
+        val lang = request.language?.takeIf { it.isNotEmpty() && it != "detect" }
+        val multipart = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("audio", audioUploadNameOf(request.audioFile), request.audioBody())
+            .apply {
+                if (lang != null) {
+                    addFormDataPart(
+                        "config",
+                        null,
+                        json.encodeToString(AssemblySyncConfigDto.serializer(), AssemblySyncConfigDto(listOf(lang.substringBefore('-'))))
+                            .toRequestBody(JSON_MEDIA_TYPE),
+                    )
+                }
+            }
+            .build()
+        val httpRequest = Request.Builder()
+            .url(config.normalizedBaseUrl + "v1/transcribe")
+            .header("Authorization", config.apiKey)
+            .header("X-AAI-Model", request.model)
+            .post(multipart)
+            .build()
+        val body = executeForBody(httpRequest, onRetry = onRetry)
+        return TranscriptionResult(decode(AssemblySyncResponseDto.serializer(), body).text.trim())
+    }
+
+    /**
+     * Gladia v2: upload → create job → poll, like [transcribeAssemblyAi]. `solaria-3` speaks only five
+     * languages and one per request, so it needs a pinned language; `solaria-1` detects among 100+.
+     * Endpoints and fields read from Gladia's docs on 2026-10-19.
+     */
+    private suspend fun transcribeGladia(
+        request: TranscriptionRequest,
+        onRetry: (attempt: Int) -> Unit,
+    ): TranscriptionResult {
+        val base = config.normalizedBaseUrl
+        val lang = request.language?.takeIf { it.isNotEmpty() && it != "detect" }?.substringBefore('-')
+        if (request.model == GLADIA_SOLARIA_3 && lang == null) {
+            throw DictateApiException(
+                DictateApiException.Kind.UNKNOWN,
+                "Gladia Solaria 3 needs a fixed language; pick one or use Solaria 1 for auto-detect.",
+            )
+        }
+
+        // 1. Upload the audio.
+        val upload = Request.Builder()
+            .url(base + "v2/upload")
+            .header("x-gladia-key", config.apiKey)
+            .post(
+                MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("audio", audioUploadNameOf(request.audioFile), request.audioBody())
+                    .build(),
+            )
+            .build()
+        val audioUrl = decode(GladiaUploadDto.serializer(), executeForBody(upload, onRetry = onRetry)).audioUrl
+
+        // 2. Create the job.
+        val createDto = GladiaCreateDto(
+            audioUrl = audioUrl,
+            model = request.model.takeIf { it.isNotBlank() },
+            languageConfig = lang?.let { GladiaLanguageConfigDto(listOf(it)) },
+        )
+        val create = Request.Builder()
+            .url(base + "v2/pre-recorded")
+            .header("x-gladia-key", config.apiKey)
+            .post(json.encodeToString(GladiaCreateDto.serializer(), createDto).toRequestBody(JSON_MEDIA_TYPE))
+            .build()
+        val job = decode(GladiaJobDto.serializer(), executeForBody(create, onRetry = onRetry))
+        val resultUrl = job.resultUrl ?: (base + "v2/pre-recorded/" + job.id)
+
+        // 3. Poll until done / error, bounded by the overall budget.
+        var waitedMs = 0L
+        while (true) {
+            val poll = Request.Builder().url(resultUrl).header("x-gladia-key", config.apiKey).get().build()
+            val dto = decode(GladiaJobDto.serializer(), executeForBody(poll, maxRetries = 2, onRetry = onRetry))
+            when (dto.status) {
+                "done" -> return TranscriptionResult(dto.result?.transcription?.fullTranscript.orEmpty().trim())
+                "error" -> throw DictateApiException.fromHttp(
+                    status = dto.errorCode?.takeIf { it in 400..599 } ?: 502,
+                    message = "Gladia transcription failed",
+                )
+                else -> {
+                    if (waitedMs >= SONIOX_POLL_TIMEOUT_MS) {
+                        throw DictateApiException(DictateApiException.Kind.TIMEOUT, "Gladia transcription timed out")
                     }
                     delay(SONIOX_POLL_INTERVAL_MS)
                     waitedMs += SONIOX_POLL_INTERVAL_MS
@@ -1196,6 +1299,27 @@ class OpenAiCompatibleClient(
                 executeForBody(request, maxRetries = 1)
                 return ConnectionCheck(scope)
             }
+            // The Sync API has no cheap authenticated GET of its own (`v1/warm` is documented without a
+            // URL), so the key is proven by the one thing that can: the account's async list page.
+            // Gladia likewise lists the account's jobs, capped at one entry.
+            TranscriptionApi.ASSEMBLYAI_SYNC -> {
+                val request = Request.Builder()
+                    .url("https://api.assemblyai.com/v2/transcript?limit=1")
+                    .header("authorization", config.apiKey)
+                    .get()
+                    .build()
+                executeForBody(request, maxRetries = 1)
+                return ConnectionCheck(scope)
+            }
+            TranscriptionApi.GLADIA_ASYNC -> {
+                val request = Request.Builder()
+                    .url(config.normalizedBaseUrl + "v2/pre-recorded?limit=1")
+                    .header("x-gladia-key", config.apiKey)
+                    .get()
+                    .build()
+                executeForBody(request, maxRetries = 1)
+                return ConnectionCheck(scope)
+            }
             else -> return ConnectionCheck(scope, liveModelCount = listModels().size)
         }
     }
@@ -1659,6 +1783,40 @@ class OpenAiCompatibleClient(
         val error: String? = null,
     )
 
+    @Serializable
+    private data class AssemblySyncConfigDto(@SerialName("language_codes") val languageCodes: List<String>)
+
+    @Serializable
+    private data class AssemblySyncResponseDto(val text: String = "")
+
+    @Serializable
+    private data class GladiaUploadDto(@SerialName("audio_url") val audioUrl: String)
+
+    @Serializable
+    private data class GladiaLanguageConfigDto(val languages: List<String>)
+
+    @Serializable
+    private data class GladiaCreateDto(
+        @SerialName("audio_url") val audioUrl: String,
+        val model: String? = null,
+        @SerialName("language_config") val languageConfig: GladiaLanguageConfigDto? = null,
+    )
+
+    @Serializable
+    private data class GladiaJobDto(
+        val id: String = "",
+        @SerialName("result_url") val resultUrl: String? = null,
+        val status: String = "",
+        @SerialName("error_code") val errorCode: Int? = null,
+        val result: GladiaResultDto? = null,
+    )
+
+    @Serializable
+    private data class GladiaResultDto(val transcription: GladiaTranscriptionDto? = null)
+
+    @Serializable
+    private data class GladiaTranscriptionDto(@SerialName("full_transcript") val fullTranscript: String = "")
+
     // --- Azure Fast Transcription DTOs (issue #349, see transcribeAzure) ---
 
     /**
@@ -1962,10 +2120,15 @@ class OpenAiCompatibleClient(
         private const val SONIOX_POLL_INTERVAL_MS = 1500L
         private const val SONIOX_POLL_TIMEOUT_MS = 300_000L
 
+        /** The Gladia model that needs a pinned language (see [transcribeGladia]). */
+        private const val GLADIA_SOLARIA_3 = "solaria-3"
+
         /** Transcription APIs with no model-list endpoint; listModels() returns curated ids (#143). */
         private val NO_MODELS_CATALOG_APIS = setOf(
             TranscriptionApi.ELEVENLABS_MULTIPART,
             TranscriptionApi.ASSEMBLYAI_ASYNC,
+            TranscriptionApi.ASSEMBLYAI_SYNC,
+            TranscriptionApi.GLADIA_ASYNC,
             // Azure has a models endpoint the resource key opens, but it lists the wrong namespace —
             // per-locale custom-speech base models, none of which `enhancedMode.model` accepts. See
             // [ProviderRegistry.AZURE], which carries the measurement (#349).

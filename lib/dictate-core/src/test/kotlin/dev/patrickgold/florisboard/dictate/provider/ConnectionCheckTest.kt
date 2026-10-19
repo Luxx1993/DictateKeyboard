@@ -201,4 +201,71 @@ class ConnectionCheckTest : FunSpec({
             sample.delete()
         }
     }
+
+    // --- AssemblyAI Sync and Gladia: the wire formats added 2026-10-19 ---------------------------
+
+    test("AssemblyAI Sync answers in one POST with the model header and the raw key") {
+        val sample = createTempFile(suffix = ".wav").toFile().apply { writeBytes("RIFF-sample".encodeToByteArray()) }
+        try {
+            MockWebServer().use { server ->
+                server.enqueue(MockResponse().setResponseCode(200).setBody("""{"text":" Hallo Welt. ","words":[]}"""))
+                val check = clientFor(ProviderRegistry.ASSEMBLYAI_SYNC, server.url("/").toString(), "aai-key")
+                    .checkTranscription(sample, model = "universal-3-5-pro", language = "de")
+
+                val recorded = server.takeRequest()
+                recorded.method shouldBe "POST"
+                recorded.path shouldBe "/v1/transcribe"
+                recorded.getHeader("Authorization") shouldBe "aai-key"
+                recorded.getHeader("X-AAI-Model") shouldBe "universal-3-5-pro"
+                recorded.body.readUtf8() shouldContain "language_codes"
+                check.transcript shouldBe "Hallo Welt."
+                server.requestCount shouldBe 1
+            }
+        } finally {
+            sample.delete()
+        }
+    }
+
+    test("Gladia uploads, creates the job and polls until it is done") {
+        val sample = createTempFile(suffix = ".wav").toFile().apply { writeBytes("RIFF-sample".encodeToByteArray()) }
+        try {
+            MockWebServer().use { server ->
+                server.enqueue(MockResponse().setResponseCode(200).setBody("""{"audio_url":"https://api.gladia.io/file/1"}"""))
+                server.enqueue(MockResponse().setResponseCode(201).setBody("""{"id":"job1"}"""))
+                server.enqueue(
+                    MockResponse().setResponseCode(200).setBody(
+                        """{"id":"job1","status":"done","result":{"transcription":{"full_transcript":"Guten Tag."}}}""",
+                    ),
+                )
+                val check = clientFor(ProviderRegistry.GLADIA, server.url("/").toString(), "gl-key")
+                    .checkTranscription(sample, model = "solaria-1", language = "de")
+
+                val upload = server.takeRequest()
+                upload.path shouldBe "/v2/upload"
+                upload.getHeader("x-gladia-key") shouldBe "gl-key"
+                val create = server.takeRequest()
+                create.path shouldBe "/v2/pre-recorded"
+                create.body.readUtf8() shouldContain "solaria-1"
+                server.takeRequest().path shouldBe "/v2/pre-recorded/job1"
+                check.transcript shouldBe "Guten Tag."
+            }
+        } finally {
+            sample.delete()
+        }
+    }
+
+    test("Gladia Solaria 3 refuses to run without a pinned language") {
+        val sample = createTempFile(suffix = ".wav").toFile().apply { writeBytes("RIFF-sample".encodeToByteArray()) }
+        try {
+            MockWebServer().use { server ->
+                shouldThrow<DictateApiException> {
+                    clientFor(ProviderRegistry.GLADIA, server.url("/").toString(), "gl-key")
+                        .checkTranscription(sample, model = "solaria-3", language = null)
+                }
+                server.requestCount shouldBe 0
+            }
+        } finally {
+            sample.delete()
+        }
+    }
 })
