@@ -11,7 +11,6 @@
     <!-- The project diktat is forked from (attribution): Dictate Keyboard, itself a fork of FlorisBoard. -->
     <string name="florisboard__upstream_repo_url" translatable="false">https://github.com/DevEmperor/DictateKeyboard</string>
     <string name="florisboard__issue_tracker_url" translatable="false">https://github.com/Luxx1993/unisono-diktat/issues</string>
-    <string name="florisboard__privacy_policy_url" translatable="false">https://github.com/Luxx1993/unisono-diktat/blob/HEAD/PRIVACY_POLICY.md</string>
     <string name="florisboard__changelog_url" translatable="false">https://github.com/Luxx1993/unisono-diktat/commits/HEAD</string>
     <string name="florisboard__commit_by_hash_url" translatable="false">https://github.com/Luxx1993/unisono-diktat/commit/{hash}</string>
 

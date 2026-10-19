@@ -3,7 +3,6 @@
     <string name="app_name">diktat</string>
     <!-- Settings UI strings -->
     <string name="settings__title" comment="Title of Settings">ⵜⵉⵙⵖⴰⵍ</string>
-    <string name="settings__home__title" comment="Title of the Home screen">ⴱⵔⵔⴽ ⴳ {app_name}</string>
     <!-- About UI strings -->
     <string name="about__title" comment="Title of About activity">ⵅⴼ</string>
     <!-- Setup UI strings -->

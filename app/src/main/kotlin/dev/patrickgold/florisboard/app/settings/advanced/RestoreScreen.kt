@@ -18,15 +18,11 @@ package dev.patrickgold.florisboard.app.settings.advanced
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Box
 import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
 import dev.patrickgold.florisboard.app.apptheme.Unisono
 import dev.patrickgold.florisboard.app.main.UButton
 import dev.patrickgold.florisboard.app.main.UCard
-import dev.patrickgold.florisboard.app.main.UCheckRow
-import dev.patrickgold.florisboard.app.main.UChoiceOption
 import dev.patrickgold.florisboard.app.main.UDivider
 import dev.patrickgold.florisboard.app.main.UGroupLabel
 import dev.patrickgold.florisboard.app.main.UNotice
@@ -34,24 +30,15 @@ import dev.patrickgold.florisboard.app.main.UnisonoPage
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import dev.patrickgold.florisboard.BuildConfig
 import dev.patrickgold.florisboard.R
@@ -66,13 +53,11 @@ import dev.patrickgold.florisboard.dictate.data.prompts.PromptsDatabaseHelper
 import dev.patrickgold.florisboard.dictate.provider.ProviderAccounts
 import dev.patrickgold.florisboard.dictate.provider.hasNoSecrets
 import dev.patrickgold.florisboard.lib.cache.CacheManager
-import dev.patrickgold.florisboard.lib.compose.FlorisScreen
 import dev.patrickgold.florisboard.lib.io.ZipUtils
 import dev.patrickgold.jetpref.datastore.runtime.AndroidAppDataStorage
 import dev.patrickgold.jetpref.datastore.runtime.DataStoreReader
 import dev.patrickgold.jetpref.datastore.runtime.FileBasedStorage
 import dev.patrickgold.jetpref.datastore.runtime.ImportStrategy
-import dev.patrickgold.jetpref.datastore.ui.Preference
 import java.io.FileNotFoundException
 import java.text.DateFormat
 import java.util.*
@@ -82,17 +67,10 @@ import kotlinx.coroutines.launch
 import org.florisboard.lib.android.readToFile
 import org.florisboard.lib.android.showLongToast
 import org.florisboard.lib.android.showLongToastSync
-import org.florisboard.lib.compose.FlorisButtonBar
-import org.florisboard.lib.compose.FlorisCardDefaults
-import org.florisboard.lib.compose.FlorisOutlinedBox
-import org.florisboard.lib.compose.FlorisOutlinedButton
-import org.florisboard.lib.compose.defaultFlorisOutlinedBox
 import org.florisboard.lib.compose.stringRes
-import org.florisboard.lib.kotlin.io.deleteContentsRecursively
 import org.florisboard.lib.kotlin.io.readJson
 import org.florisboard.lib.kotlin.io.subDir
 import org.florisboard.lib.kotlin.io.subFile
-import dev.patrickgold.florisboard.lib.FlorisLocale
 
 object Restore {
     const val MIN_VERSION_CODE = 64

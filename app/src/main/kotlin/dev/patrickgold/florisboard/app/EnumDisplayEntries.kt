@@ -21,7 +21,6 @@ import dev.patrickgold.florisboard.R
 import dev.patrickgold.jetpref.datastore.ui.ListPreferenceEntry
 import dev.patrickgold.jetpref.datastore.ui.listPrefEntries
 import org.florisboard.lib.compose.stringRes
-import org.florisboard.lib.kotlin.curlyFormat
 import kotlin.reflect.KClass
 
 private const val DEFAULT = ""

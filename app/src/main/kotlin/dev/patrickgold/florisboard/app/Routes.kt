@@ -61,7 +61,6 @@ import dev.patrickgold.florisboard.app.settings.dictate.DictateRewordingScreen
 import dev.patrickgold.florisboard.app.settings.dictate.DictateHistoryScreen
 import dev.patrickgold.florisboard.app.settings.dictate.DictateStatsScreen
 import dev.patrickgold.florisboard.app.setup.SetupScreen
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlin.reflect.KClass
 

@@ -31,9 +31,7 @@ import kotlinx.coroutines.sync.withLock
 import org.florisboard.lib.kotlin.io.FsDir
 import org.florisboard.lib.kotlin.io.FsFile
 import org.florisboard.lib.kotlin.io.subDir
-import org.florisboard.lib.kotlin.io.subFile
 import java.io.Closeable
-import java.io.File
 import java.util.UUID
 
 class CacheManager(context: Context) {

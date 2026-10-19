@@ -4,13 +4,10 @@
     <!-- Emoji strings -->
     <string name="emoji__history__pinned">مثبّت</string>
     <!-- Quick action strings -->
-    <string name="quick_action__voice_input" comment="Please mind the limited available space for the quick action strings">إدخال الصوت</string>
-    <string name="quick_action__voice_input__tooltip" comment="IME stands for Input Method Editor and is indirectly equivalent to 'keyboard'.">افتح موفر خدمة الإدخال الصوتي</string>
     <string name="quick_action__noop" comment="Noop=no operation; this action is only used as a placeholder in the actions editor drag and drop screen">لا شَيْء</string>
     <!-- Settings UI strings -->
     <string name="settings__title" comment="Title of Settings">الإعدادات</string>
     <string name="settings__system_default" comment="General string which is used when a preference has the system default value set">الإعداد الافتراضي</string>
-    <string name="settings__home__title" comment="Title of the Home screen">مرحبا بكم في {app_name}</string>
     <string name="dictate__settings_unreadable_card">تعذّرت قراءة إعداداتك، لذا بدأ diktat بالإعدادات الافتراضية. اضغط هنا لاستعادتها.</string>
     <string name="dictate__settings_unreadable_title">استعادة الإعدادات؟</string>
     <string name="dictate__settings_unreadable_message">عند بدء التشغيل لم يتمكن diktat من قراءة ملف إعداداته، فاحتفظ به دون تغيير وبدأ بالإعدادات الافتراضية. يعيد «إستعادة» مزوّديك ومفاتيحك ومطالباتك وإعداداتك كما كانت. ويزيل «حذف» الملف القديم.</string>
@@ -30,10 +27,8 @@
     <string name="pref__glide__enabled__label" comment="Preference title">تفعيل الكتابة بالتمرير</string>
     <string name="settings__other__title" comment="Title of Other settings">أخرى</string>
     <string name="pref__other__settings_theme__label" comment="Label of Settings theme preference in Other">إعدادات المظهر</string>
-    <string name="pref__other__settings_theme__auto_amoled" comment="Possible value of Settings theme preference in Other">افتراضي النظام (أموليد)</string>
     <string name="pref__other__settings_theme__light" comment="Possible value of Settings theme preference in Other">فاتح</string>
     <string name="pref__other__settings_theme__dark" comment="Possible value of Settings theme preference in Other">داكن</string>
-    <string name="pref__other__settings_theme__amoled_dark" comment="Possible value of Settings theme preference in Other">أسود قاتم</string>
     <string name="pref__other__settings_accent_color__label" comment="Label of accent color preference in Other">اللون الثانوي للإعدادات    </string>
     <string name="pref__other__settings_language__label" comment="Label of Settings language preference in Other">إعدادات اللغة</string>
     <string name="pref__other__show_app_icon__label" comment="Label of Show app icon preference in Other">إظهار أيقونة البرنامج في درج التطبيقات</string>
@@ -53,8 +48,6 @@
     <string name="about__changelog__summary" comment="Preference summary">مالجديد</string>
     <string name="about__repository__title" comment="Preference title">المستودع(چيتهب)</string>
     <string name="about__repository__summary" comment="Preference summary">الكود المصدري, المناقشات, الاخطاء والمعلومات</string>
-    <string name="about__privacy_policy__title" comment="Preference title">سياسة الخصوصية</string>
-    <string name="about__privacy_policy__summary" comment="Preference summary">سياسة الخصوصية لهذا المشروع</string>
     <string name="about__project_license__title" comment="Preference title">رخصة المشروع</string>
     <string name="about__project_license__summary" comment="Preference summary">هذا التطبيق هو مرخص تحت رخصة {license_name}</string>
     <string name="about__project_license__error_license_text_failed" comment="Error text for license text loading failure">خطأ: فشل تحميل نص الترخيص. \n-&gt; السبب: {error_message}</string>
@@ -63,7 +56,6 @@
     <!-- Setup UI strings -->
     <string name="setup__title" comment="Title of Setup">مرحباً!</string>
     <string name="setup__intro_message" comment="Short intro message welcoming new users">شكرًا لاستخدامك {app_name}! سيرشدك هذا الإعداد السريع خلال الخطوات المطلوبة لاستخدام {app_name} على جهازك.</string>
-    <string name="setup__footer__privacy_policy" comment="Privacy policy label for URL">سياسة الخصوصية</string>
     <string name="setup__footer__repository" comment="Repository label for URL">المستودع</string>
     <string name="setup__grant_notification_permission__title">السماح بإخطارات تقرير الأعطال</string>
     <string name="setup__grant_notification_permission__description">اعتبارًا من نظام التشغيل Android 13+، يجب أن تطلب التطبيقات الإذن بذلك
@@ -141,10 +133,6 @@
     <string name="state__no_file_selected">لم يتم تحديد أي ملف</string>
     <!-- Dictate strings -->
     <string name="quick_action__dictate_live_prompt">أمر صوتي</string>
-    <string name="about__feedback__title">الملاحظات والدعم</string>
-    <string name="about__feedback__summary">أرسل بريدًا إلكترونيًا بأسئلة أو أخطاء أو أفكار</string>
-    <string name="about__feedback__email">contact@devemperor.net</string>
-    <string name="about__feedback__subject">diktat Feedback</string>
     <string name="setup__provider__title">اختر كيف يُفرِّغ diktat كلامك</string>
     <string name="setup__provider__choose_intro">يحوِّل diktat كلامك إلى نص بمساعدة خدمة ذكاء اصطناعي. الطريقتان أعلاه تناسبان معظم الناس — وإذا كنت تفضّل الاستغناء عن الخدمات السحابية تمامًا، فهناك طريقتان إضافيتان بالأسفل.</string>
     <string name="setup__provider__choice_own_title">استخدام مزوّد ذكاء اصطناعي خاص بك</string>
@@ -241,7 +229,6 @@
     <string name="dictate__floating_button_snap_title">الالتصاق بالحافة</string>
     <string name="dictate__transcription_stopped">تم الإيقاف، التسجيل محفوظ</string>
     <string name="dictate__transcription_stopped_in_history">تم الإيقاف، التسجيل في السجل</string>
-    <string name="dictate__providers_summary_both">النسخ: {transcription} · إعادة الصياغة: {rewording}</string>
     <string name="dictate__remember_last_dictation_summary">يحتفظ بآخر إملاء لك حتى يتمكن الزر العائم من التراجع عنه والتخطيط الكلاسيكي من إدراجه مجددًا.</string>
     <string name="dictate__remember_last_dictation_title">تذكّر آخر إملاء</string>
     <string name="setup__floating_button__btn">إعداد الزر العائم</string>
@@ -252,7 +239,6 @@
     <string name="setup__floating_button__accessibility_note">للقيام بذلك، يستخدم {app_name} إعدادات إمكانية الوصول في أندرويد — وبهذا يمكن للفقاعة الظهور فوق التطبيقات الأخرى وإدراج النص المُفرَّغ نيابةً عنك. تُرشدك الشاشة التالية إلى تفعيلها.</string>
     <string name="setup__floating_button__optional_note">هذا اختياري تمامًا — تخطَّه إذا كنت تريد استخدام {app_name} كلوحة مفاتيح كاملة فقط. يمكنك دائمًا إعداده لاحقًا من الإعدادات.</string>
     <string name="setup__floating_button__skip_btn">تخطّي — سأستخدم لوحة المفاتيح</string>
-    <string name="dictate__floating_button_badge_new">جديد</string>
     <string name="dictate__prompts_layout_title">تخطيط المطالبات</string>
     <string name="dictate__status_transcribing">جارٍ التفريغ النصي…</string>
     <string name="dictate__status_transcribing_local">جارٍ التفريغ على الجهاز…</string>
@@ -296,11 +282,8 @@
     <string name="dictate__base_url_placeholder">https://your-server/v1/</string>
     <string name="dictate__value_not_set">غير مضبوط</string>
     <string name="dictate__providers_title">مزوّدو الذكاء الاصطناعي</string>
-    <string name="dictate__providers_summary">النشط: {provider}</string>
-    <string name="dictate__providers_active_group">المزوّدون النشطون</string>
     <string name="dictate__providers_active_transcription">التفريغ النصي</string>
     <string name="dictate__providers_active_rewording">إعادة الصياغة</string>
-    <string name="dictate__providers_manage_group">إعداد المزوّدين</string>
     <string name="dictate__providers_status_key_set">تم ضبط المفتاح</string>
     <string name="dictate__providers_status_no_key">لا يوجد مفتاح</string>
     <string name="dictate__providers_status_unconfigured">غير مُعدّ</string>
@@ -426,13 +409,9 @@
     <string name="dictate__resend_button_summary">إذا فشل التفريغ النصي، أظهِر زرًا لإعادة المحاولة بالتسجيل نفسه</string>
     <string name="dictate__formatting_title">التنسيق &amp; المفردات</string>
     <string name="dictate__formatting_menu_summary">موجّه الأسلوب، كلمات مخصّصة، استبدالات</string>
-    <string name="dictate__recording_menu_summary">الوقت الفعلي، مصدر الصوت، التسجيل الفوري</string>
     <string name="dictate__output_menu_summary">إدخال تلقائي، سرعة الكتابة، إعادة الإرسال</string>
-    <string name="dictate__layout_title">تخطيط الإملاء</string>
     <string name="dictate__languages_title">لغات التفريغ النصي</string>
-    <string name="dictate__languages_summary">اختر اللغات التي تُملي بها. بدّل بينها بسرعة من شريط التسجيل.</string>
     <string name="dictate__language_detect">الكشف تلقائيًا</string>
-    <string name="dictate__languages_selected_title">اللغات المحدّدة</string>
     <string name="dictate__languages_active_title">اللغة النشطة</string>
     <string name="dictate__languages_follow_keyboard">اتّباع لغة لوحة المفاتيح</string>
     <string name="dictate__prompt_selection_none">بدون</string>
@@ -440,7 +419,6 @@
     <string name="dictate__prompt_selection_custom">مخصّص</string>
     <string name="dictate__style_prompt_title">علامات الترقيم والنمط</string>
     <string name="dictate__style_prompt_custom_placeholder">مثلاً: مرحباً. شكراً جزيلاً.</string>
-    <string name="dictate__style_prompt_info_title">عرض المثال الافتراضي</string>
     <string name="dictate__style_prompt_info_description">تُرسَل هذه الجملة النموذجية مع كل عملية تفريغ نصي لتوجيه النموذج نحو الأحرف الكبيرة وعلامات الترقيم الصحيحة. وتتكيّف تلقائيًا مع اللغة التي تُملي بها.</string>
     <string name="dictate__style_prompt_info_none">لا توجد بعد جملة مثال لهذه اللغة، لذا لا يتم إرسال أي جملة. وتظل عملية التفريغ تتبع اللغة التي اخترتها.</string>
     <string name="dictate__custom_words_title">كلمات مخصّصة</string>
@@ -475,13 +453,11 @@
     <string name="dictate__command_word_off">إيقاف</string>
     <string name="dictate__command_word_summary">الإملاءات التي تبدأ بـ «{word}» تُنفَّذ كأمر صوتي</string>
     <string name="dictate__command_word_placeholder">جارفيس</string>
-    <string name="dictate__command_word_info_title">حول كلمة الأمر</string>
     <string name="dictate__command_word_info_description">يكتب diktat عادةً ما تقوله. عند ضبط كلمة أمر، يتحوّل الإملاء الذي يبدأ بها إلى تعليمة بدلاً من ذلك: تُحذف الكلمة ويُرسل الباقي إلى الذكاء الاصطناعي، مع النص المحدد إن وُجد.\n\n«جارفيس، اجعل هذا أكثر رسمية» يعيد صياغة التحديد. «جارفيس، ما عاصمة اليابان» يكتب الإجابة في الحقل. إنه زر الأمر الصوتي نفسه، تصل إليه بنطق اسمه بدل الضغط عليه.\n\nلا تُحتسب الكلمة إلا في بداية الإملاء تمامًا وككلمة كاملة فقط، فاختر شيئًا نادرًا ما تبدأ به جملة.</string>
     <string name="dictate__auto_formatting_title">التنسيق التلقائي</string>
     <string name="dictate__auto_formatting_summary">حوّل إشارات التنسيق المنطوقة إلى Markdown (عناوين، قوائم، …)</string>
     <string name="dictate__system_prompt_title">تعليمات إعادة الصياغة</string>
     <string name="dictate__system_prompt_custom_placeholder">إرشادات تُضاف إلى كل طلب إعادة صياغة</string>
-    <string name="dictate__system_prompt_info_title">عرض التعليمات الافتراضية</string>
     <string name="dictate__system_prompt_info_description">تُضاف هذه التعليمات إلى كل طلب إعادة صياغة بحيث يُعيد الذكاء الاصطناعي النتيجة التي طلبتها فقط — دون أي نص إضافي قبلها أو بعدها.</string>
     <string name="dictate__prompts_title">المطالبات</string>
     <string name="dictate__prompts_empty">لا توجد مطالبات بعد. انقر الزر أدناه لإضافة واحدة.</string>
@@ -522,7 +498,6 @@
     <string name="dictate__prompt_library_empty">لا توجد مطالبات مطابقة لبحثك.</string>
     <string name="dictate__prompt_library_error">تعذّر تحميل مكتبة المجتمع. تحقّق من اتصالك وأعد المحاولة.</string>
     <string name="dictate__prompt_library_retry">إعادة المحاولة</string>
-    <string name="dictate__prompt_library_close">إغلاق</string>
     <string name="dictate__prompt_library_author">بواسطة {author}</string>
     <string name="dictate__prompt_share_title">المشاركة مع المجتمع</string>
     <string name="dictate__prompt_share_message">يفتح هذا GitHub في متصفّحك مع تعبئة مطالبتك مسبقًا كطلب إرسال. سجّل الدخول وأكّد لفتح طلب سحب يضيفها إلى مكتبة المجتمع. يلزم حساب GitHub مجاني؛ لا يُرفع أي شيء حتى تؤكّد على GitHub.</string>
@@ -536,7 +511,6 @@
     <string name="dictate__import_share_label">تفريغ</string>
     <string name="dictate__import_title">تفريغ ملف</string>
     <string name="dictate__import_menu">تفريغ ملف</string>
-    <string name="dictate__import_menu_summary">اختر ملف صوت أو فيديو واقرأ ما قيل فيه</string>
     <string name="dictate__import_step_copy">استلام الملف</string>
     <string name="dictate__import_step_extract">استخراج الصوت من الفيديو</string>
     <string name="dictate__import_step_prepare">تجهيز الصوت</string>
@@ -615,7 +589,6 @@
     <string name="dictate__mappings_field_from_placeholder">مثال: github</string>
     <string name="dictate__mappings_field_to">بـ</string>
     <string name="dictate__mappings_field_to_placeholder">مثال: GitHub</string>
-    <string name="dictate__mappings_group">قواعد الاستبدال</string>
     <string name="dictate__mappings_matchcase_summary">الاستبدال فقط عند تطابق حالة الأحرف تمامًا.</string>
     <string name="dictate__mappings_import">استيراد القواعد</string>
     <string name="dictate__mappings_export">تصدير القواعد</string>
@@ -654,7 +627,6 @@
     <string name="dictate__history_title">السجل</string>
     <string name="dictate__history_original">الأصل</string>
     <string name="dictate__history_result">النتيجة</string>
-    <string name="dictate__history_menu_summary">إعادة تشغيل الإملاءات السابقة وإعادة إدراجها وإدارتها</string>
     <string name="dictate__history_empty">لا توجد إملاءات بعد — ستظهر إملاءاتك الأخيرة هنا.</string>
     <string name="dictate__history_enable_title">الاحتفاظ بسجل</string>
     <string name="dictate__history_enable_summary">سجّل الإملاءات لإعادة إدراجها أو مراجعتها لاحقًا.</string>
@@ -683,7 +655,6 @@
     <string name="dictate__history_export_folder_unset">غير محدد</string>
     <string name="dictate__history_export_folder_unavailable">المجلد غير متاح — اختره من جديد</string>
     <string name="dictate__history_export_choose">اختيار مجلد</string>
-    <string name="dictate__history_export_change">تغيير</string>
     <string name="dictate__history_export_disconnect">قطع الاتصال</string>
     <string name="dictate__history_export_audio_title">تصدير التسجيل أيضًا</string>
     <string name="dictate__history_export_audio_summary">يحفظ الصوت بجانب النص.</string>
@@ -734,6 +705,5 @@
     <string name="dictate__audio_source_voice_communication_summary">أعلى أولوية للميكروفون — يعمل حتى عندما يستخدمه تطبيق آخر، لكنه قد يقلل الدقة.</string>
 
     <string name="dictate__legacy_action_copy">نسخ</string>
-    <string name="about__website__title">الموقع الإلكتروني</string>
 
 </resources>

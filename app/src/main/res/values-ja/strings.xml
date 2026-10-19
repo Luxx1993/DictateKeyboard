@@ -4,13 +4,10 @@
     <!-- Emoji strings -->
     <string name="emoji__history__pinned">ピン留め済み</string>
     <!-- Quick action strings -->
-    <string name="quick_action__voice_input" comment="Please mind the limited available space for the quick action strings">音声入力</string>
-    <string name="quick_action__voice_input__tooltip" comment="IME stands for Input Method Editor and is indirectly equivalent to 'keyboard'.">音声入力プロバイダを開く</string>
     <string name="quick_action__noop" comment="Noop=no operation; this action is only used as a placeholder in the actions editor drag and drop screen">操作なし</string>
     <!-- Settings UI strings -->
     <string name="settings__title" comment="Title of Settings">設定</string>
     <string name="settings__system_default" comment="General string which is used when a preference has the system default value set">システムのデフォルト</string>
-    <string name="settings__home__title" comment="Title of the Home screen">{app_name}へようこそ</string>
     <string name="dictate__settings_unreadable_card">設定を読み込めなかったため、diktat は初期設定で起動しました。ここをタップすると元に戻せます。</string>
     <string name="dictate__settings_unreadable_title">設定を復元しますか？</string>
     <string name="dictate__settings_unreadable_message">起動時に diktat は設定ファイルを読み込めませんでした。ファイルはそのまま保管し、初期設定で起動しています。「復元」でプロバイダー、キー、プロンプト、設定を元どおりに戻せます。「削除」で古いファイルを削除します。</string>
@@ -30,10 +27,8 @@
     <string name="pref__glide__enabled__label" comment="Preference title">グライド入力を有効にする</string>
     <string name="settings__other__title" comment="Title of Other settings">その他</string>
     <string name="pref__other__settings_theme__label" comment="Label of Settings theme preference in Other">設定テーマ</string>
-    <string name="pref__other__settings_theme__auto_amoled" comment="Possible value of Settings theme preference in Other">システムデフォルト (AMOLED)</string>
     <string name="pref__other__settings_theme__light" comment="Possible value of Settings theme preference in Other">ライト</string>
     <string name="pref__other__settings_theme__dark" comment="Possible value of Settings theme preference in Other">ダーク</string>
-    <string name="pref__other__settings_theme__amoled_dark" comment="Possible value of Settings theme preference in Other">AMOLEDダーク</string>
     <string name="pref__other__settings_accent_color__label" comment="Label of accent color preference in Other"> 設定アクセントカラー </string>
     <string name="pref__other__settings_language__label" comment="Label of Settings language preference in Other">設定言語</string>
     <string name="pref__other__show_app_icon__label" comment="Label of Show app icon preference in Other">ランチャーにアプリアイコンを表示</string>
@@ -53,8 +48,6 @@
     <string name="about__changelog__summary" comment="Preference summary">新機能</string>
     <string name="about__repository__title" comment="Preference title">リポジトリ (GitHub)</string>
     <string name="about__repository__summary" comment="Preference summary">ソースコード、ディスカッション、課題、情報</string>
-    <string name="about__privacy_policy__title" comment="Preference title">プライバシーポリシー</string>
-    <string name="about__privacy_policy__summary" comment="Preference summary">このプロジェクトのプライバシーポリシー</string>
     <string name="about__project_license__title" comment="Preference title">プロジェクトライセンス</string>
     <string name="about__project_license__summary" comment="Preference summary">{app_name}は{license_name}の下でライセンスされています</string>
     <string name="about__project_license__error_license_text_failed" comment="Error text for license text loading failure">エラー: ライセンステキストの読み込みに失敗しました。\n-&gt; 理由: {error_message}</string>
@@ -63,7 +56,6 @@
     <!-- Setup UI strings -->
     <string name="setup__title" comment="Title of Setup">ようこそ！</string>
     <string name="setup__intro_message" comment="Short intro message welcoming new users">{app_name}をご利用いただきありがとうございます！このクイックセットアップでは、お使いのデバイスで{app_name}を使用するために必要な手順を案内します。</string>
-    <string name="setup__footer__privacy_policy" comment="Privacy policy label for URL">プライバシーポリシー</string>
     <string name="setup__footer__repository" comment="Repository label for URL">リポジトリ</string>
     <string name="setup__grant_notification_permission__title">クラッシュレポート通知を許可</string>
     <string name="setup__grant_notification_permission__description">Android 13以降、アプリは通知を送信するために許可を求める必要があります。\n Dictateでは、これはクラッシュ発生時にクラッシュレポート画面を開くためにのみ使用されます。\n この許可はシステム設定でいつでも変更できます。\n </string>
@@ -139,10 +131,6 @@
     <string name="state__no_file_selected">ファイルが選択されていません</string>
     <!-- Dictate strings -->
     <string name="quick_action__dictate_live_prompt">音声指示</string>
-    <string name="about__feedback__title">フィードバックとサポート</string>
-    <string name="about__feedback__summary">質問・不具合・アイデアをメールで送信</string>
-    <string name="about__feedback__email">contact@devemperor.net</string>
-    <string name="about__feedback__subject">diktat Feedback</string>
     <string name="setup__provider__title">文字起こしの方法を選ぶ</string>
     <string name="setup__provider__choose_intro">diktat は AI サービスを使って音声を文字にします。ほとんどの方には上の2つの方法が合いますが、クラウドサービスをまったく使いたくない場合は、下にさらに2つあります。</string>
     <string name="setup__provider__choice_own_title">自分の AI プロバイダーを使う</string>
@@ -239,7 +227,6 @@
     <string name="dictate__floating_button_snap_title">端に吸着</string>
     <string name="dictate__transcription_stopped">停止しました。録音は保持済み</string>
     <string name="dictate__transcription_stopped_in_history">停止しました。録音は履歴にあります</string>
-    <string name="dictate__providers_summary_both">文字起こし: {transcription} · 言い換え: {rewording}</string>
     <string name="dictate__remember_last_dictation_summary">直前の音声入力を保持し、フローティングボタンで取り消したり、クラシックレイアウトで再挿入したりできるようにします。</string>
     <string name="dictate__remember_last_dictation_title">最後の音声入力を記憶</string>
     <string name="setup__floating_button__btn">フローティングボタンを設定</string>
@@ -250,7 +237,6 @@
     <string name="setup__floating_button__accessibility_note">そのために {app_name} は Android のユーザー補助設定を利用します。これにより、バブルが他のアプリの上に表示され、文字起こししたテキストを代わりに挿入できます。次の画面で有効化の手順を案内します。</string>
     <string name="setup__floating_button__optional_note">これは完全に任意です。{app_name} を通常のキーボードとして使うだけならスキップして構いません。あとから設定でいつでも有効にできます。</string>
     <string name="setup__floating_button__skip_btn">スキップ — キーボードを使います</string>
-    <string name="dictate__floating_button_badge_new">新着</string>
     <string name="dictate__prompts_layout_title">プロンプトのレイアウト</string>
     <string name="dictate__status_transcribing">文字起こし中…</string>
     <string name="dictate__status_transcribing_local">端末で文字起こし中…</string>
@@ -294,11 +280,8 @@
     <string name="dictate__base_url_placeholder">https://your-server/v1/</string>
     <string name="dictate__value_not_set">未設定</string>
     <string name="dictate__providers_title">AIプロバイダー</string>
-    <string name="dictate__providers_summary">使用中: {provider}</string>
-    <string name="dictate__providers_active_group">使用中のプロバイダー</string>
     <string name="dictate__providers_active_transcription">文字起こし</string>
     <string name="dictate__providers_active_rewording">言い換え</string>
-    <string name="dictate__providers_manage_group">プロバイダーを構成</string>
     <string name="dictate__providers_status_key_set">キー設定済み</string>
     <string name="dictate__providers_status_no_key">キーなし</string>
     <string name="dictate__providers_status_unconfigured">未構成</string>
@@ -424,13 +407,9 @@
     <string name="dictate__resend_button_summary">文字起こしに失敗した場合、同じ録音で再試行するボタンを表示します</string>
     <string name="dictate__formatting_title">書式 &amp; 語彙</string>
     <string name="dictate__formatting_menu_summary">スタイルプロンプト、カスタム単語、置換</string>
-    <string name="dictate__recording_menu_summary">リアルタイム、音声ソース、即時録音</string>
     <string name="dictate__output_menu_summary">自動エンター、入力速度、再送信</string>
-    <string name="dictate__layout_title">音声入力レイアウト</string>
     <string name="dictate__languages_title">文字起こし言語</string>
-    <string name="dictate__languages_summary">音声入力する言語を選択します。録音バーから素早く切り替えられます。</string>
     <string name="dictate__language_detect">自動検出</string>
-    <string name="dictate__languages_selected_title">選択した言語</string>
     <string name="dictate__languages_active_title">使用中の言語</string>
     <string name="dictate__languages_follow_keyboard">キーボードの言語に合わせる</string>
     <string name="dictate__prompt_selection_none">なし</string>
@@ -438,7 +417,6 @@
     <string name="dictate__prompt_selection_custom">カスタム</string>
     <string name="dictate__style_prompt_title">句読点とスタイル</string>
     <string name="dictate__style_prompt_custom_placeholder">例：こんにちは。どうもありがとうございます。</string>
-    <string name="dictate__style_prompt_info_title">既定の例を表示</string>
     <string name="dictate__style_prompt_info_description">この例文は、正しい大文字使用と句読点へモデルを導くために、文字起こしごとに送信されます。音声入力する言語に自動的に適応します。</string>
     <string name="dictate__style_prompt_info_none">この言語にはまだ例文がないため、何も送信されません。文字起こしは選択した言語に従います。</string>
     <string name="dictate__custom_words_title">カスタム単語</string>
@@ -473,13 +451,11 @@
     <string name="dictate__command_word_off">オフ</string>
     <string name="dictate__command_word_summary">「{word}」で始まる音声入力は音声指示として実行されます</string>
     <string name="dictate__command_word_placeholder">ジャービス</string>
-    <string name="dictate__command_word_info_title">コマンドワードについて</string>
     <string name="dictate__command_word_info_description">diktat は通常、話した内容をそのまま書き取ります。コマンドワードを設定すると、その語で始まる音声入力は指示として扱われます。語は取り除かれ、残りが（選択中のテキストがあればそれと一緒に）AI へ送られます。\n\n「ジャービス、もっと丁寧にして」は選択範囲を書き換えます。「ジャービス、日本の首都はどこ」は答えを入力欄に書き込みます。つまり、タップする代わりに名前を呼んで使う音声指示ボタンです。\n\nこの語は音声入力のいちばん最初にあるときだけ、しかも単独の語としてのみ有効です。文の書き出しにめったに使わない語を選んでください。</string>
     <string name="dictate__auto_formatting_title">自動書式設定</string>
     <string name="dictate__auto_formatting_summary">話した書式の指示をMarkdown（見出し、リストなど）に変換します</string>
     <string name="dictate__system_prompt_title">言い換えの指示</string>
     <string name="dictate__system_prompt_custom_placeholder">すべての言い換えリクエストに追加されるガイダンス</string>
-    <string name="dictate__system_prompt_info_title">既定の指示を表示</string>
     <string name="dictate__system_prompt_info_description">この指示はすべての言い換えリクエストに追加され、AIが求めた結果のみを返すようにします。前後に余分なテキストは付きません。</string>
     <string name="dictate__prompts_title">プロンプト</string>
     <string name="dictate__prompts_empty">まだプロンプトがありません。下のボタンをタップして追加してください。</string>
@@ -520,7 +496,6 @@
     <string name="dictate__prompt_library_empty">検索に一致するプロンプトがありません。</string>
     <string name="dictate__prompt_library_error">コミュニティライブラリを読み込めませんでした。接続を確認して、もう一度お試しください。</string>
     <string name="dictate__prompt_library_retry">再試行</string>
-    <string name="dictate__prompt_library_close">閉じる</string>
     <string name="dictate__prompt_library_author">作成者: {author}</string>
     <string name="dictate__prompt_share_title">コミュニティに共有</string>
     <string name="dictate__prompt_share_message">お使いのブラウザで GitHub が開き、あなたのプロンプトが投稿として事前入力されます。サインインして確認すると、それをコミュニティライブラリに追加するプルリクエストが開きます。無料の GitHub アカウントが必要です。GitHub で確認するまで、何もアップロードされません。</string>
@@ -534,7 +509,6 @@
     <string name="dictate__import_share_label">文字起こし</string>
     <string name="dictate__import_title">ファイルを文字起こし</string>
     <string name="dictate__import_menu">ファイルを文字起こし</string>
-    <string name="dictate__import_menu_summary">音声または動画ファイルを選んで、内容を読みましょう</string>
     <string name="dictate__import_step_copy">ファイルの受け取り</string>
     <string name="dictate__import_step_extract">音声の取り出し</string>
     <string name="dictate__import_step_prepare">音声の準備</string>
@@ -608,7 +582,6 @@
     <string name="dictate__mappings_field_from_placeholder">例: github</string>
     <string name="dictate__mappings_field_to">置換後</string>
     <string name="dictate__mappings_field_to_placeholder">例: GitHub</string>
-    <string name="dictate__mappings_group">置換ルール</string>
     <string name="dictate__mappings_matchcase_summary">大文字と小文字が完全に一致する場合のみ置き換えます。</string>
     <string name="dictate__mappings_import">ルールを読み込む</string>
     <string name="dictate__mappings_export">ルールを書き出す</string>
@@ -647,7 +620,6 @@
     <string name="dictate__history_title">履歴</string>
     <string name="dictate__history_original">元の文</string>
     <string name="dictate__history_result">結果</string>
-    <string name="dictate__history_menu_summary">過去の音声入力を再生・再挿入・管理します</string>
     <string name="dictate__history_empty">まだ音声入力がありません — 最近の音声入力がここに表示されます。</string>
     <string name="dictate__history_enable_title">履歴を保存する</string>
     <string name="dictate__history_enable_summary">音声入力を記録して、後で再挿入や確認ができます。</string>
@@ -676,7 +648,6 @@
     <string name="dictate__history_export_folder_unset">未設定</string>
     <string name="dictate__history_export_folder_unavailable">フォルダーを利用できません — もう一度選んでください</string>
     <string name="dictate__history_export_choose">フォルダーを選択</string>
-    <string name="dictate__history_export_change">変更</string>
     <string name="dictate__history_export_disconnect">接続を解除</string>
     <string name="dictate__history_export_audio_title">録音も書き出す</string>
     <string name="dictate__history_export_audio_summary">文字起こしの隣に音声を保存します。</string>
@@ -727,6 +698,5 @@
     <string name="dictate__audio_source_voice_communication_summary">マイクの優先度が最高 — 他のアプリがマイクを使用中でも動作しますが、精度が下がる場合があります。</string>
 
     <string name="dictate__legacy_action_copy">コピー</string>
-    <string name="about__website__title">ウェブサイト</string>
 
 </resources>

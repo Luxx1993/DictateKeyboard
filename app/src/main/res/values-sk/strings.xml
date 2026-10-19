@@ -4,12 +4,9 @@
     <!-- Emoji strings -->
     <string name="emoji__history__pinned">Pripnuté</string>
     <!-- Quick action strings -->
-    <string name="quick_action__voice_input" comment="Please mind the limited available space for the quick action strings">Hlas. vstup</string>
-    <string name="quick_action__voice_input__tooltip" comment="IME stands for Input Method Editor and is indirectly equivalent to 'keyboard'.">Otvoriť poskytovateľa hlasového vstupu</string>
     <!-- Settings UI strings -->
     <string name="settings__title" comment="Title of Settings">Nastavenia</string>
     <string name="settings__system_default" comment="General string which is used when a preference has the system default value set">Podľa systému</string>
-    <string name="settings__home__title" comment="Title of the Home screen">Víta ťa {app_name}</string>
     <string name="settings__theme__title" comment="Title of the Theme screen">Motív</string>
     <!-- Typing strings -->
     <string name="settings__typing__title" comment="Title of Typing screen">Písanie</string>
@@ -23,8 +20,6 @@
     <string name="about__changelog__summary" comment="Preference summary">Čo je nové?</string>
     <string name="about__repository__title" comment="Preference title">Repozitár (GitHub)</string>
     <string name="about__repository__summary" comment="Preference summary">Zdrojový kód, diskusie, problémy a informácie</string>
-    <string name="about__privacy_policy__title" comment="Preference title">Zásady ochrany osobných údajov</string>
-    <string name="about__privacy_policy__summary" comment="Preference summary">Zásady ochrany osobných údajov v rámci tohto projektu</string>
     <string name="about__project_license__title" comment="Preference title">Licencia projektu</string>
     <string name="about__project_license__summary" comment="Preference summary">{app_name} má udelenú licenciu {license_name}</string>
     <string name="about__project_license__error_license_text_failed" comment="Error text for license text loading failure">Chyba: Nepodarilo sa načítať text licencie.\n-&gt; Dôvod: {error_message}.</string>
@@ -33,7 +28,6 @@
     <!-- Setup UI strings -->
     <string name="setup__title" comment="Title of Setup">Vitajte!</string>
     <string name="setup__intro_message" comment="Short intro message welcoming new users">Ďakujeme, že ste sa rozhodli pre {app_name}! Toto rýchle nastavenie vás prevedie krokmi potrebnými na to, aby ste {app_name} mohli používať na svojom zariadení.</string>
-    <string name="setup__footer__privacy_policy" comment="Privacy policy label for URL">Zásady ochrany osobných údajov</string>
     <string name="setup__footer__repository" comment="Repository label for URL">Repozitár</string>
     <!-- Back up & Restore -->
     <string name="backup_and_restore__title">Zálohovanie a obnovenie</string>

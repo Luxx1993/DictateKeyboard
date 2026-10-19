@@ -16,7 +16,6 @@
 
 package dev.patrickgold.florisboard.lib
 
-import android.content.Context
 import dev.patrickgold.florisboard.lib.FlorisLocale.Companion.default
 import java.util.*
 import kotlinx.serialization.KSerializer

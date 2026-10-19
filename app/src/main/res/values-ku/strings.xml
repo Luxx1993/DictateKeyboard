@@ -4,7 +4,6 @@
     <!-- Settings UI strings -->
     <string name="settings__title" comment="Title of Settings">Mîhengan</string>
     <string name="settings__system_default" comment="General string which is used when a preference has the system default value set">Jixwebera Sîstemê</string>
-    <string name="settings__home__title" comment="Title of the Home screen">Bi xêr hatî {app_name}</string>
     <string name="settings__theme__title" comment="Title of the Theme screen">Mijar</string>
     <!-- Typing strings -->
     <string name="pref__glide__enabled__label" comment="Preference title">Bi şemitandin binivîse çalak bike</string>
@@ -17,8 +16,6 @@
     <string name="about__changelog__summary" comment="Preference summary">Çi nû ye</string>
     <string name="about__repository__title" comment="Preference title">Depo (GitHub)</string>
     <string name="about__repository__summary" comment="Preference summary">Koda çavkanî, nîqaş, mijar û agahî</string>
-    <string name="about__privacy_policy__title" comment="Preference title">Polîtîqa Taybetîyê</string>
-    <string name="about__privacy_policy__summary" comment="Preference summary">Polîtîkaya nepenîtiyê ya ji bo vê projeyê</string>
     <string name="about__project_license__title" comment="Preference title">Lîsansa projeyê</string>
     <string name="about__project_license__summary" comment="Preference summary">{app_name} di binê lîsansê de ye {license_name}</string>
     <string name="about__third_party_licenses__title" comment="Preference title">Lîsansên partiya sêyem</string>
@@ -26,7 +23,6 @@
     <!-- Setup UI strings -->
     <string name="setup__title" comment="Title of Setup">Hûn bi xêr hatin!</string>
     <string name="setup__intro_message" comment="Short intro message welcoming new users">Spas ji bo bikaranîna {app_name}! Ev sazkirina bilez, ji bo bikarînana {app_name} di cîhaza xwe da gavên pêwîst rê dide we.</string>
-    <string name="setup__footer__privacy_policy" comment="Privacy policy label for URL">Polîtîkaya nepenîtiyê</string>
     <string name="setup__footer__repository" comment="Repository label for URL">Depo</string>
     <string name="setup__finish_up__title">Bi dawî bû</string>
     <string name="setup__finish_up__description_p1">{app_name} niha di pergalê de çalak e û amade ye ku ji hêla we ve were xwemalîkirin.</string>

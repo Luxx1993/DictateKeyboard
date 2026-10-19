@@ -4,14 +4,11 @@
     <!-- Settings UI strings -->
     <string name="settings__title" comment="Title of Settings">Inställningar</string>
     <string name="settings__system_default" comment="General string which is used when a preference has the system default value set">Systemstandard</string>
-    <string name="settings__home__title" comment="Title of the Home screen">Välkommen till {app_name}</string>
     <string name="settings__theme__title" comment="Title of the Theme screen">Tema</string>
     <!-- About UI strings -->
     <string name="about__title" comment="Title of About activity">Om</string>
-    <string name="about__privacy_policy__title" comment="Preference title">Sekretesspolicy</string>
     <!-- Setup UI strings -->
     <string name="setup__title" comment="Title of Setup">Välkommen!</string>
-    <string name="setup__footer__privacy_policy" comment="Privacy policy label for URL">Sekretesspolicy</string>
     <!-- Crash Dialog strings -->
     <string name="crash_dialog__close" comment="Label of Close button in crash dialog">Stäng</string>
 </resources>

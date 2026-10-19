@@ -4,13 +4,10 @@
     <!-- Emoji strings -->
     <string name="emoji__history__pinned">Disematkan</string>
     <!-- Quick action strings -->
-    <string name="quick_action__voice_input" comment="Please mind the limited available space for the quick action strings">Input suara</string>
-    <string name="quick_action__voice_input__tooltip" comment="IME stands for Input Method Editor and is indirectly equivalent to 'keyboard'.">Buka penyedia masukan suara</string>
     <string name="quick_action__noop" comment="Noop=no operation; this action is only used as a placeholder in the actions editor drag and drop screen">Tidak ada</string>
     <!-- Settings UI strings -->
     <string name="settings__title" comment="Title of Settings">Setelan</string>
     <string name="settings__system_default" comment="General string which is used when a preference has the system default value set">Standar sistem</string>
-    <string name="settings__home__title" comment="Title of the Home screen">Selamat datang di {app_name}</string>
     <string name="dictate__settings_unreadable_card">Setelan Anda tidak dapat dibaca, jadi diktat dimulai dengan setelan bawaan. Ketuk di sini untuk memulihkannya.</string>
     <string name="dictate__settings_unreadable_title">Pulihkan setelan?</string>
     <string name="dictate__settings_unreadable_message">Saat dimulai, diktat tidak dapat membaca file setelannya. File itu disimpan tanpa diubah dan diktat dimulai dengan setelan bawaan. “Pulihkan” mengembalikan penyedia, kunci, perintah, dan setelan Anda seperti semula. “Hapus” menghapus file lama.</string>
@@ -30,10 +27,8 @@
     <string name="pref__glide__enabled__label" comment="Preference title">Aktifkan ketik geser</string>
     <string name="settings__other__title" comment="Title of Other settings">Lainnya</string>
     <string name="pref__other__settings_theme__label" comment="Label of Settings theme preference in Other">Pengaturan Tema</string>
-    <string name="pref__other__settings_theme__auto_amoled" comment="Possible value of Settings theme preference in Other">Default sistem (AMOLED)</string>
     <string name="pref__other__settings_theme__light" comment="Possible value of Settings theme preference in Other">Terang</string>
     <string name="pref__other__settings_theme__dark" comment="Possible value of Settings theme preference in Other">Gelap</string>
-    <string name="pref__other__settings_theme__amoled_dark" comment="Possible value of Settings theme preference in Other">AMOLED Gelap</string>
     <string name="pref__other__settings_accent_color__label" comment="Label of accent color preference in Other">        Pengaturan warna aksen
     </string>
     <string name="pref__other__settings_language__label" comment="Label of Settings language preference in Other">Pengaturan Bahasa</string>
@@ -54,8 +49,6 @@
     <string name="about__changelog__summary" comment="Preference summary">Apa yang baru</string>
     <string name="about__repository__title" comment="Preference title">Repositori (GitHub)</string>
     <string name="about__repository__summary" comment="Preference summary">Sumber kode, diskusi, masalah dan info</string>
-    <string name="about__privacy_policy__title" comment="Preference title">Kebijakan privasi</string>
-    <string name="about__privacy_policy__summary" comment="Preference summary">Kebijakan privasi untuk proyek ini</string>
     <string name="about__project_license__title" comment="Preference title">Lisensi proyek</string>
     <string name="about__project_license__summary" comment="Preference summary">{app_name} dilisensikan di bawah {license_name}</string>
     <string name="about__project_license__error_license_text_failed" comment="Error text for license text loading failure">Kesalahan: Gagal memuat teks lisensi.\n-&gt; Alasan: {error_message}</string>
@@ -64,7 +57,6 @@
     <!-- Setup UI strings -->
     <string name="setup__title" comment="Title of Setup">Selamat datang!</string>
     <string name="setup__intro_message" comment="Short intro message welcoming new users">Terima kasih telah menggunakan {app_name}! Penyiapan cepat ini memandu Anda melalui langkah-langkah yang diperlukan untuk menggunakan {app_name} di perangkat Anda.</string>
-    <string name="setup__footer__privacy_policy" comment="Privacy policy label for URL">Kebijakan privasi</string>
     <string name="setup__footer__repository" comment="Repository label for URL">Repositori</string>
     <string name="setup__grant_notification_permission__title">Izinkan Notifikasi Pelaporan Crash</string>
     <string name="setup__grant_notification_permission__description">Per-Android 13+, apl harus meminta izin untuk 
@@ -145,10 +137,6 @@
     <string name="state__no_file_selected">Tidak ada file yang dipilih</string>
     <!-- Dictate strings -->
     <string name="quick_action__dictate_live_prompt">Perintah suara</string>
-    <string name="about__feedback__title">Masukan &amp; dukungan</string>
-    <string name="about__feedback__summary">Kirim email berisi pertanyaan, bug, atau ide</string>
-    <string name="about__feedback__email">contact@devemperor.net</string>
-    <string name="about__feedback__subject">diktat Feedback</string>
     <string name="setup__provider__title">Pilih cara diktat menyalin suara</string>
     <string name="setup__provider__choose_intro">diktat mengubah suaramu menjadi teks dengan bantuan layanan AI. Dua cara di atas cocok untuk kebanyakan orang — dan kalau kamu sama sekali tidak ingin memakai layanan awan, ada dua cara lagi di bawah.</string>
     <string name="setup__provider__choice_own_title">Pakai penyedia AI sendiri</string>
@@ -245,7 +233,6 @@
     <string name="dictate__floating_button_snap_title">Tempel ke tepi</string>
     <string name="dictate__transcription_stopped">Dihentikan, rekaman disimpan</string>
     <string name="dictate__transcription_stopped_in_history">Dihentikan, rekaman ada di Riwayat</string>
-    <string name="dictate__providers_summary_both">Transkripsi: {transcription} · Penyusunan ulang: {rewording}</string>
     <string name="dictate__remember_last_dictation_summary">Menyimpan dikte terakhir Anda agar tombol mengambang dapat membatalkannya dan tata letak klasik dapat menyisipkannya kembali.</string>
     <string name="dictate__remember_last_dictation_title">Ingat dikte terakhir</string>
     <string name="setup__floating_button__btn">Siapkan tombol mengambang</string>
@@ -256,7 +243,6 @@
     <string name="setup__floating_button__accessibility_note">Untuk itu, {app_name} menggunakan pengaturan aksesibilitas Android — begitulah gelembung dapat muncul di atas aplikasi lain dan menyisipkan teks hasil transkripsi untukmu. Layar berikutnya akan memandumu mengaktifkannya.</string>
     <string name="setup__floating_button__optional_note">Ini sepenuhnya opsional — lewati jika kamu hanya ingin menggunakan {app_name} sebagai keyboard penuh. Kamu selalu bisa mengaturnya nanti di pengaturan.</string>
     <string name="setup__floating_button__skip_btn">Lewati — saya akan pakai keyboard</string>
-    <string name="dictate__floating_button_badge_new">Baru</string>
     <string name="dictate__prompts_layout_title">Tata letak perintah</string>
     <string name="dictate__status_transcribing">Mentranskripsi…</string>
     <string name="dictate__status_transcribing_local">Mentranskripsi di perangkat…</string>
@@ -300,11 +286,8 @@
     <string name="dictate__base_url_placeholder">https://your-server/v1/</string>
     <string name="dictate__value_not_set">Belum diatur</string>
     <string name="dictate__providers_title">Penyedia AI</string>
-    <string name="dictate__providers_summary">Aktif: {provider}</string>
-    <string name="dictate__providers_active_group">Penyedia aktif</string>
     <string name="dictate__providers_active_transcription">Transkripsi</string>
     <string name="dictate__providers_active_rewording">Penyusunan ulang</string>
-    <string name="dictate__providers_manage_group">Konfigurasikan penyedia</string>
     <string name="dictate__providers_status_key_set">Kunci diatur</string>
     <string name="dictate__providers_status_no_key">Tidak ada kunci</string>
     <string name="dictate__providers_status_unconfigured">Belum dikonfigurasi</string>
@@ -430,13 +413,9 @@
     <string name="dictate__resend_button_summary">Jika transkripsi gagal, tampilkan tombol untuk mencoba lagi dengan rekaman yang sama</string>
     <string name="dictate__formatting_title">Pemformatan &amp; kosakata</string>
     <string name="dictate__formatting_menu_summary">Prompt gaya, kata khusus, penggantian</string>
-    <string name="dictate__recording_menu_summary">Real-time, sumber audio, rekaman instan</string>
     <string name="dictate__output_menu_summary">Auto-enter, kecepatan ketik, kirim ulang</string>
-    <string name="dictate__layout_title">Tata letak dikte</string>
     <string name="dictate__languages_title">Bahasa transkripsi</string>
-    <string name="dictate__languages_summary">Pilih bahasa yang Anda gunakan untuk mendikte. Beralih di antaranya dengan cepat dari bilah perekaman.</string>
     <string name="dictate__language_detect">Deteksi otomatis</string>
-    <string name="dictate__languages_selected_title">Bahasa yang dipilih</string>
     <string name="dictate__languages_active_title">Bahasa aktif</string>
     <string name="dictate__languages_follow_keyboard">Ikuti bahasa keyboard</string>
     <string name="dictate__prompt_selection_none">Tidak ada</string>
@@ -444,7 +423,6 @@
     <string name="dictate__prompt_selection_custom">Kustom</string>
     <string name="dictate__style_prompt_title">Tanda baca &amp; gaya</string>
     <string name="dictate__style_prompt_custom_placeholder">mis. Halo. Terima kasih banyak.</string>
-    <string name="dictate__style_prompt_info_title">Lihat contoh bawaan</string>
     <string name="dictate__style_prompt_info_description">Contoh kalimat ini dikirim bersama setiap transkripsi untuk mengarahkan model ke huruf kapital dan tanda baca yang benar. Ini menyesuaikan secara otomatis dengan bahasa yang Anda gunakan untuk mendikte.</string>
     <string name="dictate__style_prompt_info_none">Bahasa ini belum memiliki kalimat contoh, jadi tidak ada yang dikirim. Transkripsi tetap mengikuti bahasa yang Anda pilih.</string>
     <string name="dictate__custom_words_title">Kata kustom</string>
@@ -479,13 +457,11 @@
     <string name="dictate__command_word_off">Mati</string>
     <string name="dictate__command_word_summary">Dikte yang diawali “{word}” dijalankan sebagai perintah suara</string>
     <string name="dictate__command_word_placeholder">Jarvis</string>
-    <string name="dictate__command_word_info_title">Tentang kata perintah</string>
     <string name="dictate__command_word_info_description">Biasanya diktat menuliskan apa yang Anda ucapkan. Jika kata perintah diatur, dikte yang diawali kata itu justru menjadi sebuah instruksi: katanya dihapus dan sisanya dikirim ke AI, beserta teks yang dipilih jika ada.\n\n“Jarvis, buat ini lebih formal” menulis ulang teks terpilih. “Jarvis, apa ibu kota Jepang” menuliskan jawabannya ke kolom. Ini tombol perintah suara yang sama, hanya dipanggil dengan menyebut namanya alih-alih mengetuknya.\n\nKata itu hanya berlaku di awal dikte dan hanya sebagai kata utuh, jadi pilih sesuatu yang jarang Anda pakai untuk memulai kalimat.</string>
     <string name="dictate__auto_formatting_title">Pemformatan otomatis</string>
     <string name="dictate__auto_formatting_summary">Ubah isyarat pemformatan lisan menjadi Markdown (judul, daftar, …)</string>
     <string name="dictate__system_prompt_title">Instruksi penyusunan ulang</string>
     <string name="dictate__system_prompt_custom_placeholder">Panduan yang ditambahkan ke setiap permintaan penyusunan ulang</string>
-    <string name="dictate__system_prompt_info_title">Lihat instruksi bawaan</string>
     <string name="dictate__system_prompt_info_description">Instruksi ini ditambahkan ke setiap permintaan penyusunan ulang sehingga AI hanya mengembalikan hasil yang Anda minta — tanpa teks tambahan sebelum atau sesudahnya.</string>
     <string name="dictate__prompts_title">Perintah</string>
     <string name="dictate__prompts_empty">Belum ada perintah. Ketuk tombol di bawah untuk menambahkan.</string>
@@ -526,7 +502,6 @@
     <string name="dictate__prompt_library_empty">Tidak ada perintah yang cocok dengan pencarian Anda.</string>
     <string name="dictate__prompt_library_error">Tidak dapat memuat pustaka komunitas. Periksa koneksi Anda dan coba lagi.</string>
     <string name="dictate__prompt_library_retry">Coba lagi</string>
-    <string name="dictate__prompt_library_close">Tutup</string>
     <string name="dictate__prompt_library_author">oleh {author}</string>
     <string name="dictate__prompt_share_title">Bagikan ke komunitas</string>
     <string name="dictate__prompt_share_message">Ini membuka GitHub di browser Anda dengan perintah Anda yang sudah terisi sebagai kiriman. Masuk dan konfirmasi untuk membuka pull request yang menambahkannya ke pustaka komunitas. Diperlukan akun GitHub gratis; tidak ada yang diunggah hingga Anda mengonfirmasi di GitHub.</string>
@@ -540,7 +515,6 @@
     <string name="dictate__import_share_label">Transkripsikan</string>
     <string name="dictate__import_title">Transkripsikan berkas</string>
     <string name="dictate__import_menu">Transkripsikan berkas</string>
-    <string name="dictate__import_menu_summary">Pilih berkas audio atau video dan baca isinya</string>
     <string name="dictate__import_step_copy">Menerima berkas</string>
     <string name="dictate__import_step_extract">Mengekstrak audio</string>
     <string name="dictate__import_step_prepare">Menyiapkan audio</string>
@@ -614,7 +588,6 @@
     <string name="dictate__mappings_field_from_placeholder">mis. github</string>
     <string name="dictate__mappings_field_to">Dengan</string>
     <string name="dictate__mappings_field_to_placeholder">mis. GitHub</string>
-    <string name="dictate__mappings_group">Aturan penggantian</string>
     <string name="dictate__mappings_matchcase_summary">Hanya ganti jika kapitalisasinya sama persis.</string>
     <string name="dictate__mappings_import">Impor aturan</string>
     <string name="dictate__mappings_export">Ekspor aturan</string>
@@ -653,7 +626,6 @@
     <string name="dictate__history_title">Riwayat</string>
     <string name="dictate__history_original">Asli</string>
     <string name="dictate__history_result">Hasil</string>
-    <string name="dictate__history_menu_summary">Putar ulang, sisipkan ulang, dan kelola dikte sebelumnya</string>
     <string name="dictate__history_empty">Belum ada dikte — dikte terbaru Anda akan muncul di sini.</string>
     <string name="dictate__history_enable_title">Simpan riwayat</string>
     <string name="dictate__history_enable_summary">Catat dikte untuk disisipkan ulang atau ditinjau nanti.</string>
@@ -682,7 +654,6 @@
     <string name="dictate__history_export_folder_unset">Belum diatur</string>
     <string name="dictate__history_export_folder_unavailable">Folder tidak tersedia — pilih lagi</string>
     <string name="dictate__history_export_choose">Pilih folder</string>
-    <string name="dictate__history_export_change">Ubah</string>
     <string name="dictate__history_export_disconnect">Putuskan</string>
     <string name="dictate__history_export_audio_title">Ekspor rekamannya juga</string>
     <string name="dictate__history_export_audio_summary">Menyimpan audio di samping transkrip.</string>
@@ -733,6 +704,5 @@
     <string name="dictate__audio_source_voice_communication_summary">Prioritas mikrofon tertinggi — tetap bekerja saat aplikasi lain memakai mikrofon, tetapi dapat menurunkan akurasi.</string>
 
     <string name="dictate__legacy_action_copy">Salin</string>
-    <string name="about__website__title">Situs web</string>
 
 </resources>

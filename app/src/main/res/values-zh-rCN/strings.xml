@@ -4,13 +4,10 @@
     <!-- Emoji strings -->
     <string name="emoji__history__pinned">已置顶</string>
     <!-- Quick action strings -->
-    <string name="quick_action__voice_input" comment="Please mind the limited available space for the quick action strings">语音输入</string>
-    <string name="quick_action__voice_input__tooltip" comment="IME stands for Input Method Editor and is indirectly equivalent to 'keyboard'.">打开语音输入提供者</string>
     <string name="quick_action__noop" comment="Noop=no operation; this action is only used as a placeholder in the actions editor drag and drop screen">无</string>
     <!-- Settings UI strings -->
     <string name="settings__title" comment="Title of Settings">设置</string>
     <string name="settings__system_default" comment="General string which is used when a preference has the system default value set">系统默认</string>
-    <string name="settings__home__title" comment="Title of the Home screen">欢迎使用{app_name}</string>
     <string name="dictate__settings_unreadable_card">无法读取你的设置，因此 diktat 已使用默认值启动。点按此处即可恢复。</string>
     <string name="dictate__settings_unreadable_title">恢复设置？</string>
     <string name="dictate__settings_unreadable_message">diktat 启动时无法读取其设置文件。它已原样保留该文件，并使用默认值启动。“还原”会将你的服务商、密钥、提示词和设置恢复原样。“删除”会移除旧文件。</string>
@@ -30,10 +27,8 @@
     <string name="pref__glide__enabled__label" comment="Preference title">启用滑动输入</string>
     <string name="settings__other__title" comment="Title of Other settings">其他杂项...</string>
     <string name="pref__other__settings_theme__label" comment="Label of Settings theme preference in Other">软件设置页主题</string>
-    <string name="pref__other__settings_theme__auto_amoled" comment="Possible value of Settings theme preference in Other">系统默认(AMOLED)</string>
     <string name="pref__other__settings_theme__light" comment="Possible value of Settings theme preference in Other">亮色模式</string>
     <string name="pref__other__settings_theme__dark" comment="Possible value of Settings theme preference in Other">暗色模式</string>
-    <string name="pref__other__settings_theme__amoled_dark" comment="Possible value of Settings theme preference in Other">AMOLED暗黑</string>
     <string name="pref__other__settings_accent_color__label" comment="Label of accent color preference in Other">软件设置页中各控件(如开关、滑动条)的强调色    </string>
     <string name="pref__other__settings_language__label" comment="Label of Settings language preference in Other">软件设置页的显示语言</string>
     <string name="pref__other__show_app_icon__label" comment="Label of Show app icon preference in Other">在系统桌面显示软件logo图标</string>
@@ -53,8 +48,6 @@
     <string name="about__changelog__summary" comment="Preference summary">新版本变化</string>
     <string name="about__repository__title" comment="Preference title">源码库（GitHub）</string>
     <string name="about__repository__summary" comment="Preference summary">源代码、讨论、问题和信息</string>
-    <string name="about__privacy_policy__title" comment="Preference title">隐私政策</string>
-    <string name="about__privacy_policy__summary" comment="Preference summary">本项目的隐私政策</string>
     <string name="about__project_license__title" comment="Preference title">项目开源协议</string>
     <string name="about__project_license__summary" comment="Preference summary">{app_name} 在 {license_name} 下进行授权</string>
     <string name="about__project_license__error_license_text_failed" comment="Error text for license text loading failure">错误：无法加载许可证文本。\n-&gt; 原因：{error_message}</string>
@@ -63,7 +56,6 @@
     <!-- Setup UI strings -->
     <string name="setup__title" comment="Title of Setup">欢迎！</string>
     <string name="setup__intro_message" comment="Short intro message welcoming new users">感谢您使用 {app_name}！这个快速设定将引导您完成在您的设备上使用 {app_name} 所需的步骤。</string>
-    <string name="setup__footer__privacy_policy" comment="Privacy policy label for URL">隐私政策</string>
     <string name="setup__footer__repository" comment="Repository label for URL">源码库</string>
     <string name="setup__grant_notification_permission__title">允许崩溃报告消息通知</string>
     <string name="setup__grant_notification_permission__description">自安卓 13 以来，应用在发送通知前
@@ -144,10 +136,6 @@
     <string name="state__no_file_selected">未选择文件</string>
     <!-- Dictate strings -->
     <string name="quick_action__dictate_live_prompt">实时指令</string>
-    <string name="about__feedback__title">反馈与支持</string>
-    <string name="about__feedback__summary">发送电子邮件提出问题、漏洞或建议</string>
-    <string name="about__feedback__email">contact@devemperor.net</string>
-    <string name="about__feedback__subject">diktat Feedback</string>
     <string name="setup__provider__title">选择 diktat 的转写方式</string>
     <string name="setup__provider__choose_intro">diktat 借助 AI 服务把语音转成文字。上面两种方式适合大多数人；如果你完全不想用云服务，下面还有两种。</string>
     <string name="setup__provider__choice_own_title">使用你自己的 AI 服务商</string>
@@ -244,7 +232,6 @@
     <string name="dictate__floating_button_snap_title">吸附到边缘</string>
     <string name="dictate__transcription_stopped">已停止，录音已保留</string>
     <string name="dictate__transcription_stopped_in_history">已停止，录音在历史中</string>
-    <string name="dictate__providers_summary_both">转写：{transcription} · 改写：{rewording}</string>
     <string name="dictate__remember_last_dictation_summary">保留你最近一次的听写，以便悬浮按钮可以撤销它、经典布局可以重新插入它。</string>
     <string name="dictate__remember_last_dictation_title">记住上次听写</string>
     <string name="setup__floating_button__btn">设置悬浮按钮</string>
@@ -255,7 +242,6 @@
     <string name="setup__floating_button__accessibility_note">为此，{app_name} 会使用 Android 的无障碍设置——这样气泡才能显示在其他应用之上，并为你插入转写的文字。下一个界面会引导你完成开启。</string>
     <string name="setup__floating_button__optional_note">这完全是可选的——如果你只想把 {app_name} 当作完整键盘使用，可以跳过。你随时可以稍后在设置中开启。</string>
     <string name="setup__floating_button__skip_btn">跳过 — 我用键盘</string>
-    <string name="dictate__floating_button_badge_new">新</string>
     <string name="dictate__prompts_layout_title">提示词布局</string>
     <string name="dictate__status_transcribing">转录中…</string>
     <string name="dictate__status_transcribing_local">在设备上转录中…</string>
@@ -299,11 +285,8 @@
     <string name="dictate__base_url_placeholder">https://your-server/v1/</string>
     <string name="dictate__value_not_set">未设置</string>
     <string name="dictate__providers_title">AI 服务商</string>
-    <string name="dictate__providers_summary">当前：{provider}</string>
-    <string name="dictate__providers_active_group">当前服务商</string>
     <string name="dictate__providers_active_transcription">转录</string>
     <string name="dictate__providers_active_rewording">改写</string>
-    <string name="dictate__providers_manage_group">配置服务商</string>
     <string name="dictate__providers_status_key_set">已设置密钥</string>
     <string name="dictate__providers_status_no_key">无密钥</string>
     <string name="dictate__providers_status_unconfigured">未配置</string>
@@ -429,13 +412,9 @@
     <string name="dictate__resend_button_summary">如果转录失败，显示一个按钮以使用相同录音重试</string>
     <string name="dictate__formatting_title">格式 &amp; 词汇</string>
     <string name="dictate__formatting_menu_summary">风格提示、自定义词语、替换</string>
-    <string name="dictate__recording_menu_summary">实时、音频源、即时录音</string>
     <string name="dictate__output_menu_summary">自动回车、输入速度、重新发送</string>
-    <string name="dictate__layout_title">听写布局</string>
     <string name="dictate__languages_title">转录语言</string>
-    <string name="dictate__languages_summary">选择您听写所用的语言。可从录音栏快速切换。</string>
     <string name="dictate__language_detect">自动检测</string>
-    <string name="dictate__languages_selected_title">已选语言</string>
     <string name="dictate__languages_active_title">当前语言</string>
     <string name="dictate__languages_follow_keyboard">跟随键盘语言</string>
     <string name="dictate__prompt_selection_none">无</string>
@@ -443,7 +422,6 @@
     <string name="dictate__prompt_selection_custom">自定义</string>
     <string name="dictate__style_prompt_title">标点与风格</string>
     <string name="dictate__style_prompt_custom_placeholder">例如：你好。非常感谢。</string>
-    <string name="dictate__style_prompt_info_title">查看默认示例</string>
     <string name="dictate__style_prompt_info_description">该示例句会随每次转录一起发送，以引导模型使用正确的大小写和标点。它会自动适应您听写所用的语言。</string>
     <string name="dictate__style_prompt_info_none">该语言还没有示例句子，因此不会发送任何示例。转写仍会遵循你选择的语言。</string>
     <string name="dictate__custom_words_title">自定义词汇</string>
@@ -478,13 +456,11 @@
     <string name="dictate__command_word_off">关闭</string>
     <string name="dictate__command_word_summary">以“{word}”开头的听写将作为实时指令执行</string>
     <string name="dictate__command_word_placeholder">贾维斯</string>
-    <string name="dictate__command_word_info_title">关于指令唤醒词</string>
     <string name="dictate__command_word_info_description">diktat 通常会把你说的话原样写下来。设置唤醒词后，以它开头的听写会改为按指令处理：该词被去掉，其余内容连同选中的文本（如果有）一起发送给 AI。\n\n“贾维斯，把这段改得正式一点”会改写选中的文本；“贾维斯，日本的首都是哪里”会把答案写进输入框。也就是把实时指令按钮从“点一下”变成“叫一声”。\n\n该词只有位于听写最开头、且作为完整词出现时才生效，所以请挑一个你很少用来起头的词。</string>
     <string name="dictate__auto_formatting_title">自动格式化</string>
     <string name="dictate__auto_formatting_summary">将口述的格式提示转换为 Markdown（标题、列表等）</string>
     <string name="dictate__system_prompt_title">改写指令</string>
     <string name="dictate__system_prompt_custom_placeholder">添加到每次改写请求的指引</string>
-    <string name="dictate__system_prompt_info_title">查看默认指令</string>
     <string name="dictate__system_prompt_info_description">该指令会添加到每次改写请求中，使 AI 只返回您所要求的结果——前后不带多余文本。</string>
     <string name="dictate__prompts_title">提示词</string>
     <string name="dictate__prompts_empty">暂无提示词。点按下方按钮添加一条。</string>
@@ -525,7 +501,6 @@
     <string name="dictate__prompt_library_empty">没有与搜索匹配的提示词。</string>
     <string name="dictate__prompt_library_error">无法加载社区库。请检查网络连接后重试。</string>
     <string name="dictate__prompt_library_retry">重试</string>
-    <string name="dictate__prompt_library_close">关闭</string>
     <string name="dictate__prompt_library_author">作者：{author}</string>
     <string name="dictate__prompt_share_title">分享到社区</string>
     <string name="dictate__prompt_share_message">这会在浏览器中打开 GitHub，并将你的提示词预填为提交内容。登录并确认后即可打开一个拉取请求，将其添加到社区库。需要一个免费的 GitHub 账户；在你于 GitHub 上确认之前，不会上传任何内容。</string>
@@ -539,7 +514,6 @@
     <string name="dictate__import_share_label">转写</string>
     <string name="dictate__import_title">转写文件</string>
     <string name="dictate__import_menu">转写文件</string>
-    <string name="dictate__import_menu_summary">选择音频或视频文件，读一读里面说了什么</string>
     <string name="dictate__import_step_copy">正在接收文件</string>
     <string name="dictate__import_step_extract">正在提取音频</string>
     <string name="dictate__import_step_prepare">正在准备音频</string>
@@ -613,7 +587,6 @@
     <string name="dictate__mappings_field_from_placeholder">例如 github</string>
     <string name="dictate__mappings_field_to">为</string>
     <string name="dictate__mappings_field_to_placeholder">例如 GitHub</string>
-    <string name="dictate__mappings_group">替换规则</string>
     <string name="dictate__mappings_matchcase_summary">仅在大小写完全一致时才替换。</string>
     <string name="dictate__mappings_import">导入规则</string>
     <string name="dictate__mappings_export">导出规则</string>
@@ -651,7 +624,6 @@
     <string name="dictate__history_title">历史</string>
     <string name="dictate__history_original">原文</string>
     <string name="dictate__history_result">结果</string>
-    <string name="dictate__history_menu_summary">重放、重新插入和管理过往的听写</string>
     <string name="dictate__history_empty">暂无听写 — 你最近的听写将显示在这里。</string>
     <string name="dictate__history_enable_title">保留历史记录</string>
     <string name="dictate__history_enable_summary">记录听写，以便稍后重新插入或查看。</string>
@@ -680,7 +652,6 @@
     <string name="dictate__history_export_folder_unset">未设置</string>
     <string name="dictate__history_export_folder_unavailable">文件夹不可用 — 请重新选择</string>
     <string name="dictate__history_export_choose">选择文件夹</string>
-    <string name="dictate__history_export_change">更改</string>
     <string name="dictate__history_export_disconnect">断开</string>
     <string name="dictate__history_export_audio_title">同时导出录音</string>
     <string name="dictate__history_export_audio_summary">将音频保存在转写文本旁边。</string>
@@ -731,6 +702,5 @@
     <string name="dictate__audio_source_voice_communication_summary">最高麦克风优先级——当其他应用占用麦克风时仍可工作，但可能降低准确度。</string>
 
     <string name="dictate__legacy_action_copy">复制</string>
-    <string name="about__website__title">网站</string>
 
 </resources>

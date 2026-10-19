@@ -16,13 +16,10 @@
 
 package dev.patrickgold.florisboard.app.settings.advanced
 
-import android.content.ContentUris
 import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Row
-import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
-import dev.patrickgold.florisboard.app.apptheme.Unisono
 import dev.patrickgold.florisboard.app.main.UButton
 import dev.patrickgold.florisboard.app.main.UCard
 import dev.patrickgold.florisboard.app.main.UCheckRow
@@ -32,19 +29,10 @@ import dev.patrickgold.florisboard.app.main.UGroupLabel
 import dev.patrickgold.florisboard.app.main.UNotice
 import dev.patrickgold.florisboard.app.main.UnisonoPage
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.TriStateCheckbox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,7 +40,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider
@@ -65,13 +52,11 @@ import dev.patrickgold.florisboard.cacheManager
 import dev.patrickgold.florisboard.dictate.data.history.DictateHistoryStore
 import dev.patrickgold.florisboard.dictate.data.prompts.PromptsDatabaseHelper
 import dev.patrickgold.florisboard.lib.cache.CacheManager
-import dev.patrickgold.florisboard.lib.compose.FlorisScreen
 import dev.patrickgold.florisboard.lib.devtools.flogError
 import dev.patrickgold.florisboard.lib.io.ZipUtils
 import dev.patrickgold.jetpref.datastore.runtime.AndroidAppDataStorage
 import dev.patrickgold.jetpref.datastore.runtime.DataStoreWriter
 import dev.patrickgold.jetpref.datastore.runtime.FileBasedStorage
-import dev.patrickgold.jetpref.material.ui.JetPrefListItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -80,12 +65,6 @@ import kotlinx.serialization.Serializable
 import org.florisboard.lib.android.showLongToast
 import org.florisboard.lib.android.showLongToastSync
 import org.florisboard.lib.android.writeFromFile
-import org.florisboard.lib.compose.FlorisButtonBar
-import org.florisboard.lib.compose.FlorisInfoCard
-import org.florisboard.lib.compose.FlorisOutlinedBox
-import org.florisboard.lib.compose.FlorisWarningCard
-import org.florisboard.lib.compose.defaultFlorisOutlinedBox
-import org.florisboard.lib.compose.rippleClickable
 import org.florisboard.lib.compose.stringRes
 import org.florisboard.lib.kotlin.io.subDir
 import org.florisboard.lib.kotlin.io.subFile

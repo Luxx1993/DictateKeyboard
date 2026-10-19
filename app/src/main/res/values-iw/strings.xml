@@ -4,21 +4,16 @@
     <!-- Emoji strings -->
     <string name="emoji__history__pinned">הוצמד</string>
     <!-- Quick action strings -->
-    <string name="quick_action__voice_input" comment="Please mind the limited available space for the quick action strings">קלט קולי</string>
-    <string name="quick_action__voice_input__tooltip" comment="IME stands for Input Method Editor and is indirectly equivalent to 'keyboard'.">לפתוח ספק קלט קולי</string>
     <string name="quick_action__noop" comment="Noop=no operation; this action is only used as a placeholder in the actions editor drag and drop screen">כלום</string>
     <!-- Settings UI strings -->
     <string name="settings__title" comment="Title of Settings">הגדרות</string>
     <string name="settings__system_default" comment="General string which is used when a preference has the system default value set">ברירת המחדל של המערכת</string>
-    <string name="settings__home__title" comment="Title of the Home screen">ברוכים הבאים ל{app_name}</string>
     <string name="settings__theme__title" comment="Title of the Theme screen">ערכת נושא</string>
     <!-- About UI strings -->
     <string name="about__title" comment="Title of About activity">אודות</string>
     <string name="about__version_copied__title" comment="Title of the toast for copying the version string">הגרסה הועתקה ללוח</string>
-    <string name="about__privacy_policy__title" comment="Preference title">מדיניות פרטיות</string>
     <!-- Setup UI strings -->
     <string name="setup__title" comment="Title of Setup">ברוכים הבאים!</string>
-    <string name="setup__footer__privacy_policy" comment="Privacy policy label for URL">מדיניות פרטיות</string>
     <!-- Crash Dialog strings -->
     <string name="crash_dialog__title" comment="Title of crash dialog">diktat דוח שגיאה</string>
     <string name="crash_dialog__description" comment="Description of crash dialog">מצטער על אי הנוחות, אך diktat קרס בגלל שגיאה לא צפויה.</string>

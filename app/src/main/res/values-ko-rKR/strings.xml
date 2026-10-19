@@ -4,13 +4,10 @@
     <!-- Emoji strings -->
     <string name="emoji__history__pinned">고정됨</string>
     <!-- Quick action strings -->
-    <string name="quick_action__voice_input" comment="Please mind the limited available space for the quick action strings">음성 입력</string>
-    <string name="quick_action__voice_input__tooltip" comment="IME stands for Input Method Editor and is indirectly equivalent to 'keyboard'.">음성 입력 제공자 열기</string>
     <string name="quick_action__noop" comment="Noop=no operation; this action is only used as a placeholder in the actions editor drag and drop screen">없음</string>
     <!-- Settings UI strings -->
     <string name="settings__title" comment="Title of Settings">설정</string>
     <string name="settings__system_default" comment="General string which is used when a preference has the system default value set">시스템 기본값</string>
-    <string name="settings__home__title" comment="Title of the Home screen">{app_name}</string>
     <string name="settings__theme__title" comment="Title of the Theme screen">테마</string>
     <!-- Typing strings -->
     <string name="settings__typing__title" comment="Title of Typing screen">입력</string>
@@ -24,8 +21,6 @@
     <string name="about__changelog__summary" comment="Preference summary">새로운 기능</string>
     <string name="about__repository__title" comment="Preference title">리포지터리 (GitHub)</string>
     <string name="about__repository__summary" comment="Preference summary">소스 코드, 토론, 버그 신고 및 정보</string>
-    <string name="about__privacy_policy__title" comment="Preference title">개인 정보 보호 정책</string>
-    <string name="about__privacy_policy__summary" comment="Preference summary">이 프로젝트의 개인 정보 보호 정책</string>
     <string name="about__project_license__title" comment="Preference title">프로젝트 라이선스</string>
     <string name="about__project_license__summary" comment="Preference summary">이 앱은 {license_name} 라이선스를 따릅니다.</string>
     <string name="about__project_license__error_license_text_failed" comment="Error text for license text loading failure">오류: 라이선스 텍스트를 불러올 수 없습니다.\n-&gt; 사유: {error_message}</string>
@@ -34,7 +29,6 @@
     <!-- Setup UI strings -->
     <string name="setup__title" comment="Title of Setup">어서오세요!</string>
     <string name="setup__intro_message" comment="Short intro message welcoming new users">{app_name} 키보드를 사용해 주셔서 고마워요! {app_name} 키보드를 사용하기 위해서 필요한 단계를 설명해 드릴게요.</string>
-    <string name="setup__footer__privacy_policy" comment="Privacy policy label for URL">개인 정보 보호 정책</string>
     <string name="setup__footer__repository" comment="Repository label for URL">리포지터리</string>
     <string name="setup__finish_up__title">마무리</string>
     <string name="setup__finish_up__description_p1">이제 {app_name} 키보드를 마음껏 꾸미고 써볼 수 있어요.</string>
