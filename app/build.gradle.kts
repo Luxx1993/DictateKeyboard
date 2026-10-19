@@ -137,7 +137,7 @@ configure<ApplicationExtension> {
     buildTypes {
         named("debug") {
             applicationIdSuffix = ".debug"
-            versionNameSuffix = "-debug+${getGitCommitHash(short = true).get()}"
+            versionNameSuffix = "+${getGitCommitHash(short = true).get()}"
 
             isDebuggable = true
             isJniDebuggable = false
