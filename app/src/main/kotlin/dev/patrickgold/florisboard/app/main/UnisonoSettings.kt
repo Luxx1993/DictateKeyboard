@@ -11,6 +11,8 @@
 package dev.patrickgold.florisboard.app.main
 
 import androidx.compose.foundation.background
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
@@ -389,6 +391,7 @@ fun UTextField(
     minHeight: Dp = 110.dp,
     isError: Boolean = false,
     keyboardType: KeyboardType = KeyboardType.Text,
+    isSecret: Boolean = false,
 ) {
     val c = LocalUnisono.current
     val shape = if (singleLine) Unisono.Pill else Unisono.RadiusMd
@@ -413,7 +416,8 @@ fun UTextField(
                 onValueChange = onValueChange,
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = singleLine,
-                keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+                keyboardOptions = KeyboardOptions(keyboardType = if (isSecret) KeyboardType.Password else keyboardType),
+                visualTransformation = if (isSecret) PasswordVisualTransformation() else VisualTransformation.None,
                 textStyle = Unisono.Body.copy(color = c.textPrimary),
                 cursorBrush = SolidColor(c.textPrimary),
             )

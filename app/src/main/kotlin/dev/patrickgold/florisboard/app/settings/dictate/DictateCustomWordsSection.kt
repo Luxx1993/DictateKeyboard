@@ -10,18 +10,27 @@
 
 package dev.patrickgold.florisboard.app.settings.dictate
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
+import dev.patrickgold.florisboard.app.apptheme.Unisono
+import dev.patrickgold.florisboard.app.main.UDialog
+import dev.patrickgold.florisboard.app.main.UDivider
+import dev.patrickgold.florisboard.app.main.UNavRow
+import dev.patrickgold.florisboard.app.main.UTextField
 import android.content.Context
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
@@ -33,7 +42,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,7 +54,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import dev.patrickgold.florisboard.R
 import dev.patrickgold.florisboard.app.FlorisPreferenceModel
@@ -84,7 +91,7 @@ import org.florisboard.lib.compose.stringRes
  * the budget is what it is.
  */
 @Composable
-internal fun PreferenceUiScope<FlorisPreferenceModel>.CustomWordsSection(pref: PreferenceData<String>) {
+internal fun CustomWordsSection(pref: PreferenceData<String>) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
@@ -131,13 +138,11 @@ internal fun PreferenceUiScope<FlorisPreferenceModel>.CustomWordsSection(pref: P
         }
     }
 
-    Preference(
-        icon = Icons.Default.MenuBook,
-        modifier = Modifier.settingsSearchAnchor("dictate__custom_words_title"),
+    UNavRow(
         title = stringRes(R.string.dictate__custom_words_title),
-        // What the list costs belongs on the row itself: it is the only number that explains both the
-        // cap and why a word that is in the list still does not arrive.
-        summary = if (words.isEmpty()) {
+        // What the list costs belongs on the row itself: it is the only number that explains both the cap
+        // and why a word that is in the list still does not arrive.
+        subtitle = if (words.isEmpty()) {
             stringRes(R.string.dictate__custom_words_summary_empty)
         } else {
             stringRes(
@@ -148,6 +153,7 @@ internal fun PreferenceUiScope<FlorisPreferenceModel>.CustomWordsSection(pref: P
             )
         },
         onClick = { editorText = raw },
+        modifier = Modifier.settingsSearchAnchor("dictate__custom_words_title"),
     )
 
     editorText?.let { text ->
@@ -217,128 +223,74 @@ private fun CustomWordsEditorDialog(
     val overBudget = tokens > CustomWordList.TOKEN_BUDGET
     val hasNote = tokens > CustomWordList.WARN_TOKENS
 
-    JetPrefAlertDialog(
-        modifier = Modifier.fillMaxWidth(0.96f),
-        properties = DialogProperties(usePlatformDefaultWidth = false),
-        scrollModifier = florisDialogScroll(),
+    val c = LocalUnisono.current
+    UDialog(
         title = stringRes(R.string.dictate__custom_words_title),
-        confirmLabel = stringRes(R.string.action__ok),
-        dismissLabel = stringRes(R.string.action__cancel),
-        onConfirm = onConfirm,
+        doneLabel = stringRes(R.string.action__cancel),
         onDismiss = onDismiss,
     ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            OutlinedTextField(
-                value = text,
-                onValueChange = onTextChange,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    // The dialog's own height is bounded, so a taller field does not make the dialog
-                    // taller — it pushes whatever follows out of sight. The device test found exactly
-                    // that at 360.dp: with a full list the buttons started below the fold, and the
-                    // only way back to them was a scroll gesture the text field swallows.
-                    //
-                    // Hence two sizes. With nothing below the buttons the field can have the room;
-                    // once the budget note appears the field yields some of it — the note only shows
-                    // when the list is long enough to be scrolling anyway, and at that point what it
-                    // says matters more than four more visible lines of the list.
-                    .heightIn(
-                        min = if (hasNote) 160.dp else 200.dp,
-                        max = if (hasNote) 200.dp else 280.dp,
-                    ),
-                singleLine = false,
-                placeholder = { Text(stringRes(R.string.dictate__custom_words_placeholder)) },
-            )
+        UTextField(
+            label = stringRes(R.string.dictate__custom_words_title),
+            placeholder = stringRes(R.string.dictate__custom_words_placeholder),
+            value = text,
+            onValueChange = onTextChange,
+            singleLine = false,
+            minHeight = if (hasNote) 160.dp else 200.dp,
+        )
+        Text(
+            modifier = Modifier.padding(horizontal = 18.dp),
+            text = if (words.isEmpty()) {
+                stringRes(R.string.dictate__custom_words_summary_empty)
+            } else {
+                stringRes(
+                    R.string.dictate__custom_words_summary,
+                    "count" to words.size,
+                    "tokens" to tokens,
+                    "budget" to CustomWordList.TOKEN_BUDGET,
+                )
+            },
+            style = Unisono.Label,
+            // Red is the whole point of the live count: it goes red exactly when pasting one more word
+            // stops adding anything.
+            color = if (overBudget) CUSTOM_WORDS_ERROR else c.textSecondary,
+        )
+        Spacer(Modifier.height(8.dp))
+        // Above the explanation, not below it: the rows must keep the same place whatever the list does.
+        UDivider()
+        UNavRow(title = stringRes(R.string.action__import), onClick = onImport)
+        if (words.isNotEmpty()) {
+            UDivider()
+            UNavRow(title = stringRes(R.string.action__export), onClick = onExport)
+        }
+        // Plain small text, not a card. Two states, and the difference between them is whether anything is
+        // being lost yet: an approaching list still sends every word, so it is said in muted grey; a list
+        // past the line is dropping words on every dictation, so it is said in red.
+        if (hasNote) {
             Text(
-                modifier = Modifier.padding(top = 6.dp),
-                text = if (words.isEmpty()) {
-                    stringRes(R.string.dictate__custom_words_summary_empty)
+                modifier = Modifier.padding(horizontal = 18.dp, vertical = 8.dp),
+                text = if (overBudget) {
+                    stringRes(
+                        R.string.dictate__custom_words_budget_over,
+                        "fits" to CustomWordList.countWithinBudget(words),
+                        "count" to words.size,
+                    )
                 } else {
                     stringRes(
-                        R.string.dictate__custom_words_summary,
-                        "count" to words.size,
-                        "tokens" to tokens,
+                        R.string.dictate__custom_words_budget_info,
                         "budget" to CustomWordList.TOKEN_BUDGET,
+                        "tokens" to tokens,
                     )
                 },
-                style = MaterialTheme.typography.bodySmall,
-                // Red is the whole point of the live count: it goes red exactly when pasting one more
-                // word stops adding anything.
-                color = if (overBudget) {
-                    MaterialTheme.colorScheme.error
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                },
+                style = Unisono.Label,
+                color = if (overBudget) CUSTOM_WORDS_ERROR else c.textSecondary,
             )
-            Spacer(Modifier.height(12.dp))
-            // Above the explanation, not below it: the buttons must keep the same place whatever the
-            // list does, and the explanation is the one thing here that can be read on the screen
-            // behind this dialog instead.
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                DialogFileButton(
-                    modifier = Modifier.weight(1f),
-                    icon = Icons.Default.FileDownload,
-                    label = stringRes(R.string.action__import),
-                    onClick = onImport,
-                )
-                DialogFileButton(
-                    modifier = Modifier.weight(1f),
-                    icon = Icons.Default.FileUpload,
-                    label = stringRes(R.string.action__export),
-                    enabled = words.isNotEmpty(),
-                    onClick = onExport,
-                )
-            }
-            // Plain small text, not a card. Two states, and the difference between them is whether
-            // anything is being lost yet: an approaching list still sends every word, so it is said in
-            // the same muted grey as the count; a list past the line is dropping words on every
-            // dictation, so it is said in red. Both live here rather than on the screen behind,
-            // because this is where the list is edited and where the fix is.
-            if (hasNote) {
-                Text(
-                    modifier = Modifier.padding(top = 12.dp),
-                    text = if (overBudget) {
-                        stringRes(
-                            R.string.dictate__custom_words_budget_over,
-                            "fits" to CustomWordList.countWithinBudget(words),
-                            "count" to words.size,
-                        )
-                    } else {
-                        stringRes(
-                            R.string.dictate__custom_words_budget_info,
-                            "budget" to CustomWordList.TOKEN_BUDGET,
-                            "tokens" to tokens,
-                        )
-                    },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (overBudget) {
-                        MaterialTheme.colorScheme.error
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    },
-                )
-            }
         }
+        UDivider()
+        UNavRow(title = stringRes(R.string.action__ok), onClick = onConfirm)
     }
 }
 
-/** One of the two file buttons in the editor dialog. */
-@Composable
-private fun DialogFileButton(
-    icon: ImageVector,
-    label: String,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-) {
-    OutlinedButton(onClick = onClick, modifier = modifier, enabled = enabled) {
-        Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(18.dp))
-        Text(modifier = Modifier.padding(start = 8.dp), text = label)
-    }
-}
+private val CUSTOM_WORDS_ERROR = Color(0xFFB3443A)
 
 /**
  * What the import would do, before it does it.
@@ -356,66 +308,65 @@ private fun ImportWordsDialog(
 ) {
     val preview = report.accepted.ifEmpty { report.fromFile }
 
-    JetPrefAlertDialog(
-        modifier = Modifier.fillMaxWidth(0.96f),
-        properties = DialogProperties(usePlatformDefaultWidth = false),
-        scrollModifier = florisDialogScroll(),
+    val c = LocalUnisono.current
+    UDialog(
         title = stringRes(R.string.dictate__custom_words_import_title),
-        confirmLabel = stringRes(R.string.action__add),
-        dismissLabel = stringRes(R.string.action__cancel),
-        onConfirm = onConfirm,
+        doneLabel = stringRes(R.string.action__cancel),
         onDismiss = onDismiss,
     ) {
-        Column {
+        Column(
+            Modifier.padding(horizontal = 18.dp, vertical = 6.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
             Text(
-                text = stringRes(
-                    R.string.dictate__custom_words_import_fitting,
-                    "count" to report.accepted.size,
-                ),
+                text = stringRes(R.string.dictate__custom_words_import_fitting, "count" to report.accepted.size),
+                style = Unisono.Body,
+                color = c.textPrimary,
             )
             if (report.alreadyKnown > 0) {
                 Text(
-                    modifier = Modifier.padding(top = 4.dp),
-                    text = stringRes(
-                        R.string.dictate__custom_words_import_known,
-                        "count" to report.alreadyKnown,
-                    ),
+                    text = stringRes(R.string.dictate__custom_words_import_known, "count" to report.alreadyKnown),
+                    style = Unisono.Label,
+                    color = c.textSecondary,
                 )
             }
             if (report.didNotFit > 0) {
                 Text(
-                    modifier = Modifier.padding(top = 4.dp),
                     text = stringRes(
                         R.string.dictate__custom_words_import_nofit,
                         "count" to report.didNotFit,
                         "budget" to CustomWordList.TOKEN_BUDGET,
                     ),
+                    style = Unisono.Label,
+                    color = c.textSecondary,
                 )
             }
             if (report.unusable > 0) {
                 Text(
-                    modifier = Modifier.padding(top = 4.dp),
-                    text = stringRes(
-                        R.string.dictate__custom_words_import_unusable,
-                        "count" to report.unusable,
-                    ),
+                    text = stringRes(R.string.dictate__custom_words_import_unusable, "count" to report.unusable),
+                    style = Unisono.Label,
+                    color = c.textSecondary,
                 )
             }
             if (report.fileTruncated) {
                 Text(
-                    modifier = Modifier.padding(top = 4.dp),
                     text = stringRes(
                         R.string.dictate__custom_words_import_truncated,
                         "count" to CustomWordList.MAX_IMPORT_ENTRIES,
                     ),
+                    style = Unisono.Label,
+                    color = c.textSecondary,
                 )
             }
             Text(
-                modifier = Modifier.padding(top = 8.dp),
-                text = preview.take(8).joinToString(", ") + if (preview.size > 8) ", …" else "",
-                fontStyle = FontStyle.Italic,
+                modifier = Modifier.padding(top = 6.dp),
+                text = preview.take(8).joinToString(", ") + if (preview.size > 8) ", \u2026" else "",
+                style = Unisono.Mono,
+                color = c.textTertiary,
             )
         }
+        UDivider()
+        UNavRow(title = stringRes(R.string.action__add), onClick = onConfirm)
     }
 }
 
