@@ -214,6 +214,8 @@
     <string name="dictate__floating_button_mic_title">Mikrofon-Zugriff</string>
     <string name="dictate__floating_button_mic_summary">Nötig, um deine Stimme aufzunehmen · tippen, um zu erlauben</string>
     <string name="dictate__floating_button_show_when_title">Wann anzeigen</string>
+    <string name="dictate__floating_button_show_when_always">Immer</string>
+    <string name="dictate__floating_button_show_when_always_summary">Bleibt auch ohne Textfeld auf dem Bildschirm, klein und durchsichtig, bis du ihn brauchst. Ohne ausgewähltes Textfeld landet der Text in der Zwischenablage.</string>
     <string name="dictate__floating_button_show_when_field">Sobald ein Textfeld ausgewählt ist</string>
     <string name="dictate__floating_button_show_when_keyboard">Nur bei geöffneter Tastatur</string>
     <string name="dictate__floating_button_apps_title">App-Sichtbarkeit</string>

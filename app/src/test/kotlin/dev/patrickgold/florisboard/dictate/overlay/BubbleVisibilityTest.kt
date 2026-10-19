@@ -45,6 +45,7 @@ class BubbleVisibilityTest {
         recognitionActive: Boolean = false,
         screenOn: Boolean = true,
         allowedInApp: Boolean = true,
+        always: Boolean = false,
     ) = BubbleVisibility.shouldShow(
         enabled = enabled,
         focused = focused,
@@ -55,6 +56,7 @@ class BubbleVisibilityTest {
         recognitionActive = recognitionActive,
         screenOn = screenOn,
         allowedInApp = allowedInApp,
+        always = always,
     )
 
     @Test
@@ -69,6 +71,15 @@ class BubbleVisibilityTest {
         assertTrue(shown(state = recording))
         assertTrue(shown(state = transcribing))
         assertTrue(shown(state = rewording))
+    }
+
+    @Test
+    fun `always show needs no field, but the suppressors still win`() {
+        assertTrue(shown(always = true))
+        assertFalse(shown(always = true, enabled = false))
+        assertFalse(shown(always = true, screenOn = false))
+        assertFalse(shown(always = true, allowedInApp = false))
+        assertFalse(shown(always = true, recognitionActive = true))
     }
 
     @Test

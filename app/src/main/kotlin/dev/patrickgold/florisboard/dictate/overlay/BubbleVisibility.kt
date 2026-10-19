@@ -70,6 +70,9 @@ object BubbleVisibility {
      * no longer enough by itself: a messenger focuses its composer the moment a chat is opened, long before
      * anyone means to type into it. It narrows only the reason to *appear*, not [pinsBubble] — closing the
      * keyboard in the middle of a recording must not take the stop button away with it.
+     *
+     * [always] is the "always show" choice: the button is there whether or not a field holds focus, and only
+     * the suppressors below can take it away.
      */
     fun shouldShow(
         enabled: Boolean,
@@ -81,8 +84,9 @@ object BubbleVisibility {
         recognitionActive: Boolean,
         screenOn: Boolean,
         allowedInApp: Boolean,
+        always: Boolean = false,
     ): Boolean = enabled &&
-        ((focused && (keyboardShown || !keyboardRequired)) || pinsBubble(state)) &&
+        (always || (focused && (keyboardShown || !keyboardRequired)) || pinsBubble(state)) &&
         !hiddenByOwnKeyboard &&
         !recognitionActive &&
         screenOn &&

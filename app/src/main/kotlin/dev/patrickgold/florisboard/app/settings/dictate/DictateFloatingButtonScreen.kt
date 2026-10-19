@@ -234,6 +234,11 @@ fun DictateFloatingButtonScreen() = UnisonoPage(title = stringRes(R.string.main_
                 choices = listOf(
                     UChoice(DictateFloatingButtonShowWhen.FIELD_SELECTED, stringRes(R.string.dictate__floating_button_show_when_field)),
                     UChoice(DictateFloatingButtonShowWhen.KEYBOARD_OPEN, stringRes(R.string.dictate__floating_button_show_when_keyboard)),
+                    UChoice(
+                        DictateFloatingButtonShowWhen.ALWAYS,
+                        stringRes(R.string.dictate__floating_button_show_when_always),
+                        stringRes(R.string.dictate__floating_button_show_when_always_summary),
+                    ),
                 ),
                 selected = showWhen,
                 onSelect = { scope.launch { prefs.dictate.floatingButtonShowWhen.set(it) } },

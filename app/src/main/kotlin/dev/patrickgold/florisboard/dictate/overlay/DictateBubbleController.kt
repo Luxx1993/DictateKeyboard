@@ -205,6 +205,9 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
     /** Idle auto-dim: shrinks/fades the bubble to a small dot after a while; restored on touch. */
     private var dimJob: Job? = null
     private var dimmed = false
+
+    /** The button is on screen only because "always show" is chosen, with no field in focus: it rests dimmed. */
+    private var restingNoField = false
     private var idleShownPrev = false
 
     /** The state of the previous emission, used to tell a successful finish (busy → idle) from a cancel. */
@@ -319,6 +322,7 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
                     recognitionActive = recogActive,
                     screenOn = screenOn,
                     allowedInApp = appAllowed,
+                    always = showWhen.alwaysVisible,
                 )
                 // Read before this emission shows or hides the button: a failure ends what pinned it, so
                 // the button may be leaving with this very state (see [reportTerminalState]).
@@ -349,9 +353,22 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
                 reportTerminalState(state, wasShown, dictateKeyboardShown)
                 // Auto-dim only while idle and shown; restore (and stop the timer) otherwise.
                 val idleShown = state is DictateController.UiState.Idle && show
+                // "Always show" with no field in focus: the button rests as a small, see-through dot, whatever
+                // the auto-dim switch says (that one is about the idle timer while a field is up). Posted, so
+                // it is laid out before it shrinks toward its wall.
+                val resting = idleShown && showWhen.alwaysVisible && !focused
+                if (resting != restingNoField) {
+                    restingNoField = resting
+                    if (!resting && idleShown) scheduleDim()
+                }
                 if (idleShown && !idleShownPrev) scheduleDim()
                 if (!idleShown) {
                     cancelDim()
+                    applyDim(false)
+                } else if (resting) {
+                    cancelDim()
+                    skin?.root?.post { if (restingNoField) applyDim(true) }
+                } else if (dimmed && !wantsAutoDim()) {
                     applyDim(false)
                 }
                 idleShownPrev = idleShown
@@ -1456,9 +1473,11 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
         scope.launch { prefs.dictate.floatingButtonPositions.set(BubbleAnchors.of(stored)) }
     }
 
+    private fun wantsAutoDim(): Boolean = restingNoField || prefs.dictate.floatingButtonAutoDim.get()
+
     private fun scheduleDim() {
         cancelDim()
-        if (!prefs.dictate.floatingButtonAutoDim.get()) return
+        if (!wantsAutoDim()) return
         dimJob = scope.launch {
             delay(AUTO_DIM_DELAY_MS)
             if (added && DictateController.state.value is DictateController.UiState.Idle) applyDim(true)
