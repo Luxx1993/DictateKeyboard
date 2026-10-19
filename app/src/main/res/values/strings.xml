@@ -221,7 +221,7 @@
     <!-- Dictate floating button / accessibility service (issue #88) -->
     <string name="dictate__accessibility_service_label" comment="Name of the Dictate accessibility service, shown in the system accessibility settings list">diktat floating button</string>
     <string name="dictate__accessibility_service_summary" comment="Short one-line summary of the accessibility service in the system settings">Show a floating button to dictate into any text field.</string>
-    <string name="dictate__accessibility_service_description" comment="Full disclosure shown in the system accessibility settings explaining what the service does and why">diktat uses this service to power the floating dictation button. When enabled, it detects when a text field is focused in any app — so the button can appear — and inserts your transcribed speech into that field. diktat only reads the focused field to place your text at the cursor; it does not collect, store or share other screen content.</string>
+    <string name="dictate__accessibility_service_description" comment="Full disclosure shown in the system accessibility settings explaining what the service does and why">diktat uses this service to power the floating dictation button. When enabled, it detects when a text field is focused in any app — so the button can appear — and inserts your transcribed speech into that field. diktat only reads the focused field to place your text at the cursor; it does not collect, store or share other screen content. For the "Wave" button style it also reads the brightness of a few screen pixels next to the button, to choose black or white; the picture is discarded at once.</string>
     <string name="dictate__overlay_notification_channel" comment="Name of the notification channel for the floating-button recording notification">Floating dictation button</string>
     <string name="dictate__overlay_notification_recording" comment="Text of the ongoing notification shown while the floating button is recording">Recording — tap the floating button to transcribe</string>
     <string name="dictate__floating_button_title" comment="Title of the floating-button settings screen">Floating button</string>
@@ -263,6 +263,8 @@
     <string name="dictate__floating_button_design_aurora_summary">Light moving inside a sphere; it stirs while recording and churns while working</string>
     <string name="dictate__floating_button_design_lattice" comment="Floating-button style option: a sphere built from dots">Lattice</string>
     <string name="dictate__floating_button_design_lattice_summary" comment="Description of the lattice floating-button style">A sphere of dots that wires itself while idle, ripples with your voice and twists while working</string>
+    <string name="dictate__floating_button_design_wave">Wave</string>
+    <string name="dictate__floating_button_design_wave_summary">The app icon: a still wave around a globe, black or white to suit the screen behind it. Turns and breathes with your voice while recording, only turns while transcribing</string>
     <string name="dictate__floating_button_size_title" comment="Title of the floating-button size picker">Button size</string>
     <string name="dictate__floating_button_size_small" comment="Floating-button size option">Small</string>
     <string name="dictate__floating_button_size_medium" comment="Floating-button size option">Medium</string>

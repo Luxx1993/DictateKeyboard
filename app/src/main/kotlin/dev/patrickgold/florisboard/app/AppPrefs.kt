@@ -268,12 +268,12 @@ abstract class FlorisPreferenceModel : PreferenceModel() {
             key = "dictate__floating_button_enabled",
             default = false,
         )
-        // When the floating button comes up (issue #439): as soon as a field is selected, or only while a
+        // When the floating button comes up (issue #439): always, as soon as a field is selected, or only while a
         // keyboard is open. Replaces the boolean `dictate__floating_button_show_with_dictate_keyboard`,
         // which migrate() carries over.
         val floatingButtonShowWhen = enum(
             key = "dictate__floating_button_show_when",
-            default = DictateFloatingButtonShowWhen.FIELD_SELECTED,
+            default = DictateFloatingButtonShowWhen.ALWAYS,
         )
         // Visual style of the floating button, see DictateFloatingButtonDesign. diktat's own is the cloud (CLOUD,
         // docs/design/diktat-design.md §4); an install that never chose one gets it.

@@ -104,6 +104,11 @@ Ziel: diesen Shader optisch an den Prototyp angleichen.
 | Tinte | `#CFC8BF` | `#6F6962` | `#1F1C1A` | `#F4F1EC` | `#A59E96` |
 
 - Wolke und App-Icon sind **getrennte Dinge**: das Icon zeigt keine Wolke.
+- **Stil „Welle“** (zusätzlicher Button-Stil, `DictateWaveOrbView`): das App-Icon als Strichzeichnung, schwarz oder weiß je nach
+  Hintergrund. Ruhe: steht still wie das Icon. Aufnahme: Welle dreht sich (Animation D) und die Kugel atmet (2,6 s, etwas tiefer mit
+  der Stimme). Transkribieren/Umformulieren: nur Drehen. Erfolg/Fehler: kurz grün/rot. Die Farbe kommt aus einem Standbild des
+  Bildschirms (nur wenige Bildpunkte um den Button, nichts gespeichert; braucht `canTakeScreenshot`, Android 11+), sonst aus hell/dunkel
+  des Systems.
 
 ## 5. App-Icon „Welle um die Welt“ (entschieden)
 

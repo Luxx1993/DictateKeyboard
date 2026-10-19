@@ -22,6 +22,7 @@ import android.graphics.Paint
 import android.graphics.PixelFormat
 import android.graphics.Point
 import android.graphics.RadialGradient
+import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
@@ -71,6 +72,9 @@ import dev.patrickgold.florisboard.dictate.ui.CloudPalette
 import dev.patrickgold.florisboard.dictate.ui.GlassDrawable
 import dev.patrickgold.florisboard.dictate.ui.DictateAuroraOrbView
 import dev.patrickgold.florisboard.dictate.ui.DictateLatticeSphereView
+import android.os.PowerManager
+import android.content.res.Configuration
+import dev.patrickgold.florisboard.dictate.ui.DictateWaveOrbView
 import dev.patrickgold.florisboard.lib.devtools.flogDebug
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -255,6 +259,14 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
 
     /** Starts observing the feature toggle + focus + design + dictation state to drive the bubble. */
     fun start() {
+        scope.launch {
+            // Pages scroll from white to dark without any event to tell of it, so the "Welle" design looks again
+            // every few seconds while it is on screen. Nothing else needs this.
+            while (true) {
+                delay(BACKDROP_POLL_MS)
+                requestBackdropSample()
+            }
+        }
         scope.launch {
             DictateAccessibilityService.foregroundPackage.collect { pkg -> onForegroundPackageChanged(pkg) }
         }
@@ -870,6 +882,51 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
         if (cancelAdded) runCatching { windowManager.updateViewLayout(cancel, clp) }
     }
 
+    // --- Backdrop (the "Welle" design is black or white to suit what is behind it) ---------------------
+
+    private var backdropLight: Boolean? = null
+    private var backdropSampling = false
+    private var lastBackdropSample = 0L
+
+    private fun systemLooksLight(): Boolean =
+        context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK != Configuration.UI_MODE_NIGHT_YES
+
+    private fun applyBackdrop(light: Boolean) {
+        backdropLight = light
+        skin?.onBackdropChanged(light)
+    }
+
+    /** Reads the screen around the bubble, a moment from now: after a drag or an app switch has settled. */
+    private fun requestBackdropSampleSoon(delayMs: Long = BACKDROP_SETTLE_MS) {
+        if (currentDesign != DictateFloatingButtonDesign.WAVE) return
+        scope.launch {
+            delay(delayMs)
+            requestBackdropSample()
+        }
+    }
+
+    private fun requestBackdropSample() {
+        if (currentDesign != DictateFloatingButtonDesign.WAVE || !added) return
+        val view = rootView ?: return
+        if (!BackdropTone.available(service)) {
+            applyBackdrop(systemLooksLight())
+            return
+        }
+        val now = SystemClock.uptimeMillis()
+        if (backdropSampling || now - lastBackdropSample < BACKDROP_MIN_GAP_MS) return
+        val power = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+        if (!power.isInteractive) return
+        val at = IntArray(2).also { view.getLocationOnScreen(it) }
+        backdropSampling = true
+        lastBackdropSample = now
+        BackdropTone.sample(service, Rect(at[0], at[1], at[0] + view.width, at[1] + view.height)) { mean ->
+            scope.launch(Dispatchers.Main) {
+                backdropSampling = false
+                applyBackdrop(if (mean != null) BackdropTone.decide(mean, backdropLight) else backdropLight ?: systemLooksLight())
+            }
+        }
+    }
+
     private fun createView(): View {
         val newSkin = when (currentDesign) {
             DictateFloatingButtonDesign.RING -> RingSkin(context)
@@ -878,8 +935,10 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
             DictateFloatingButtonDesign.CLOUD -> CloudSkin(context)
             DictateFloatingButtonDesign.AURORA -> AuroraSkin(context)
             DictateFloatingButtonDesign.LATTICE -> LatticeSkin(context)
+            DictateFloatingButtonDesign.WAVE -> WaveSkin(context)
         }
         skin = newSkin
+        newSkin.onBackdropChanged(backdropLight ?: systemLooksLight())
         // Before the first layout pass: a pill built for the right edge has to be mirrored already when it
         // is measured, or its first frame is the unmirrored one. Pushed straight at the skin rather than
         // through [setSide], which would find the side unchanged and tell a skin that no longer exists.
@@ -1072,7 +1131,10 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
                         // the screen by ACTION_MOVE); otherwise it animates to the nearer side edge.
                         prefs.dictate.floatingButtonSnapToEdge.get() -> snapToEdge()
                     }
-                    if (moved) rememberCurrentPosition()
+                    if (moved) {
+                        rememberCurrentPosition()
+                        requestBackdropSampleSoon()
+                    }
                     scheduleDim() // restart the idle timer after the interaction
                     true
                 }
@@ -1435,6 +1497,7 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
 
     /** Saves the bubble position for the leaving app and restores the position saved for the new app. */
     private fun onForegroundPackageChanged(pkg: String?) {
+        requestBackdropSampleSoon(BACKDROP_APP_SWITCH_MS)
         if (!prefs.dictate.floatingButtonRememberPosition.get()) {
             currentPackage = pkg
             return
@@ -1888,6 +1951,9 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
          * matters there (#399).
          */
         fun onAnchorSideChanged(onRight: Boolean) {}
+
+        /** Whether the screen behind the bubble is light; only the "Welle" design draws in black or white. */
+        fun onBackdropChanged(light: Boolean) {}
 
         fun applyState(state: DictateController.UiState)
         fun showFlash(kind: FlashKind)
@@ -2839,11 +2905,72 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
         }
     }
 
+    // --- Wave skin (design 7) --------------------------------------------------------------------
+
+    /**
+     * The app icon as the button: a wave around a globe in black or white, standing still at rest, turning
+     * and breathing with the voice while recording, and only turning while the text is on its way back. There
+     * is no badge on it; the motion says what is going on, and the colour follows the screen behind it.
+     */
+    private inner class WaveSkin(context: Context) : BubbleSkin {
+        private val viewSize = sdp(64)
+        private val coreSize = sdp(46)
+
+        override val visualInset: Int = (viewSize - coreSize) / 2
+        override val shapeWidth: Int get() = viewSize
+        override val shapeHeight: Int get() = viewSize
+
+        private val orb = DictateWaveOrbView(context).apply { bodyDiameter = coreSize.toFloat() }
+
+        override val root: View = FrameLayout(context).apply {
+            addView(orb, FrameLayout.LayoutParams(viewSize, viewSize))
+        }
+
+        override fun onBackdropChanged(light: Boolean) = orb.setBackdropLight(light)
+
+        override fun applyState(state: DictateController.UiState) {
+            orb.setFlash(null)
+            when (state) {
+                is DictateController.UiState.Recording -> {
+                    orb.setPaused(state.paused)
+                    orb.setMode(DictateWaveOrbView.Mode.RECORDING)
+                }
+                is DictateController.UiState.Transcribing,
+                is DictateController.UiState.Rewording -> {
+                    orb.setPaused(false)
+                    orb.setMode(DictateWaveOrbView.Mode.WORKING)
+                }
+                else -> {
+                    orb.setPaused(false)
+                    orb.setMode(DictateWaveOrbView.Mode.IDLE)
+                }
+            }
+        }
+
+        override fun showFlash(kind: FlashKind) {
+            orb.setPaused(false)
+            orb.setMode(DictateWaveOrbView.Mode.IDLE)
+            orb.setFlash(
+                color(if (kind == FlashKind.ERROR) R.color.dictate_overlay_error else R.color.dictate_overlay_success),
+            )
+        }
+
+        override fun onRecordingTick(level: Float, elapsedMs: Long) = orb.pushLevel(level)
+
+        override fun destroy() = orb.stop()
+    }
+
     private companion object {
         private const val ERROR_HOLD_MS = 1800L
         private const val SUCCESS_HOLD_MS = 1700L
         private const val TICK_MS = 50L
         private const val AUTO_DIM_DELAY_MS = 3500L
+
+        /** "Welle": how often the backdrop is re-read, the least gap between two reads, and the wait after a move. */
+        private const val BACKDROP_POLL_MS = 2500L
+        private const val BACKDROP_MIN_GAP_MS = 700L
+        private const val BACKDROP_SETTLE_MS = 350L
+        private const val BACKDROP_APP_SWITCH_MS = 700L
 
         /**
          * Hold mode: how long the finger has to rest before recording starts. Short enough to feel instant,

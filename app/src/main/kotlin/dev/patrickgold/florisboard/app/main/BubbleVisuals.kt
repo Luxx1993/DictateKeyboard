@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalDensity
 import androidx.core.graphics.ColorUtils
 import dev.patrickgold.florisboard.dictate.ui.DictateAuroraOrbView
+import dev.patrickgold.florisboard.dictate.ui.DiktatGlobe
 import dev.patrickgold.florisboard.dictate.ui.DictateLatticeSphereView
 import dev.patrickgold.florisboard.dictate.ui.GlassDrawable
 import androidx.compose.foundation.Canvas
@@ -28,6 +29,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -114,7 +116,10 @@ internal fun StylePreview(design: DictateFloatingButtonDesign, size: Dp) {
         Modifier.size(size).clip(Unisono.Pill).background(Unisono.Light.canvas),
         contentAlignment = Alignment.Center,
     ) {
-        LiveBubble(design, size, color.toArgb())
+        // The disc is paper in both themes, so the globe's ink has to be the light theme's.
+        CompositionLocalProvider(LocalUnisono provides Unisono.Light) {
+            LiveBubble(design, size, color.toArgb())
+        }
     }
 }
 
@@ -141,6 +146,11 @@ internal fun LiveBubble(design: DictateFloatingButtonDesign, size: Dp, colorArgb
             },
             update = { it.setMode(DictateLatticeSphereView.Mode.WEB, colorArgb) },
             modifier = Modifier.size(size),
+        )
+        DictateFloatingButtonDesign.WAVE -> DiktatGlobe(
+            modifier = Modifier.size(size * body),
+            animate = false,
+            color = LocalUnisono.current.textPrimary,
         )
         else -> {
             val core = size * body

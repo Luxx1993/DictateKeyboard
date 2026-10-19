@@ -24,7 +24,7 @@ Kernablauf: sprechen → KI räumt den Text auf → Text wird eingefügt. Luxx19
 ## Repository
 
 - README, `SECURITY.md` und die Links in der App gelten für diktat und zeigen auf
-  `Luxx1993/unisono-diktat`. Das Repository heißt `unisono-diktat` (vorher `DictateKeyboard`); die Fork-Verbindung zu `DevEmperor/DictateKeyboard` bleibt (Remote `upstream` zum Abgleich).
+  `Luxx1993/unisono-diktat` (vorher `DictateKeyboard`). Die Fork-Verbindung zu `DevEmperor/DictateKeyboard` bleibt (Remote `upstream` zum Abgleich).
 - Herkunft bleibt genannt: README „Herkunft und Lizenz“, `NOTICE` (eigener Block oben, Originale unverändert), Über-Seite
   „Basiert auf Dictate Keyboard“. Apache 2.0 verlangt das.
 - Noch an DevEmperor gebunden: Downloads der Offline- und Smart-Turn-Modelle (`LocalModelCatalog.REL`, Releases von
@@ -42,7 +42,7 @@ APK unter `app/build/outputs/apk/debug/`. Debug-Builds sind mit einem Debug-Schl
 - `app/src/main/kotlin/dev/patrickgold/florisboard/dictate/` – Diktat-Logik (Anbieter, Aufnahme, Overlay)
 - `dictate/overlay/` – schwebender Button (Accessibility-Service, Bubble-Controller)
 - `dictate/ui/AudioReactiveCloudOrbView.kt` – AGSL-Shader der Wolke (Ebenen wie der Prototyp), `CloudMotion.kt` (Keyframes), `CloudPalette.kt` (5 Paletten)
-- `dictate/ui/DiktatGlobe.kt` – Icon-Kugel als Compose-Komponente, Animation D
+- `dictate/ui/DiktatGlobe.kt` – Icon-Kugel als Compose-Komponente, Animation D; `DictateWaveOrbView.kt` – dieselbe Kugel als schwebender Button „Welle“ (schwarz/weiß nach Hintergrund, `overlay/BackdropTone.kt`)
 - `app/main/` – Oberfläche Entwurf 3: `MainScreen.kt` (4 Tabs, Startbildschirm), `StartTab`, `DictionaryTab`, `StylesTab`, `SettingsTab`, Bausteine `UnisonoComponents.kt`, Icons `UnisonoIcons.kt`
 - `app/apptheme/Unisono.kt` – Farben, Schriften, Textstile des Unisono-Looks
 - `app/settings/` – Compose-Einstellungen (`HomeScreen.kt` = „Alle Einstellungen“, `dictate/DictateProvidersScreen.kt` …)
