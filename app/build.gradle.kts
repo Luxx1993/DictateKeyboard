@@ -68,7 +68,7 @@ configure<ApplicationExtension> {
     }
 
     defaultConfig {
-        applicationId = "net.devemperor.dictate"
+        applicationId = "app.diktat"
         minSdk = projectMinSdk.toInt()
         targetSdk = projectTargetSdk.toInt()
         versionCode = projectVersionCode.toInt()
@@ -115,8 +115,7 @@ configure<ApplicationExtension> {
     // is absent (e.g. on CI without secrets, or a contributor's machine) the release build simply has
     // no signing config attached and falls back to an unsigned build, exactly as before.
     //
-    // IMPORTANT: For uploads to Google Play this must be the *upload key* the existing
-    // net.devemperor.dictate listing expects (the old Java app's key) — a fresh key gets rejected.
+    // diktat is its own app (app.diktat), not an update of the Dictate Keyboard listing, so any key will do.
     val keystorePropsFile = rootProject.file("keystore.properties")
     val keystoreProps = if (keystorePropsFile.exists()) {
         Properties().apply { keystorePropsFile.inputStream().use { load(it) } }
@@ -136,8 +135,8 @@ configure<ApplicationExtension> {
 
     buildTypes {
         named("debug") {
-            applicationIdSuffix = ".debug"
-            versionNameSuffix = "-debug+${getGitCommitHash(short = true).get()}"
+            // No applicationIdSuffix: the debug build is the app, there is no second "real" variant next to it.
+            versionNameSuffix = "+${getGitCommitHash(short = true).get()}"
 
             isDebuggable = true
             isJniDebuggable = false

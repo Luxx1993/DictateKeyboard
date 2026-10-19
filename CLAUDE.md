@@ -28,12 +28,12 @@ Kernablauf: sprechen → KI räumt den Text auf → Text wird eingefügt. Luxx19
 - Herkunft bleibt genannt: README „Herkunft und Lizenz“, `NOTICE` (eigener Block oben, Originale unverändert), Über-Seite
   „Basiert auf Dictate Keyboard“. Apache 2.0 verlangt das.
 - Noch an DevEmperor gebunden: Downloads der Offline- und Smart-Turn-Modelle (`LocalModelCatalog.REL`, Releases von
-  Dictate Keyboard) und die Paket-ID `net.devemperor.dictate` (Ändern hieße neue App, Einstellungen per Sicherung umziehen).
+  Dictate Keyboard). Die Paket-ID ist seit Oktober 2026 `app.diktat` (vorher `net.devemperor.dictate.debug`); Backups der alten App lassen sich weiter wiederherstellen.
 
 ## Bauen
 
 ```bash
-./gradlew :app:assembleDebug          # Debug-APK, Paket net.devemperor.dictate.debug (läuft neben der Play-Version)
+./gradlew :app:assembleDebug          # Debug-APK, Paket app.diktat
 ```
 APK unter `app/build/outputs/apk/debug/`. Debug-Builds sind mit einem Debug-Schlüssel signiert.
 

@@ -74,10 +74,10 @@ import org.florisboard.lib.kotlin.io.subFile
 
 object Restore {
     const val MIN_VERSION_CODE = 64
-    // Dictate's own application id (base, without the .debug/.beta variant suffixes) — a backup whose
-    // metadata package starts with this is a genuine Dictate backup, not a "third-party" one. Was still
-    // the upstream FlorisBoard id after the fork, which made every Dictate backup falsely warn.
-    const val PACKAGE_NAME = "net.devemperor.dictate"
+    // diktat's own application id, and the one of Dictate Keyboard it came from (both without the .beta
+    // variant suffix): a backup whose metadata package starts with either is a genuine one, not a
+    // "third-party" one. The old id has to stay, or moving from the old app to this one would warn.
+    val PACKAGE_NAMES = listOf("app.diktat", "net.devemperor.dictate")
     const val BACKUP_ARCHIVE_FILE_NAME = "backup.zip"
 }
 
@@ -133,7 +133,7 @@ fun RestoreScreen() = UnisonoPage(title = stringRes(R.string.backup_and_restore_
                     workspace.metadata.versionCode != BuildConfig.VERSION_CODE -> {
                         R.string.backup_and_restore__restore__metadata_warn_different_version
                     }
-                    !workspace.metadata.packageName.startsWith(Restore.PACKAGE_NAME) -> {
+                    Restore.PACKAGE_NAMES.none { workspace.metadata.packageName.startsWith(it) } -> {
                         R.string.backup_and_restore__restore__metadata_warn_different_vendor
                     }
                     else -> null

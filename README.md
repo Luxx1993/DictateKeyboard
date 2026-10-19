@@ -90,7 +90,7 @@ und Prüfsumme der aktuellen Version. Selbst bauen: siehe [Bauen](#bauen).
 ./gradlew :app:assembleDebug
 ```
 
-Die APK liegt unter `app/build/outputs/apk/debug/`. Debug-Builds haben das Paket `net.devemperor.dictate.debug` und
+Die APK liegt unter `app/build/outputs/apk/debug/`. Debug-Builds haben das Paket `app.diktat` und
 sind mit einem Debug-Schlüssel signiert.
 
 Die fertige APK für den festen Download-Link stellt `scripts/publish-apk.sh` auf den Zweig `apk` (baut, kopiert, pusht).
