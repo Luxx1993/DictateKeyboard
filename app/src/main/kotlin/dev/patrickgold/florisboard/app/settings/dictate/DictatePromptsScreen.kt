@@ -10,6 +10,24 @@
 
 package dev.patrickgold.florisboard.app.settings.dictate
 
+import androidx.compose.foundation.background
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.graphics.Color
+import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
+import dev.patrickgold.florisboard.app.apptheme.Unisono
+import dev.patrickgold.florisboard.app.main.UCard
+import dev.patrickgold.florisboard.app.main.UChip
+import dev.patrickgold.florisboard.app.main.UDialog
+import dev.patrickgold.florisboard.app.main.UDivider
+import dev.patrickgold.florisboard.app.main.UNavRow
+import dev.patrickgold.florisboard.app.main.USwitchRow
+import dev.patrickgold.florisboard.app.main.UTextField
+import dev.patrickgold.florisboard.app.main.UnisonoIcons
+import dev.patrickgold.florisboard.app.main.UnisonoPage
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
@@ -73,7 +91,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -117,9 +134,8 @@ fun DictatePromptsScreen(
     // editor should open automatically once the list has loaded (-1 = none, the normal entry;
     // PromptModel.ID_ADD_PROMPT = the editor for a new prompt).
     editPromptId: Int = -1,
-) = FlorisScreen {
-    title = stringRes(R.string.dictate__prompts_title)
-    scrollable = false
+) = UnisonoPage(title = stringRes(R.string.dictate__prompts_title)) {
+    val c = LocalUnisono.current
 
     val context = LocalContext.current
     val navController = LocalNavController.current
@@ -179,106 +195,66 @@ fun DictatePromptsScreen(
         }
     }
 
-    actions {
-        var menuExpanded by remember { mutableStateOf(false) }
-        FlorisIconButton(
-            onClick = { menuExpanded = true },
-            icon = Icons.Default.MoreVert,
-        )
-        DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
-            DropdownMenuItem(
-                leadingIcon = { Icon(Icons.Default.FileUpload, contentDescription = null) },
-                text = { Text(stringRes(R.string.dictate__prompts_export)) },
-                onClick = {
-                    menuExpanded = false
-                    exportLauncher.launch(context.getString(R.string.dictate__prompts_export_filename))
-                },
-            )
-            DropdownMenuItem(
-                leadingIcon = { Icon(Icons.Default.FileDownload, contentDescription = null) },
-                text = { Text(stringRes(R.string.dictate__prompts_import)) },
-                onClick = {
-                    menuExpanded = false
-                    importLauncher.launch(arrayOf("application/json"))
-                },
-            )
-        }
-    }
+    LaunchedEffect(Unit) { reload() }
 
-    floatingActionButton {
-        ExtendedFloatingActionButton(
-            icon = { Icon(Icons.Default.Add, contentDescription = null) },
-            text = { Text(stringRes(R.string.dictate__prompt_add)) },
-            onClick = {
-                // -1 = a not-yet-persisted prompt; defaults mirror the legacy edit screen.
-                editorTarget = PromptModel(-1, 0, "", "", requiresSelection = true, autoApply = false)
-            },
-        )
-    }
-
-    content {
-        LaunchedEffect(Unit) { reload() }
-
-        // Deep-linked from a long-pressed prompt chip on the keyboard: open that prompt's editor once
-        // the list has loaded. Guarded so it fires a single time (and not again after the user closes
-        // the editor, even though the route arg stays put).
-        var deepLinkEditHandled by remember { mutableStateOf(false) }
-        LaunchedEffect(editPromptId, prompts.size) {
-            if (deepLinkEditHandled) return@LaunchedEffect
-            // "Neuer Stil" on the styles tab: open the editor for a new prompt straight away.
-            if (editPromptId == PromptModel.ID_ADD_PROMPT) {
-                editorTarget = PromptModel(-1, 0, "", "", requiresSelection = true, autoApply = false)
-                deepLinkEditHandled = true
-                return@LaunchedEffect
-            }
-            if (editPromptId < 0) return@LaunchedEffect
-            val target = prompts.firstOrNull { it.id == editPromptId } ?: return@LaunchedEffect
-            editorTarget = target.copy()
+    // Deep-linked from a long-pressed prompt chip on the keyboard: open that prompt's editor once
+    // the list has loaded. Guarded so it fires a single time (and not again after the user closes
+    // the editor, even though the route arg stays put).
+    var deepLinkEditHandled by remember { mutableStateOf(false) }
+    LaunchedEffect(editPromptId, prompts.size) {
+        if (deepLinkEditHandled) return@LaunchedEffect
+        // "Neuer Stil" on the styles tab: open the editor for a new prompt straight away.
+        if (editPromptId == PromptModel.ID_ADD_PROMPT) {
+            editorTarget = PromptModel(-1, 0, "", "", requiresSelection = true, autoApply = false)
             deepLinkEditHandled = true
+            return@LaunchedEffect
         }
+        if (editPromptId < 0) return@LaunchedEffect
+        val target = prompts.firstOrNull { it.id == editPromptId } ?: return@LaunchedEffect
+        editorTarget = target.copy()
+        deepLinkEditHandled = true
+    }
 
-        val listState = rememberLazyListState()
-        // Id of the prompt being dragged, plus its current finger offset (px) for the lift effect.
-        var draggingId by remember { mutableStateOf<Int?>(null) }
-        var dragOffset by remember { mutableStateOf(0f) }
 
-        Column(modifier = Modifier.fillMaxSize()) {
-            // Always-visible entry into the community library, pinned above the user's own prompts so it
-            // is discoverable without opening the overflow menu (issue #105).
-            CommunityLibraryEntry(
-                onClick = { navController.navigate(Routes.Settings.DictatePromptLibrary) },
-            )
+    // Id of the prompt being dragged, plus its current finger offset (px) for the lift effect, and the
+    // measured height of each row (the list is a plain column, so the rows report their own size).
+    var draggingId by remember { mutableStateOf<Int?>(null) }
+    var dragOffset by remember { mutableStateOf(0f) }
+    val rowHeights = remember { mutableStateMapOf<Int, Int>() }
 
-            if (prompts.isEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        modifier = Modifier.padding(horizontal = 32.dp),
-                        text = stringRes(R.string.dictate__prompts_empty),
-                    )
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .florisScrollbar(listState, isVertical = true),
-                    state = listState,
-                ) {
-                itemsIndexed(prompts, key = { _, it -> it.id }) { index, prompt ->
+    // Always-visible entry into the community library, pinned above the user's own prompts so it is
+    // discoverable without hunting for it (issue #105).
+    UCard {
+        UNavRow(
+            title = stringRes(R.string.dictate__prompt_library_menu),
+            icon = UnisonoIcons.Cloud,
+            onClick = { navController.navigate(Routes.Settings.DictatePromptLibrary) },
+        )
+    }
+
+    if (prompts.isEmpty()) {
+        Text(
+            text = stringRes(R.string.dictate__prompts_empty),
+            modifier = Modifier.fillMaxWidth().padding(24.dp),
+            style = Unisono.Body,
+            color = c.textSecondary,
+            textAlign = TextAlign.Center,
+        )
+    } else {
+        UCard {
+            prompts.forEachIndexed { index, prompt ->
+                key(prompt.id) {
+                    if (index > 0) UDivider()
                     val isDragging = draggingId == prompt.id
-                    // The whole row both edits (tap) and reorders (long-press drag); the handle is a
-                    // visual affordance. Lift the dragged row above the rest via zIndex + translation.
-                    Surface(
-                        tonalElevation = if (isDragging) 4.dp else 0.dp,
+                    // The whole row both edits (tap) and reorders (long-press drag); the handle is a visual
+                    // affordance. The dragged row is lifted above the rest via zIndex + translation.
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .zIndex(if (isDragging) 1f else 0f)
                             .graphicsLayer { translationY = if (isDragging) dragOffset else 0f }
+                            .background(if (isDragging) c.sunken else Color.Transparent)
+                            .onSizeChanged { rowHeights[prompt.id] = it.height }
                             .pointerInput(prompt.id) {
                                 detectDragGesturesAfterLongPress(
                                     onDragStart = { draggingId = prompt.id; dragOffset = 0f },
@@ -297,11 +273,10 @@ fun DictatePromptsScreen(
                                         dragOffset += amount.y
                                         val curIndex = prompts.indexOfFirst { it.id == draggingId }
                                         if (curIndex < 0) return@detectDragGesturesAfterLongPress
-                                        val itemHeight = listState.layoutInfo.visibleItemsInfo
-                                            .firstOrNull { it.index == curIndex }?.size
+                                        val itemHeight = rowHeights[prompt.id]
                                             ?: return@detectDragGesturesAfterLongPress
-                                        // Cross the half-item threshold → swap with the neighbour and
-                                        // carry the offset over so the row stays under the finger.
+                                        // Cross the half-item threshold: swap with the neighbour and carry the
+                                        // offset over so the row stays under the finger.
                                         if (dragOffset > itemHeight / 2 && curIndex < prompts.lastIndex) {
                                             prompts.add(curIndex + 1, prompts.removeAt(curIndex))
                                             dragOffset -= itemHeight
@@ -311,133 +286,145 @@ fun DictatePromptsScreen(
                                         }
                                     },
                                 )
-                            },
+                            }
+                            .clickable { editorTarget = prompt.copy() }
+                            .padding(horizontal = 18.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            JetPrefListItem(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .clickable { editorTarget = prompt.copy() },
-                                text = prompt.name.orEmpty(),
-                                secondaryText = prompt.prompt.orEmpty(),
-                                singleLineSecondaryText = true,
-                            )
-                            // Two status indicators, mirroring the legacy app: select-all = "needs a
-                            // selection", auto-renew = "applies automatically". Tinted with the accent
-                            // when active, dimmed when not, so the prompt's type is readable at a glance.
-                            PromptStatusIcon(
-                                icon = Icons.Default.SelectAll,
-                                active = prompt.requiresSelection,
-                                contentDescription = stringRes(R.string.dictate__prompt_badge_selection),
-                            )
-                            Spacer(Modifier.width(6.dp))
-                            PromptStatusIcon(
-                                icon = Icons.Default.Autorenew,
-                                active = prompt.autoApply,
-                                contentDescription = stringRes(R.string.dictate__prompt_badge_auto),
-                            )
-                            Icon(
-                                modifier = Modifier.padding(start = 8.dp, end = 16.dp),
-                                imageVector = Icons.Default.DragHandle,
-                                contentDescription = null,
-                            )
+                        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                            Text(prompt.name.orEmpty(), style = Unisono.BodyStrong, color = c.textPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            Text(prompt.prompt.orEmpty(), style = Unisono.Label, color = c.textSecondary, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            // Two indicators, mirroring the legacy app: "needs a selection" and "applies
+                            // automatically", so the prompt's type is readable at a glance.
+                            val kinds = listOfNotNull(
+                                if (prompt.requiresSelection) stringRes(R.string.dictate__prompt_badge_selection) else null,
+                                if (prompt.autoApply) stringRes(R.string.dictate__prompt_badge_auto) else null,
+                            ).joinToString(" \u00b7 ")
+                            if (kinds.isNotEmpty()) Text(kinds, style = Unisono.Mono, color = c.textTertiary)
                         }
+                        Icon(
+                            imageVector = Icons.Default.DragHandle,
+                            contentDescription = null,
+                            tint = c.textTertiary,
+                            modifier = Modifier.size(20.dp),
+                        )
                     }
-                }
                 }
             }
         }
+    }
 
-        val target = editorTarget
-        if (target != null) {
-            PromptEditorDialog(
-                initial = target,
-                onDismiss = { editorTarget = null },
-                onShare = { name, text, requiresSelection, autoApply ->
-                    // No reasoning here on purpose — shared prompts stay reasoning-agnostic.
-                    pendingShare = PromptModel(0, 0, name, text, requiresSelection, autoApply)
-                },
-                onSave = { name, text, requiresSelection, autoApply, reasoning, reasoningCustom ->
-                    scope.launch {
-                        withContext(Dispatchers.IO) {
-                            if (target.id < 0) {
-                                db.add(PromptModel(0, db.count(), name, text, requiresSelection, autoApply, reasoning, reasoningCustom))
-                            } else {
-                                db.update(
-                                    target.copy(
-                                        name = name,
-                                        prompt = text,
-                                        requiresSelection = requiresSelection,
-                                        autoApply = autoApply,
-                                        reasoningEffort = reasoning,
-                                        reasoningEffortCustom = reasoningCustom,
-                                    ),
-                                )
-                            }
+    UCard {
+        UNavRow(
+            title = stringRes(R.string.dictate__prompt_add),
+            icon = UnisonoIcons.Plus,
+            onClick = {
+                // -1 = a not-yet-persisted prompt; defaults mirror the legacy edit screen.
+                editorTarget = PromptModel(-1, 0, "", "", requiresSelection = true, autoApply = false)
+            },
+        )
+        UDivider()
+        UNavRow(
+            title = stringRes(R.string.dictate__prompts_import),
+            onClick = { importLauncher.launch(arrayOf("application/json")) },
+        )
+        UDivider()
+        UNavRow(
+            title = stringRes(R.string.dictate__prompts_export),
+            onClick = { exportLauncher.launch(context.getString(R.string.dictate__prompts_export_filename)) },
+        )
+    }
+
+    val target = editorTarget
+    if (target != null) {
+        PromptEditorDialog(
+            initial = target,
+            onDismiss = { editorTarget = null },
+            onShare = { name, text, requiresSelection, autoApply ->
+                // No reasoning here on purpose — shared prompts stay reasoning-agnostic.
+                pendingShare = PromptModel(0, 0, name, text, requiresSelection, autoApply)
+            },
+            onSave = { name, text, requiresSelection, autoApply, reasoning, reasoningCustom ->
+                scope.launch {
+                    withContext(Dispatchers.IO) {
+                        if (target.id < 0) {
+                            db.add(PromptModel(0, db.count(), name, text, requiresSelection, autoApply, reasoning, reasoningCustom))
+                        } else {
+                            db.update(
+                                target.copy(
+                                    name = name,
+                                    prompt = text,
+                                    requiresSelection = requiresSelection,
+                                    autoApply = autoApply,
+                                    reasoningEffort = reasoning,
+                                    reasoningEffortCustom = reasoningCustom,
+                                ),
+                            )
                         }
+                    }
+                    reload()
+                }
+                editorTarget = null
+            },
+            onDelete = if (target.id < 0) {
+                null
+            } else {
+                {
+                    scope.launch {
+                        withContext(Dispatchers.IO) { db.delete(target.id) }
                         reload()
                     }
                     editorTarget = null
-                },
-                onDelete = if (target.id < 0) {
-                    null
-                } else {
-                    {
-                        scope.launch {
-                            withContext(Dispatchers.IO) { db.delete(target.id) }
-                            reload()
-                        }
-                        editorTarget = null
-                    }
-                },
-            )
-        }
+                }
+            },
+        )
+    }
 
-        val imported = pendingImport
-        if (imported != null) {
-            ImportModeDialog(
-                onDismiss = { pendingImport = null },
-                onReplace = {
-                    scope.launch {
-                        withContext(Dispatchers.IO) {
-                            db.replaceAll(imported.mapIndexed { i, p -> p.copy(id = 0, pos = i) })
-                        }
-                        reload()
-                        toast(R.string.dictate__prompts_import_success)
+    val imported = pendingImport
+    if (imported != null) {
+        ImportModeDialog(
+            onDismiss = { pendingImport = null },
+            onReplace = {
+                scope.launch {
+                    withContext(Dispatchers.IO) {
+                        db.replaceAll(imported.mapIndexed { i, p -> p.copy(id = 0, pos = i) })
                     }
-                    pendingImport = null
-                },
-                onAdd = {
-                    scope.launch {
-                        val start = withContext(Dispatchers.IO) { db.count() }
-                        withContext(Dispatchers.IO) {
-                            db.addAll(imported.mapIndexed { i, p -> p.copy(id = 0, pos = start + i) })
-                        }
-                        reload()
-                        toast(R.string.dictate__prompts_import_success)
+                    reload()
+                    toast(R.string.dictate__prompts_import_success)
+                }
+                pendingImport = null
+            },
+            onAdd = {
+                scope.launch {
+                    val start = withContext(Dispatchers.IO) { db.count() }
+                    withContext(Dispatchers.IO) {
+                        db.addAll(imported.mapIndexed { i, p -> p.copy(id = 0, pos = start + i) })
                     }
-                    pendingImport = null
-                },
-            )
-        }
+                    reload()
+                    toast(R.string.dictate__prompts_import_success)
+                }
+                pendingImport = null
+            },
+        )
+    }
 
-        val share = pendingShare
-        if (share != null) {
-            ShareConfirmDialog(
-                onDismiss = { pendingShare = null },
-                onConfirm = { category, description ->
-                    val url = PromptLibraryContribution.buildSubmissionUrl(share, category, description)
-                    runCatching {
-                        context.startActivity(
-                            Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
-                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            },
-                        )
-                    }.onFailure { toast(R.string.dictate__prompts_import_failed) }
-                    pendingShare = null
-                },
-            )
-        }
+    val share = pendingShare
+    if (share != null) {
+        ShareConfirmDialog(
+            onDismiss = { pendingShare = null },
+            onConfirm = { category, description ->
+                val url = PromptLibraryContribution.buildSubmissionUrl(share, category, description)
+                runCatching {
+                    context.startActivity(
+                        Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        },
+                    )
+                }.onFailure { toast(R.string.dictate__prompts_import_failed) }
+                pendingShare = null
+            },
+        )
     }
 }
 
@@ -451,43 +438,40 @@ private fun ShareConfirmDialog(
     // Category is a fixed vocabulary (matching the library); description is a free one-liner.
     var category by remember { mutableStateOf<String?>(null) }
     var description by remember { mutableStateOf("") }
+    val c = LocalUnisono.current
 
-    JetPrefAlertDialog(
-        scrollModifier = florisDialogScroll(),
+    UDialog(
         title = stringRes(R.string.dictate__prompt_share_title),
-        confirmLabel = stringRes(R.string.dictate__prompt_share_continue),
-        onConfirm = { onConfirm(category, description.trim().ifBlank { null }) },
-        dismissLabel = stringRes(R.string.action__cancel),
+        description = stringRes(R.string.dictate__prompt_share_message),
+        doneLabel = stringRes(R.string.action__cancel),
         onDismiss = onDismiss,
-        allowOutsideDismissal = true,
     ) {
-        Column {
-            Text(text = stringRes(R.string.dictate__prompt_share_message))
-            Spacer(Modifier.height(16.dp))
-            Text(
-                text = stringRes(R.string.dictate__prompt_share_category),
-                style = MaterialTheme.typography.labelLarge,
-            )
-            Spacer(Modifier.height(4.dp))
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                PromptLibraryContribution.CATEGORIES.forEach { option ->
-                    FilterChip(
-                        selected = category == option,
-                        onClick = { category = if (category == option) null else option },
-                        label = { Text(option) },
-                    )
-                }
+        Text(
+            stringRes(R.string.dictate__prompt_share_category),
+            modifier = Modifier.padding(horizontal = 18.dp),
+            style = Unisono.Mono,
+            color = c.textTertiary,
+        )
+        FlowRow(
+            modifier = Modifier.padding(horizontal = 18.dp, vertical = 6.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            PromptLibraryContribution.CATEGORIES.forEach { option ->
+                UChip(option, category == option) { category = if (category == option) null else option }
             }
-            Spacer(Modifier.height(12.dp))
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = description,
-                onValueChange = { description = it },
-                label = { Text(stringRes(R.string.dictate__prompt_share_description)) },
-                placeholder = { Text(stringRes(R.string.dictate__prompt_share_description_placeholder)) },
-                singleLine = true,
-            )
         }
+        UTextField(
+            label = stringRes(R.string.dictate__prompt_share_description),
+            placeholder = stringRes(R.string.dictate__prompt_share_description_placeholder),
+            value = description,
+            onValueChange = { description = it },
+        )
+        UDivider()
+        UNavRow(
+            title = stringRes(R.string.dictate__prompt_share_continue),
+            onClick = { onConfirm(category, description.trim().ifBlank { null }) },
+        )
     }
 }
 
@@ -562,18 +546,15 @@ private fun ImportModeDialog(
     onReplace: () -> Unit,
     onAdd: () -> Unit,
 ) {
-    JetPrefAlertDialog(
-        scrollModifier = florisDialogScroll(),
+    UDialog(
         title = stringRes(R.string.dictate__prompts_import_mode_title),
-        confirmLabel = stringRes(R.string.dictate__prompts_import_mode_replace),
-        onConfirm = onReplace,
-        neutralLabel = stringRes(R.string.dictate__prompts_import_mode_add),
-        onNeutral = onAdd,
-        dismissLabel = stringRes(R.string.action__cancel),
+        description = stringRes(R.string.dictate__prompts_import_mode_message),
+        doneLabel = stringRes(R.string.action__cancel),
         onDismiss = onDismiss,
-        allowOutsideDismissal = true,
     ) {
-        Text(text = stringRes(R.string.dictate__prompts_import_mode_message))
+        UNavRow(title = stringRes(R.string.dictate__prompts_import_mode_add), onClick = onAdd)
+        UDivider()
+        UNavRow(title = stringRes(R.string.dictate__prompts_import_mode_replace), onClick = onReplace)
     }
 }
 
@@ -608,225 +589,86 @@ private fun PromptEditorDialog(
         requiresSelection = promptRequiresSelection(text.trim(), requiresSelection, autoApply)
     }
 
-    JetPrefAlertDialog(
-        scrollModifier = florisDialogScroll(),
-        title = stringRes(
-            if (initial.id < 0) R.string.dictate__prompt_add else R.string.dictate__prompt_edit,
-        ),
-        confirmLabel = stringRes(R.string.action__save),
-        onConfirm = {
-            when {
-                name.isBlank() || text.isBlank() -> showError = true
-                else -> onSave(
-                    name.trim(),
-                    text.trim(),
-                    requiresSelection,
-                    autoApply,
-                    reasoning,
-                    reasoningCustom.trim().ifBlank { null },
-                )
-            }
-        },
-        dismissLabel = stringRes(R.string.action__cancel),
+    val save = {
+        when {
+            name.isBlank() || text.isBlank() -> showError = true
+            else -> onSave(
+                name.trim(),
+                text.trim(),
+                requiresSelection,
+                autoApply,
+                reasoning,
+                reasoningCustom.trim().ifBlank { null },
+            )
+        }
+    }
+
+    UDialog(
+        title = stringRes(if (initial.id < 0) R.string.dictate__prompt_add else R.string.dictate__prompt_edit),
+        // Closing without saving; saving is its own button, because a blank prompt has to say what is wrong.
+        doneLabel = stringRes(R.string.action__cancel),
         onDismiss = onDismiss,
-        neutralLabel = onDelete?.let { stringRes(R.string.action__delete) },
-        onNeutral = { onDelete?.invoke() },
-        allowOutsideDismissal = true,
     ) {
-        Column {
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = name,
-                onValueChange = { name = it; showError = false },
-                label = { Text(stringRes(R.string.dictate__prompt_name_title)) },
-                placeholder = { Text(stringRes(R.string.dictate__prompt_name_placeholder)) },
-                singleLine = true,
-                isError = showError && name.isBlank(),
-            )
-            Spacer(Modifier.height(8.dp))
-            OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    // Cap the height so a long prompt scrolls inside the field instead of stretching the
-                    // whole dialog into a scroll (issue #149).
-                    .heightIn(min = 110.dp, max = 220.dp)
-                    .onFocusChanged { textFocused = it.isFocused },
-                value = text,
-                onValueChange = { text = it; showError = false },
-                // An empty, untouched field carries the tip about the brackets in place of the bare
-                // "Prompt" label — that sentence is the whole answer to issue #283, and inside the field
-                // it costs no extra height. As soon as the field is used, the label shrinks back to
-                // "Prompt" and the tip moves into the placeholder.
-                label = {
-                    Text(
-                        text = stringRes(
-                            if (text.isEmpty() && !textFocused) {
-                                R.string.dictate__prompt_text_placeholder
-                            } else {
-                                R.string.dictate__prompt_text_title
-                            },
-                        ),
-                        maxLines = 2,
-                    )
-                },
-                placeholder = { Text(stringRes(R.string.dictate__prompt_text_placeholder)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                isError = showError && text.isBlank(),
-            )
-            Spacer(Modifier.height(12.dp))
-            // The two toggles keep only their title inline; the longer description now shows on a
-            // long-press as a tooltip, so the (already tall) editor dialog stays compact.
-            SwitchRow(
-                title = stringRes(R.string.dictate__prompt_requires_selection_title),
-                tooltip = stringRes(R.string.dictate__prompt_requires_selection_summary),
-                checked = requiresSelection,
-                onCheckedChange = { requiresSelection = it },
-                // A snippet is inserted verbatim and never looks at a selection, so the switch would be
-                // a promise the prompt cannot keep — it is cleared and locked while the brackets are
-                // there, and selectable again the moment they are gone. An automatic prompt keeps it
-                // set and locked, because off it would only ever see its own instruction.
-                enabled = !isSnippet && !autoApply,
-            )
-            SwitchRow(
-                title = stringRes(R.string.dictate__prompt_auto_apply_title),
-                tooltip = stringRes(R.string.dictate__prompt_auto_apply_summary),
-                checked = autoApply,
-                onCheckedChange = { autoApply = it },
-            )
-            // Per-prompt reasoning-effort override (issue #155): "Default" = use the global setting.
-            ReasoningRow(
-                selected = reasoning,
-                custom = reasoningCustom,
-                onSelected = { effort, c -> reasoning = effort; reasoningCustom = c },
-            )
-            Spacer(Modifier.height(12.dp))
-            // Contribute this prompt to the community library (issue #105) — a tonal button, only enabled
-            // once there is something worth sharing; the submission itself happens as a GitHub pull request.
-            val shareEnabled = name.isNotBlank() && text.isNotBlank()
-            Surface(
+        UTextField(
+            label = stringRes(R.string.dictate__prompt_name_title),
+            placeholder = stringRes(R.string.dictate__prompt_name_placeholder),
+            value = name,
+            onValueChange = { name = it; showError = false },
+            isError = showError && name.isBlank(),
+        )
+        // An empty, untouched field carries the tip about the brackets in place of the bare "Prompt" label:
+        // that sentence is the whole answer to issue #283. As soon as the field is used, the label shrinks
+        // back to "Prompt" and the tip stays in the placeholder.
+        UTextField(
+            label = stringRes(R.string.dictate__prompt_text_title),
+            placeholder = stringRes(R.string.dictate__prompt_text_placeholder),
+            value = text,
+            onValueChange = { text = it; showError = false },
+            singleLine = false,
+            isError = showError && text.isBlank(),
+        )
+        UDivider()
+        USwitchRow(
+            title = stringRes(R.string.dictate__prompt_requires_selection_title),
+            subtitle = stringRes(R.string.dictate__prompt_requires_selection_summary),
+            checked = requiresSelection,
+            onCheckedChange = { requiresSelection = it },
+            // A snippet is inserted verbatim and never looks at a selection, so the switch would be a
+            // promise the prompt cannot keep: cleared and locked while the brackets are there. An automatic
+            // prompt keeps it set and locked, because off it would only ever see its own instruction.
+            enabled = !isSnippet && !autoApply,
+        )
+        UDivider()
+        USwitchRow(
+            title = stringRes(R.string.dictate__prompt_auto_apply_title),
+            subtitle = stringRes(R.string.dictate__prompt_auto_apply_summary),
+            checked = autoApply,
+            onCheckedChange = { autoApply = it },
+        )
+        UDivider()
+        // Per-prompt reasoning-effort override (issue #155): "Default" = use the global setting.
+        ReasoningRow(
+            selected = reasoning,
+            custom = reasoningCustom,
+            onSelected = { effort, c -> reasoning = effort; reasoningCustom = c },
+        )
+        UDivider()
+        UNavRow(
+            title = stringRes(R.string.action__save),
+            onClick = save,
+        )
+        // Contribute this prompt to the community library (issue #105), only once there is something worth
+        // sharing; the submission itself happens as a GitHub pull request.
+        if (name.isNotBlank() && text.isNotBlank()) {
+            UDivider()
+            UNavRow(
+                title = stringRes(R.string.dictate__prompt_share_title),
                 onClick = { onShare(name.trim(), text.trim(), requiresSelection, autoApply) },
-                enabled = shareEnabled,
-                shape = MaterialTheme.shapes.large,
-                color = MaterialTheme.colorScheme.secondaryContainer,
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Share,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                    )
-                    Spacer(Modifier.width(10.dp))
-                    Text(
-                        text = stringRes(R.string.dictate__prompt_share_title),
-                        style = MaterialTheme.typography.labelLarge,
-                    )
-                }
-            }
-        }
-    }
-}
-
-/**
- * The pinned entry point into the community prompt library (issue #105), shown at the top of the
- * Prompts screen. A tinted, tappable banner so it is obvious without opening the overflow menu.
- */
-@Composable
-private fun CommunityLibraryEntry(onClick: () -> Unit) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.secondaryContainer,
-        onClick = onClick,
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                imageVector = Icons.Default.CloudDownload,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSecondaryContainer,
-            )
-            Text(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 16.dp),
-                text = stringRes(R.string.dictate__prompt_library_menu),
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                style = MaterialTheme.typography.bodyLarge,
-            )
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSecondaryContainer,
             )
         }
-    }
-}
-
-/** A small prompt-type indicator: accent-tinted when [active], dimmed otherwise. */
-@Composable
-private fun PromptStatusIcon(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    active: Boolean,
-    contentDescription: String,
-) {
-    Icon(
-        modifier = Modifier.size(18.dp),
-        imageVector = icon,
-        contentDescription = if (active) contentDescription else null,
-        tint = if (active) {
-            MaterialTheme.colorScheme.primary
-        } else {
-            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
-        },
-    )
-}
-
-/**
- * A compact toggle row: title + switch, with [tooltip] (the former inline description) surfaced on a
- * long-press so the editor dialog stays short. Tap anywhere on the row toggles it.
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun SwitchRow(
-    title: String,
-    tooltip: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    enabled: Boolean = true,
-) {
-    TooltipBox(
-        positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
-        tooltip = { PlainTooltip { Text(tooltip) } },
-        state = rememberTooltipState(isPersistent = false),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(enabled = enabled) { onCheckedChange(!checked) }
-                .padding(vertical = 1.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Text(
-                text = title,
-                modifier = Modifier.weight(1f).padding(end = 12.dp),
-                // Dim the label along with the switch, so a disabled row reads as one greyed-out unit.
-                color = if (enabled) {
-                    Color.Unspecified
-                } else {
-                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-                },
-            )
-            Switch(checked = checked, onCheckedChange = onCheckedChange, enabled = enabled)
+        if (onDelete != null) {
+            UDivider()
+            UNavRow(title = stringRes(R.string.action__delete), onClick = onDelete)
         }
     }
 }
@@ -842,36 +684,15 @@ private fun ReasoningRow(
     onSelected: (DictateReasoningEffort?, String) -> Unit,
 ) {
     var dialogOpen by remember { mutableStateOf(false) }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { dialogOpen = true }
-            .padding(vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Text(
-            text = stringRes(R.string.dictate__prompt_reasoning_title),
-            modifier = Modifier.weight(1f).padding(end = 12.dp),
-            maxLines = 1,
-        )
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = if (selected == DictateReasoningEffort.CUSTOM && custom.isNotBlank()) {
-                    custom
-                } else {
-                    reasoningEffortLabel(selected)
-                },
-                color = MaterialTheme.colorScheme.primary,
-                maxLines = 1,
-            )
-            Icon(
-                imageVector = Icons.Default.ArrowDropDown,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-            )
-        }
-    }
+    UNavRow(
+        title = stringRes(R.string.dictate__prompt_reasoning_title),
+        subtitle = if (selected == DictateReasoningEffort.CUSTOM && custom.isNotBlank()) {
+            custom
+        } else {
+            reasoningEffortLabel(selected)
+        },
+        onClick = { dialogOpen = true },
+    )
     if (dialogOpen) {
         ReasoningEffortDialog(
             initialEffort = selected,

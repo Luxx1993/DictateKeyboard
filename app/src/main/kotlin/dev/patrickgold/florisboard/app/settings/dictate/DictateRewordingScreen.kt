@@ -10,16 +10,6 @@
 
 package dev.patrickgold.florisboard.app.settings.dictate
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AutoFixHigh
-import androidx.compose.material.icons.filled.Bolt
-import androidx.compose.material.icons.filled.Dns
-import androidx.compose.material.icons.filled.Key
-import androidx.compose.material.icons.filled.ListAlt
-import androidx.compose.material.icons.filled.ModelTraining
-import androidx.compose.material.icons.filled.Psychology
-import androidx.compose.material.icons.filled.RecordVoiceOver
-import androidx.compose.material.icons.filled.ViewAgenda
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,113 +19,100 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.KeyboardType
-import kotlinx.coroutines.launch
 import dev.patrickgold.florisboard.R
-import dev.patrickgold.florisboard.app.settings.search.settingsSearchAnchor
 import dev.patrickgold.florisboard.app.FlorisPreferenceStore
 import dev.patrickgold.florisboard.app.LocalNavController
 import dev.patrickgold.florisboard.app.Routes
+import dev.patrickgold.florisboard.app.main.UCard
+import dev.patrickgold.florisboard.app.main.UDivider
+import dev.patrickgold.florisboard.app.main.UNavRow
+import dev.patrickgold.florisboard.app.main.UPrefSwitch
+import dev.patrickgold.florisboard.app.main.UPrefText
+import dev.patrickgold.florisboard.app.main.UnisonoPage
+import dev.patrickgold.florisboard.app.settings.search.settingsSearchAnchor
 import dev.patrickgold.florisboard.dictate.DictateReasoningEffort
 import dev.patrickgold.florisboard.dictate.data.prompts.DictatePromptDefaults
 import dev.patrickgold.florisboard.dictate.data.prompts.PromptsDatabaseHelper
-import dev.patrickgold.florisboard.lib.compose.FlorisScreen
 import dev.patrickgold.jetpref.datastore.model.collectAsState
-import dev.patrickgold.jetpref.datastore.ui.ListPreference
-import dev.patrickgold.jetpref.datastore.ui.Preference
-import dev.patrickgold.jetpref.datastore.ui.SwitchPreference
-import dev.patrickgold.jetpref.datastore.ui.listPrefEntries
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.florisboard.lib.compose.stringRes
 
 /**
- * Rewording (AI) settings: the master toggle, the dedicated chat provider/key/model, prompt
- * management and the system/auto-formatting options. The transcription provider is configured on the
- * main Dictate screen; this screen is purely about the rewording (GPT) side (roadmap section 4, P2).
+ * Rewording (AI) settings in the look of Entwurf 3: the master toggle, prompt management and the
+ * system/auto-formatting options. The providers are configured on their own page; this page is purely
+ * about the rewording side.
  */
 @Composable
-fun DictateRewordingScreen() = FlorisScreen {
-    title = stringRes(R.string.dictate__rewording_title)
-    iconSpaceReserved = true
-
+fun DictateRewordingScreen() = UnisonoPage(title = stringRes(R.string.dictate__rewording_title)) {
     val prefs by FlorisPreferenceStore
+    val navController = LocalNavController.current
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val rewordingEnabled by prefs.dictate.rewordingEnabled.collectAsState()
 
-    content {
-        val navController = LocalNavController.current
-        val context = LocalContext.current
-
-        SwitchPreference(
+    UCard {
+        UPrefSwitch(
             prefs.dictate.rewordingEnabled,
-            icon = Icons.Default.AutoFixHigh,
-            modifier = Modifier.settingsSearchAnchor("dictate__rewording_enabled_title"),
             title = stringRes(R.string.dictate__rewording_enabled_title),
-            summary = stringRes(R.string.dictate__rewording_enabled_summary),
+            subtitle = stringRes(R.string.dictate__rewording_enabled_summary),
+            modifier = Modifier.settingsSearchAnchor("dictate__rewording_enabled_title"),
         )
-
+        UDivider()
         val promptCount by produceState(initialValue = -1) {
             value = withContext(Dispatchers.IO) {
                 PromptsDatabaseHelper.getInstance(context).count()
             }
         }
-        Preference(
-            icon = Icons.Default.ListAlt,
-            modifier = Modifier.settingsSearchAnchor("dictate__manage_prompts_title"),
+        UNavRow(
             title = stringRes(R.string.dictate__manage_prompts_title),
-            summary = if (promptCount < 0) {
+            subtitle = if (promptCount < 0) {
                 stringRes(R.string.dictate__manage_prompts_summary_loading)
             } else {
                 stringRes(R.string.dictate__manage_prompts_summary, "count" to promptCount)
             },
             onClick = { navController.navigate(Routes.Settings.DictatePrompts()) },
+            modifier = Modifier.settingsSearchAnchor("dictate__manage_prompts_title"),
         )
-
+        UDivider()
         // The spoken command word (#139): the live-prompt chip, reached by saying its name instead of
-        // tapping it. Blank switches the recognition off, and that is the default — no word is rare
-        // enough in everyone's speech to be safe unasked, so the user names their own.
-        val commandWord by prefs.dictate.commandTriggerWord.collectAsState()
+        // tapping it. Blank switches the recognition off, and that is the default: no word is rare enough
+        // in everyone's speech to be safe unasked, so the user names their own.
         val commandWordOff = stringRes(R.string.dictate__command_word_off)
-        val commandWordSummary = stringRes(R.string.dictate__command_word_summary, "word" to commandWord)
-        TextInputPreference(
-            pref = prefs.dictate.commandTriggerWord,
-            icon = Icons.Default.RecordVoiceOver,
-            modifier = Modifier.settingsSearchAnchor("dictate__command_word_title"),
+        UPrefText(
+            prefs.dictate.commandTriggerWord,
             title = stringRes(R.string.dictate__command_word_title),
             placeholder = stringRes(R.string.dictate__command_word_placeholder),
-            keyboardType = KeyboardType.Text,
-            summaryProvider = { value -> if (value.isBlank()) commandWordOff else commandWordSummary },
-            enabledIf = { prefs.dictate.rewordingEnabled isEqualTo true },
-            infoTitle = stringRes(R.string.dictate__command_word_info_title),
-            infoText = stringRes(R.string.dictate__command_word_info_description),
+            enabled = rewordingEnabled,
+            info = stringRes(R.string.dictate__command_word_info_description),
+            summaryProvider = { value ->
+                if (value.isBlank()) commandWordOff else context.getString(R.string.dictate__command_word_summary, value)
+            },
+            modifier = Modifier.settingsSearchAnchor("dictate__command_word_title"),
         )
+    }
 
-        SwitchPreference(
+    UCard {
+        UPrefSwitch(
             prefs.dictate.autoFormattingEnabled,
-            icon = Icons.Default.AutoFixHigh,
-            modifier = Modifier.settingsSearchAnchor("dictate__auto_formatting_title"),
             title = stringRes(R.string.dictate__auto_formatting_title),
-            summary = stringRes(R.string.dictate__auto_formatting_summary),
+            subtitle = stringRes(R.string.dictate__auto_formatting_summary),
+            modifier = Modifier.settingsSearchAnchor("dictate__auto_formatting_title"),
         )
-
-        val reasoningScope = rememberCoroutineScope()
+        UDivider()
         val reasoningEffort by prefs.dictate.rewordingReasoningEffort.collectAsState()
         val reasoningCustom by prefs.dictate.rewordingReasoningEffortCustom.collectAsState()
         var reasoningDialogOpen by remember { mutableStateOf(false) }
-        Preference(
-            icon = Icons.Default.Bolt,
-            modifier = Modifier.settingsSearchAnchor("dictate__reasoning_effort_title"),
+        UNavRow(
             title = stringRes(R.string.dictate__reasoning_effort_title),
-            summary = when (reasoningEffort) {
-                DictateReasoningEffort.CUSTOM ->
-                    reasoningCustom.ifBlank { stringRes(R.string.dictate__reasoning_effort_custom) }
-                DictateReasoningEffort.OFF -> stringRes(R.string.dictate__reasoning_effort_off)
-                DictateReasoningEffort.MINIMAL -> stringRes(R.string.dictate__reasoning_effort_minimal)
-                DictateReasoningEffort.LOW -> stringRes(R.string.dictate__reasoning_effort_low)
-                DictateReasoningEffort.MEDIUM -> stringRes(R.string.dictate__reasoning_effort_medium)
-                DictateReasoningEffort.HIGH -> stringRes(R.string.dictate__reasoning_effort_high)
+            subtitle = if (reasoningEffort == DictateReasoningEffort.CUSTOM) {
+                reasoningCustom.ifBlank { stringRes(R.string.dictate__reasoning_effort_custom) }
+            } else {
+                reasoningEffortDialogLabel(reasoningEffort)
             },
-            onClick = { reasoningDialogOpen = true },
-            enabledIf = { prefs.dictate.rewordingEnabled isEqualTo true },
+            onClick = { if (rewordingEnabled) reasoningDialogOpen = true },
+            modifier = Modifier.settingsSearchAnchor("dictate__reasoning_effort_title"),
         )
         if (reasoningDialogOpen) {
             ReasoningEffortDialog(
@@ -143,7 +120,7 @@ fun DictateRewordingScreen() = FlorisScreen {
                 initialCustom = reasoningCustom,
                 includeUseGlobal = false,
                 onConfirm = { effort, custom ->
-                    reasoningScope.launch {
+                    scope.launch {
                         prefs.dictate.rewordingReasoningEffort.set(effort ?: DictateReasoningEffort.OFF)
                         prefs.dictate.rewordingReasoningEffortCustom.set(custom)
                     }
@@ -152,13 +129,11 @@ fun DictateRewordingScreen() = FlorisScreen {
                 onDismiss = { reasoningDialogOpen = false },
             )
         }
-
-        PromptSelectionPreference(
+        UDivider()
+        PromptSelectionRow(
             pref = prefs.dictate.systemPromptSelection,
-            icon = Icons.Default.Psychology,
             title = stringRes(R.string.dictate__system_prompt_title),
-            entries = promptSelectionEntries(),
-            infoTitle = stringRes(R.string.dictate__system_prompt_info_title),
+            choices = promptSelectionChoices(),
             infoDescription = stringRes(R.string.dictate__system_prompt_info_description),
             infoPromptText = DictatePromptDefaults.REWORDING_BE_PRECISE,
             customPref = prefs.dictate.systemPromptCustom,

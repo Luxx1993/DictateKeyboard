@@ -10,17 +10,25 @@
 
 package dev.patrickgold.florisboard.app.settings.dictate
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.SolidColor
+import dev.patrickgold.florisboard.app.main.UChoice
+import dev.patrickgold.florisboard.app.main.UChoiceOption
+import dev.patrickgold.florisboard.app.main.UChoiceRow
+import dev.patrickgold.florisboard.app.main.UDialog
+import dev.patrickgold.florisboard.app.main.UDivider
+import dev.patrickgold.florisboard.app.main.UNavRow
+import dev.patrickgold.florisboard.app.main.USwitchRow
 import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
 import dev.patrickgold.florisboard.app.apptheme.Unisono
 import dev.patrickgold.florisboard.app.main.UCard
 import dev.patrickgold.florisboard.app.main.UCheckRow
 import dev.patrickgold.florisboard.app.main.UChevron
-import dev.patrickgold.florisboard.app.main.UChoiceOption
-import dev.patrickgold.florisboard.app.main.UDialog
-import dev.patrickgold.florisboard.app.main.UDivider
 import dev.patrickgold.florisboard.app.main.UDot
 import dev.patrickgold.florisboard.app.main.UGroupLabel
-import dev.patrickgold.florisboard.app.main.UNavRow
 import dev.patrickgold.florisboard.app.main.USliderRow
 import dev.patrickgold.florisboard.app.main.UnisonoIcons
 import dev.patrickgold.florisboard.app.main.UnisonoPage
@@ -671,83 +679,56 @@ internal fun ProviderEditorDialog(
     // whose only job was that guess; the picker loads the catalog itself when it is opened, so the
     // dialog no longer sends a request nobody asked for.
 
-    JetPrefAlertDialog(
+    val saveAccount = {
+        onSave(
+            account.copy(
+                displayName = displayName.trim(),
+                apiKey = apiKey.trim(),
+                customBaseUrl = baseUrl.trim(),
+                customRealtime = customRealtime,
+                customWarmUp = customWarmUp,
+                trustUserCerts = trustUserCerts,
+                transcriptionModel = transcriptionModel.trim(),
+                chatModel = chatModel.trim(),
+                realtimeModel = realtimeModel.trim(),
+                cachedModels = cachedModels,
+                cachedAudioModels = cachedAudioModels,
+                cachedTranscriptionModels = cachedTranscriptionModels,
+                transcriptionViaChat = transcriptionViaChat,
+                cachedModelsAt = if (cachedModels != account.cachedModels) {
+                    System.currentTimeMillis()
+                } else {
+                    account.cachedModelsAt
+                },
+            ),
+            chosenOnDevice,
+        )
+    }
+
+    // The whole body scrolls as one (the on-device model list makes this the tallest dialog in the app).
+    // Closing it is "Abbrechen"; saving and deleting are rows at the end, so nothing is lost by a stray tap.
+    UDialog(
         title = preset?.displayName ?: stringRes(R.string.dictate__providers_custom_title),
-        // The whole body scrolls as one — the on-device model list makes this dialog the tallest in the
-        // app, and pinning the intro/checkbox/slider while only the list moved read as two panes.
-        scrollModifier = florisDialogScroll(),
-        // The on-device list is the one body in this dialog made of *rows* rather than full-width
-        // fields — a radio, two lines of text and an action button inside roughly 280 dp — so it gets
-        // four dp back at each side. A small nudge on purpose: the rows won their room from the radio
-        // slot, and taking much more from here would push them out of line with every other dialog.
-        // Vertical stays untouched; the default is 0 either way.
-        contentPadding = if (preset?.transcriptionApi == TranscriptionApi.LOCAL_ONDEVICE) {
-            PaddingValues(horizontal = 20.dp)
-        } else {
-            JetPrefAlertDialogDefaults.ContentPadding
-        },
-        // The way to the provider's key page, next to the provider's name (#410). The key field below is
-        // where someone with no key gets stuck, and until now the only place in the app that said where a
-        // key comes from was the setup wizard — so anyone who changed provider later, added a second one
-        // for rewording, or skipped the wizard was left to guess. A reporter read OpenAI's verbatim
-        // "Missing bearer authentication in header" as a broken app and asked for a refund.
-        //
-        // Shown on `apiKeyUrl` alone: not gated on the field being empty, because replacing an expired key
-        // is the same errand, and a control that appears and disappears with the text is worse than one
-        // that is simply there. Absent for Dictate Cloud, Ollama, on-device and custom endpoints, which
-        // have no key page at all — that absence is the honest answer, not a gap.
-        //
-        // No tooltip: PlainTooltip consumes the release on the Initial pass (#257/#261), and this sits in
-        // the title row of a dialog. The content description carries the label.
-        trailingIconTitle = {
-            preset?.apiKeyUrl?.let { url ->
-                IconButton(
-                    onClick = { context.launchUrl(url) },
-                    modifier = Modifier.offset(x = 12.dp),
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Key,
-                        contentDescription = stringRes(R.string.dictate__providers_get_key),
-                    )
-                }
-            }
-        },
-        confirmLabel = stringRes(R.string.action__ok),
-        dismissLabel = stringRes(R.string.action__cancel),
-        neutralLabel = if (onDelete != null) stringRes(R.string.action__delete) else null,
-        onConfirm = {
-            onSave(
-                account.copy(
-                    displayName = displayName.trim(),
-                    apiKey = apiKey.trim(),
-                    customBaseUrl = baseUrl.trim(),
-                    customRealtime = customRealtime,
-                    customWarmUp = customWarmUp,
-                    trustUserCerts = trustUserCerts,
-                    transcriptionModel = transcriptionModel.trim(),
-                    chatModel = chatModel.trim(),
-                    realtimeModel = realtimeModel.trim(),
-                    cachedModels = cachedModels,
-                    cachedAudioModels = cachedAudioModels,
-                    cachedTranscriptionModels = cachedTranscriptionModels,
-                    transcriptionViaChat = transcriptionViaChat,
-                    cachedModelsAt = if (cachedModels != account.cachedModels) {
-                        System.currentTimeMillis()
-                    } else {
-                        account.cachedModelsAt
-                    },
-                ),
-                chosenOnDevice,
-            )
-        },
+        doneLabel = stringRes(R.string.action__cancel),
         onDismiss = onDismiss,
-        onNeutral = { onDelete?.invoke() },
     ) {
+        // The way to the provider's key page (#410). The key field below is where someone with no key gets
+        // stuck, and the only other place that said where a key comes from was the setup wizard. Shown on
+        // `apiKeyUrl` alone, not gated on the field being empty, because replacing an expired key is the
+        // same errand. Absent for Dictate Cloud, Ollama, on-device and custom endpoints, which have no key page.
+        preset?.apiKeyUrl?.let { url ->
+            UNavRow(
+                title = stringRes(R.string.dictate__providers_get_key),
+                onClick = { context.launchUrl(url) },
+            )
+            UDivider()
+        }
         if (preset?.transcriptionApi == TranscriptionApi.LOCAL_ONDEVICE) {
             // On-device provider: no key/remote model — manage downloadable models instead (#104).
             // Two independent picks (#233): the one-shot model lives in `transcriptionModel`, the live
             // streaming one in `realtimeModel` — which is otherwise unused for this provider and means
             // exactly that. Both stay selected at once, so choosing a live model never drops the one-shot.
+            Column(Modifier.padding(horizontal = 6.dp)) {
             LocalModelSection(
                 activeModelId = transcriptionModel,
                 activeStreamingModelId = realtimeModel,
@@ -755,6 +736,7 @@ internal fun ProviderEditorDialog(
                 onActiveStreamingModelChange = { realtimeModel = it },
                 onModelChosen = { chosenOnDevice = true },
             )
+            }
         } else {
         Column {
             // Ollama is chat-only, and correctly so — it serves no /v1/audio/transcriptions. But someone
@@ -764,9 +746,9 @@ internal fun ProviderEditorDialog(
             if (preset?.id == ProviderRegistry.OLLAMA.id) {
                 Text(
                     text = stringRes(R.string.dictate__providers_ollama_no_stt),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 12.dp),
+                    style = Unisono.Label,
+                    color = LocalUnisono.current.textSecondary,
+                    modifier = Modifier.padding(start = 18.dp, end = 18.dp, bottom = 12.dp),
                 )
             }
             // Azure is the one provider whose address is the user's own (#349): a Speech resource answers
@@ -776,9 +758,9 @@ internal fun ProviderEditorDialog(
             if (preset?.id == ProviderRegistry.AZURE.id) {
                 Text(
                     text = stringRes(R.string.dictate__providers_azure_endpoint),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 4.dp),
+                    style = Unisono.Label,
+                    color = LocalUnisono.current.textSecondary,
+                    modifier = Modifier.padding(start = 18.dp, end = 18.dp, bottom = 4.dp),
                 )
                 // Azure is the one provider here where getting as far as this dialog is the easy part:
                 // an account, a subscription, a Speech resource in one of the six regions, and only then
@@ -789,7 +771,7 @@ internal fun ProviderEditorDialog(
                 ProvideTextStyle(MaterialTheme.typography.bodySmall) {
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier.padding(bottom = 12.dp),
+                        modifier = Modifier.padding(start = 18.dp, end = 18.dp, bottom = 12.dp),
                     ) {
                         FlorisHyperlinkText(
                             text = stringRes(R.string.dictate__providers_azure_link_signup),
@@ -845,9 +827,9 @@ internal fun ProviderEditorDialog(
                 if (baseUrl.trim().startsWith("http://", ignoreCase = true)) {
                     Text(
                         text = stringRes(R.string.dictate__base_url_cleartext_warning),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(top = 4.dp),
+                        style = Unisono.Label,
+                        color = Color(0xFFB3443A),
+                        modifier = Modifier.padding(start = 18.dp, end = 18.dp, top = 4.dp),
                     )
                 }
             }
@@ -918,26 +900,12 @@ internal fun ProviderEditorDialog(
                 // protocol under /v1/realtime — which several self-hosted transcription servers do. There
                 // is no way to tell without connecting, so this is a switch rather than a guess.
                 if (isCustom) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { customRealtime = !customRealtime }
-                            .padding(top = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
-                            Text(
-                                text = stringRes(R.string.dictate__providers_custom_realtime),
-                                style = MaterialTheme.typography.bodyLarge,
-                            )
-                            Text(
-                                text = stringRes(R.string.dictate__providers_custom_realtime_summary),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                        Switch(checked = customRealtime, onCheckedChange = { customRealtime = it })
-                    }
+                    USwitchRow(
+                        title = stringRes(R.string.dictate__providers_custom_realtime),
+                        subtitle = stringRes(R.string.dictate__providers_custom_realtime_summary),
+                        checked = customRealtime,
+                        onCheckedChange = { customRealtime = it },
+                    )
                     // Optional: many self-hosted servers serve whatever model they were started with, so a
                     // blank box means "whatever you have".
                     if (customRealtime) {
@@ -970,26 +938,12 @@ internal fun ProviderEditorDialog(
             // mislead, and a wrong warning about a model that works is worse than none. Picking a model
             // that can do both is the user's job here, and it is one the app cannot do for them.
             if (showTranscription && showChat) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            stringRes(R.string.dictate__providers_single_call_title),
-                            style = MaterialTheme.typography.bodyLarge,
-                        )
-                        Text(
-                            stringRes(R.string.dictate__providers_single_call_summary),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    Switch(
-                        checked = transcriptionViaChat,
-                        onCheckedChange = { transcriptionViaChat = it },
-                    )
-                }
+                USwitchRow(
+                    title = stringRes(R.string.dictate__providers_single_call_title),
+                    subtitle = stringRes(R.string.dictate__providers_single_call_summary),
+                    checked = transcriptionViaChat,
+                    onCheckedChange = { transcriptionViaChat = it },
+                )
             }
             // Wake-on-demand (#189): a machine that sleeps between jobs, or a server that unloads its model
             // when idle, only starts coming back once something reaches it, so the first request otherwise
@@ -999,49 +953,27 @@ internal fun ProviderEditorDialog(
             // when single-call folds the two into one request. Offered only for endpoints of the user's
             // own — nowhere else is there a machine to wake.
             if (isCustom) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { customWarmUp = !customWarmUp }
-                        .padding(top = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
-                        Text(
-                            text = stringRes(R.string.dictate__providers_custom_warm_up),
-                            style = MaterialTheme.typography.bodyLarge,
-                        )
-                        Text(
-                            text = stringRes(R.string.dictate__providers_custom_warm_up_summary),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    Switch(checked = customWarmUp, onCheckedChange = { customWarmUp = it })
-                }
+                USwitchRow(
+                    title = stringRes(R.string.dictate__providers_custom_warm_up),
+                    subtitle = stringRes(R.string.dictate__providers_custom_warm_up_summary),
+                    checked = customWarmUp,
+                    onCheckedChange = { customWarmUp = it },
+                )
             }
             // Per account since #383: the app-wide switch it replaces also opened every cloud provider's
             // traffic to whoever holds a certificate from the CA it was turned on for. Any account may need
             // it, not only a server of the user's own — a company's TLS-inspecting proxy sits in front of all.
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { trustUserCerts = !trustUserCerts }
-                    .padding(top = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
-                    Text(
-                        text = stringRes(R.string.dictate__trust_user_certs_title),
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
-                    Text(
-                        text = stringRes(R.string.dictate__trust_user_certs_summary),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                Switch(checked = trustUserCerts, onCheckedChange = { trustUserCerts = it })
+            USwitchRow(
+                title = stringRes(R.string.dictate__trust_user_certs_title),
+                subtitle = stringRes(R.string.dictate__trust_user_certs_summary),
+                checked = trustUserCerts,
+                onCheckedChange = { trustUserCerts = it },
+            )
+            UDivider()
+            UNavRow(title = stringRes(R.string.action__save), onClick = saveAccount)
+            if (onDelete != null) {
+                UDivider()
+                UNavRow(title = stringRes(R.string.action__delete), onClick = { onDelete.invoke() })
             }
         }
         }
@@ -1094,39 +1026,19 @@ private fun RealtimeModelPickerDialog(
     onPick: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    JetPrefAlertDialog(
-        scrollModifier = florisDialogScroll(),
+    UDialog(
         title = stringRes(R.string.dictate__providers_field_realtime_model),
-        dismissLabel = stringRes(R.string.action__cancel),
+        doneLabel = stringRes(R.string.action__cancel),
         onDismiss = onDismiss,
     ) {
-        Column {
-            models.forEach { model ->
-                val isDefault = model == default
-                val pick = { onPick(model); onDismiss() }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = pick)
-                        .padding(vertical = 12.dp, horizontal = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    RadioButton(
-                        selected = current == model || (current.isBlank() && isDefault),
-                        onClick = pick,
-                    )
-                    Column(modifier = Modifier.padding(start = 8.dp)) {
-                        Text(model, style = MaterialTheme.typography.bodyLarge)
-                        if (isDefault) {
-                            Text(
-                                stringRes(R.string.dictate__providers_realtime_model_default),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                    }
-                }
-            }
+        models.forEach { model ->
+            val isDefault = model == default
+            UChoiceOption(
+                title = model,
+                subtitle = if (isDefault) stringRes(R.string.dictate__providers_realtime_model_default) else null,
+                selected = current == model || (current.isBlank() && isDefault),
+                onClick = { onPick(model); onDismiss() },
+            )
         }
     }
 }
@@ -1217,25 +1129,19 @@ private fun ProviderCheckSection(
         }
     }
 
+    val c = LocalUnisono.current
     Column(modifier = Modifier.fillMaxWidth().padding(top = 4.dp)) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.End,
-        ) {
-            if (running) {
-                CircularProgressIndicator(modifier = Modifier.padding(end = 8.dp).size(16.dp))
-            }
-            TextButton(
-                enabled = !running,
-                onClick = { startCheck(transcription = false) { it.checkCredentials() } },
-            ) {
-                Text(stringRes(R.string.dictate__providers_test))
-            }
-            if (showTranscription) {
-                TextButton(
-                    enabled = !running,
-                    onClick = {
+        UNavRow(
+            title = stringRes(R.string.dictate__providers_test),
+            subtitle = if (running) "\u2026" else null,
+            onClick = { if (!running) startCheck(transcription = false) { it.checkCredentials() } },
+        )
+        if (showTranscription) {
+            UDivider()
+            UNavRow(
+                title = stringRes(R.string.dictate__providers_test_transcribe),
+                onClick = {
+                    if (!running) {
                         startCheck(transcription = true) { client ->
                             client.checkTranscription(
                                 sample = ConnectionCheckSample.file(context),
@@ -1243,23 +1149,23 @@ private fun ProviderCheckSection(
                                 language = ConnectionCheckSample.LANGUAGE,
                             )
                         }
-                    },
-                ) {
-                    Text(stringRes(R.string.dictate__providers_test_transcribe))
-                }
-            }
+                    }
+                },
+            )
         }
         result?.let { outcome ->
             Text(
                 text = outcome.headline,
+                modifier = Modifier.padding(start = 18.dp, end = 18.dp, top = 6.dp),
                 color = if (outcome.ok) okColor else errColor,
-                style = MaterialTheme.typography.bodyMedium,
+                style = Unisono.Body,
             )
             outcome.detail?.let { detail ->
                 Text(
                     text = detail,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 18.dp),
+                    style = Unisono.Label,
+                    color = c.textSecondary,
                 )
             }
         }
@@ -1347,43 +1253,58 @@ private fun EditorField(
     keyboardType: KeyboardType = KeyboardType.Text,
     onBrowse: (() -> Unit)? = null,
 ) {
+    val c = LocalUnisono.current
     // Secret fields (API keys) start masked but can be revealed with the eye toggle (issue #195).
     var reveal by remember { mutableStateOf(false) }
-    OutlinedTextField(
-        modifier = Modifier.padding(top = 8.dp),
-        value = value,
-        onValueChange = onValueChange,
-        singleLine = true,
-        label = { Text(label) },
-        placeholder = { if (placeholder.isNotEmpty()) Text(placeholder) },
-        visualTransformation = if (isSecret && !reveal) PasswordVisualTransformation() else VisualTransformation.None,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = if (isSecret) KeyboardType.Password else keyboardType,
-        ),
-        trailingIcon = when {
-            isSecret -> {
-                {
-                    IconButton(onClick = { reveal = !reveal }) {
-                        Icon(
-                            imageVector = if (reveal) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                            contentDescription = null,
-                        )
-                    }
+    Column(
+        Modifier.padding(horizontal = 18.dp, vertical = 6.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Text(label, style = Unisono.Mono, color = c.textTertiary)
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .height(44.dp)
+                .clip(Unisono.Pill)
+                .background(c.sunken)
+                .padding(start = 14.dp, end = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
+                if (value.isEmpty() && placeholder.isNotEmpty()) {
+                    Text(placeholder, style = Unisono.Body, color = c.textTertiary, maxLines = 1)
+                }
+                BasicTextField(
+                    value = value,
+                    onValueChange = onValueChange,
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    visualTransformation = if (isSecret && !reveal) PasswordVisualTransformation() else VisualTransformation.None,
+                    keyboardOptions = KeyboardOptions(keyboardType = if (isSecret) KeyboardType.Password else keyboardType),
+                    textStyle = Unisono.Body.copy(color = c.textPrimary),
+                    cursorBrush = SolidColor(c.textPrimary),
+                )
+            }
+            when {
+                isSecret -> IconButton(onClick = { reveal = !reveal }, modifier = Modifier.size(36.dp)) {
+                    Icon(
+                        imageVector = if (reveal) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                        contentDescription = null,
+                        tint = c.textSecondary,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
+                onBrowse != null -> IconButton(onClick = onBrowse, modifier = Modifier.size(36.dp)) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = stringRes(R.string.dictate__model_picker_title),
+                        tint = c.textSecondary,
+                        modifier = Modifier.size(20.dp),
+                    )
                 }
             }
-            onBrowse != null -> {
-                {
-                    IconButton(onClick = onBrowse) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = stringRes(R.string.dictate__model_picker_title),
-                        )
-                    }
-                }
-            }
-            else -> null
-        },
-    )
+        }
+    }
 }
 
 /**
@@ -1404,55 +1325,23 @@ private fun RegionField(
     baseUrl: String,
     onRegionChange: (ProviderRegion) -> Unit,
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var open by remember { mutableStateOf(false) }
     val wanted = baseUrl.trim().trimEnd('/')
     val selected = when {
         wanted.isEmpty() -> regions.first()
         else -> regions.firstOrNull { it.baseUrl.trimEnd('/').equals(wanted, ignoreCase = true) }
     }
-    Box {
-        OutlinedTextField(
-            modifier = Modifier.padding(top = 8.dp).fillMaxWidth(),
-            value = selected?.let { stringRes(regionLabelOf(it.id)) } ?: baseUrl,
-            onValueChange = {},
-            readOnly = true,
-            singleLine = true,
-            label = { Text(stringRes(R.string.dictate__providers_region_title)) },
-            // The host stays in the open list and nowhere else: it is what tells two regions apart while
-            // choosing, and clutter once the choice is made and the name already says it.
-            trailingIcon = { Icon(Icons.Default.ArrowDropDown, contentDescription = null) },
-        )
-        // A read-only text field still consumes the tap that was meant to open the list, so the opener is
-        // a transparent layer of its own over the field. No ripple: the field is what the eye is on.
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
-                ) { expanded = true },
-        )
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            regions.forEach { region ->
-                DropdownMenuItem(
-                    text = {
-                        Column {
-                            Text(stringRes(regionLabelOf(region.id)))
-                            Text(
-                                text = hostOf(region.baseUrl),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                        }
-                    },
-                    onClick = {
-                        expanded = false
-                        onRegionChange(region)
-                    },
-                )
-            }
-        }
-    }
+    // The host stays in the open list and nowhere else: it is what tells two regions apart while choosing,
+    // and clutter once the choice is made and the name already says it.
+    UChoiceRow(
+        title = stringRes(R.string.dictate__providers_region_title),
+        choices = regions.map { UChoice(it, stringRes(regionLabelOf(it.id)), hostOf(it.baseUrl)) },
+        selected = selected ?: regions.first(),
+        onSelect = onRegionChange,
+        open = open,
+        onOpenChange = { open = it },
+        summary = if (selected == null) baseUrl else null,
+    )
 }
 
 /**

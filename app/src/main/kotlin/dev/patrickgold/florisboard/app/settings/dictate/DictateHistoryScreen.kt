@@ -18,7 +18,9 @@ import androidx.compose.ui.text.style.TextAlign
 import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
 import dev.patrickgold.florisboard.app.apptheme.Unisono
 import dev.patrickgold.florisboard.app.main.UCard
+import dev.patrickgold.florisboard.app.main.UDialog
 import dev.patrickgold.florisboard.app.main.UDivider
+import dev.patrickgold.florisboard.app.main.UTextField
 import dev.patrickgold.florisboard.app.main.UNavRow
 import dev.patrickgold.florisboard.app.main.USwitchRow
 import dev.patrickgold.florisboard.app.main.UnisonoIcons
@@ -369,51 +371,54 @@ fun DictateHistoryScreen() = UnisonoPage(title = stringRes(R.string.dictate__his
     }
 
     if (showExportWarning) {
-        JetPrefAlertDialog(
-            scrollModifier = florisDialogScroll(),
+        UDialog(
             title = stringRes(R.string.dictate__history_export_warning_title),
-            confirmLabel = stringRes(R.string.dictate__history_export_choose),
-            onConfirm = {
-                showExportWarning = false
-                exportFolderPicker.launch(null)
-            },
-            dismissLabel = stringRes(android.R.string.cancel),
+            description = stringRes(R.string.dictate__history_export_warning_message),
+            doneLabel = stringRes(android.R.string.cancel),
             onDismiss = { showExportWarning = false },
         ) {
-            Text(stringRes(R.string.dictate__history_export_warning_message))
+            UNavRow(
+                title = stringRes(R.string.dictate__history_export_choose),
+                onClick = {
+                    showExportWarning = false
+                    exportFolderPicker.launch(null)
+                },
+            )
         }
     }
 
     if (showHistoryOffNotice) {
-        JetPrefAlertDialog(
-            scrollModifier = florisDialogScroll(),
+        UDialog(
             title = stringRes(R.string.dictate__history_export_title),
-            confirmLabel = stringRes(R.string.dictate__history_export_enable_history),
-            onConfirm = {
-                scope.launch { prefs.dictate.historyEnabled.set(true) }
-                showHistoryOffNotice = false
-                showExport = true
-            },
-            dismissLabel = stringRes(android.R.string.cancel),
+            description = stringRes(R.string.dictate__history_export_needs_history),
+            doneLabel = stringRes(android.R.string.cancel),
             onDismiss = { showHistoryOffNotice = false },
         ) {
-            Text(stringRes(R.string.dictate__history_export_needs_history))
+            UNavRow(
+                title = stringRes(R.string.dictate__history_export_enable_history),
+                onClick = {
+                    scope.launch { prefs.dictate.historyEnabled.set(true) }
+                    showHistoryOffNotice = false
+                    showExport = true
+                },
+            )
         }
     }
 
     if (confirmClear) {
-        JetPrefAlertDialog(
-            scrollModifier = florisDialogScroll(),
+        UDialog(
             title = stringRes(R.string.dictate__history_clear_title),
-            confirmLabel = stringRes(R.string.dictate__history_clear_confirm),
-            onConfirm = {
-                scope.launch { DictateHistoryStore.clearAll(context) }
-                confirmClear = false
-            },
-            dismissLabel = stringRes(android.R.string.cancel),
+            description = stringRes(R.string.dictate__history_clear_message),
+            doneLabel = stringRes(android.R.string.cancel),
             onDismiss = { confirmClear = false },
         ) {
-            Text(stringRes(R.string.dictate__history_clear_message))
+            UNavRow(
+                title = stringRes(R.string.dictate__history_clear_confirm),
+                onClick = {
+                    scope.launch { DictateHistoryStore.clearAll(context) }
+                    confirmClear = false
+                },
+            )
         }
     }
 }
@@ -424,11 +429,10 @@ private fun ageLabel(days: Int): String =
     else stringRes(R.string.dictate__history_age_days, "days" to days.toString())
 
 /**
- * Everything the folder export (issue #379) needs, behind the one app-bar action: which folder, whether
- * the audio goes with it, and the one-off pass that fills the folder.
+ * Everything the folder export (issue #379) needs, behind one row: which folder, whether the audio goes
+ * with it, and the one-off pass that fills the folder.
  *
- * A dialog rather than rows in the screen, because this is set once and then never touched again — and
- * the screen's job is the list of dictations, not a growing stack of switches above it.
+ * A dialog rather than rows in the screen, because this is set once and then never touched again.
  */
 @Composable
 private fun ExportDialog(
@@ -446,134 +450,83 @@ private fun ExportDialog(
     onExportAll: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    JetPrefAlertDialog(
-        scrollModifier = florisDialogScroll(),
+    val c = LocalUnisono.current
+    UDialog(
         title = stringRes(R.string.dictate__history_export_title),
-        confirmLabel = stringRes(R.string.action__ok),
-        onConfirm = onDismiss,
+        description = stringRes(R.string.dictate__history_export_summary),
         onDismiss = onDismiss,
-        allowOutsideDismissal = true,
     ) {
-        Column {
-            Text(
-                text = stringRes(R.string.dictate__history_export_summary),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+        UNavRow(
+            title = stringRes(R.string.dictate__history_export_folder),
+            subtitle = when {
+                !folderSet -> stringRes(R.string.dictate__history_export_folder_unset)
+                !folderWritable -> stringRes(R.string.dictate__history_export_folder_unavailable)
+                else -> folderName
+            },
+            onClick = onPick,
+        )
+        if (folderSet) {
+            UDivider()
+            UNavRow(title = stringRes(R.string.dictate__history_export_disconnect), onClick = onDisconnect)
+            UDivider()
+            USwitchRow(
+                title = stringRes(R.string.dictate__history_export_audio_title),
+                // Says why it is off rather than silently doing nothing: without retention the recording is
+                // deleted the moment it has been transcribed, so there is no file to put beside the transcript.
+                subtitle = stringRes(
+                    if (audioRetention) {
+                        R.string.dictate__history_export_audio_summary
+                    } else {
+                        R.string.dictate__history_export_audio_needs_retention
+                    },
+                ),
+                checked = exportAudio && audioRetention,
+                enabled = audioRetention,
+                onCheckedChange = onToggleAudio,
             )
-            Spacer(Modifier.height(16.dp))
-
-            Text(
-                text = stringRes(R.string.dictate__history_export_folder),
-                style = MaterialTheme.typography.labelLarge,
-            )
-            Text(
-                text = when {
-                    !folderSet -> stringRes(R.string.dictate__history_export_folder_unset)
-                    !folderWritable -> stringRes(R.string.dictate__history_export_folder_unavailable)
-                    else -> folderName
-                },
-                style = MaterialTheme.typography.bodyMedium,
-                color = if (folderSet && !folderWritable) {
-                    MaterialTheme.colorScheme.error
-                } else {
-                    MaterialTheme.colorScheme.onSurfaceVariant
-                },
-            )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                TextButton(onClick = onPick) {
-                    Text(
-                        stringRes(
-                            if (folderSet) {
-                                R.string.dictate__history_export_change
-                            } else {
-                                R.string.dictate__history_export_choose
-                            }
-                        )
-                    )
-                }
-                if (folderSet) {
-                    TextButton(onClick = onDisconnect) {
-                        Text(stringRes(R.string.dictate__history_export_disconnect))
-                    }
-                }
-            }
-
-            if (folderSet) {
-                Spacer(Modifier.height(8.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = stringRes(R.string.dictate__history_export_audio_title),
-                            style = MaterialTheme.typography.bodyLarge,
-                        )
-                        Text(
-                            // Says why it is off rather than silently doing nothing: without retention the
-                            // recording is deleted the moment it has been transcribed, so there is no file
-                            // left to put beside the transcript.
-                            text = stringRes(
-                                if (audioRetention) {
-                                    R.string.dictate__history_export_audio_summary
-                                } else {
-                                    R.string.dictate__history_export_audio_needs_retention
-                                }
-                            ),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    Spacer(Modifier.width(16.dp))
-                    Switch(
-                        checked = exportAudio && audioRetention,
-                        onCheckedChange = onToggleAudio,
-                        enabled = audioRetention,
-                    )
-                }
-
-                Spacer(Modifier.height(8.dp))
+            UDivider()
+            if (progress != null) {
+                val (done, total) = progress
                 Text(
-                    text = stringRes(R.string.dictate__history_export_all_summary),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    text = "$done / $total",
+                    modifier = Modifier.padding(horizontal = 18.dp, vertical = 12.dp),
+                    style = Unisono.Mono,
+                    color = c.textPrimary,
                 )
-                if (progress != null) {
-                    val (done, total) = progress
-                    Text(
-                        text = "$done / $total",
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                } else {
-                    TextButton(onClick = onExportAll, enabled = folderWritable) {
-                        Text(stringRes(R.string.dictate__history_export_all))
-                    }
-                }
-                result?.let {
-                    Text(
-                        text = stringRes(
-                            R.string.dictate__history_export_all_result,
-                            "written" to it.written.toString(),
-                            "skipped" to it.skipped.toString(),
-                            "failed" to it.failed.toString(),
-                        ),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-
-                if (lastFailure > 0L) {
-                    Spacer(Modifier.height(8.dp))
-                    Text(
-                        text = stringRes(
-                            R.string.dictate__history_export_last_failure,
-                            "when" to DateUtils.getRelativeTimeSpanString(
-                                lastFailure,
-                                System.currentTimeMillis(),
-                                DateUtils.MINUTE_IN_MILLIS,
-                            ).toString(),
-                        ),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.error,
-                    )
-                }
+            } else {
+                UNavRow(
+                    title = stringRes(R.string.dictate__history_export_all),
+                    subtitle = stringRes(R.string.dictate__history_export_all_summary),
+                    onClick = { if (folderWritable) onExportAll() },
+                )
+            }
+            result?.let {
+                Text(
+                    text = stringRes(
+                        R.string.dictate__history_export_all_result,
+                        "written" to it.written.toString(),
+                        "skipped" to it.skipped.toString(),
+                        "failed" to it.failed.toString(),
+                    ),
+                    modifier = Modifier.padding(horizontal = 18.dp, vertical = 6.dp),
+                    style = Unisono.Label,
+                    color = c.textSecondary,
+                )
+            }
+            if (lastFailure > 0L) {
+                Text(
+                    text = stringRes(
+                        R.string.dictate__history_export_last_failure,
+                        "when" to DateUtils.getRelativeTimeSpanString(
+                            lastFailure,
+                            System.currentTimeMillis(),
+                            DateUtils.MINUTE_IN_MILLIS,
+                        ).toString(),
+                    ),
+                    modifier = Modifier.padding(horizontal = 18.dp, vertical = 6.dp),
+                    style = Unisono.Label,
+                    color = HISTORY_ERROR,
+                )
             }
         }
     }
@@ -665,120 +618,81 @@ private fun DetailDialog(
     onDismiss: () -> Unit,
 ) {
     val context = LocalContext.current
+    val c = LocalUnisono.current
     // The player itself lives in AudioPlayback.kt and is shared with the import screen (#301): the
-    // lifecycle — stop on completion, release on dispose, poll while running — is the part worth
-    // having in one place. The row of buttons below stays here, because this dialog's row also
-    // carries export, share and pin.
+    // lifecycle (stop on completion, release on dispose, poll while running) is the part worth having in
+    // one place. The rows below stay here, because this dialog's also carry export, share and pin.
     val player = rememberAudioPlayer(entry.audioPath) {
         Toast.makeText(context, R.string.dictate__history_audio_missing, Toast.LENGTH_SHORT).show()
     }
     val playing = player.playing
-    val progress = player.progress
     fun stop() = player.stop()
-    fun toggle() = player.toggle()
 
-    JetPrefAlertDialog(
-        scrollModifier = florisDialogScroll(),
+    UDialog(
         title = DateUtils.getRelativeDateTimeString(
             context, entry.createdAt, DateUtils.MINUTE_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0,
         ).toString(),
-        dismissLabel = stringRes(android.R.string.ok),
         onDismiss = { stop(); onDismiss() },
     ) {
-        Column {
-            // When a prompt rewrote the dictation, both versions are shown (issue #240): the raw transcript
-            // is otherwise unrecoverable, since re-transcribing runs the whole prompt chain again. Driven by
-            // originalText rather than entry.reworded, which is only set for live prompts and would miss
-            // auto-formatting and auto-apply prompts.
-            val hasOriginal = entry.originalText.isNotEmpty() && entry.originalText != entry.text
-            SelectionContainer {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(max = if (hasOriginal) 320.dp else 260.dp)
-                        .verticalScroll(rememberScrollState()),
-                ) {
-                    if (hasOriginal) {
-                        Column {
-                            TranscriptSection(
-                                label = stringRes(R.string.dictate__history_original),
-                                text = entry.originalText,
-                                onCopy = { copyToClipboard(context, entry.originalText) },
-                            )
-                            Spacer(Modifier.height(12.dp))
-                            TranscriptSection(
-                                label = stringRes(R.string.dictate__history_result),
-                                text = entry.text,
-                                onCopy = { copyToClipboard(context, entry.text) },
-                            )
-                        }
-                    } else {
-                        Text(
-                            text = entry.text,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = if (entry.failed) MaterialTheme.colorScheme.error else Color.Unspecified,
-                        )
-                    }
-                }
-            }
-            val meta = historyRowMeta(entry)
-            if (meta.isNotEmpty()) {
-                Spacer(Modifier.height(8.dp))
-                Text(
-                    text = meta,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            Spacer(Modifier.height(12.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically,
+        // When a prompt rewrote the dictation, both versions are shown (issue #240): the raw transcript is
+        // otherwise unrecoverable, since re-transcribing runs the whole prompt chain again. Driven by
+        // originalText rather than entry.reworded, which is only set for live prompts and would miss
+        // auto-formatting and auto-apply prompts.
+        val hasOriginal = entry.originalText.isNotEmpty() && entry.originalText != entry.text
+        SelectionContainer {
+            Column(
+                Modifier.padding(horizontal = 18.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                if (entry.audioPath != null) {
-                    Box(contentAlignment = Alignment.Center) {
-                        if (playing) {
-                            CircularProgressIndicator(
-                                progress = { progress },
-                                modifier = Modifier.size(40.dp),
-                                strokeWidth = 2.dp,
-                            )
-                        }
-                        IconButton(onClick = { toggle() }, modifier = Modifier.size(44.dp)) {
-                            Icon(
-                                imageVector = if (playing) Icons.Default.Pause else Icons.Default.PlayArrow,
-                                contentDescription = stringRes(R.string.dictate__history_play),
-                                modifier = Modifier.size(24.dp),
-                            )
-                        }
-                    }
-                    IconButton(onClick = onExport, modifier = Modifier.size(44.dp)) {
-                        Icon(
-                            imageVector = Icons.Default.FileDownload,
-                            contentDescription = stringRes(R.string.action__export),
-                            modifier = Modifier.size(24.dp),
-                        )
-                    }
-                }
-                IconButton(onClick = onShare, enabled = !entry.failed, modifier = Modifier.size(44.dp)) {
-                    Icon(
-                        imageVector = Icons.Default.Share,
-                        contentDescription = stringRes(R.string.dictate__stats_share),
-                        modifier = Modifier.size(24.dp),
+                if (hasOriginal) {
+                    TranscriptSection(
+                        label = stringRes(R.string.dictate__history_original),
+                        text = entry.originalText,
+                        onCopy = { copyToClipboard(context, entry.originalText) },
                     )
-                }
-                Spacer(Modifier.weight(1f))
-                IconButton(onClick = onTogglePin, modifier = Modifier.size(44.dp)) {
-                    Icon(
-                        imageVector = Icons.Default.PushPin,
-                        contentDescription = stringRes(R.string.emoji__history__pinned),
-                        modifier = Modifier.size(24.dp),
-                        tint = if (entry.pinned) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                    TranscriptSection(
+                        label = stringRes(R.string.dictate__history_result),
+                        text = entry.text,
+                        onCopy = { copyToClipboard(context, entry.text) },
+                    )
+                } else {
+                    Text(
+                        text = entry.text,
+                        style = Unisono.Body,
+                        color = if (entry.failed) HISTORY_ERROR else c.textPrimary,
                     )
                 }
             }
         }
+        val meta = historyRowMeta(entry)
+        if (meta.isNotEmpty()) {
+            Text(
+                text = meta,
+                modifier = Modifier.padding(horizontal = 18.dp, vertical = 8.dp),
+                style = Unisono.Mono,
+                color = c.textTertiary,
+            )
+        }
+        UDivider()
+        if (entry.audioPath != null) {
+            UNavRow(
+                title = stringRes(R.string.dictate__history_play),
+                subtitle = if (playing) "${(player.progress * 100).toInt()} %" else null,
+                onClick = { player.toggle() },
+            )
+            UDivider()
+            UNavRow(title = stringRes(R.string.action__export), onClick = onExport)
+            UDivider()
+        }
+        if (!entry.failed) {
+            UNavRow(title = stringRes(R.string.dictate__stats_share), onClick = onShare)
+            UDivider()
+        }
+        UNavRow(
+            title = stringRes(R.string.emoji__history__pinned),
+            subtitle = if (entry.pinned) "\u2713" else null,
+            onClick = onTogglePin,
+        )
     }
 }
 
@@ -793,29 +707,27 @@ private fun TranscriptSection(
     text: String,
     onCopy: () -> Unit,
 ) {
+    val c = LocalUnisono.current
     Column {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary,
-            )
+            Text(text = label, style = Unisono.Mono, color = c.textTertiary)
             Spacer(Modifier.weight(1f))
-            // Outside the SelectionContainer's text flow, so copying a whole version stays one tap even
-            // though the text itself is also selectable by hand.
+            // Outside the text flow, so copying a whole version stays one tap even though the text itself is
+            // also selectable by hand.
             IconButton(onClick = onCopy, modifier = Modifier.size(32.dp)) {
                 Icon(
                     imageVector = Icons.Default.ContentCopy,
                     contentDescription = stringRes(R.string.dictate__legacy_action_copy),
                     modifier = Modifier.size(18.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = c.textSecondary,
                 )
             }
         }
-        Text(text = text, style = MaterialTheme.typography.bodyMedium)
+        Text(text = text, style = Unisono.Body, color = c.textPrimary)
     }
 }
 
+/** The three retention limits in one dialog; closing it without the save row leaves them as they were. */
 @Composable
 private fun RetentionDialog(
     entries: Int,
@@ -830,59 +742,44 @@ private fun RetentionDialog(
     // Reuse the translated "{days} days" string to get the localized bare day-unit word for the label.
     val dayUnit = stringRes(R.string.dictate__history_age_days, "days" to "").trim()
 
-    JetPrefAlertDialog(
-        scrollModifier = florisDialogScroll(),
+    UDialog(
         title = stringRes(R.string.dictate__history_retention_title),
-        confirmLabel = stringRes(android.R.string.ok),
-        onConfirm = {
-            onSave(
-                e.toIntOrNull()?.coerceIn(1, 100_000) ?: entries,
-                a.toIntOrNull()?.coerceIn(0, 100_000) ?: ageDays,
-                b.toIntOrNull()?.coerceIn(0, 1_000_000) ?: budgetMb,
-            )
-        },
-        dismissLabel = stringRes(android.R.string.cancel),
+        doneLabel = stringRes(android.R.string.cancel),
         onDismiss = onDismiss,
     ) {
-        Column {
-            NumberField(
-                label = stringRes(R.string.dictate__history_max_entries_title),
-                value = e,
-                onChange = { e = it },
-            )
-            Spacer(Modifier.height(8.dp))
-            NumberField(
-                label = "${stringRes(R.string.dictate__history_max_age_title)} ($dayUnit)",
-                value = a,
-                onChange = { a = it },
-                supporting = "0 = ${stringRes(R.string.dictate__history_age_never)}",
-            )
-            Spacer(Modifier.height(8.dp))
-            NumberField(
-                label = "${stringRes(R.string.dictate__history_audio_budget_title)} (MB)",
-                value = b,
-                onChange = { b = it },
-            )
-        }
+        UTextField(
+            label = stringRes(R.string.dictate__history_max_entries_title),
+            placeholder = "",
+            value = e,
+            onValueChange = { e = it.filter { ch -> ch.isDigit() }.take(7) },
+            keyboardType = KeyboardType.Number,
+        )
+        UTextField(
+            label = "${stringRes(R.string.dictate__history_max_age_title)} ($dayUnit) \u00b7 0 = ${stringRes(R.string.dictate__history_age_never)}",
+            placeholder = "",
+            value = a,
+            onValueChange = { a = it.filter { ch -> ch.isDigit() }.take(7) },
+            keyboardType = KeyboardType.Number,
+        )
+        UTextField(
+            label = "${stringRes(R.string.dictate__history_audio_budget_title)} (MB)",
+            placeholder = "",
+            value = b,
+            onValueChange = { b = it.filter { ch -> ch.isDigit() }.take(7) },
+            keyboardType = KeyboardType.Number,
+        )
+        UDivider()
+        UNavRow(
+            title = stringRes(R.string.action__save),
+            onClick = {
+                onSave(
+                    e.toIntOrNull()?.coerceIn(1, 100_000) ?: entries,
+                    a.toIntOrNull()?.coerceIn(0, 100_000) ?: ageDays,
+                    b.toIntOrNull()?.coerceIn(0, 1_000_000) ?: budgetMb,
+                )
+            },
+        )
     }
-}
-
-@Composable
-private fun NumberField(
-    label: String,
-    value: String,
-    onChange: (String) -> Unit,
-    supporting: String? = null,
-) {
-    OutlinedTextField(
-        modifier = Modifier.fillMaxWidth(),
-        value = value,
-        onValueChange = { onChange(it.filter { c -> c.isDigit() }.take(7)) },
-        label = { Text(label) },
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        supportingText = supporting?.let { s -> { Text(s) } },
-    )
 }
 
 /** "OpenAI · gpt-4o-mini-transcribe · 0:12 · 0.4 MB" — omits empty parts. */

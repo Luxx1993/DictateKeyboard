@@ -10,6 +10,23 @@
 
 package dev.patrickgold.florisboard.app.settings.search
 
+import androidx.compose.foundation.background
+import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.SolidColor
+import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
+import dev.patrickgold.florisboard.app.apptheme.Unisono
+import dev.patrickgold.florisboard.app.main.UCard
+import dev.patrickgold.florisboard.app.main.UChip
+import dev.patrickgold.florisboard.app.main.UDivider
+import dev.patrickgold.florisboard.app.main.UGroupLabel
+import dev.patrickgold.florisboard.app.main.UNavRow
+import dev.patrickgold.florisboard.app.main.UnisonoIcons
+import dev.patrickgold.florisboard.app.main.UnisonoPage
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -72,14 +89,13 @@ private val POPULAR_TITLES = setOf(
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun SettingsSearchScreen() = FlorisScreen {
-    title = stringRes(R.string.settings__search__title)
-
+fun SettingsSearchScreen() = UnisonoPage(title = stringRes(R.string.settings__search__title)) {
     val navController = LocalNavController.current
     val context = LocalContext.current
     val prefs by FlorisPreferenceStore
     val scope = rememberCoroutineScope()
     val keyboardController = LocalSoftwareKeyboardController.current
+    val c = LocalUnisono.current
 
     var query by rememberSaveable { mutableStateOf("") }
     val historyRaw by prefs.internal.settingsSearchHistory.collectAsState()
@@ -87,136 +103,133 @@ fun SettingsSearchScreen() = FlorisScreen {
         historyRaw.split('\n').map { it.trim() }.filter { it.isNotEmpty() }
     }
 
-    // In-bar search field (autofocused on first entry), mirroring DictateHistoryScreen's pattern.
-    titleContent = {
-        val focus = remember { FocusRequester() }
-        LaunchedEffect(Unit) { if (query.isEmpty()) focus.requestFocus() }
-        TextField(
-            value = query,
-            onValueChange = { query = it },
-            modifier = Modifier.fillMaxWidth().focusRequester(focus),
-            singleLine = true,
-            placeholder = { Text(stringRes(R.string.settings__search__placeholder)) },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(onSearch = {
-                scope.launch { SettingsSearchHistory.add(prefs, query) }
-                keyboardController?.hide()
-            }),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-            ),
-        )
-    }
-
-    actions {
-        if (query.isNotEmpty()) {
-            FlorisIconButton(onClick = { query = "" }, icon = Icons.Default.Close)
-        }
-    }
-
-    content {
-        val q = query.trim()
-        val results = remember(q) {
-            if (q.isEmpty()) {
-                emptyList()
-            } else {
-                SettingsSearchIndex.entries.filter { e ->
-                    (context.getString(e.titleRes).contains(q, ignoreCase = true) ||
-                        context.getString(e.sectionRes).contains(q, ignoreCase = true) ||
-                        (e.parentRes != null && context.getString(e.parentRes).contains(q, ignoreCase = true)) ||
-                        // Synonyms for a setting whose own name nobody would guess (issue #333). Matched,
-                        // never shown — the row still reads as the setting's real name.
-                        (e.keywordsRes != null && context.getString(e.keywordsRes).contains(q, ignoreCase = true)))
-                }
-                    // Cluster the hits under their top-level section (the breadcrumb root).
-                    .sortedBy { context.getString(it.parentRes ?: it.sectionRes) }
+    // The search field (autofocused on first entry).
+    val focus = remember { FocusRequester() }
+    LaunchedEffect(Unit) { if (query.isEmpty()) focus.requestFocus() }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(44.dp)
+            .clip(Unisono.Pill)
+            .background(c.sunken)
+            .padding(horizontal = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Icon(UnisonoIcons.Search, contentDescription = null, tint = c.textTertiary, modifier = Modifier.size(18.dp))
+        Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
+            if (query.isEmpty()) {
+                Text(stringRes(R.string.settings__search__placeholder), style = Unisono.Body, color = c.textTertiary)
             }
-        }
-
-        fun open(entry: SettingsSearchEntry) {
-            // Retract the soft keyboard before navigating, so the destination screen doesn't briefly
-            // show with the keyboard still up.
-            keyboardController?.hide()
-            scope.launch { SettingsSearchHistory.add(prefs, query) }
-            SettingsSearchState.requestAnchor(entry.anchor)
-            navController.navigate(entry.route)
-        }
-
-        if (q.isEmpty()) {
-            // Recent searches as removable chips.
-            if (recent.isNotEmpty()) {
-                SectionHeader(stringRes(R.string.settings__search__recent))
-                FlowRow(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    recent.forEach { term ->
-                        SuggestionChip(
-                            onClick = { query = term },
-                            label = { Text(term) },
-                        )
-                    }
-                }
-                Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp)) {
-                    Text(
-                        text = stringRes(R.string.settings__search__clear_recent),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier
-                            .clickable { scope.launch { SettingsSearchHistory.clear(prefs) } }
-                            .padding(vertical = 4.dp),
-                    )
-                }
-            }
-            // Popular shortcuts.
-            SectionHeader(stringRes(R.string.settings__search__popular))
-            SettingsSearchIndex.entries.filter { it.titleRes in POPULAR_TITLES }.forEach { entry ->
-                ResultRow(entry, onClick = { open(entry) })
-            }
-        } else if (results.isEmpty()) {
-            Text(
-                text = stringRes(R.string.settings__search__no_results),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(24.dp),
+            BasicTextField(
+                value = query,
+                onValueChange = { query = it },
+                modifier = Modifier.fillMaxWidth().focusRequester(focus),
+                singleLine = true,
+                textStyle = Unisono.Body.copy(color = c.textPrimary),
+                cursorBrush = SolidColor(c.textPrimary),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(onSearch = {
+                    scope.launch { SettingsSearchHistory.add(prefs, query) }
+                    keyboardController?.hide()
+                }),
             )
+        }
+        if (query.isNotEmpty()) {
+            Icon(
+                Icons.Default.Close,
+                contentDescription = null,
+                tint = c.textSecondary,
+                modifier = Modifier.size(20.dp).clickable { query = "" },
+            )
+        }
+    }
+
+    val q = query.trim()
+    val results = remember(q) {
+        if (q.isEmpty()) {
+            emptyList()
         } else {
-            // Group results under their top-level section (the breadcrumb root).
-            var lastGroup: Int? = null
-            results.forEach { entry ->
-                val group = entry.parentRes ?: entry.sectionRes
-                if (group != lastGroup) {
-                    SectionHeader(stringRes(group))
-                    lastGroup = group
+            SettingsSearchIndex.entries.filter { e ->
+                (context.getString(e.titleRes).contains(q, ignoreCase = true) ||
+                    context.getString(e.sectionRes).contains(q, ignoreCase = true) ||
+                    (e.parentRes != null && context.getString(e.parentRes).contains(q, ignoreCase = true)) ||
+                    // Synonyms for a setting whose own name nobody would guess (issue #333). Matched, never
+                    // shown: the row still reads as the setting's real name.
+                    (e.keywordsRes != null && context.getString(e.keywordsRes).contains(q, ignoreCase = true)))
+            }
+                // Cluster the hits under their top-level section (the breadcrumb root).
+                .sortedBy { context.getString(it.parentRes ?: it.sectionRes) }
+        }
+    }
+
+    fun open(entry: SettingsSearchEntry) {
+        // Retract the soft keyboard before navigating, so the destination screen doesn't briefly show with
+        // the keyboard still up.
+        keyboardController?.hide()
+        scope.launch { SettingsSearchHistory.add(prefs, query) }
+        SettingsSearchState.requestAnchor(entry.anchor)
+        navController.navigate(entry.route)
+    }
+
+    if (q.isEmpty()) {
+        // Recent searches as chips.
+        if (recent.isNotEmpty()) {
+            UGroupLabel(stringRes(R.string.settings__search__recent))
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                recent.forEach { term -> UChip(term, selected = false, onClick = { query = term }) }
+            }
+            Text(
+                text = stringRes(R.string.settings__search__clear_recent),
+                style = Unisono.Caption,
+                color = c.textSecondary,
+                modifier = Modifier
+                    .clickable { scope.launch { SettingsSearchHistory.clear(prefs) } }
+                    .padding(vertical = 4.dp),
+            )
+        }
+        // Popular shortcuts.
+        val popular = SettingsSearchIndex.entries.filter { it.titleRes in POPULAR_TITLES }
+        if (popular.isNotEmpty()) {
+            UGroupLabel(stringRes(R.string.settings__search__popular))
+            UCard {
+                popular.forEachIndexed { index, entry ->
+                    if (index > 0) UDivider()
+                    ResultRow(entry, onClick = { open(entry) })
                 }
-                ResultRow(entry, onClick = { open(entry) })
+            }
+        }
+    } else if (results.isEmpty()) {
+        Text(
+            text = stringRes(R.string.settings__search__no_results),
+            style = Unisono.Body,
+            color = c.textSecondary,
+            modifier = Modifier.padding(24.dp),
+        )
+    } else {
+        // Group results under their top-level section (the breadcrumb root).
+        results.groupBy { it.parentRes ?: it.sectionRes }.forEach { (group, entries) ->
+            UGroupLabel(stringRes(group))
+            UCard {
+                entries.forEachIndexed { index, entry ->
+                    if (index > 0) UDivider()
+                    ResultRow(entry, onClick = { open(entry) })
+                }
             }
         }
     }
-}
-
-@Composable
-private fun SectionHeader(text: String) {
-    Text(
-        text = text.uppercase(),
-        style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.primary,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 4.dp),
-    )
 }
 
 @Composable
 private fun ResultRow(entry: SettingsSearchEntry, onClick: () -> Unit) {
     val section = stringRes(entry.sectionRes)
-    val breadcrumb = entry.parentRes?.let { "${stringRes(it)} › $section" } ?: section
-    Preference(
-        icon = Icons.Default.Search,
+    val breadcrumb = entry.parentRes?.let { "${stringRes(it)} \u203a $section" } ?: section
+    UNavRow(
         title = stringRes(entry.titleRes),
-        summary = breadcrumb,
+        subtitle = breadcrumb,
         onClick = onClick,
     )
 }

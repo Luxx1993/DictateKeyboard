@@ -11,6 +11,14 @@
 package dev.patrickgold.florisboard.app.main
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.alpha
 import androidx.compose.foundation.layout.height
@@ -98,6 +106,67 @@ fun UnisonoPage(
         }
         Column(Modifier.padding(bottom = 8.dp)) { UPageHeader(title, subtitle) }
         content()
+    }
+}
+
+/**
+ * [UnisonoPage] for long lists: the same back arrow and headline, but the content is a lazy list so only
+ * the rows in view are composed. The first item is the header; [content] adds the rest.
+ */
+@Composable
+fun UnisonoLazyPage(
+    title: String,
+    subtitle: String? = null,
+    content: LazyListScope.() -> Unit,
+) {
+    val c = LocalUnisono.current
+    val navController = LocalNavController.current
+    LazyColumn(
+        Modifier
+            .fillMaxSize()
+            .background(c.canvas)
+            .windowInsetsPadding(WindowInsets.statusBars),
+        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 32.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        item {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Box(
+                    Modifier
+                        .size(44.dp)
+                        .clip(CircleShape)
+                        .clickable { navController.popBackStack() },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        UnisonoIcons.Arrow,
+                        contentDescription = stringRes(R.string.main__back),
+                        tint = c.textPrimary,
+                        modifier = Modifier.size(22.dp).rotate(180f),
+                    )
+                }
+                Column(Modifier.padding(bottom = 8.dp)) { UPageHeader(title, subtitle) }
+            }
+        }
+        content()
+    }
+}
+
+/** The square tick box of [UCheckRow], for rows that bring their own click handling. */
+@Composable
+fun UCheckMark(checked: Boolean) {
+    val c = LocalUnisono.current
+    Box(
+        Modifier
+            .size(22.dp)
+            .clip(Unisono.RadiusMd)
+            .background(if (checked) c.action else c.raised)
+            .border(1.5.dp, if (checked) c.action else c.borderStrong, Unisono.RadiusMd),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (checked) {
+            Text("✓", style = Unisono.Caption, color = c.onAction)
+        }
     }
 }
 
@@ -256,18 +325,7 @@ fun UCheckRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        Box(
-            Modifier
-                .size(22.dp)
-                .clip(Unisono.RadiusMd)
-                .background(if (checked) c.action else c.raised)
-                .border(1.5.dp, if (checked) c.action else c.borderStrong, Unisono.RadiusMd),
-            contentAlignment = Alignment.Center,
-        ) {
-            if (checked) {
-                Text("✓", style = Unisono.Caption, color = c.onAction)
-            }
-        }
+        UCheckMark(checked)
         Column(Modifier.weight(1f)) {
             Text(title, style = Unisono.BodyStrong.copy(lineHeight = 24.sp), color = c.textPrimary)
             if (subtitle != null) Text(subtitle, style = Unisono.Label, color = c.textSecondary)
@@ -328,6 +386,7 @@ fun UDialog(
     title: String,
     onDismiss: () -> Unit,
     description: String? = null,
+    doneLabel: String = stringRes(R.string.main__done),
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val c = LocalUnisono.current
@@ -358,7 +417,7 @@ fun UDialog(
             Column(Modifier.padding(top = 10.dp)) { content() }
             Row(Modifier.fillMaxWidth().padding(horizontal = 10.dp), horizontalArrangement = Arrangement.End) {
                 Text(
-                    stringRes(R.string.main__done),
+                    doneLabel,
                     modifier = Modifier
                         .clip(Unisono.Pill)
                         .clickable(onClick = onDismiss)
@@ -371,35 +430,69 @@ fun UDialog(
     }
 }
 
-/** A labelled single-line text field on a sunken pill, for use inside a [UDialog]. */
+/**
+ * A labelled text field on a sunken pill, for use inside a [UDialog]. With [singleLine] off it becomes a
+ * taller box of at least [minHeight] that grows with its text.
+ */
 @Composable
-fun UTextField(label: String, placeholder: String, value: String, onValueChange: (String) -> Unit) {
+fun UTextField(
+    label: String,
+    placeholder: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    singleLine: Boolean = true,
+    minHeight: Dp = 110.dp,
+    isError: Boolean = false,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    isSecret: Boolean = false,
+) {
     val c = LocalUnisono.current
+    val shape = if (singleLine) Unisono.Pill else Unisono.RadiusMd
     Column(
         Modifier.padding(horizontal = 18.dp, vertical = 6.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        Text(label, style = Unisono.Mono, color = c.textTertiary)
+        Text(label, style = Unisono.Mono, color = if (isError) Color(0xFFB3443A) else c.textTertiary)
         Box(
             Modifier
                 .fillMaxWidth()
-                .height(44.dp)
-                .clip(Unisono.Pill)
+                .then(if (singleLine) Modifier.height(44.dp) else Modifier.heightIn(min = minHeight))
+                .clip(shape)
                 .background(c.sunken)
-                .padding(horizontal = 14.dp),
-            contentAlignment = Alignment.CenterStart,
+                .then(if (isError) Modifier.border(1.dp, Color(0xFFB3443A), shape) else Modifier)
+                .padding(horizontal = 14.dp, vertical = if (singleLine) 0.dp else 12.dp),
+            contentAlignment = if (singleLine) Alignment.CenterStart else Alignment.TopStart,
         ) {
             if (value.isEmpty()) Text(placeholder, style = Unisono.Body, color = c.textTertiary)
             BasicTextField(
                 value = value,
                 onValueChange = onValueChange,
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
+                singleLine = singleLine,
+                keyboardOptions = KeyboardOptions(keyboardType = if (isSecret) KeyboardType.Password else keyboardType),
+                visualTransformation = if (isSecret) PasswordVisualTransformation() else VisualTransformation.None,
                 textStyle = Unisono.Body.copy(color = c.textPrimary),
                 cursorBrush = SolidColor(c.textPrimary),
             )
         }
     }
+}
+
+/** A pill chip; the [selected] one is filled with the action colour. */
+@Composable
+fun UChip(label: String, selected: Boolean, onClick: () -> Unit) {
+    val c = LocalUnisono.current
+    Text(
+        label,
+        modifier = Modifier
+            .clip(Unisono.Pill)
+            .background(if (selected) c.action else c.raised)
+            .border(0.5.dp, if (selected) c.action else c.borderSubtle, Unisono.Pill)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 8.dp),
+        style = Unisono.Caption,
+        color = if (selected) c.onAction else c.textPrimary,
+    )
 }
 
 /** A pill button: [primary] is filled with the action colour, otherwise outlined. */

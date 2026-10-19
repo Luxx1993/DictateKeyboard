@@ -11,8 +11,17 @@
 package dev.patrickgold.florisboard.app.settings.dictate
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
+import dev.patrickgold.florisboard.app.apptheme.Unisono
+import dev.patrickgold.florisboard.app.main.UCard
+import dev.patrickgold.florisboard.app.main.UDivider
+import dev.patrickgold.florisboard.app.main.UNavRow
+import dev.patrickgold.florisboard.app.main.UPrefSlider
+import dev.patrickgold.florisboard.app.main.UPrefSwitch
+import dev.patrickgold.florisboard.app.main.UnisonoIcons
+import dev.patrickgold.florisboard.app.main.UnisonoPage
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -113,71 +122,66 @@ import dev.patrickgold.jetpref.datastore.ui.listPrefEntries
 import kotlinx.coroutines.launch
 
 @Composable
-fun DictateScreen() = FlorisScreen {
-    title = stringRes(R.string.dictate__title)
-    iconSpaceReserved = true
-
+fun DictateScreen() = UnisonoPage(title = stringRes(R.string.dictate__title)) {
     val prefs by FlorisPreferenceStore
+    val navController = LocalNavController.current
 
-    content {
-        val navController = LocalNavController.current
+    // The active providers' display names, for the summary of the providers row. Show both the
+    // transcription and (when rewording is on) the rewording provider, since they are configured
+    // independently and often differ.
+    val transcriptionProviderId by prefs.dictate.transcriptionProviderId.collectAsState()
+    val rewordingProviderId by prefs.dictate.rewordingProviderId.collectAsState()
+    val rewordingEnabled by prefs.dictate.rewordingEnabled.collectAsState()
+    val accounts by prefs.dictate.providerAccounts.collectAsState()
+    val transcriptionName = remember(transcriptionProviderId, accounts) {
+        providerDisplayName(transcriptionProviderId, accounts)
+    }
+    val rewordingName = remember(rewordingProviderId, accounts) {
+        providerDisplayName(rewordingProviderId, accounts)
+    }
 
-        // The active providers' display names, for the summary of the providers row. Show both the
-        // transcription and (when rewording is on) the rewording provider, since they are configured
-        // independently and often differ — the row previously surfaced only the transcription one.
-        val transcriptionProviderId by prefs.dictate.transcriptionProviderId.collectAsState()
-        val rewordingProviderId by prefs.dictate.rewordingProviderId.collectAsState()
-        val rewordingEnabled by prefs.dictate.rewordingEnabled.collectAsState()
-        val accounts by prefs.dictate.providerAccounts.collectAsState()
-        val transcriptionName = remember(transcriptionProviderId, accounts) {
-            providerDisplayName(transcriptionProviderId, accounts)
-        }
-        val rewordingName = remember(rewordingProviderId, accounts) {
-            providerDisplayName(rewordingProviderId, accounts)
-        }
-
-        Preference(
-            icon = Icons.Default.Insights,
-            modifier = Modifier.settingsSearchAnchor("dictate__stats_title"),
+    UCard {
+        UNavRow(
             title = stringRes(R.string.dictate__stats_title),
-            summary = stringRes(R.string.dictate__stats_menu_summary),
+            subtitle = stringRes(R.string.dictate__stats_menu_summary),
+            icon = UnisonoIcons.Wave,
             onClick = { navController.navigate(Routes.Settings.DictateStats) },
+            modifier = Modifier.settingsSearchAnchor("dictate__stats_title"),
         )
-        Preference(
-            icon = Icons.Default.History,
-            modifier = Modifier.settingsSearchAnchor("dictate__history_title"),
+        UDivider()
+        UNavRow(
             title = stringRes(R.string.dictate__history_title),
-            summary = stringRes(R.string.dictate__history_menu_summary),
+            subtitle = stringRes(R.string.dictate__history_menu_summary),
+            icon = UnisonoIcons.Clock,
             onClick = { navController.navigate(Routes.Settings.DictateHistory) },
+            modifier = Modifier.settingsSearchAnchor("dictate__history_title"),
         )
-
+        UDivider()
         // "Transcribe a file" (issue #301): the same screen a share lands on, reached from inside.
-        // Deliberately the system picker rather than a browser of our own — SAF is better at it than
-        // we would ever be, and it reopens where it was last used, which was the actual request in
+        // Deliberately the system picker rather than a browser of our own: SAF is better at it than we
+        // would ever be, and it reopens where it was last used, which was the actual request in
         // discussion #300 (a folder of Signal voice messages).
         val importContext = LocalContext.current
         val importPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
             if (uri != null) importContext.startActivity(TranscribeShareActivity.intentFor(importContext, uri))
         }
-        Preference(
-            icon = Icons.Default.AudioFile,
-            modifier = Modifier.settingsSearchAnchor("dictate__import_menu"),
+        UNavRow(
             title = stringRes(R.string.dictate__import_menu),
-            summary = stringRes(R.string.dictate__import_menu_summary),
+            subtitle = stringRes(R.string.dictate__import_menu_summary),
+            icon = UnisonoIcons.AudioFile,
             onClick = { importPicker.launch(TranscribeShareActivity.MIME_TYPES) },
+            modifier = Modifier.settingsSearchAnchor("dictate__import_menu"),
         )
+    }
 
-        // Hub: each row opens a dedicated sub-screen (issue #153), keeping this landing page short and
-        // scannable instead of one long list of every setting.
-        //
-        // Who dictates and in which language comes first: those two are what somebody sets up once and
-        // then changes when something is wrong, while the layout is a matter of taste that most people
-        // never touch.
-        Preference(
-            icon = Icons.Default.Cloud,
-            modifier = Modifier.settingsSearchAnchor("dictate__providers_title"),
+    // Hub: each row opens a dedicated sub-screen (issue #153), keeping this landing page short and
+    // scannable instead of one long list of every setting. Who dictates and in which language comes first:
+    // those two are what somebody sets up once and then changes when something is wrong, while the layout
+    // is a matter of taste that most people never touch.
+    UCard {
+        UNavRow(
             title = stringRes(R.string.dictate__providers_title),
-            summary = if (rewordingEnabled && transcriptionName != rewordingName) {
+            subtitle = if (rewordingEnabled && transcriptionName != rewordingName) {
                 stringRes(
                     R.string.dictate__providers_summary_both,
                     "transcription" to transcriptionName,
@@ -186,9 +190,11 @@ fun DictateScreen() = FlorisScreen {
             } else {
                 stringRes(R.string.dictate__providers_summary, "provider" to transcriptionName)
             },
+            icon = UnisonoIcons.Cloud,
             onClick = { navController.navigate(Routes.Settings.DictateProviders) },
+            modifier = Modifier.settingsSearchAnchor("dictate__providers_title"),
         )
-
+        UDivider()
         val selectionRaw by prefs.dictate.inputLanguages.collectAsState()
         val detectLabel = stringRes(R.string.dictate__language_detect)
         val languagesSummary = remember(selectionRaw, detectLabel) {
@@ -196,57 +202,59 @@ fun DictateScreen() = FlorisScreen {
                 if (it.code == DictateLanguages.DETECT) detectLabel else it.displayName()
             }
         }
-        Preference(
-            icon = Icons.Default.Translate,
-            modifier = Modifier.settingsSearchAnchor("dictate__languages_title"),
+        UNavRow(
             title = stringRes(R.string.dictate__languages_title),
-            summary = languagesSummary,
+            subtitle = languagesSummary,
+            icon = UnisonoIcons.Globe,
             onClick = { navController.navigate(Routes.Settings.DictateLanguages) },
+            modifier = Modifier.settingsSearchAnchor("dictate__languages_title"),
         )
-
-        Preference(
-            icon = Icons.Default.Spellcheck,
-            modifier = Modifier.settingsSearchAnchor("dictate__formatting_title"),
+        UDivider()
+        UNavRow(
             title = stringRes(R.string.dictate__formatting_title),
-            summary = stringRes(R.string.dictate__formatting_menu_summary),
+            subtitle = stringRes(R.string.dictate__formatting_menu_summary),
+            icon = UnisonoIcons.Book,
             onClick = { navController.navigate(Routes.Settings.DictateFormatting) },
+            modifier = Modifier.settingsSearchAnchor("dictate__formatting_title"),
         )
-
-        Preference(
-            icon = Icons.Default.AutoAwesome,
-            modifier = Modifier.settingsSearchAnchor("dictate__rewording_title"),
+        UDivider()
+        UNavRow(
             title = stringRes(R.string.dictate__rewording_title),
-            summary = stringRes(
+            subtitle = stringRes(
                 if (rewordingEnabled) R.string.dictate__rewording_summary_on
                 else R.string.dictate__rewording_summary_off,
             ),
+            icon = UnisonoIcons.Sparkle,
             onClick = { navController.navigate(Routes.Settings.DictateRewording) },
+            modifier = Modifier.settingsSearchAnchor("dictate__rewording_title"),
         )
-
-        Preference(
-            icon = Icons.Default.Mic,
-            modifier = Modifier.settingsSearchAnchor("dictate__recording_group"),
+        UDivider()
+        UNavRow(
             title = stringRes(R.string.dictate__recording_group),
-            summary = stringRes(R.string.dictate__recording_menu_summary),
+            subtitle = stringRes(R.string.dictate__recording_menu_summary),
+            icon = UnisonoIcons.Mic,
             onClick = { navController.navigate(Routes.Settings.DictateRecording) },
+            modifier = Modifier.settingsSearchAnchor("dictate__recording_group"),
         )
-
-        Preference(
-            icon = Icons.Default.Keyboard,
-            modifier = Modifier.settingsSearchAnchor("dictate__output_group"),
+        UDivider()
+        UNavRow(
             title = stringRes(R.string.dictate__output_group),
-            summary = stringRes(R.string.dictate__output_menu_summary),
+            subtitle = stringRes(R.string.dictate__output_menu_summary),
+            icon = UnisonoIcons.Keyboard,
             onClick = { navController.navigate(Routes.Settings.DictateOutput) },
+            modifier = Modifier.settingsSearchAnchor("dictate__output_group"),
         )
+    }
 
-        // Floating button keeps its own screen and the "New" badge until first opened (issue #88).
+    // Floating button keeps its own entry and the "New" badge until first opened (issue #88).
+    UCard {
         val floatingHintSeen by prefs.dictate.floatingButtonHintSeen.collectAsState()
-        Preference(
-            icon = Icons.Default.Adjust,
-            modifier = Modifier.settingsSearchAnchor("dictate__floating_button_enable_title"),
+        UNavRow(
             title = stringRes(R.string.dictate__floating_button_enable_title),
-            summary = stringRes(R.string.dictate__floating_button_enable_summary),
+            subtitle = stringRes(R.string.dictate__floating_button_enable_summary),
+            icon = UnisonoIcons.Cloud,
             onClick = { navController.navigate(Routes.Settings.DictateFloatingButton) },
+            modifier = Modifier.settingsSearchAnchor("dictate__floating_button_enable_title"),
             trailing = if (!floatingHintSeen) {
                 { NewBadge() }
             } else {
@@ -257,25 +265,20 @@ fun DictateScreen() = FlorisScreen {
 }
 
 /**
- * Sub-screen (issue #153): input formatting & vocabulary — the style prompt, custom words appended to the
+ * Sub-screen (issue #153): input formatting & vocabulary: the style prompt, custom words appended to the
  * transcription prompt, and the deterministic find-and-replace mappings.
  */
 @Composable
-fun DictateFormattingScreen() = FlorisScreen {
-    title = stringRes(R.string.dictate__formatting_title)
-    iconSpaceReserved = true
-
+fun DictateFormattingScreen() = UnisonoPage(title = stringRes(R.string.dictate__formatting_title)) {
     val prefs by FlorisPreferenceStore
+    val navController = LocalNavController.current
+    val activeLang by prefs.dictate.activeInputLanguage.collectAsState()
 
-    content {
-        val navController = LocalNavController.current
-        val activeLang by prefs.dictate.activeInputLanguage.collectAsState()
-        PromptSelectionPreference(
+    UCard {
+        PromptSelectionRow(
             pref = prefs.dictate.stylePromptSelection,
-            icon = Icons.Default.Spellcheck,
             title = stringRes(R.string.dictate__style_prompt_title),
-            entries = promptSelectionEntries(),
-            infoTitle = stringRes(R.string.dictate__style_prompt_info_title),
+            choices = promptSelectionChoices(),
             infoDescription = stringRes(R.string.dictate__style_prompt_info_description),
             // Null for a language that has no example sentence: since issue #275 none is sent at all
             // rather than an English one, and the info box should say so instead of showing nothing.
@@ -284,59 +287,55 @@ fun DictateFormattingScreen() = FlorisScreen {
             customPref = prefs.dictate.stylePromptCustom,
             customPlaceholder = stringRes(R.string.dictate__style_prompt_custom_placeholder),
         )
+        UDivider()
         // The editor, what the list costs on every request, and the file import/export (issue #389).
         CustomWordsSection(prefs.dictate.customWords)
-        Preference(
-            icon = Icons.Default.SwapHoriz,
-            modifier = Modifier.settingsSearchAnchor("dictate__mappings_title"),
+        UDivider()
+        UNavRow(
             title = stringRes(R.string.dictate__mappings_title),
-            summary = stringRes(R.string.dictate__mappings_entry_summary),
+            subtitle = stringRes(R.string.dictate__mappings_entry_summary),
             onClick = { navController.navigate(Routes.Settings.DictateMappings) },
+            modifier = Modifier.settingsSearchAnchor("dictate__mappings_title"),
         )
     }
 }
 
 /**
- * Sub-screen (issue #153): output & insertion — how the finished text is written (instant vs typed),
+ * Sub-screen (issue #153): output & insertion: how the finished text is written (instant vs typed),
  * auto-enter, the resend button, and remembering the last dictation.
  */
 @Composable
-fun DictateOutputScreen() = FlorisScreen {
-    title = stringRes(R.string.dictate__output_group)
-    iconSpaceReserved = true
-
+fun DictateOutputScreen() = UnisonoPage(title = stringRes(R.string.dictate__output_group)) {
     val prefs by FlorisPreferenceStore
+    val instantOutput by prefs.dictate.instantOutput.collectAsState()
 
-    content {
-        SwitchPreference(
+    UCard {
+        UPrefSwitch(
             prefs.dictate.autoEnter,
-            icon = Icons.AutoMirrored.Filled.KeyboardReturn,
-            modifier = Modifier.settingsSearchAnchor("dictate__auto_enter_title"),
             title = stringRes(R.string.dictate__auto_enter_title),
-            summary = stringRes(R.string.dictate__auto_enter_summary),
+            subtitle = stringRes(R.string.dictate__auto_enter_summary),
+            modifier = Modifier.settingsSearchAnchor("dictate__auto_enter_title"),
         )
-        SwitchPreference(
+        UDivider()
+        UPrefSwitch(
             prefs.dictate.instantOutput,
-            icon = Icons.Default.Keyboard,
-            modifier = Modifier.settingsSearchAnchor("dictate__instant_output_title"),
             title = stringRes(R.string.dictate__instant_output_title),
-            summary = stringRes(R.string.dictate__instant_output_summary),
+            subtitle = stringRes(R.string.dictate__instant_output_summary),
+            modifier = Modifier.settingsSearchAnchor("dictate__instant_output_title"),
         )
-        DialogSliderPreference(
+        UDivider()
+        UPrefSlider(
             prefs.dictate.outputSpeed,
-            icon = Icons.Default.Speed,
-            modifier = Modifier.settingsSearchAnchor("dictate__output_speed_title"),
             title = stringRes(R.string.dictate__output_speed_title),
             valueLabel = { stringRes(R.string.dictate__output_speed_value, "v" to it) },
             min = 1,
             max = 10,
-            stepIncrement = 1,
-            enabledIf = { prefs.dictate.instantOutput isEqualTo false },
+            enabled = !instantOutput,
+            modifier = Modifier.settingsSearchAnchor("dictate__output_speed_title"),
         )
-        DialogSliderPreference(
+        UDivider()
+        UPrefSlider(
             prefs.dictate.paragraphSplitWords,
-            icon = Icons.Default.Segment,
-            modifier = Modifier.settingsSearchAnchor("dictate__paragraph_split_title"),
             title = stringRes(R.string.dictate__paragraph_split_title),
             valueLabel = {
                 if (it <= 0) stringRes(R.string.dictate__paragraph_split_off)
@@ -344,28 +343,31 @@ fun DictateOutputScreen() = FlorisScreen {
             },
             min = 0,
             max = 100,
-            stepIncrement = 5,
+            step = 5,
+            modifier = Modifier.settingsSearchAnchor("dictate__paragraph_split_title"),
         )
-        SwitchPreference(
+    }
+
+    UCard {
+        UPrefSwitch(
             prefs.dictate.resendButton,
-            icon = Icons.Default.Replay,
-            modifier = Modifier.settingsSearchAnchor("dictate__resend_button_title"),
             title = stringRes(R.string.dictate__resend_button_title),
-            summary = stringRes(R.string.dictate__resend_button_summary),
+            subtitle = stringRes(R.string.dictate__resend_button_summary),
+            modifier = Modifier.settingsSearchAnchor("dictate__resend_button_title"),
         )
-        SwitchPreference(
+        UDivider()
+        UPrefSwitch(
             prefs.dictate.hapticFeedback,
-            icon = Icons.Default.Vibration,
-            modifier = Modifier.settingsSearchAnchor("dictate__haptic_feedback_title"),
             title = stringRes(R.string.dictate__haptic_feedback_title),
-            summary = stringRes(R.string.dictate__haptic_feedback_summary),
+            subtitle = stringRes(R.string.dictate__haptic_feedback_summary),
+            modifier = Modifier.settingsSearchAnchor("dictate__haptic_feedback_title"),
         )
-        SwitchPreference(
+        UDivider()
+        UPrefSwitch(
             prefs.dictate.rememberLastDictation,
-            icon = Icons.Default.History,
-            modifier = Modifier.settingsSearchAnchor("dictate__remember_last_dictation_title"),
             title = stringRes(R.string.dictate__remember_last_dictation_title),
-            summary = stringRes(R.string.dictate__remember_last_dictation_summary),
+            subtitle = stringRes(R.string.dictate__remember_last_dictation_summary),
+            modifier = Modifier.settingsSearchAnchor("dictate__remember_last_dictation_title"),
         )
     }
 }
@@ -383,18 +385,16 @@ private fun providerDisplayName(id: String, accounts: ProviderAccounts): String 
 /** A small accent "New" pill used to point users at a recently added settings entry. */
 @Composable
 private fun NewBadge() {
-    Box(
+    val c = LocalUnisono.current
+    Text(
+        text = stringRes(R.string.dictate__floating_button_badge_new),
         modifier = Modifier
-            .clip(RoundedCornerShape(percent = 50))
-            .background(MaterialTheme.colorScheme.primary)
+            .clip(Unisono.Pill)
+            .background(c.action)
             .padding(horizontal = 8.dp, vertical = 2.dp),
-    ) {
-        Text(
-            text = stringRes(R.string.dictate__floating_button_badge_new),
-            color = MaterialTheme.colorScheme.onPrimary,
-            style = MaterialTheme.typography.labelSmall,
-        )
-    }
+        color = c.onAction,
+        style = Unisono.Mono,
+    )
 }
 
 /**

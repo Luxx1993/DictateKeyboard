@@ -10,6 +10,12 @@
 
 package dev.patrickgold.florisboard.app.settings.dictate
 
+import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
+import dev.patrickgold.florisboard.app.apptheme.Unisono
+import dev.patrickgold.florisboard.app.main.UDialog
+import dev.patrickgold.florisboard.app.main.UDivider
+import dev.patrickgold.florisboard.app.main.UNavRow
+import dev.patrickgold.florisboard.app.main.UTextField
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -159,64 +165,50 @@ fun ModelPickerDialog(
     }
     val showFreeText = query.isNotBlank() && candidates.none { it.equals(query.trim(), ignoreCase = true) }
 
-    JetPrefAlertDialog(
-        scrollModifier = florisDialogScroll(),
+    val c = LocalUnisono.current
+    UDialog(
         title = stringRes(R.string.dictate__model_picker_title),
-        dismissLabel = stringRes(R.string.action__cancel),
+        doneLabel = stringRes(R.string.action__cancel),
         onDismiss = onDismiss,
     ) {
-        Column {
-            OutlinedTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = query,
-                onValueChange = { query = it },
-                singleLine = true,
-                label = { Text(stringRes(R.string.dictate__model_picker_search)) },
-            )
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                val statusText = when {
-                    loading -> stringRes(R.string.dictate__model_picker_loading)
-                    error != null -> error!!
-                    else -> stringRes(R.string.dictate__model_picker_count, "count" to candidates.size)
-                }
-                Text(text = statusText, modifier = Modifier.weight(1f))
-                TextButton(
-                    enabled = !loading,
-                    onClick = { scope.launch { loadModels() } },
-                ) {
-                    if (loading) {
-                        CircularProgressIndicator(modifier = Modifier.padding(end = 8.dp).size(16.dp))
-                    } else {
-                        Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.padding(end = 4.dp))
-                    }
-                    Text(stringRes(R.string.dictate__model_picker_refresh))
-                }
-            }
-
-            LazyColumn(modifier = Modifier.heightIn(max = 280.dp)) {
-                if (showFreeText) {
-                    item {
-                        ModelRow(
-                            label = stringRes(R.string.dictate__model_picker_use_custom, "model" to query.trim()),
-                            selected = false,
-                            onClick = { onPick(query.trim()); onDismiss() },
-                        )
-                    }
-                }
-                items(candidates) { model ->
+        UTextField(
+            label = stringRes(R.string.dictate__model_picker_search),
+            placeholder = "",
+            value = query,
+            onValueChange = { query = it },
+        )
+        val statusText = when {
+            loading -> stringRes(R.string.dictate__model_picker_loading)
+            error != null -> error!!
+            else -> stringRes(R.string.dictate__model_picker_count, "count" to candidates.size)
+        }
+        Text(
+            text = statusText,
+            modifier = Modifier.padding(horizontal = 18.dp, vertical = 4.dp),
+            style = Unisono.Label,
+            color = c.textSecondary,
+        )
+        UNavRow(
+            title = stringRes(R.string.dictate__model_picker_refresh),
+            onClick = { if (!loading) scope.launch { loadModels() } },
+        )
+        UDivider()
+        LazyColumn(modifier = Modifier.heightIn(max = 280.dp)) {
+            if (showFreeText) {
+                item {
                     ModelRow(
-                        label = model,
-                        selected = model.equals(current, ignoreCase = true),
-                        onClick = { onPick(model); onDismiss() },
+                        label = stringRes(R.string.dictate__model_picker_use_custom, "model" to query.trim()),
+                        selected = false,
+                        onClick = { onPick(query.trim()); onDismiss() },
                     )
                 }
+            }
+            items(candidates) { model ->
+                ModelRow(
+                    label = model,
+                    selected = model.equals(current, ignoreCase = true),
+                    onClick = { onPick(model); onDismiss() },
+                )
             }
         }
     }
@@ -224,24 +216,25 @@ fun ModelPickerDialog(
 
 @Composable
 private fun ModelRow(label: String, selected: Boolean, onClick: () -> Unit) {
+    val c = LocalUnisono.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = 12.dp),
+            .padding(horizontal = 18.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = label,
             modifier = Modifier.weight(1f),
-            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+            style = if (selected) Unisono.BodyStrong else Unisono.Body,
+            color = c.textPrimary,
         )
-        // No capability badge here any more. A 🎤 used to mark what the catalog called audio-capable, and
-        // it was wrong often enough to send people away from models that work (#313). The modality data
-        // still decides which ids *appear* in the transcription list, where being wrong only ever adds an
-        // entry — claiming something about a particular model is the part that had to go.
+        // No capability badge here any more. A 🎤 used to mark what the catalog called audio-capable, and it
+        // was wrong often enough to send people away from models that work (#313). The modality data still
+        // decides which ids *appear* in the transcription list, where being wrong only ever adds an entry.
         if (selected) {
-            Icon(Icons.Default.Check, contentDescription = null)
+            Icon(Icons.Default.Check, contentDescription = null, tint = c.textPrimary)
         }
     }
 }
