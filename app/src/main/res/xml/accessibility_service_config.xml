@@ -13,6 +13,8 @@
   caused visible typing jank. Focus never moves on a content change, so nothing is lost by ignoring it.
   notificationTimeout stays at zero: the service itself coalesces the only high-frequency event
   (typeViewTextSelectionChanged), while focus and window changes must reach the bubble immediately.
+  canTakeScreenshot (Android 11+) is only for the floating button's "Welle" design: it reads the brightness of a few
+  pixels around the button to choose black or white ink, and keeps nothing of the picture (see BackdropTone).
   The description is shown verbatim in the system Accessibility settings as the user-facing disclosure.
 -->
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
@@ -20,6 +22,7 @@
     android:accessibilityFeedbackType="feedbackGeneric"
     android:accessibilityFlags="flagDefault|flagRetrieveInteractiveWindows|flagReportViewIds|flagInputMethodEditor"
     android:canRetrieveWindowContent="true"
+    android:canTakeScreenshot="true"
     android:notificationTimeout="0"
     android:description="@string/dictate__accessibility_service_description"
     android:summary="@string/dictate__accessibility_service_summary" />

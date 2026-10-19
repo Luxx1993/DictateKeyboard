@@ -42,7 +42,7 @@ APK unter `app/build/outputs/apk/debug/`. Debug-Builds sind mit einem Debug-Schl
 - `app/src/main/kotlin/dev/patrickgold/florisboard/dictate/` – Diktat-Logik (Anbieter, Aufnahme, Overlay)
 - `dictate/overlay/` – schwebender Button (Accessibility-Service, Bubble-Controller)
 - `dictate/ui/AudioReactiveCloudOrbView.kt` – AGSL-Shader der Wolke (Ebenen wie der Prototyp), `CloudMotion.kt` (Keyframes), `CloudPalette.kt` (5 Paletten)
-- `dictate/ui/DiktatGlobe.kt` – Icon-Kugel als Compose-Komponente, Animation D
+- `dictate/ui/DiktatGlobe.kt` – Icon-Kugel als Compose-Komponente, Animation D; `DictateWaveOrbView.kt` – dieselbe Kugel als schwebender Button „Welle“ (schwarz/weiß nach Hintergrund, `overlay/BackdropTone.kt`)
 - `app/main/` – Oberfläche Entwurf 3: `MainScreen.kt` (4 Tabs, Startbildschirm), `StartTab`, `DictionaryTab`, `StylesTab`, `SettingsTab`, Bausteine `UnisonoComponents.kt`, Icons `UnisonoIcons.kt`
 - `app/apptheme/Unisono.kt` – Farben, Schriften, Textstile des Unisono-Looks
 - `app/settings/` – Compose-Einstellungen (`HomeScreen.kt` = „Alle Einstellungen“, `dictate/DictateProvidersScreen.kt` …)

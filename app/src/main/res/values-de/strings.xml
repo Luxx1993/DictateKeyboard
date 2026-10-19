@@ -186,7 +186,7 @@
     <!-- Dictate floating button / accessibility service (issue #88) -->
     <string name="dictate__accessibility_service_label">diktat Floating-Button</string>
     <string name="dictate__accessibility_service_summary">Zeigt einen schwebenden Button, um in jedes Textfeld zu diktieren.</string>
-    <string name="dictate__accessibility_service_description">diktat nutzt diesen Dienst für den schwebenden Diktier-Button. Wenn er aktiviert ist, erkennt er, wann in einer beliebigen App ein Textfeld fokussiert wird – damit der Button erscheinen kann – und fügt deine transkribierte Sprache in dieses Feld ein. diktat liest nur das fokussierte Feld, um deinen Text an der Cursorposition einzufügen; es sammelt, speichert oder teilt keine anderen Bildschirminhalte.</string>
+    <string name="dictate__accessibility_service_description">diktat nutzt diesen Dienst für den schwebenden Diktier-Button. Wenn er aktiviert ist, erkennt er, wann in einer beliebigen App ein Textfeld fokussiert wird – damit der Button erscheinen kann – und fügt deine transkribierte Sprache in dieses Feld ein. diktat liest nur das fokussierte Feld, um deinen Text an der Cursorposition einzufügen; es sammelt, speichert oder teilt keine anderen Bildschirminhalte. Für den Button-Stil „Welle“ liest es zusätzlich die Helligkeit einiger Bildpunkte neben dem Button, um Schwarz oder Weiß zu wählen; das Bild wird sofort verworfen.</string>
     <string name="dictate__overlay_notification_channel">Schwebender Diktier-Button</string>
     <string name="dictate__overlay_notification_recording">Aufnahme – tippe auf den schwebenden Button, um zu transkribieren</string>
     <string name="dictate__floating_button_title">Floating-Button</string>
@@ -229,6 +229,8 @@
     <string name="dictate__floating_button_design_aurora_summary">Licht in einer Kugel: bewegt sich beim Aufnehmen, wirbelt beim Verarbeiten</string>
     <string name="dictate__floating_button_design_lattice">Gitter</string>
     <string name="dictate__floating_button_design_lattice_summary">Eine Kugel aus Punkten: verknüpft sich im Leerlauf, wellt sich mit deiner Stimme, dreht sich beim Verarbeiten</string>
+    <string name="dictate__floating_button_design_wave">Welle</string>
+    <string name="dictate__floating_button_design_wave_summary">Das App-Symbol: eine ruhende Welle um die Welt, schwarz oder weiß passend zum Hintergrund. Beim Aufnehmen dreht sie sich und atmet mit deiner Stimme, beim Transkribieren dreht sie sich nur</string>
     <string name="dictate__floating_button_size_title">Buttongröße</string>
     <string name="dictate__floating_button_size_small">Klein</string>
     <string name="dictate__floating_button_size_medium">Mittel</string>
@@ -750,7 +752,6 @@
     <string name="main__prov_group_mine">Deine Anbieter</string>
     <string name="main__prov_group_network">Netzwerk</string>
     <string name="main__greeting_set_name">Namen eintragen</string>
-    <string name="main__theme_toggle">Zwischen hell und dunkel wechseln</string>
     <string name="main__greeting_name_hint">Dein Name</string>
     <string name="main__greeting">Hallo</string>
     <string name="main__start_subtitle">Diktiere in jeder App über die Wolke oder die Mikrofon-Taste deiner Tastatur.</string>

@@ -189,6 +189,7 @@ fun DictateFloatingButtonScreen() = UnisonoPage(title = stringRes(R.string.main_
                     designChoice(DictateFloatingButtonDesign.ORB, R.string.dictate__floating_button_design_orb, R.string.dictate__floating_button_design_orb_summary),
                     designChoice(DictateFloatingButtonDesign.AURORA, R.string.dictate__floating_button_design_aurora, R.string.dictate__floating_button_design_aurora_summary),
                     designChoice(DictateFloatingButtonDesign.LATTICE, R.string.dictate__floating_button_design_lattice, R.string.dictate__floating_button_design_lattice_summary),
+                    designChoice(DictateFloatingButtonDesign.WAVE, R.string.dictate__floating_button_design_wave, R.string.dictate__floating_button_design_wave_summary),
                 ),
                 selected = design,
                 onSelect = { scope.launch { prefs.dictate.floatingButtonDesign.set(it) } },

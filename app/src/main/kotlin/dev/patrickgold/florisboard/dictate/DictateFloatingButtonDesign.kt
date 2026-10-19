@@ -32,5 +32,11 @@ enum class DictateFloatingButtonDesign {
     AURORA,
 
     /** A sphere of dots that wires itself while idle, ripples with the voice, and twists while working (#253). */
-    LATTICE;
+    LATTICE,
+
+    /**
+     * The app icon, a wave around a globe, in black or white to suit the screen behind it: still at rest,
+     * turning and breathing with the voice while recording, only turning while transcribing/rewording.
+     */
+    WAVE;
 }

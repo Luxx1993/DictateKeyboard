@@ -75,7 +75,7 @@ internal fun SettingsTab() {
     val navController = LocalNavController.current
     val scope = rememberCoroutineScope()
 
-    UPageHeader(title = stringRes(R.string.main__tab_settings), globe = true)
+    Text(stringRes(R.string.main__tab_settings), style = Unisono.PageTitle, color = c.textPrimary)
 
     // The search, as the pill it is on the other pages.
     Row(
