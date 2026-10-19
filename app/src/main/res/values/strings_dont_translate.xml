@@ -7,11 +7,11 @@
         diktat's own URLs. Keys keep the historic `florisboard__` prefix so the references in code stay
         valid; the values point to diktat's repository.
     -->
-    <string name="florisboard__repo_url" translatable="false">https://github.com/Luxx1993/DictateKeyboard</string>
+    <string name="florisboard__repo_url" translatable="false">https://github.com/Luxx1993/unisono-diktat</string>
     <!-- The project diktat is forked from (attribution): Dictate Keyboard, itself a fork of FlorisBoard. -->
     <string name="florisboard__upstream_repo_url" translatable="false">https://github.com/DevEmperor/DictateKeyboard</string>
-    <string name="florisboard__issue_tracker_url" translatable="false">https://github.com/Luxx1993/DictateKeyboard/issues</string>
-    <string name="florisboard__changelog_url" translatable="false">https://github.com/Luxx1993/DictateKeyboard/commits/HEAD</string>
-    <string name="florisboard__commit_by_hash_url" translatable="false">https://github.com/Luxx1993/DictateKeyboard/commit/{hash}</string>
+    <string name="florisboard__issue_tracker_url" translatable="false">https://github.com/Luxx1993/unisono-diktat/issues</string>
+    <string name="florisboard__changelog_url" translatable="false">https://github.com/Luxx1993/unisono-diktat/commits/HEAD</string>
+    <string name="florisboard__commit_by_hash_url" translatable="false">https://github.com/Luxx1993/unisono-diktat/commit/{hash}</string>
 
 </resources>

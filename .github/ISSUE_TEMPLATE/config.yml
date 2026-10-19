@@ -2,7 +2,7 @@
 blank_issues_enabled: true
 contact_links:
   - name: 🔒 Sicherheitslücke privat melden
-    url: https://github.com/Luxx1993/DictateKeyboard/security/advisories/new
+    url: https://github.com/Luxx1993/unisono-diktat/security/advisories/new
     about: >-
       Alles, was gegen ein Gerät oder Daten verwendet werden könnte, etwa ein preisgegebener API-Key.
       Privat statt als öffentliches Issue, siehe SECURITY.md.
