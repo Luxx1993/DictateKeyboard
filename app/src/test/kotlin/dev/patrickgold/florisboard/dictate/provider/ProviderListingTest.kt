@@ -122,7 +122,7 @@ class ProviderListingTest {
     fun `the EU filter finds the EU-hosted providers and the EU regions`() {
         val eu = ProviderRegistry.presets.filter { ProviderListing.matches(it, "", setOf(Filter.EU)) }.map { it.id }
         assertEquals(
-            setOf("openrouter", "mistral", "soniox", "scaleway", "ovhcloud"),
+            setOf("openrouter", "mistral", "soniox", "assemblyai_sync", "scaleway", "ovhcloud"),
             eu.toSet(),
         )
     }
