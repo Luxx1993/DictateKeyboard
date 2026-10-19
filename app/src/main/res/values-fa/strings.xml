@@ -2,12 +2,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="app_name">diktat</string>
     <!-- Quick action strings -->
-    <string name="quick_action__voice_input" comment="Please mind the limited available space for the quick action strings">ورودی صدا</string>
     <string name="quick_action__noop" comment="Noop=no operation; this action is only used as a placeholder in the actions editor drag and drop screen">هیچ کدام</string>
     <!-- Settings UI strings -->
     <string name="settings__title" comment="Title of Settings">تنظیمات</string>
     <string name="settings__system_default" comment="General string which is used when a preference has the system default value set">پیشفرض سیستم</string>
-    <string name="settings__home__title" comment="Title of the Home screen">خوش آمدید به {app_name}</string>
     <string name="settings__theme__title" comment="Title of the Theme screen">تم</string>
     <!-- Typing strings -->
     <string name="pref__glide__enabled__label" comment="Preference title">فعال سازی دنباله نویسی</string>
@@ -20,8 +18,6 @@
     <string name="about__changelog__summary" comment="Preference summary">تغییرات جدید</string>
     <string name="about__repository__title" comment="Preference title">رپو (گیت هاب)</string>
     <string name="about__repository__summary" comment="Preference summary">کد منبع، مباحثه ها، مشکلات و اطلاعات</string>
-    <string name="about__privacy_policy__title" comment="Preference title">سیاست حریم خصوصی</string>
-    <string name="about__privacy_policy__summary" comment="Preference summary">سیاست حریم خصوصی برای این پروژه</string>
     <string name="about__project_license__title" comment="Preference title">گواهی های پروژه</string>
     <string name="about__project_license__summary" comment="Preference summary">فلوریس بورد زیر نظر {license_name} دارای گواهی می باشد</string>
     <string name="about__project_license__error_license_text_failed" comment="Error text for license text loading failure">خطا: ناتوانی در بارگذاری متن گواهی.\n-&gt; دلیل: {error_message}</string>
@@ -29,7 +25,6 @@
     <string name="about__third_party_licenses__summary" comment="Preference summary">گواهی های استفاده از کتابخانه های شخص ثالث استفاده شده در این برنامه</string>
     <!-- Setup UI strings -->
     <string name="setup__title" comment="Title of Setup">خوش آمدید!</string>
-    <string name="setup__footer__privacy_policy" comment="Privacy policy label for URL">سیاست حفظ حریم خصوصی</string>
     <!-- Crash Dialog strings -->
     <string name="crash_dialog__title" comment="Title of crash dialog">گزارش خطای فلوریس بورد</string>
     <string name="crash_dialog__description" comment="Description of crash dialog">با عرض پوزش برای این مشکل به وجود آمده، اما فلوریس بورد به یک دلیل پیش‌بینی نشده، متوقف شد.</string>

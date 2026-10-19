@@ -34,9 +34,3 @@ fun Modifier.fold(
 ): Modifier =
     if (condition) then(ifTrue()) else then(ifFalse())
 
-@Composable
-inline fun <reified T : Any> Modifier.ifIsInstance(
-    value: Any,
-    modifier: @Composable (T) -> Modifier,
-): Modifier =
-    if (value is T) then(modifier(value)) else this

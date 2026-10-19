@@ -94,9 +94,6 @@ object TranslationCatalog {
         }
     }
 
-    /** The languages that have to be downloaded for [from] → [to]; English never is. */
-    fun requiredLanguages(from: String, to: String): Set<String> =
-        setOf(from, to) - ENGLISH
 
     /**
      * The catalog code for a detected or system [languageTag], or `null` when the catalog has none.

@@ -40,12 +40,6 @@ object UnicodeCtrlChar {
     val Matcher = """[$LeftToRightIsolate$RightToLeftIsolate$FirstStrongIsolate$PopDirectionalIsolate]""".toRegex()
 }
 
-fun String.stripUnicodeCtrlChars(): String {
-    return this.replace(UnicodeCtrlChar.Matcher, "")
-}
 
 object Unicode {
-    fun isNonSpacingMark(code: Int): Boolean {
-        return UCharacter.getType(code).toByte() == UCharacterCategory.NON_SPACING_MARK
-    }
 }

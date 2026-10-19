@@ -32,7 +32,7 @@ internal object CloudMotion {
         val opacity: Float,
         /** Seconds for one pass from 0 % to 100 %. */
         val idleSeconds: Float,
-        /** The same while listening; the prototype speeds up blobs a and b to 12 s. */
+        /** The same while listening; blobs a and b speed up to 6 s (the prototype had 12 s). */
         val listenSeconds: Float,
         /** Keyframes at 50 % and 100 %: translate x/y (fraction of the blob's own size), scale, rotation°. */
         val mid: FloatArray,
@@ -46,17 +46,21 @@ internal object CloudMotion {
     private const val LAYER_INSET = 0.25f
     private const val LAYER_SIZE = 1f + 2 * LAYER_INSET
 
-    const val LAYER_TURN_SECONDS = 140f
-    const val SMOKE_TURN_SECONDS = 90f
+    /**
+     * The layer and the smoke turn faster than the prototype's 140 s and 90 s: at the size of the floating
+     * button nothing could be seen moving. Now once in 70 s and, the other way, once in 45 s.
+     */
+    const val LAYER_TURN_SECONDS = 70f
+    const val SMOKE_TURN_SECONDS = 45f
 
     /** Blur of the blobs as a share of the sphere's diameter: `--b: 8px` on the 90 px sphere. */
     const val BLUR = 8f / 90f
 
     val BLOBS = listOf(
         // .a  o1
-        BlobSpec(0.08f, 0.08f, 0.60f, 0.58f, 1.0f, 26f, 12f, floatArrayOf(0.12f, 0.08f, 1.10f, 25f), floatArrayOf(-0.06f, 0.12f, 0.94f, -15f)),
+        BlobSpec(0.08f, 0.08f, 0.60f, 0.58f, 1.0f, 26f, 6f, floatArrayOf(0.12f, 0.08f, 1.10f, 25f), floatArrayOf(-0.06f, 0.12f, 0.94f, -15f)),
         // .b  o2
-        BlobSpec(0.44f, 0.30f, 0.56f, 0.62f, 1.0f, 32f, 12f, floatArrayOf(-0.14f, -0.09f, 1.12f, -30f), floatArrayOf(0.07f, -0.04f, 0.96f, 10f)),
+        BlobSpec(0.44f, 0.30f, 0.56f, 0.62f, 1.0f, 32f, 6f, floatArrayOf(-0.14f, -0.09f, 1.12f, -30f), floatArrayOf(0.07f, -0.04f, 0.96f, 10f)),
         // .c  o3
         BlobSpec(0.12f, 0.58f, 0.66f, 0.38f, 0.7f, 21f, 21f, floatArrayOf(0.10f, -0.12f, 1.08f, 0f), floatArrayOf(-0.08f, -0.04f, 1.03f, 0f)),
         // .d  o4

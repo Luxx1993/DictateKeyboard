@@ -31,11 +31,22 @@ enum class DictateFloatingButtonShowWhen {
      * its composer focus the moment a chat opens no longer brings the button up over a chat being read.
      * Steps aside for Dictate's own voice input like [FIELD_SELECTED].
      */
-    KEYBOARD_OPEN;
+    KEYBOARD_OPEN,
+
+    /**
+     * Always on screen (apart from the app filter and a dark screen), field or not. Without a field the
+     * button rests as a small, see-through dot (see `DictateBubbleController`); a tap wakes it, and a
+     * dictation started that way has no field to type into, so its text goes the clipboard way.
+     */
+    ALWAYS;
 
     /** Whether a focused field needs an on-screen keyboard beside it before it counts. */
     val keyboardRequired: Boolean
         get() = this == KEYBOARD_OPEN
+
+    /** Whether the button stays on screen with no field in focus. */
+    val alwaysVisible: Boolean
+        get() = this == ALWAYS
 
     companion object {
         /**

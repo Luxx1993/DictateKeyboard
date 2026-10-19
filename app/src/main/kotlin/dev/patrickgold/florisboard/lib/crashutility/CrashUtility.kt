@@ -161,15 +161,6 @@ abstract class CrashUtility private constructor() {
             }
         }
 
-        @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
-        fun handleStagedButUnhandledExceptions() {
-            val e = stagedException ?: return
-            val handler = Thread.getDefaultUncaughtExceptionHandler()
-            if (handler is UncaughtExceptionHandler) {
-                stagedException = null
-                handler.uncaughtException(null, e)
-            }
-        }
 
         /**
          * Reads and returns all unhandled stacktrace files.
@@ -196,16 +187,6 @@ abstract class CrashUtility private constructor() {
             return retList.toList()
         }
 
-        fun hasUnhandledStacktraceFiles(context: Context): Boolean {
-            val ustDir = context.getUstDir()
-            return if (ustDir.isDirectory) {
-                (ustDir.listFiles { pathname ->
-                    pathname.name.endsWith(".$UNHANDLED_STACKTRACE_FILE_EXT")
-                })?.isNotEmpty() ?: false
-            } else {
-                false
-            }
-        }
 
         /**
          * Gets the last crash timestamp from the shared preferences.

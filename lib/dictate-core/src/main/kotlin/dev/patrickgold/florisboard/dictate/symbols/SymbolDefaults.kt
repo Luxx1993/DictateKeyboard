@@ -88,21 +88,3 @@ object SymbolDefaults {
     }
 }
 
-/**
- * Symbols to pick from while editing a key (issue #342), because the hard part of a personal symbol
- * page is typing a symbol the keyboard does not have yet. Our own selection; Unicode characters need
- * nobody's permission. Emoji are left to the keyboard's emoji panel, which can type into the editor.
- */
-enum class SymbolPalette(val symbols: List<String>) {
-    MATH(
-        "± × ÷ = ≠ ≈ ≡ < > ≤ ≥ ≪ ≫ ∞ √ ∛ ∑ ∏ ∫ ∂ ∆ ∇ ∝ ∴ ∵ ∈ ∉ ∩ ∪ ⊂ ⊃ ∅ ∀ ∃ ¬ ∧ ∨ % ‰ ° ′ ″ ½ ⅓ ¼ ¾ ⅔ ⅛",
-    ),
-    ARROWS("→ ← ↑ ↓ ↔ ↕ ⇒ ⇐ ⇔ ⇑ ⇓ ↗ ↘ ↙ ↖ ⟶ ⟵ ⟷ ➜ ➔ ➤ ↩ ↪ ⤴ ⤵ ↻ ↺"),
-    CURRENCIES("$ € £ ¥ ¢ ₹ ₽ ₩ ₺ ₪ ₦ ₱ ₫ ₴ ₸ ₿ ฿ ₡ ₲ ₵ ₼ ₾ ₭ ₮ ৳ ₨ ֏ ¤"),
-    PUNCTUATION("… · • ‣ – — ‘ ’ “ ” „ ‚ « » ‹ › ¡ ¿ ‽ § ¶ † ‡ © ® ™ № ℅ ※ ¦ ‖ ‾ ´ ` ^ ~ ¨"),
-    SHAPES("✓ ✔ ✗ ✘ ☐ ☑ ☒ ★ ☆ ✪ ✦ ✧ ● ○ ◦ ■ □ ▪ ▫ ▲ △ ▼ ▽ ◆ ◇ ♥ ♡ ♦ ♣ ♠ ♪ ♫ ✿ ❀ ❝ ❞ ❛ ❜ ꧁ ꧂"),
-    GREEK("α β γ δ ε ζ η θ ι κ λ μ ν ξ ο π ρ σ ς τ υ φ χ ψ ω Γ Δ Θ Λ Ξ Π Σ Φ Ψ Ω"),
-    SCRIPTS("⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹ ⁺ ⁻ ⁼ ⁽ ⁾ ⁿ ⁱ ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉ ₊ ₋ ₌ ₍ ₎");
-
-    constructor(symbols: String) : this(symbols.split(' '))
-}

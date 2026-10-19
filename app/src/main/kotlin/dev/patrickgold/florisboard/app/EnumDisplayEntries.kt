@@ -21,7 +21,6 @@ import dev.patrickgold.florisboard.R
 import dev.patrickgold.jetpref.datastore.ui.ListPreferenceEntry
 import dev.patrickgold.jetpref.datastore.ui.listPrefEntries
 import org.florisboard.lib.compose.stringRes
-import org.florisboard.lib.kotlin.curlyFormat
 import kotlin.reflect.KClass
 
 private const val DEFAULT = ""
@@ -34,20 +33,12 @@ private val ENUM_DISPLAY_ENTRIES = mapOf<Pair<KClass<*>, String>, @Composable ()
                 label = stringRes(R.string.settings__system_default),
             )
             entry(
-                key = AppTheme.AUTO_AMOLED,
-                label = stringRes(R.string.pref__other__settings_theme__auto_amoled),
-            )
-            entry(
                 key = AppTheme.LIGHT,
                 label = stringRes(R.string.pref__other__settings_theme__light),
             )
             entry(
                 key = AppTheme.DARK,
                 label = stringRes(R.string.pref__other__settings_theme__dark),
-            )
-            entry(
-                key = AppTheme.AMOLED_DARK,
-                label = stringRes(R.string.pref__other__settings_theme__amoled_dark),
             )
         }
     },

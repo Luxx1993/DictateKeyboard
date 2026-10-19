@@ -17,17 +17,8 @@
 package dev.patrickgold.florisboard.app.settings.advanced
 
 import android.text.format.Formatter
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -35,12 +26,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import dev.patrickgold.florisboard.R
 import dev.patrickgold.florisboard.app.AppIconColor
 import dev.patrickgold.florisboard.app.AppTheme
@@ -67,7 +54,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.florisboard.lib.android.AndroidVersion
-import org.florisboard.lib.color.ColorMappings
 import org.florisboard.lib.compose.stringRes
 
 /** The remaining app settings in the look of Entwurf 3: appearance, name and icon, the cache, backup. */
@@ -101,18 +87,16 @@ fun OtherScreen() = UnisonoPage(title = stringRes(R.string.settings__other__titl
         UChoiceRow(
             title = stringRes(R.string.pref__other__settings_theme__label),
             choices = themeEntries.map { UChoice(it.key, it.label) },
-            selected = theme,
+            // The AMOLED values are no longer offered; a stored one shows as the plain variant.
+            selected = when (theme) {
+                AppTheme.AUTO_AMOLED -> AppTheme.AUTO
+                AppTheme.AMOLED_DARK -> AppTheme.DARK
+                else -> theme
+            },
             onSelect = { v -> scope.launch { prefs.other.settingsTheme.set(v) } },
             open = openDialog == "theme",
             onOpenChange = { openDialog = if (it) "theme" else null },
             modifier = Modifier.settingsSearchAnchor("pref__other__settings_theme__label"),
-        )
-        UDivider()
-        UNavRow(
-            title = stringRes(R.string.pref__other__settings_accent_color__label),
-            onClick = { openDialog = "accent" },
-            modifier = Modifier.settingsSearchAnchor("pref__other__settings_accent_color__label"),
-            trailing = { Box(Modifier.size(20.dp).clip(CircleShape).background(accent)) },
         )
         UDivider()
         val systemDefault = stringRes(R.string.settings__system_default)
@@ -205,30 +189,6 @@ fun OtherScreen() = UnisonoPage(title = stringRes(R.string.settings__other__titl
     }
 
     when (openDialog) {
-        "accent" -> UDialog(
-            title = stringRes(R.string.pref__other__settings_accent_color__label),
-            onDismiss = { openDialog = null },
-        ) {
-            FlowRow(
-                modifier = Modifier.padding(horizontal = 14.dp),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
-            ) {
-                for (swatch in ColorMappings.colors.distinct()) {
-                    val chosen = swatch.toArgb() == accent.toArgb()
-                    Box(
-                        Modifier
-                            .size(44.dp)
-                            .clip(CircleShape)
-                            .clickable { scope.launch { prefs.other.accentColor.set(swatch) } },
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Box(Modifier.size(if (chosen) 30.dp else 34.dp).clip(CircleShape).background(swatch))
-                        if (chosen) Box(Modifier.size(38.dp).border(1.5.dp, c.action, CircleShape))
-                    }
-                }
-            }
-        }
         "name" -> {
             var draft by remember { mutableStateOf(userName) }
             UDialog(

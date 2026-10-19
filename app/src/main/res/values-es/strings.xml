@@ -4,13 +4,10 @@
     <!-- Emoji strings -->
     <string name="emoji__history__pinned">Fijado</string>
     <!-- Quick action strings -->
-    <string name="quick_action__voice_input" comment="Please mind the limited available space for the quick action strings">Entrada voz</string>
-    <string name="quick_action__voice_input__tooltip" comment="IME stands for Input Method Editor and is indirectly equivalent to 'keyboard'.">Abrir proveedor de entrada de voz</string>
     <string name="quick_action__noop" comment="Noop=no operation; this action is only used as a placeholder in the actions editor drag and drop screen">Ninguno</string>
     <!-- Settings UI strings -->
     <string name="settings__title" comment="Title of Settings">Ajustes</string>
     <string name="settings__system_default" comment="General string which is used when a preference has the system default value set">Predeterminado del sistema</string>
-    <string name="settings__home__title" comment="Title of the Home screen">Bienvenido a {app_name}</string>
     <string name="dictate__settings_unreadable_card">No se pudieron leer tus ajustes, así que diktat se inició con los valores predeterminados. Toca aquí para recuperarlos.</string>
     <string name="dictate__settings_unreadable_title">¿Restaurar ajustes?</string>
     <string name="dictate__settings_unreadable_message">Al iniciarse, diktat no pudo leer su archivo de ajustes. Lo conservó intacto y empezó con los valores predeterminados. «Restaurar» recupera tus proveedores, claves, prompts y ajustes tal como estaban. «Eliminar» borra el archivo antiguo.</string>
@@ -30,10 +27,8 @@
     <string name="pref__glide__enabled__label" comment="Preference title">Escritura por gestos</string>
     <string name="settings__other__title" comment="Title of Other settings">Otro</string>
     <string name="pref__other__settings_theme__label" comment="Label of Settings theme preference in Other">Ajustes del tema</string>
-    <string name="pref__other__settings_theme__auto_amoled" comment="Possible value of Settings theme preference in Other">Predeterminado del sistema (AMOLED)</string>
     <string name="pref__other__settings_theme__light" comment="Possible value of Settings theme preference in Other">Claro</string>
     <string name="pref__other__settings_theme__dark" comment="Possible value of Settings theme preference in Other">Oscuro</string>
-    <string name="pref__other__settings_theme__amoled_dark" comment="Possible value of Settings theme preference in Other">AMOLED Oscuro</string>
     <string name="pref__other__settings_accent_color__label" comment="Label of accent color preference in Other">Ajustes del color del énfasis
     </string>
     <string name="pref__other__settings_language__label" comment="Label of Settings language preference in Other">Ajustes del idioma</string>
@@ -54,8 +49,6 @@
     <string name="about__changelog__summary" comment="Preference summary">Qué hay de nuevo</string>
     <string name="about__repository__title" comment="Preference title">Repositorio (GitHub)</string>
     <string name="about__repository__summary" comment="Preference summary">Código fuente, discusiones, problemas e informaciones</string>
-    <string name="about__privacy_policy__title" comment="Preference title">Política de privacidad</string>
-    <string name="about__privacy_policy__summary" comment="Preference summary">La política de privacidad para este proyecto</string>
     <string name="about__project_license__title" comment="Preference title">Licencia del proyecto</string>
     <string name="about__project_license__summary" comment="Preference summary">{app_name} está licenciado bajo {license_name}</string>
     <string name="about__project_license__error_license_text_failed" comment="Error text for license text loading failure">Error: Fallo al cargar texto de licencia.\n-&gt; Razón: {error_message}</string>
@@ -64,7 +57,6 @@
     <!-- Setup UI strings -->
     <string name="setup__title" comment="Title of Setup">¡Bienvenido/a!</string>
     <string name="setup__intro_message" comment="Short intro message welcoming new users">¡Gracias por usar {app_name}! Esta configuración rápida lo guiará a través de los pasos necesarios para poder utilizar {app_name} en su dispositivo.</string>
-    <string name="setup__footer__privacy_policy" comment="Privacy policy label for URL">Política de privacidad</string>
     <string name="setup__footer__repository" comment="Repository label for URL">Repositorio</string>
     <string name="setup__grant_notification_permission__title">Permitir notificaciones de informes de errores</string>
     <string name="setup__grant_notification_permission__description">A partir de Android 13+, las aplicaciones deben pedir permiso para
@@ -145,10 +137,6 @@
     <string name="state__no_file_selected">Ningún archivo seleccionado</string>
     <!-- Dictate strings -->
     <string name="quick_action__dictate_live_prompt">Instrucción en vivo</string>
-    <string name="about__feedback__title">Comentarios y soporte</string>
-    <string name="about__feedback__summary">Envía un correo con preguntas, errores o ideas</string>
-    <string name="about__feedback__email">contact@devemperor.net</string>
-    <string name="about__feedback__subject">diktat Feedback</string>
     <string name="setup__provider__title">Elige cómo transcribe diktat</string>
     <string name="setup__provider__choose_intro">diktat convierte tu voz en texto con un servicio de IA. A la mayoría le sirve una de estas dos formas, y si prefieres no usar ningún servicio en la nube, abajo tienes otras dos.</string>
     <string name="setup__provider__choice_own_title">Usar tu propio proveedor de IA</string>
@@ -245,7 +233,6 @@
     <string name="dictate__floating_button_snap_title">Ajustar al borde</string>
     <string name="dictate__transcription_stopped">Detenido, grabación guardada</string>
     <string name="dictate__transcription_stopped_in_history">Detenido, grabación en el Historial</string>
-    <string name="dictate__providers_summary_both">Transcripción: {transcription} · Reformulación: {rewording}</string>
     <string name="dictate__remember_last_dictation_summary">Conserva tu último dictado para que el botón flotante pueda deshacerlo y el diseño clásico pueda volver a insertarlo.</string>
     <string name="dictate__remember_last_dictation_title">Recordar último dictado</string>
     <string name="setup__floating_button__btn">Configurar el botón flotante</string>
@@ -256,7 +243,6 @@
     <string name="setup__floating_button__accessibility_note">Para ello, {app_name} usa los ajustes de accesibilidad de Android: así la burbuja puede mostrarse sobre otras apps e insertar el texto transcrito por ti. La siguiente pantalla te guía para activarlo.</string>
     <string name="setup__floating_button__optional_note">Esto es totalmente opcional: omítelo si solo quieres usar {app_name} como teclado completo. Siempre puedes configurarlo más tarde en los ajustes.</string>
     <string name="setup__floating_button__skip_btn">Omitir — usaré el teclado</string>
-    <string name="dictate__floating_button_badge_new">Nuevo</string>
     <string name="dictate__prompts_layout_title">Diseño de prompts</string>
     <string name="dictate__status_transcribing">Transcribiendo…</string>
     <string name="dictate__status_transcribing_local">Transcribiendo en el dispositivo…</string>
@@ -300,11 +286,8 @@
     <string name="dictate__base_url_placeholder">https://tu-servidor/v1/</string>
     <string name="dictate__value_not_set">Sin configurar</string>
     <string name="dictate__providers_title">Proveedores de IA</string>
-    <string name="dictate__providers_summary">Activo: {provider}</string>
-    <string name="dictate__providers_active_group">Proveedores activos</string>
     <string name="dictate__providers_active_transcription">Transcripción</string>
     <string name="dictate__providers_active_rewording">Reformulación</string>
-    <string name="dictate__providers_manage_group">Configurar proveedores</string>
     <string name="dictate__providers_status_key_set">Clave configurada</string>
     <string name="dictate__providers_status_no_key">Sin clave</string>
     <string name="dictate__providers_status_unconfigured">Sin configurar</string>
@@ -430,13 +413,9 @@
     <string name="dictate__resend_button_summary">Si la transcripción falla, mostrar un botón para reintentar con la misma grabación</string>
     <string name="dictate__formatting_title">Formato y vocabulario</string>
     <string name="dictate__formatting_menu_summary">Indicación de estilo, palabras personalizadas, sustituciones</string>
-    <string name="dictate__recording_menu_summary">Tiempo real, fuente de audio, grabación instantánea</string>
     <string name="dictate__output_menu_summary">Auto-Enter, velocidad de escritura, reenviar</string>
-    <string name="dictate__layout_title">Diseño de dictado</string>
     <string name="dictate__languages_title">Idiomas de transcripción</string>
-    <string name="dictate__languages_summary">Elige los idiomas en los que dictas. Cambia rápidamente entre ellos desde la barra de grabación.</string>
     <string name="dictate__language_detect">Detectar automáticamente</string>
-    <string name="dictate__languages_selected_title">Idiomas seleccionados</string>
     <string name="dictate__languages_active_title">Idioma activo</string>
     <string name="dictate__languages_follow_keyboard">Seguir el idioma del teclado</string>
     <string name="dictate__prompt_selection_none">Ninguno</string>
@@ -444,7 +423,6 @@
     <string name="dictate__prompt_selection_custom">Personalizado</string>
     <string name="dictate__style_prompt_title">Puntuación y estilo</string>
     <string name="dictate__style_prompt_custom_placeholder">p. ej. Hola. Muchas gracias.</string>
-    <string name="dictate__style_prompt_info_title">Ver ejemplo predeterminado</string>
     <string name="dictate__style_prompt_info_description">Esta frase de ejemplo se envía con cada transcripción para guiar al modelo hacia el uso correcto de mayúsculas y puntuación. Se adapta automáticamente al idioma en el que dictas.</string>
     <string name="dictate__style_prompt_info_none">Este idioma aún no tiene una frase de ejemplo, así que no se envía ninguna. La transcripción sigue el idioma que has seleccionado.</string>
     <string name="dictate__custom_words_title">Palabras personalizadas</string>
@@ -479,13 +457,11 @@
     <string name="dictate__command_word_off">Desactivado</string>
     <string name="dictate__command_word_summary">Los dictados que empiezan por «{word}» se ejecutan como instrucción en vivo</string>
     <string name="dictate__command_word_placeholder">Jarvis</string>
-    <string name="dictate__command_word_info_title">Acerca de la palabra de comando</string>
     <string name="dictate__command_word_info_description">Normalmente diktat escribe lo que dices. Si defines una palabra de comando, un dictado que empiece por ella se convierte en una instrucción: la palabra se elimina y el resto se envía a la IA, junto con el texto seleccionado si lo hay.\n\n«Jarvis, hazlo más formal» reescribe la selección. «Jarvis, cuál es la capital de Japón» escribe la respuesta en el campo. Es el botón de instrucción en vivo, al que llegas diciendo su nombre en lugar de tocarlo.\n\nLa palabra solo cuenta al principio del dictado y solo como palabra completa, así que elige algo con lo que rara vez empieces una frase.</string>
     <string name="dictate__auto_formatting_title">Formato automático</string>
     <string name="dictate__auto_formatting_summary">Convertir indicaciones de formato habladas en Markdown (títulos, listas, …)</string>
     <string name="dictate__system_prompt_title">Instrucción de reformulación</string>
     <string name="dictate__system_prompt_custom_placeholder">Indicación añadida a cada solicitud de reformulación</string>
-    <string name="dictate__system_prompt_info_title">Ver instrucción predeterminada</string>
     <string name="dictate__system_prompt_info_description">Esta instrucción se añade a cada solicitud de reformulación para que la IA devuelva solo el resultado que pediste, sin texto adicional antes o después.</string>
     <string name="dictate__prompts_title">Prompts</string>
     <string name="dictate__prompts_empty">Aún no hay prompts. Toca el botón de abajo para añadir uno.</string>
@@ -526,7 +502,6 @@
     <string name="dictate__prompt_library_empty">Ningún prompt coincide con tu búsqueda.</string>
     <string name="dictate__prompt_library_error">No se pudo cargar la biblioteca de la comunidad. Comprueba tu conexión e inténtalo de nuevo.</string>
     <string name="dictate__prompt_library_retry">Reintentar</string>
-    <string name="dictate__prompt_library_close">Cerrar</string>
     <string name="dictate__prompt_library_author">de {author}</string>
     <string name="dictate__prompt_share_title">Compartir con la comunidad</string>
     <string name="dictate__prompt_share_message">Esto abre GitHub en tu navegador con tu prompt ya rellenado como propuesta. Inicia sesión y confirma para abrir una pull request que lo añade a la biblioteca de la comunidad. Se requiere una cuenta gratuita de GitHub; no se sube nada hasta que confirmes en GitHub.</string>
@@ -540,7 +515,6 @@
     <string name="dictate__import_share_label">Transcribir</string>
     <string name="dictate__import_title">Transcribir archivo</string>
     <string name="dictate__import_menu">Transcribir un archivo</string>
-    <string name="dictate__import_menu_summary">Elige un archivo de audio o vídeo y lee lo que dice</string>
     <string name="dictate__import_step_copy">Recepción del archivo</string>
     <string name="dictate__import_step_extract">Extracción del audio</string>
     <string name="dictate__import_step_prepare">Preparación del audio</string>
@@ -615,7 +589,6 @@
     <string name="dictate__mappings_field_from_placeholder">p. ej. github</string>
     <string name="dictate__mappings_field_to">Por</string>
     <string name="dictate__mappings_field_to_placeholder">p. ej. GitHub</string>
-    <string name="dictate__mappings_group">Reglas de reemplazo</string>
     <string name="dictate__mappings_matchcase_summary">Reemplazar solo cuando las mayúsculas y minúsculas coincidan exactamente.</string>
     <string name="dictate__mappings_import">Importar reglas</string>
     <string name="dictate__mappings_export">Exportar reglas</string>
@@ -654,7 +627,6 @@
     <string name="dictate__history_title">Historial</string>
     <string name="dictate__history_original">Original</string>
     <string name="dictate__history_result">Resultado</string>
-    <string name="dictate__history_menu_summary">Reproduce, reinserta y gestiona dictados anteriores</string>
     <string name="dictate__history_empty">Aún no hay dictados — tus dictados recientes aparecerán aquí.</string>
     <string name="dictate__history_enable_title">Guardar un historial</string>
     <string name="dictate__history_enable_summary">Registra los dictados para reinsertarlos o revisarlos más tarde.</string>
@@ -683,7 +655,6 @@
     <string name="dictate__history_export_folder_unset">Sin definir</string>
     <string name="dictate__history_export_folder_unavailable">Carpeta no disponible — vuelve a elegirla</string>
     <string name="dictate__history_export_choose">Elegir carpeta</string>
-    <string name="dictate__history_export_change">Cambiar</string>
     <string name="dictate__history_export_disconnect">Desconectar</string>
     <string name="dictate__history_export_audio_title">Exportar también la grabación</string>
     <string name="dictate__history_export_audio_summary">Guarda el audio junto a la transcripción.</string>
@@ -734,6 +705,5 @@
     <string name="dictate__audio_source_voice_communication_summary">Máxima prioridad de micrófono — funciona cuando otra app usa el micrófono, pero puede reducir la precisión.</string>
 
     <string name="dictate__legacy_action_copy">Copiar</string>
-    <string name="about__website__title">Sitio web</string>
 
 </resources>

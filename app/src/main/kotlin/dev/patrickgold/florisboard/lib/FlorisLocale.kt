@@ -16,7 +16,6 @@
 
 package dev.patrickgold.florisboard.lib
 
-import android.content.Context
 import dev.patrickgold.florisboard.lib.FlorisLocale.Companion.default
 import java.util.*
 import kotlinx.serialization.KSerializer
@@ -120,12 +119,6 @@ class FlorisLocale private constructor(val base: Locale) {
          */
         fun default() = FlorisLocale(Locale.getDefault())
 
-        /**
-         * Returns a list of all installed locales.
-         *
-         * @see java.util.Locale.getAvailableLocales
-         */
-        fun installedSystemLocales(): List<FlorisLocale> = Locale.getAvailableLocales().map { from(it) }
 
     }
 

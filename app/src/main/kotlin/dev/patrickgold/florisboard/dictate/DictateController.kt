@@ -32,7 +32,6 @@ import android.media.MediaRecorder
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
-import dev.patrickgold.florisboard.BuildConfig
 import dev.patrickgold.florisboard.R
 import dev.patrickgold.florisboard.app.FlorisAppActivity
 import dev.patrickgold.florisboard.app.FlorisPreferenceStore
@@ -81,8 +80,6 @@ import dev.patrickgold.florisboard.dictate.provider.chatModelFor
 import dev.patrickgold.florisboard.dictate.provider.chatModelIsPresetDefault
 import dev.patrickgold.florisboard.dictate.provider.singleCallApplies
 import dev.patrickgold.florisboard.dictate.recognition.RecognitionSink
-import dev.patrickgold.florisboard.lib.util.AppVersionUtils
-import dev.patrickgold.florisboard.lib.util.VersionName
 import org.florisboard.lib.kotlin.curlyFormat
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
@@ -106,7 +103,6 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import java.io.File
-import java.text.NumberFormat
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
@@ -779,10 +775,6 @@ object DictateController {
         return false
     }
 
-    /** Slide-down progress towards the lock, 0..1 — drives how far the lock target fills. */
-    fun onPushToTalkLockSlide(progress: Float) {
-        if (_pushToTalkPhase.value.isHolding) _lockSlideProgress.value = progress.coerceIn(0f, 1f)
-    }
 
     /** Aborts a held recording outright — the gesture was taken over (bubble drag) or the system cancelled it. */
     fun cancelPushToTalk() {
@@ -908,10 +900,6 @@ object DictateController {
         }
     }
 
-    /** Sets the active dictation language explicitly (from the recording bar's language picker). */
-    fun setLanguage(code: String) {
-        scope.launch { prefs.dictate.activeInputLanguage.set(code) }
-    }
 
     /**
      * The languages to hand to a model whose language field takes a *list* (OpenAI's gpt-transcribe

@@ -4,13 +4,10 @@
     <!-- Emoji strings -->
     <string name="emoji__history__pinned">Fixats</string>
     <!-- Quick action strings -->
-    <string name="quick_action__voice_input" comment="Please mind the limited available space for the quick action strings">Entrada veu</string>
-    <string name="quick_action__voice_input__tooltip" comment="IME stands for Input Method Editor and is indirectly equivalent to 'keyboard'.">Obre el proveïdor d\'entrada de veu</string>
     <string name="quick_action__noop" comment="Noop=no operation; this action is only used as a placeholder in the actions editor drag and drop screen">Cap</string>
     <!-- Settings UI strings -->
     <string name="settings__title" comment="Title of Settings">Preferències</string>
     <string name="settings__system_default" comment="General string which is used when a preference has the system default value set">Per defecte del sistema</string>
-    <string name="settings__home__title" comment="Title of the Home screen">Us donem la benvinguda a {app_name}</string>
     <string name="dictate__settings_unreadable_card">No s’ha pogut llegir la teva configuració, així que el diktat ha començat amb els valors per defecte. Toca aquí per recuperar-la.</string>
     <string name="dictate__settings_unreadable_title">Restaurar ajustos?</string>
     <string name="dictate__settings_unreadable_message">En iniciar-se, el diktat no ha pogut llegir el seu fitxer de configuració. L’ha conservat intacte i ha començat amb els valors per defecte. «Restaura» recupera els teus proveïdors, claus, prompts i ajustos tal com eren. «Suprimeix» elimina el fitxer antic.</string>
@@ -30,10 +27,8 @@
     <string name="pref__glide__enabled__label" comment="Preference title">Habilita escriure lliscant</string>
     <string name="settings__other__title" comment="Title of Other settings">Altres</string>
     <string name="pref__other__settings_theme__label" comment="Label of Settings theme preference in Other">Paràmetres del tema</string>
-    <string name="pref__other__settings_theme__auto_amoled" comment="Possible value of Settings theme preference in Other">Per defecte del sistema (AMOLED)</string>
     <string name="pref__other__settings_theme__light" comment="Possible value of Settings theme preference in Other">Clar</string>
     <string name="pref__other__settings_theme__dark" comment="Possible value of Settings theme preference in Other">Fosc</string>
-    <string name="pref__other__settings_theme__amoled_dark" comment="Possible value of Settings theme preference in Other">AMOLED fosc</string>
     <string name="pref__other__settings_accent_color__label" comment="Label of accent color preference in Other">        Paràmetres de color de ressalt
     </string>
     <string name="pref__other__settings_language__label" comment="Label of Settings language preference in Other">Paràmetres d\'idioma</string>
@@ -54,8 +49,6 @@
     <string name="about__changelog__summary" comment="Preference summary">Novetats</string>
     <string name="about__repository__title" comment="Preference title">Repositori (GitHub)</string>
     <string name="about__repository__summary" comment="Preference summary">Codi font, debats, incidències i informació</string>
-    <string name="about__privacy_policy__title" comment="Preference title">Política de privacitat</string>
-    <string name="about__privacy_policy__summary" comment="Preference summary">La política de privacitat per a aquest projecte</string>
     <string name="about__project_license__title" comment="Preference title">Llicència del projecte</string>
     <string name="about__project_license__summary" comment="Preference summary">{app_name} està sota la llicència de {license_name}</string>
     <string name="about__project_license__error_license_text_failed" comment="Error text for license text loading failure">Error: No s\'ha pogut carregar la llicència.\n-&gt; Motiu: {error_message}</string>
@@ -64,7 +57,6 @@
     <!-- Setup UI strings -->
     <string name="setup__title" comment="Title of Setup">Benvinguts!</string>
     <string name="setup__intro_message" comment="Short intro message welcoming new users">Gràcies per usar {app_name}! Aquesta configuració ràpida t\'acompanyarà en els passos necessaris per poder usar {app_name} al teu dispositiu.</string>
-    <string name="setup__footer__privacy_policy" comment="Privacy policy label for URL">Política de privacitat</string>
     <string name="setup__footer__repository" comment="Repository label for URL">Repositori</string>
     <string name="setup__grant_notification_permission__title">Permet les notificacions d\'informes d\'errors</string>
     <string name="setup__grant_notification_permission__description">Des d\'Android 13 i posteriors les aplicacions han de demanar permís per
@@ -143,10 +135,6 @@
     <string name="state__no_file_selected">No s\'ha seleccionat cap fitxer</string>
     <!-- Dictate strings -->
     <string name="quick_action__dictate_live_prompt">Instrucció en directe</string>
-    <string name="about__feedback__title">Comentaris i assistència</string>
-    <string name="about__feedback__summary">Envia un correu amb preguntes, errors o idees</string>
-    <string name="about__feedback__email">contact@devemperor.net</string>
-    <string name="about__feedback__subject">diktat Feedback</string>
     <string name="setup__provider__title">Tria com transcriu el diktat</string>
     <string name="setup__provider__choose_intro">El diktat converteix la teva veu en text amb un servei d\'IA. A la majoria de gent li va bé una d\'aquestes dues maneres, i si prefereixes no fer servir cap servei al núvol, a sota en tens dues més.</string>
     <string name="setup__provider__choice_own_title">Utilitzar el teu propi proveïdor d\'IA</string>
@@ -243,7 +231,6 @@
     <string name="dictate__floating_button_snap_title">Ajusta a la vora</string>
     <string name="dictate__transcription_stopped">Aturat, enregistrament conservat</string>
     <string name="dictate__transcription_stopped_in_history">Aturat, enregistrament a l’Historial</string>
-    <string name="dictate__providers_summary_both">Transcripció: {transcription} · Reformulació: {rewording}</string>
     <string name="dictate__remember_last_dictation_summary">Conserva l\'últim dictat perquè el botó flotant el pugui desfer i la disposició clàssica el pugui tornar a inserir.</string>
     <string name="dictate__remember_last_dictation_title">Recorda l’últim dictat</string>
     <string name="setup__floating_button__btn">Configura el botó flotant</string>
@@ -254,7 +241,6 @@
     <string name="setup__floating_button__accessibility_note">Per fer-ho, {app_name} utilitza la configuració d’accessibilitat d’Android — així la bombolla pot aparèixer sobre altres aplicacions i inserir el text transcrit per tu. La pantalla següent et guia per activar-ho.</string>
     <string name="setup__floating_button__optional_note">Això és totalment opcional — omet-ho si només vols fer servir {app_name} com a teclat complet. Sempre pots configurar-ho més tard a la configuració.</string>
     <string name="setup__floating_button__skip_btn">Omet — faré servir el teclat</string>
-    <string name="dictate__floating_button_badge_new">Nou</string>
     <string name="dictate__prompts_layout_title">Disposició dels prompts</string>
     <string name="dictate__status_transcribing">Transcrivint…</string>
     <string name="dictate__status_transcribing_local">Transcrivint al dispositiu…</string>
@@ -298,11 +284,8 @@
     <string name="dictate__base_url_placeholder">https://el-teu-servidor/v1/</string>
     <string name="dictate__value_not_set">Sense configurar</string>
     <string name="dictate__providers_title">Proveïdors d\'IA</string>
-    <string name="dictate__providers_summary">Actiu: {provider}</string>
-    <string name="dictate__providers_active_group">Proveïdors actius</string>
     <string name="dictate__providers_active_transcription">Transcripció</string>
     <string name="dictate__providers_active_rewording">Reformulació</string>
-    <string name="dictate__providers_manage_group">Configura els proveïdors</string>
     <string name="dictate__providers_status_key_set">Clau configurada</string>
     <string name="dictate__providers_status_no_key">Sense clau</string>
     <string name="dictate__providers_status_unconfigured">Sense configurar</string>
@@ -428,13 +411,9 @@
     <string name="dictate__resend_button_summary">Si la transcripció falla, mostra un botó per tornar-ho a provar amb la mateixa gravació</string>
     <string name="dictate__formatting_title">Format i vocabulari</string>
     <string name="dictate__formatting_menu_summary">Indicació d\'estil, paraules personalitzades, substitucions</string>
-    <string name="dictate__recording_menu_summary">Temps real, font d\'àudio, gravació instantània</string>
     <string name="dictate__output_menu_summary">Retorn automàtic, velocitat d\'escriptura, reenviament</string>
-    <string name="dictate__layout_title">Disposició de dictat</string>
     <string name="dictate__languages_title">Idiomes de transcripció</string>
-    <string name="dictate__languages_summary">Tria els idiomes en què dictes. Canvia ràpidament d\'un a l\'altre des de la barra de gravació.</string>
     <string name="dictate__language_detect">Detecta automàticament</string>
-    <string name="dictate__languages_selected_title">Idiomes seleccionats</string>
     <string name="dictate__languages_active_title">Idioma actiu</string>
     <string name="dictate__languages_follow_keyboard">Segueix l\'idioma del teclat</string>
     <string name="dictate__prompt_selection_none">Cap</string>
@@ -442,7 +421,6 @@
     <string name="dictate__prompt_selection_custom">Personalitzat</string>
     <string name="dictate__style_prompt_title">Puntuació i estil</string>
     <string name="dictate__style_prompt_custom_placeholder">p. ex. Hola. Moltes gràcies.</string>
-    <string name="dictate__style_prompt_info_title">Mostra l\'exemple per defecte</string>
     <string name="dictate__style_prompt_info_description">Aquesta frase d\'exemple s\'envia amb cada transcripció per orientar el model cap a un ús correcte de majúscules i puntuació. S\'adapta automàticament a l\'idioma en què dictes.</string>
     <string name="dictate__style_prompt_info_none">Aquesta llengua encara no té cap frase d\'exemple, així que no se n\'envia cap. La transcripció continua seguint la llengua que heu triat.</string>
     <string name="dictate__custom_words_title">Paraules personalitzades</string>
@@ -477,13 +455,11 @@
     <string name="dictate__command_word_off">Desactivat</string>
     <string name="dictate__command_word_summary">Els dictats que comencen amb «{word}» s\'executen com una instrucció en directe</string>
     <string name="dictate__command_word_placeholder">Jarvis</string>
-    <string name="dictate__command_word_info_title">Sobre la paraula d\'ordre</string>
     <string name="dictate__command_word_info_description">Normalment diktat escriu el que dius. Si defineixes una paraula d\'ordre, un dictat que hi comenci es converteix en una instrucció: la paraula s\'elimina i la resta s\'envia a la IA, juntament amb el text seleccionat si n\'hi ha.\n\n«Jarvis, fes-ho més formal» reescriu la selecció. «Jarvis, quina és la capital del Japó» escriu la resposta al camp. És el botó d\'instrucció en directe, al qual arribes dient-ne el nom en lloc de tocar-lo.\n\nLa paraula només compta al principi del dictat i només com a paraula sencera, així que tria alguna cosa amb què rarament comencis una frase.</string>
     <string name="dictate__auto_formatting_title">Formatació automàtica</string>
     <string name="dictate__auto_formatting_summary">Converteix les indicacions de format dictades en Markdown (encapçalaments, llistes, …)</string>
     <string name="dictate__system_prompt_title">Instrucció de reformulació</string>
     <string name="dictate__system_prompt_custom_placeholder">Indicació afegida a cada sol·licitud de reformulació</string>
-    <string name="dictate__system_prompt_info_title">Mostra la instrucció per defecte</string>
     <string name="dictate__system_prompt_info_description">Aquesta instrucció s\'afegeix a cada sol·licitud de reformulació perquè la IA retorni només el resultat que has demanat, sense text addicional abans o després.</string>
     <string name="dictate__prompts_title">Prompts</string>
     <string name="dictate__prompts_empty">Encara no hi ha prompts. Toca el botó de sota per afegir-ne un.</string>
@@ -524,7 +500,6 @@
     <string name="dictate__prompt_library_empty">Cap prompt coincideix amb la teva cerca.</string>
     <string name="dictate__prompt_library_error">No s\'ha pogut carregar la biblioteca de la comunitat. Comprova la connexió i torna-ho a provar.</string>
     <string name="dictate__prompt_library_retry">Torna-ho a provar</string>
-    <string name="dictate__prompt_library_close">Tanca</string>
     <string name="dictate__prompt_library_author">de {author}</string>
     <string name="dictate__prompt_share_title">Comparteix amb la comunitat</string>
     <string name="dictate__prompt_share_message">Això obre GitHub al teu navegador amb el teu prompt emplenat prèviament com a proposta. Inicia la sessió i confirma per obrir una pull request que l\'afegeix a la biblioteca de la comunitat. Cal un compte gratuït de GitHub; no es puja res fins que no ho confirmes a GitHub.</string>
@@ -538,7 +513,6 @@
     <string name="dictate__import_share_label">Transcriu</string>
     <string name="dictate__import_title">Transcriu un fitxer</string>
     <string name="dictate__import_menu">Transcriu un fitxer</string>
-    <string name="dictate__import_menu_summary">Tria un fitxer d\'àudio o de vídeo i llegeix què s\'hi diu</string>
     <string name="dictate__import_step_copy">Recepció del fitxer</string>
     <string name="dictate__import_step_extract">Extracció de l\'àudio</string>
     <string name="dictate__import_step_prepare">Preparació de l\'àudio</string>
@@ -613,7 +587,6 @@
     <string name="dictate__mappings_field_from_placeholder">p. ex. github</string>
     <string name="dictate__mappings_field_to">Per</string>
     <string name="dictate__mappings_field_to_placeholder">p. ex. GitHub</string>
-    <string name="dictate__mappings_group">Regles de substitució</string>
     <string name="dictate__mappings_matchcase_summary">Substitueix només quan les majúscules i minúscules coincideixin exactament.</string>
     <string name="dictate__mappings_import">Importa regles</string>
     <string name="dictate__mappings_export">Exporta regles</string>
@@ -652,7 +625,6 @@
     <string name="dictate__history_title">Historial</string>
     <string name="dictate__history_original">Original</string>
     <string name="dictate__history_result">Resultat</string>
-    <string name="dictate__history_menu_summary">Reprodueix, torna a inserir i gestiona els dictats anteriors</string>
     <string name="dictate__history_empty">Encara no hi ha dictats — els teus dictats recents apareixeran aquí.</string>
     <string name="dictate__history_enable_title">Desa un historial</string>
     <string name="dictate__history_enable_summary">Registra els dictats per tornar-los a inserir o revisar més tard.</string>
@@ -681,7 +653,6 @@
     <string name="dictate__history_export_folder_unset">Sense definir</string>
     <string name="dictate__history_export_folder_unavailable">Carpeta no disponible — torna a triar-la</string>
     <string name="dictate__history_export_choose">Tria una carpeta</string>
-    <string name="dictate__history_export_change">Canvia</string>
     <string name="dictate__history_export_disconnect">Desconnecta</string>
     <string name="dictate__history_export_audio_title">Exporta també l\'enregistrament</string>
     <string name="dictate__history_export_audio_summary">Desa l\'àudio al costat de la transcripció.</string>
@@ -732,6 +703,5 @@
     <string name="dictate__audio_source_voice_communication_summary">Prioritat màxima del micròfon — funciona quan una altra app el fa servir, però pot reduir la precisió.</string>
 
     <string name="dictate__legacy_action_copy">Copia</string>
-    <string name="about__website__title">Lloc web</string>
 
 </resources>

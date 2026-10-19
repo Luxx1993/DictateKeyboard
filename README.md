@@ -80,12 +80,6 @@ Lagune, Periwinkle, Salbei, Abendrot und Tinte.
 Die APK liegt unter `app/build/outputs/apk/debug/`. Debug-Builds haben das Paket `net.devemperor.dictate.debug` und
 sind mit einem Debug-Schlüssel signiert.
 
-## Datenschutz
-
-diktat betreibt keinen Server. Aufnahmen gehen direkt vom Gerät zum Anbieter, den du eingetragen hast, oder bleiben
-bei Offline-Erkennung auf dem Gerät. Keys, Stile, Verlauf und Einstellungen liegen nur auf dem Gerät. Einzelheiten
-in der [Datenschutzerklärung](PRIVACY_POLICY.md).
-
 ## Dokumentation
 
 - [`docs/FUNKTIONEN.md`](docs/FUNKTIONEN.md): Was die App können soll und heute kann

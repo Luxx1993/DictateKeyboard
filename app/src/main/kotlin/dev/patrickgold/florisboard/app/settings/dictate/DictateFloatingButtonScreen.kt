@@ -19,19 +19,14 @@ import android.content.pm.PackageManager
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -45,9 +40,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -82,11 +74,9 @@ import dev.patrickgold.florisboard.dictate.DictateFloatingButtonShowWhen
 import dev.patrickgold.florisboard.dictate.DictateFloatingButtonSize
 import dev.patrickgold.florisboard.dictate.overlay.BubbleMenuAction
 import dev.patrickgold.florisboard.dictate.overlay.DictateAccessibilityService
-import dev.patrickgold.florisboard.dictate.ui.CloudPalette
 import dev.patrickgold.jetpref.datastore.model.PreferenceData
 import dev.patrickgold.jetpref.datastore.model.collectAsState
 import kotlinx.coroutines.launch
-import org.florisboard.lib.color.ColorMappings
 import org.florisboard.lib.compose.stringRes
 
 /**
@@ -192,7 +182,6 @@ fun DictateFloatingButtonScreen() = UnisonoPage(title = stringRes(R.string.main_
         UCard {
             UChoiceRow(
                 title = stringRes(R.string.dictate__floating_button_design_title),
-                description = stringRes(R.string.main__fb_preview_note),
                 choices = listOf(
                     designChoice(DictateFloatingButtonDesign.CLOUD, R.string.dictate__floating_button_design_cloud, R.string.dictate__floating_button_design_cloud_summary),
                     designChoice(DictateFloatingButtonDesign.PILL, R.string.dictate__floating_button_design_pill, R.string.dictate__floating_button_design_pill_summary),
@@ -210,14 +199,6 @@ fun DictateFloatingButtonScreen() = UnisonoPage(title = stringRes(R.string.main_
             UDivider()
             Box(Modifier.settingsSearchAnchor("dictate__floating_button_color_title")) { PaletteRow() }
             UDivider()
-            val color by prefs.dictate.floatingButtonColor.collectAsState()
-            UNavRow(
-                title = stringRes(R.string.main__fb_more_colors),
-                subtitle = stringRes(R.string.main__fb_more_colors_summary),
-                onClick = { openDialog = "color" },
-                trailing = { Box(Modifier.size(22.dp).clip(CircleShape).background(color)) },
-            )
-            UDivider()
             val size by prefs.dictate.floatingButtonSize.collectAsState()
             UChoiceRow(
                 title = stringRes(R.string.dictate__floating_button_size_title),
@@ -234,41 +215,6 @@ fun DictateFloatingButtonScreen() = UnisonoPage(title = stringRes(R.string.main_
             )
         }
 
-        if (openDialog == "color") {
-            val color by prefs.dictate.floatingButtonColor.collectAsState()
-            UDialog(
-                title = stringRes(R.string.main__fb_more_colors),
-                description = stringRes(R.string.main__fb_more_colors_summary),
-                onDismiss = { openDialog = null },
-            ) {
-                FlowRow(
-                    modifier = Modifier.padding(horizontal = 14.dp),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    val swatches = CloudPalette.entries.map { Color(it.main) } + ColorMappings.colors
-                    for (swatch in swatches.distinct()) {
-                        val chosen = swatch.toArgb() == color.toArgb()
-                        Box(
-                            Modifier
-                                .size(44.dp)
-                                .clip(CircleShape)
-                                .clickable { scope.launch { prefs.dictate.floatingButtonColor.set(swatch) } },
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Box(
-                                Modifier
-                                    .size(if (chosen) 30.dp else 34.dp)
-                                    .clip(CircleShape)
-                                    .background(swatch),
-                            )
-                            if (chosen) Box(Modifier.size(38.dp).border(1.5.dp, c.action, CircleShape))
-                        }
-                    }
-                }
-            }
-        }
-
         UGroupLabel(stringRes(R.string.main__fb_group_behaviour))
         UCard {
             // When it appears (issue #439), one choice where there used to be two switches about keyboards.
@@ -278,6 +224,11 @@ fun DictateFloatingButtonScreen() = UnisonoPage(title = stringRes(R.string.main_
                 choices = listOf(
                     UChoice(DictateFloatingButtonShowWhen.FIELD_SELECTED, stringRes(R.string.dictate__floating_button_show_when_field)),
                     UChoice(DictateFloatingButtonShowWhen.KEYBOARD_OPEN, stringRes(R.string.dictate__floating_button_show_when_keyboard)),
+                    UChoice(
+                        DictateFloatingButtonShowWhen.ALWAYS,
+                        stringRes(R.string.dictate__floating_button_show_when_always),
+                        stringRes(R.string.dictate__floating_button_show_when_always_summary),
+                    ),
                 ),
                 selected = showWhen,
                 onSelect = { scope.launch { prefs.dictate.floatingButtonShowWhen.set(it) } },

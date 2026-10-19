@@ -27,6 +27,3 @@ fun <T> Flow<T>.collectIn(scope: CoroutineScope, collector: FlowCollector<T>) {
     scope.launch { collect(collector) }
 }
 
-fun <T> StateFlow<T>.collectLatestIn(scope: CoroutineScope, action: suspend (value: T) -> Unit) {
-    scope.launch { collectLatest(action) }
-}

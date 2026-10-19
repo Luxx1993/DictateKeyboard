@@ -104,27 +104,12 @@ object AppVersionUtils {
         installVersionRaw != VersionName.DEFAULT_RAW &&
             (lastUseRaw == VersionName.DEFAULT_RAW || lastUseRaw == installVersionRaw)
 
-    suspend fun updateVersionLastChangelog(context: Context, prefs: FlorisPreferenceModel) {
-        prefs.internal.versionLastChangelog.set(getRawVersionName(context))
-    }
 
     /** The parsed version of the currently installed build, or [VersionName.DEFAULT] when unparseable. */
     fun currentVersion(context: Context): VersionName =
         VersionName.fromString(getRawVersionName(context)) ?: VersionName.DEFAULT
 
-    /** Remembers that the user has seen the "What's new" tour for the current version. */
-    suspend fun updateVersionLastWhatsNew(context: Context, prefs: FlorisPreferenceModel) {
-        prefs.internal.versionLastWhatsNew.set(getRawVersionName(context))
-    }
 
-    /**
-     * Remembers that the user has seen every "What's new" tour up to and including [version]. Used when
-     * more than one tour is queued (a user who skipped releases): after finishing an older tour we advance
-     * the high-water mark to it, so quitting mid-queue still resumes at the next unseen tour on relaunch.
-     */
-    suspend fun markWhatsNewSeen(context: Context, prefs: FlorisPreferenceModel, version: VersionName) {
-        prefs.internal.versionLastWhatsNew.set(version.toString())
-    }
 
     /**
      * The ascending list of tour versions from [candidates] that should auto-show now: only on a real
@@ -168,15 +153,6 @@ data class VersionName(
         val DEFAULT: VersionName = VersionName(0, 0, 0)
         const val DEFAULT_RAW: String = "0.0.0"
 
-        /**
-         * [raw] with the patch level dropped ("6.1.1" → "6.1.0"), for preferences that remember "the
-         * user has already been shown this once per release". Keying those on the full version would
-         * make a patch release re-show them, which is the opposite of what a patch is for.
-         *
-         * A version name that cannot be parsed (debug builds carry a suffix) is returned unchanged, so
-         * it simply keeps a bucket of its own.
-         */
-        fun featureVersionOf(raw: String): String = fromString(raw)?.featureVersion()?.toString() ?: raw
 
         fun fromString(raw: String): VersionName? {
             if (raw.matches("""[0-9]+[.][0-9]+[.][0-9]+""".toRegex())) {

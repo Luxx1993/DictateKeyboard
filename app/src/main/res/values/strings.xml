@@ -12,7 +12,6 @@
     <string name="settings__title" comment="Title of Settings">Settings</string>
     <string name="settings__system_default" comment="General string which is used when a preference has the system default value set">System default</string>
 
-    <string name="settings__home__title" comment="Title of the Home screen">Welcome to {app_name}</string>
 
     <string name="settings__search__title" comment="Title of the settings search screen">Search settings</string>
     <string name="settings__search__placeholder" comment="Placeholder in the settings search field">Search settings…</string>
@@ -37,10 +36,8 @@
 
     <string name="settings__other__title" comment="Title of Other settings">Other</string>
     <string name="pref__other__settings_theme__label" comment="Label of Settings theme preference in Other">Settings theme</string>
-    <string name="pref__other__settings_theme__auto_amoled" comment="Possible value of Settings theme preference in Other">System default (AMOLED)</string>
     <string name="pref__other__settings_theme__light" comment="Possible value of Settings theme preference in Other">Light</string>
     <string name="pref__other__settings_theme__dark" comment="Possible value of Settings theme preference in Other">Dark</string>
-    <string name="pref__other__settings_theme__amoled_dark" comment="Possible value of Settings theme preference in Other">AMOLED Dark</string>
     <string name="pref__other__settings_accent_color__label" comment="Label of accent color preference in Other">
         Settings accent color
     </string>
@@ -67,18 +64,11 @@
     <string name="about__changelog__summary" comment="Preference summary">What\'s new</string>
 
     <!-- What's new tour for 6.0 -->
-    <string name="about__website__title" comment="Preference title linking to the marketing website">Website</string>
     <string name="about__repository__title" comment="Preference title">Repository (GitHub)</string>
     <string name="about__repository__summary" comment="Preference summary">Source code, discussions, issues and info</string>
     <string name="about__based_on_floris__title" comment="Preference title crediting the upstream project Dictate is forked from">Based on Dictate Keyboard</string>
     <string name="about__based_on_floris__summary" comment="Preference summary crediting the upstream project">A fork of Dictate Keyboard by DevEmperor, itself built on FlorisBoard by Patrick Goldinger and contributors. Apache 2.0. Tap to open.</string>
     <string name="about__made_by" comment="Personal signature shown under the app name in the About header" translatable="false">diktat by Luxx1993\nBased on Dictate Keyboard by DevEmperor</string>
-    <string name="about__feedback__title" comment="Preference title">Feedback &amp; support</string>
-    <string name="about__feedback__summary" comment="Preference summary">Send an email with questions, bugs or ideas</string>
-    <string name="about__feedback__email" translatable="false">contact@devemperor.net</string>
-    <string name="about__feedback__subject" comment="Default subject line of the feedback email" translatable="false">diktat Feedback</string>
-    <string name="about__privacy_policy__title" comment="Preference title">Privacy policy</string>
-    <string name="about__privacy_policy__summary" comment="Preference summary">The privacy policy for this project</string>
     <string name="about__project_license__title" comment="Preference title">Project license</string>
     <string name="about__project_license__summary" comment="Preference summary">{app_name} is licensed under {license_name}</string>
     <string name="about__project_license__error_license_text_failed" comment="Error text for license text loading failure">Error: Failed to load license text.\n-&gt; Reason: {error_message}</string>
@@ -90,7 +80,6 @@
     <!-- Setup UI strings -->
     <string name="setup__title" comment="Title of Setup">Welcome!</string>
     <string name="setup__intro_message" comment="Short intro message welcoming new users">Welcome to {app_name}! Let\'s get you ready to dictate in just a few quick steps — no technical knowledge needed.</string>
-    <string name="setup__footer__privacy_policy" comment="Privacy policy label for URL">Privacy policy</string>
     <string name="setup__footer__repository" comment="Repository label for URL">Repository</string>
     <string name="setup__nav_back" comment="Setup wizard: go to the previous step">Back</string>
     <string name="setup__nav_next" comment="Setup wizard: go to the next, already-reached step">Next</string>
@@ -248,6 +237,8 @@
     <string name="dictate__floating_button_mic_title" comment="Row to grant the microphone permission for the floating button">Microphone access</string>
     <string name="dictate__floating_button_mic_summary" comment="Summary of the microphone row when the permission is missing">Required to record your voice · tap to grant</string>
     <string name="dictate__floating_button_show_when_title" comment="Setting title: in which situation the floating dictation button appears; opens a list of three choices">When to show</string>
+    <string name="dictate__floating_button_show_when_always" comment="Choice: the floating button stays on screen all the time, even with no text field">Always</string>
+    <string name="dictate__floating_button_show_when_always_summary" comment="Explains the always-on choice: it rests as a small see-through dot and the text goes to the clipboard when no field is selected">Stays on screen without a text field, as a small, see-through dot until you need it. Without a selected field the text goes to the clipboard.</string>
     <string name="dictate__floating_button_show_when_field" comment="Choice: the floating button appears as soon as a text field is focused, even before any keyboard opens">As soon as a text field is selected</string>
     <string name="dictate__floating_button_show_when_keyboard" comment="Choice: the floating button appears only while an on-screen keyboard (any keyboard) is open">Only while a keyboard is open</string>    <string name="dictate__floating_button_apps_title" comment="Row that opens the per-app visibility screen for the floating button">App visibility</string>
     <string name="dictate__floating_button_apps_summary_all" comment="Summary of the app-visibility row when no filter is set">In every app</string>
@@ -299,7 +290,6 @@
     <string name="dictate__floating_button_menu_group" comment="Header above the switches that add entries to the menu opened by holding the floating button">Hold menu</string>
     <string name="dictate__floating_button_menu_settings_title" comment="Menu entry and switch that opens the diktat settings from the floating button">diktat settings</string>
     <string name="dictate__floating_button_retry_hint" comment="Toast after a failed floating-button dictation whose recording was kept; %1$s is the error message. Tapping the button re-sends the recording.">%1$s — tap to retry</string>
-    <string name="dictate__floating_button_badge_new" comment="Small 'New' badge on the floating-button settings entry. Keep very short.">New</string>
 
     <!-- Configurable action-row buttons for the classic dictation layout (issue #183/#194) -->
     <string name="dictate__legacy_action_copy" comment="Action-row button: copy">Copy</string>
@@ -365,12 +355,8 @@
     <!-- Dictate AI providers manager -->
     <string name="dictate__providers_title" comment="Title of the AI providers manager screen and the row linking to it">AI providers</string>
     <string name="dictate__base_url_cleartext_warning" comment="Warning under the base URL field when the address starts with http:// (not https). The API key and the audio are sent unencrypted.">Not encrypted: the API key and your recordings travel as plain text. Fine on your own network, but on any other Wi-Fi someone else could read them.</string>
-    <string name="dictate__providers_summary" comment="Summary showing the active provider. {provider} is a provider name like OpenAI.">Active: {provider}</string>
-    <string name="dictate__providers_summary_both" comment="Summary showing the active transcription and rewording providers when they differ. {transcription} and {rewording} are provider names like OpenAI.">Transcription: {transcription} · Rewording: {rewording}</string>
-    <string name="dictate__providers_active_group" comment="Group title for the active-provider selectors">Active providers</string>
     <string name="dictate__providers_active_transcription" comment="Selector for the active transcription provider">Transcription</string>
     <string name="dictate__providers_active_rewording" comment="Selector for the active rewording provider">Rewording</string>
-    <string name="dictate__providers_manage_group" comment="Group title for the per-provider configuration list">Configure providers</string>
     <string name="dictate__providers_status_key_set" comment="Status when a provider has an API key stored">Key set</string>
     <string name="dictate__providers_status_no_key" comment="Status when a provider has no API key yet">No key</string>
     <string name="dictate__providers_status_unconfigured" comment="Status for a custom endpoint without key or URL">Not configured</string>
@@ -565,15 +551,11 @@
     <!-- Dictate main screen pipeline groups -->
     <string name="dictate__formatting_title" comment="Title for the formatting &amp; vocabulary settings sub-screen">Formatting &amp; vocabulary</string>
     <string name="dictate__formatting_menu_summary" comment="One-line summary for the formatting hub entry on the Dictate settings landing page">Style prompt, custom words, replacements</string>
-    <string name="dictate__recording_menu_summary" comment="One-line summary for the recording hub entry on the Dictate settings landing page">Real-time, audio source, instant recording</string>
     <string name="dictate__output_menu_summary" comment="One-line summary for the output hub entry on the Dictate settings landing page">Auto-enter, typing speed, resend</string>
-    <string name="dictate__layout_title" comment="Title of the dictation layout settings category (how the dictation keyboard looks)">Dictation layout</string>
 
     <!-- Dictate language selection -->
     <string name="dictate__languages_title" comment="Setting: pick which dictation languages to cycle through">Transcription languages</string>
-    <string name="dictate__languages_summary" comment="Explanation on the language picker screen">Pick the languages you dictate in. Switch between them quickly from the recording bar.</string>
     <string name="dictate__language_detect" comment="Language option: let the model auto-detect the spoken language">Detect automatically</string>
-    <string name="dictate__languages_selected_title" comment="Row/dialog title: the languages the user dictates in, listed by name under it; tapping opens a dialog with every language and a checkbox each">Selected languages</string>
     <string name="dictate__languages_active_title" comment="Row/dialog title to pick the currently active transcription language">Active language</string>
     <string name="dictate__languages_follow_keyboard" comment="Switch title: the dictation language follows the keyboard language">Follow the keyboard language</string>
 
@@ -585,7 +567,6 @@
     <!-- Dictate style prompt (biases the transcription towards proper punctuation/casing) -->
     <string name="dictate__style_prompt_title" comment="Setting: punctuation/style prompt for transcription">Punctuation &amp; style</string>
     <string name="dictate__style_prompt_custom_placeholder" comment="Placeholder for the custom style prompt field">e.g. Hello. Thank you very much.</string>
-    <string name="dictate__style_prompt_info_title" comment="Row that reveals the built-in default style prompt">View default example</string>
     <string name="dictate__style_prompt_info_description" comment="Explanation shown above the default style prompt example">This example sentence is sent with each transcription to nudge the model towards correct capitalization and punctuation. It adapts automatically to the language you dictate in.</string>
     <string name="dictate__style_prompt_info_none" comment="Shown in the style-prompt info box for a language that has no example sentence, so none is sent (issue #275)">This language has no example sentence yet, so none is sent. The transcription still follows the language you selected.</string>
 
@@ -614,7 +595,6 @@
     <!-- Dictate custom mappings: deterministic find-and-replace on the transcript (issue #129) -->
     <string name="dictate__mappings_title" comment="Title of the custom find-and-replace mappings screen">Custom mappings</string>
     <string name="dictate__mappings_entry_summary" comment="Summary on the row that opens the mappings screen">Find-and-replace rules applied to the transcript</string>
-    <string name="dictate__mappings_group" comment="Group title on the mappings screen">Replacement rules</string>
     <string name="dictate__mappings_empty_title" comment="Shown when no mapping rules exist yet">No mappings yet</string>
     <string name="dictate__mappings_empty_summary" comment="Summary when no mapping rules exist">Add a rule to auto-replace words or phrases in every transcript — exact, no AI tokens.</string>
     <string name="dictate__mappings_add" comment="Button to add a new mapping rule">Add mapping</string>
@@ -657,7 +637,6 @@
     <string name="dictate__history_title" comment="Title of the transcription history screen and in-keyboard panel">History</string>
     <string name="dictate__history_original" comment="Label above the raw transcript, shown when a prompt rewrote it">Original</string>
     <string name="dictate__history_result" comment="Label above the text produced by a prompt">Result</string>
-    <string name="dictate__history_menu_summary" comment="Summary for the history entry in Dictate settings">Replay, re-insert and manage past dictations</string>
     <string name="dictate__history_empty" comment="Shown when no dictations have been recorded yet">No dictations yet — your recent dictations will appear here.</string>
     <string name="dictate__history_enable_title" comment="Toggle: capture finished dictations into the history">Keep a history</string>
     <string name="dictate__history_enable_summary" comment="Short summary for the keep-a-history toggle">Log dictations to re-insert or review later.</string>
@@ -686,7 +665,6 @@
     <string name="dictate__history_export_folder_unset" comment="Shown in place of the folder name when no export folder has been chosen">Not set</string>
     <string name="dictate__history_export_folder_unavailable" comment="Shown when the export folder can no longer be written to (permission revoked, storage removed, restored backup)">Folder unavailable — pick it again</string>
     <string name="dictate__history_export_choose" comment="Button that opens the folder picker for the first time">Choose folder</string>
-    <string name="dictate__history_export_change" comment="Button that opens the folder picker to swap the export folder">Change</string>
     <string name="dictate__history_export_disconnect" comment="Button that stops the folder export and gives up access to the folder">Disconnect</string>
     <string name="dictate__history_export_audio_title" comment="Toggle: also write the recording next to the exported transcript">Also export the recording</string>
     <string name="dictate__history_export_audio_summary" comment="Summary of the export-the-recording toggle when it can be used">Saves the audio next to the transcript.</string>
@@ -731,13 +709,11 @@
     <string name="dictate__command_word_off" comment="Summary shown when no command word is set, i.e. the feature is off">Off</string>
     <string name="dictate__command_word_summary" comment="Summary for the command word setting. {word} is the word the user picked.">Dictations starting with “{word}” run as a live prompt</string>
     <string name="dictate__command_word_placeholder" comment="Example command word shown in the empty input field">Jarvis</string>
-    <string name="dictate__command_word_info_title" comment="Title of the info box explaining the command word">About the command word</string>
     <string name="dictate__command_word_info_description" comment="Info box explaining what the command word does">Normally diktat writes down what you say. With a command word set, a dictation that begins with it becomes an instruction instead: the word is removed and the rest is sent to the AI, together with the selected text if there is any.\n\n“Jarvis, make this more formal” rewrites the selection. “Jarvis, what is the capital of Japan” writes the answer into the field. It is the Live prompt button, reached by saying its name instead of tapping it.\n\nThe word only counts at the very start of a dictation and only as a whole word, so pick something you rarely begin a sentence with.</string>
     <string name="dictate__auto_formatting_title" comment="Setting: turn spoken formatting cues into Markdown">Auto-formatting</string>
     <string name="dictate__auto_formatting_summary" comment="Summary for the auto-formatting setting">Turn spoken formatting cues into Markdown (headings, lists, …)</string>
     <string name="dictate__system_prompt_title" comment="Setting: base instruction sent with every rewording request">Rewording instruction</string>
     <string name="dictate__system_prompt_custom_placeholder" comment="Placeholder for the custom system prompt field">Guidance added to every rewording request</string>
-    <string name="dictate__system_prompt_info_title" comment="Row that reveals the built-in default rewording instruction">View default instruction</string>
     <string name="dictate__system_prompt_info_description" comment="Explanation shown above the default rewording instruction">This instruction is added to every rewording request so the AI returns only the result you asked for — with no extra text before or after.</string>
 
     <!-- Dictate prompt management (CRUD) -->
@@ -788,7 +764,6 @@
     <string name="dictate__prompt_library_empty" comment="Shown when no library prompt matches the search/filter">No prompts match your search.</string>
     <string name="dictate__prompt_library_error" comment="Shown when the community library could not be downloaded">Couldn\'t load the community library. Check your connection and try again.</string>
     <string name="dictate__prompt_library_retry" comment="Button to retry loading the community library">Retry</string>
-    <string name="dictate__prompt_library_close" comment="Button that closes the prompt preview dialog">Close</string>
     <string name="dictate__prompt_library_author" comment="Attribution line in the prompt preview; {author} is the author name">by {author}</string>
 
     <!-- Dictate: contribute one of your own prompts back to the community library (issue #105) -->
@@ -809,7 +784,6 @@
     <string name="dictate__import_share_label" comment="Label of the Dictate entry in the system share sheet for audio and video files. One word: the sheet already shows the app name next to it, and another Dictate entry handles images.">Transcribe</string>
     <string name="dictate__import_title" comment="Title of the screen that transcribes a shared or picked audio file">Transcribe file</string>
     <string name="dictate__import_menu" comment="Entry on the Dictate settings home that opens the file picker">Transcribe a file</string>
-    <string name="dictate__import_menu_summary" comment="Summary under the \'Transcribe a file\' entry">Pick an audio or video file and read what it says</string>
     <!-- The steps of an import, listed from the start and ticked off as they finish (issue #337). One
          "Preparing…" used to cover four different jobs, which made the longest of them look like a hang. -->
     <string name="dictate__import_step_copy" comment="Step in the import progress list: the shared file is copied out of the temporary share into the app">Receiving the file</string>
@@ -866,9 +840,6 @@
     <string name="main__fb_group_look">Appearance</string>
     <string name="main__fb_group_behaviour">Behaviour</string>
     <string name="main__fb_group_after">After dictating</string>
-    <string name="main__fb_more_colors">More colours</string>
-    <string name="main__fb_more_colors_summary">Any colour; the cloud mixes its palette from it</string>
-    <string name="main__fb_preview_note">Previews in Lagoon; the button takes your colour.</string>
     <string name="main__rec_group_start">Recording</string>
     <string name="main__rec_group_mic">Microphone</string>
     <string name="main__rec_group_send">Before sending</string>
@@ -888,7 +859,6 @@
     <string name="main__stat_words_total">Words in total</string>
     <string name="main__stat_words_month">This month</string>
     <string name="main__stat_streak">Days in a row</string>
-    <string name="main__providers">Active providers</string>
     <string name="main__provider_transcription">Transcription</string>
     <string name="main__provider_cleanup">Clean-up</string>
     <string name="main__provider_off">Off</string>
@@ -936,6 +906,7 @@
     <string name="main__settings_providers">AI providers</string>
     <string name="main__settings_recording">Recording</string>
     <string name="main__settings_group_more">More</string>
+    <string name="main__settings_group_app">App</string>
     <string name="main__settings_transcribe">Transcribe a file</string>
     <string name="main__settings_history">History</string>
     <string name="main__settings_voice_input">Voice input</string>
@@ -944,7 +915,6 @@
     <string name="main__settings_voice_input_dialog">Switch on {app_name} under on-screen keyboards. Many keyboards, SwiftKey for one, switch to the voice input with their microphone key and then dictate through {app_name}. Your keyboard stays as it is.</string>
     <string name="main__settings_voice_input_open">Open input methods</string>
     <string name="main__settings_backup">Back up and restore</string>
-    <string name="main__settings_all">All settings</string>
     <string name="dictate__longform_button_note">For the floating button in tap mode. Long dictations are transcribed piece by piece while you speak, cut at your pauses. Holding to record and the voice input stay one-shot.</string>
     <string name="dictate__error_overlay_insert_pending">This app wouldn\'t take the text yet. Tap into the field or on the cloud and it goes in; it\'s on your clipboard too.</string>
     <string name="dictate__record_mode_title">Recording with the button</string>

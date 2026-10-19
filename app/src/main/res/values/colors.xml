@@ -20,7 +20,6 @@
     <!-- Failed: the red the cloud tints with, so every style fails in the same colour. -->
     <color name="dictate_overlay_error">#B3443A</color>
     <!-- Neutral background for the secondary cancel button shown while recording -->
-    <color name="dictate_overlay_cancel">#4A4A4A</color>
     <!-- Surface of the long-press rewording menu -->
     <color name="dictate_overlay_menu_surface">#2D2D2D</color>
 </resources>

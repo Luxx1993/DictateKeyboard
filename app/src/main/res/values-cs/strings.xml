@@ -4,13 +4,10 @@
     <!-- Emoji strings -->
     <string name="emoji__history__pinned">Připnuté</string>
     <!-- Quick action strings -->
-    <string name="quick_action__voice_input" comment="Please mind the limited available space for the quick action strings">Hlas. vstup</string>
-    <string name="quick_action__voice_input__tooltip" comment="IME stands for Input Method Editor and is indirectly equivalent to 'keyboard'.">Otevřít poskytovatele hlasového zadávání</string>
     <string name="quick_action__noop" comment="Noop=no operation; this action is only used as a placeholder in the actions editor drag and drop screen">Žádné</string>
     <!-- Settings UI strings -->
     <string name="settings__title" comment="Title of Settings">Nastavení</string>
     <string name="settings__system_default" comment="General string which is used when a preference has the system default value set">Výchozí nastavení systému</string>
-    <string name="settings__home__title" comment="Title of the Home screen">Vítejte ve {app_name}</string>
     <string name="dictate__settings_unreadable_card">Vaše nastavení nešlo načíst, proto diktat začal s výchozími hodnotami. Klepnutím je vrátíte zpět.</string>
     <string name="dictate__settings_unreadable_title">Obnovit nastavení?</string>
     <string name="dictate__settings_unreadable_message">Při spuštění nemohl diktat načíst svůj soubor s nastavením. Ponechal ho nedotčený a začal s výchozími hodnotami. „Obnovit“ vrátí vaše poskytovatele, klíče, prompty a nastavení do původního stavu. „Odstranit“ starý soubor smaže.</string>
@@ -30,10 +27,8 @@
     <string name="pref__glide__enabled__label" comment="Preference title">Povolit psaní tahem</string>
     <string name="settings__other__title" comment="Title of Other settings">Ostatní</string>
     <string name="pref__other__settings_theme__label" comment="Label of Settings theme preference in Other">Motiv nastavení</string>
-    <string name="pref__other__settings_theme__auto_amoled" comment="Possible value of Settings theme preference in Other">Podle systému (AMOLED)</string>
     <string name="pref__other__settings_theme__light" comment="Possible value of Settings theme preference in Other">Světlý</string>
     <string name="pref__other__settings_theme__dark" comment="Possible value of Settings theme preference in Other">Tmavý</string>
-    <string name="pref__other__settings_theme__amoled_dark" comment="Possible value of Settings theme preference in Other">AMOLED tmavý</string>
     <string name="pref__other__settings_accent_color__label" comment="Label of accent color preference in Other">        Barva nastavení
     </string>
     <string name="pref__other__settings_language__label" comment="Label of Settings language preference in Other">Jazyk nastavení</string>
@@ -54,8 +49,6 @@
     <string name="about__changelog__summary" comment="Preference summary">Co je nového</string>
     <string name="about__repository__title" comment="Preference title">Repozitář (GitHub)</string>
     <string name="about__repository__summary" comment="Preference summary">Zdrojový kód, diskuze, problémy a informace</string>
-    <string name="about__privacy_policy__title" comment="Preference title">Soukromí</string>
-    <string name="about__privacy_policy__summary" comment="Preference summary">Zásady ochrany soukromí tohoto projektu</string>
     <string name="about__project_license__title" comment="Preference title">Licence projektu</string>
     <string name="about__project_license__summary" comment="Preference summary">{app_name} je licencován pod {license_name}</string>
     <string name="about__project_license__error_license_text_failed" comment="Error text for license text loading failure">Chyba: Nepodařilo se načíst text licence.\n-&gt; Důvod: {error_message}</string>
@@ -64,7 +57,6 @@
     <!-- Setup UI strings -->
     <string name="setup__title" comment="Title of Setup">Vítejte!</string>
     <string name="setup__intro_message" comment="Short intro message welcoming new users">Děkujeme za používání aplikace {app_name}! Toto rychlé nastavení vás provede kroky vyžadovanými k používání {app_name} na vašem zařízení.</string>
-    <string name="setup__footer__privacy_policy" comment="Privacy policy label for URL">Soukromí</string>
     <string name="setup__footer__repository" comment="Repository label for URL">Repozitář</string>
     <string name="setup__grant_notification_permission__title">Povolit oznámení o hlášení pádu</string>
     <string name="setup__grant_notification_permission__description">Počínaje systémem Android 13 musí aplikace žádat o oprávnění
@@ -145,10 +137,6 @@
     <string name="state__no_file_selected">Nebyl vybrán žádný soubor</string>
     <!-- Dictate strings -->
     <string name="quick_action__dictate_live_prompt">Pokyn naživo</string>
-    <string name="about__feedback__title">Zpětná vazba a podpora</string>
-    <string name="about__feedback__summary">Pošlete e-mail s dotazy, chybami nebo nápady</string>
-    <string name="about__feedback__email">contact@devemperor.net</string>
-    <string name="about__feedback__subject">diktat Feedback</string>
     <string name="setup__provider__title">Vyberte, jak má diktat přepisovat</string>
     <string name="setup__provider__choose_intro">diktat převádí vaši řeč na text pomocí služby AI. Většině lidí vyhoví jeden ze dvou způsobů — a pokud nechcete používat žádnou cloudovou službu, níže najdete další dva.</string>
     <string name="setup__provider__choice_own_title">Použít vlastního poskytovatele AI</string>
@@ -245,7 +233,6 @@
     <string name="dictate__floating_button_snap_title">Přichytit k okraji</string>
     <string name="dictate__transcription_stopped">Zastaveno, nahrávka zachována</string>
     <string name="dictate__transcription_stopped_in_history">Zastaveno, nahrávka je v Historii</string>
-    <string name="dictate__providers_summary_both">Přepis: {transcription} · Přeformulování: {rewording}</string>
     <string name="dictate__remember_last_dictation_summary">Uchová poslední diktát, aby jej plovoucí tlačítko mohlo vrátit zpět a klasické rozvržení znovu vložit.</string>
     <string name="dictate__remember_last_dictation_title">Zapamatovat poslední diktování</string>
     <string name="setup__floating_button__btn">Nastavit plovoucí tlačítko</string>
@@ -256,7 +243,6 @@
     <string name="setup__floating_button__accessibility_note">K tomu {app_name} využívá nastavení přístupnosti Androidu — díky tomu se bublina může zobrazovat přes ostatní aplikace a vkládat za vás přepsaný text. Další obrazovka vás provede zapnutím.</string>
     <string name="setup__floating_button__optional_note">Je to zcela volitelné — přeskočte, pokud chcete {app_name} používat jen jako plnohodnotnou klávesnici. Vždy to můžete nastavit později v nastavení.</string>
     <string name="setup__floating_button__skip_btn">Přeskočit — použiji klávesnici</string>
-    <string name="dictate__floating_button_badge_new">Nové</string>
     <string name="dictate__prompts_layout_title">Rozložení promptů</string>
     <string name="dictate__status_transcribing">Přepis…</string>
     <string name="dictate__status_transcribing_local">Přepis v zařízení…</string>
@@ -300,11 +286,8 @@
     <string name="dictate__base_url_placeholder">https://vas-server/v1/</string>
     <string name="dictate__value_not_set">Nenastaveno</string>
     <string name="dictate__providers_title">Poskytovatelé AI</string>
-    <string name="dictate__providers_summary">Aktivní: {provider}</string>
-    <string name="dictate__providers_active_group">Aktivní poskytovatelé</string>
     <string name="dictate__providers_active_transcription">Přepis</string>
     <string name="dictate__providers_active_rewording">Přeformulování</string>
-    <string name="dictate__providers_manage_group">Konfigurace poskytovatelů</string>
     <string name="dictate__providers_status_key_set">Klíč nastaven</string>
     <string name="dictate__providers_status_no_key">Bez klíče</string>
     <string name="dictate__providers_status_unconfigured">Nenakonfigurováno</string>
@@ -430,13 +413,9 @@
     <string name="dictate__resend_button_summary">Pokud přepis selže, zobrazit tlačítko pro opakování se stejnou nahrávkou</string>
     <string name="dictate__formatting_title">Formátování &amp; slovník</string>
     <string name="dictate__formatting_menu_summary">Výzva pro styl, vlastní slova, náhrady</string>
-    <string name="dictate__recording_menu_summary">V reálném čase, zdroj zvuku, okamžité nahrávání</string>
     <string name="dictate__output_menu_summary">Automatický Enter, rychlost psaní, opětovné odeslání</string>
-    <string name="dictate__layout_title">Rozvržení diktování</string>
     <string name="dictate__languages_title">Jazyky přepisu</string>
-    <string name="dictate__languages_summary">Vyberte jazyky, ve kterých diktujete. Rychle mezi nimi přepínejte na liště nahrávání.</string>
     <string name="dictate__language_detect">Zjistit automaticky</string>
-    <string name="dictate__languages_selected_title">Vybrané jazyky</string>
     <string name="dictate__languages_active_title">Aktivní jazyk</string>
     <string name="dictate__languages_follow_keyboard">Řídit se jazykem klávesnice</string>
     <string name="dictate__prompt_selection_none">Žádný</string>
@@ -444,7 +423,6 @@
     <string name="dictate__prompt_selection_custom">Vlastní</string>
     <string name="dictate__style_prompt_title">Interpunkce a styl</string>
     <string name="dictate__style_prompt_custom_placeholder">např. Dobrý den. Mnohokrát děkuji.</string>
-    <string name="dictate__style_prompt_info_title">Zobrazit výchozí příklad</string>
     <string name="dictate__style_prompt_info_description">Tato vzorová věta se odesílá s každým přepisem, aby model nasměrovala ke správnému psaní velkých písmen a interpunkce. Automaticky se přizpůsobuje jazyku, ve kterém diktujete.</string>
     <string name="dictate__style_prompt_info_none">Pro tento jazyk zatím není ukázková věta, proto se žádná neodesílá. Přepis se stále řídí jazykem, který jste zvolili.</string>
     <string name="dictate__custom_words_title">Vlastní slova</string>
@@ -479,13 +457,11 @@
     <string name="dictate__command_word_off">Vypnuto</string>
     <string name="dictate__command_word_summary">Diktáty začínající slovem „{word}“ se spustí jako pokyn naživo</string>
     <string name="dictate__command_word_placeholder">Jarvis</string>
-    <string name="dictate__command_word_info_title">O příkazovém slově</string>
     <string name="dictate__command_word_info_description">diktat normálně zapisuje to, co řeknete. Když nastavíte příkazové slovo, diktát, který jím začíná, se místo toho stane pokynem: slovo se odstraní a zbytek se pošle AI spolu s vybraným textem, pokud nějaký je.\n\n„Jarvisi, uprav to formálněji“ přepíše výběr. „Jarvisi, jaké je hlavní město Japonska“ zapíše odpověď do pole. Je to tlačítko pokynu naživo, jen vyvolané vyslovením jeho jména místo klepnutí.\n\nSlovo platí jen úplně na začátku diktátu a jen jako celé slovo — vyberte tedy něco, čím větu zahajujete zřídka.</string>
     <string name="dictate__auto_formatting_title">Automatické formátování</string>
     <string name="dictate__auto_formatting_summary">Převádět vyřčené pokyny k formátování na Markdown (nadpisy, seznamy, …)</string>
     <string name="dictate__system_prompt_title">Pokyn k přeformulování</string>
     <string name="dictate__system_prompt_custom_placeholder">Pokyn přidaný ke každému požadavku na přeformulování</string>
-    <string name="dictate__system_prompt_info_title">Zobrazit výchozí pokyn</string>
     <string name="dictate__system_prompt_info_description">Tento pokyn se přidává ke každému požadavku na přeformulování, aby AI vracela pouze požadovaný výsledek — bez dalšího textu před ním či za ním.</string>
     <string name="dictate__prompts_title">Prompty</string>
     <string name="dictate__prompts_empty">Zatím žádné prompty. Klepnutím na tlačítko níže přidáte.</string>
@@ -526,7 +502,6 @@
     <string name="dictate__prompt_library_empty">Vašemu hledání neodpovídají žádné prompty.</string>
     <string name="dictate__prompt_library_error">Komunitní knihovnu se nepodařilo načíst. Zkontrolujte připojení a zkuste to znovu.</string>
     <string name="dictate__prompt_library_retry">Zkusit znovu</string>
-    <string name="dictate__prompt_library_close">Zavřít</string>
     <string name="dictate__prompt_library_author">od {author}</string>
     <string name="dictate__prompt_share_title">Sdílet s komunitou</string>
     <string name="dictate__prompt_share_message">Tímto se ve vašem prohlížeči otevře GitHub s vaším promptem předvyplněným jako příspěvek. Přihlaste se a potvrďte otevření pull requestu, který jej přidá do komunitní knihovny. Je vyžadován bezplatný účet GitHub; nic se nenahraje, dokud to nepotvrdíte na GitHub.</string>
@@ -540,7 +515,6 @@
     <string name="dictate__import_share_label">Přepsat</string>
     <string name="dictate__import_title">Přepsat soubor</string>
     <string name="dictate__import_menu">Přepsat soubor</string>
-    <string name="dictate__import_menu_summary">Vyberte zvukový nebo video soubor a přečtěte si, co se v něm říká</string>
     <string name="dictate__import_step_copy">Přijímání souboru</string>
     <string name="dictate__import_step_extract">Získávání zvuku z videa</string>
     <string name="dictate__import_step_prepare">Příprava zvuku</string>
@@ -617,7 +591,6 @@
     <string name="dictate__mappings_field_from_placeholder">např. github</string>
     <string name="dictate__mappings_field_to">Za</string>
     <string name="dictate__mappings_field_to_placeholder">např. GitHub</string>
-    <string name="dictate__mappings_group">Pravidla nahrazování</string>
     <string name="dictate__mappings_matchcase_summary">Nahradit pouze tehdy, když přesně odpovídají velká a malá písmena.</string>
     <string name="dictate__mappings_import">Importovat pravidla</string>
     <string name="dictate__mappings_export">Exportovat pravidla</string>
@@ -656,7 +629,6 @@
     <string name="dictate__history_title">Historie</string>
     <string name="dictate__history_original">Originál</string>
     <string name="dictate__history_result">Výsledek</string>
-    <string name="dictate__history_menu_summary">Přehrávejte, znovu vkládejte a spravujte minulá diktování</string>
     <string name="dictate__history_empty">Zatím žádná diktování — vaše nedávná diktování se zobrazí zde.</string>
     <string name="dictate__history_enable_title">Uchovávat historii</string>
     <string name="dictate__history_enable_summary">Zaznamenávat diktování pro pozdější vložení nebo prohlížení.</string>
@@ -685,7 +657,6 @@
     <string name="dictate__history_export_folder_unset">Nenastaveno</string>
     <string name="dictate__history_export_folder_unavailable">Složka není dostupná — vyberte ji znovu</string>
     <string name="dictate__history_export_choose">Vybrat složku</string>
-    <string name="dictate__history_export_change">Změnit</string>
     <string name="dictate__history_export_disconnect">Odpojit</string>
     <string name="dictate__history_export_audio_title">Exportovat i nahrávku</string>
     <string name="dictate__history_export_audio_summary">Uloží zvuk vedle přepisu.</string>
@@ -736,6 +707,5 @@
     <string name="dictate__audio_source_voice_communication_summary">Nejvyšší priorita mikrofonu — funguje, i když jej používá jiná aplikace, ale může snížit přesnost.</string>
 
     <string name="dictate__legacy_action_copy">Kopírovat</string>
-    <string name="about__website__title">Webové stránky</string>
 
 </resources>

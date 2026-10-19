@@ -37,9 +37,3 @@ class GuardedByLock<out T : Any>(@PublishedApi internal val wrapped: T) {
     }
 }
 
-inline fun <T : Any> guardedByLock(initializer: () -> T): GuardedByLock<T> {
-    contract {
-        callsInPlace(initializer, InvocationKind.EXACTLY_ONCE)
-    }
-    return GuardedByLock(initializer())
-}

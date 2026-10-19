@@ -10,8 +10,15 @@
 
 package dev.patrickgold.florisboard.app.main
 
+import android.view.View
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalDensity
+import androidx.core.graphics.ColorUtils
+import dev.patrickgold.florisboard.dictate.ui.DictateAuroraOrbView
+import dev.patrickgold.florisboard.dictate.ui.DictateLatticeSphereView
+import dev.patrickgold.florisboard.dictate.ui.GlassDrawable
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -87,39 +94,80 @@ internal fun PaletteRow() {
     }
 }
 
-/** The preview image of [design] at rest, drawn after the code (see docs/design/diktat-design.md §4). */
-internal fun previewRes(design: DictateFloatingButtonDesign): Int = when (design) {
-    DictateFloatingButtonDesign.CLOUD -> R.drawable.preview_bubble_cloud
-    DictateFloatingButtonDesign.PILL -> R.drawable.preview_bubble_pill
-    DictateFloatingButtonDesign.RING -> R.drawable.preview_bubble_ring
-    DictateFloatingButtonDesign.ORB -> R.drawable.preview_bubble_orb
-    DictateFloatingButtonDesign.AURORA -> R.drawable.preview_bubble_aurora
-    DictateFloatingButtonDesign.LATTICE -> R.drawable.preview_bubble_lattice
-}
-
 /**
- * The floating button as it looks at rest: the live cloud in the chosen palette for the cloud, otherwise
- * the style's preview image (in Lagune).
+ * The floating button as it looks at rest, in the chosen colour: every style is drawn by the same view or
+ * drawable the button itself uses, so a new colour shows at once in all of them.
  */
 @Composable
 internal fun BubblePreview(design: DictateFloatingButtonDesign, size: Dp) {
     val prefs by FlorisPreferenceStore
     val color by prefs.dictate.floatingButtonColor.collectAsState()
-    if (design == DictateFloatingButtonDesign.CLOUD) {
-        CloudSwatch(CloudPalette.forColor(color.toArgb()), size = size, animated = true)
-    } else {
-        StylePreview(design, size)
-    }
+    LiveBubble(design, size, color.toArgb())
 }
 
-/** A style's preview image on a small paper disc, so its soft shadow reads the same in light and dark. */
+/** A style's live preview on a small paper disc, so its glow reads the same in light and dark. */
 @Composable
 internal fun StylePreview(design: DictateFloatingButtonDesign, size: Dp) {
+    val prefs by FlorisPreferenceStore
+    val color by prefs.dictate.floatingButtonColor.collectAsState()
     Box(
         Modifier.size(size).clip(Unisono.Pill).background(Unisono.Light.canvas),
         contentAlignment = Alignment.Center,
     ) {
-        Image(painterResource(previewRes(design)), contentDescription = null, modifier = Modifier.size(size))
+        LiveBubble(design, size, color.toArgb())
+    }
+}
+
+/**
+ * One style at rest. [size] stands for the button's 64 dp window; the body inside it is 40 dp for the ring and
+ * 48 dp for the others, as in the overlay. The glass styles use [GlassDrawable] in the palette's three tones,
+ * the aurora and the lattice their own views, the cloud its shader.
+ */
+@Composable
+internal fun LiveBubble(design: DictateFloatingButtonDesign, size: Dp, colorArgb: Int) {
+    val palette = remember(colorArgb) { CloudPalette.forColor(colorArgb) }
+    val px = with(LocalDensity.current) { size.toPx() }
+    val body = if (design == DictateFloatingButtonDesign.RING) 40f / 64f else 48f / 64f
+    when (design) {
+        DictateFloatingButtonDesign.CLOUD -> CloudSwatch(palette, size = size, animated = true)
+        DictateFloatingButtonDesign.AURORA -> AndroidView(
+            factory = { ctx -> DictateAuroraOrbView(ctx).apply { bodyRadius = px * body / 2f } },
+            update = { it.setMood(DictateAuroraOrbView.Mood.IDLE, colorArgb) },
+            modifier = Modifier.size(size),
+        )
+        DictateFloatingButtonDesign.LATTICE -> AndroidView(
+            factory = { ctx ->
+                DictateLatticeSphereView(ctx, sizeScale = size.value / 64f).apply { bodyDiameter = px * body }
+            },
+            update = { it.setMode(DictateLatticeSphereView.Mode.WEB, colorArgb) },
+            modifier = Modifier.size(size),
+        )
+        else -> {
+            val core = size * body
+            val glyph = if (ColorUtils.calculateLuminance(palette.o1 or 0xFF000000.toInt()) > 0.7) Color.Black else Color.White
+            Box(Modifier.size(size), contentAlignment = Alignment.Center) {
+                if (design == DictateFloatingButtonDesign.RING) {
+                    Canvas(Modifier.size(size)) {
+                        drawCircle(
+                            color = Color(palette.o1),
+                            radius = this.size.minDimension * 25f / 64f,
+                            style = Stroke(this.size.minDimension * 3f / 64f),
+                        )
+                    }
+                }
+                AndroidView(
+                    factory = { ctx -> View(ctx) },
+                    update = { it.background = GlassDrawable(palette.o0, palette.o1, palette.o2) },
+                    modifier = Modifier.size(core),
+                )
+                Icon(
+                    painterResource(R.drawable.ic_dictate_overlay_mic),
+                    contentDescription = null,
+                    tint = glyph,
+                    modifier = Modifier.size(core / 2),
+                )
+            }
+        }
     }
 }
 

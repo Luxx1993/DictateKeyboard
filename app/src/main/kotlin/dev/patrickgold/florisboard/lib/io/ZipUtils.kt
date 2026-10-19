@@ -30,25 +30,6 @@ import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
 
 object ZipUtils {
-    fun readFileFromArchive(context: Context, zipRef: FlorisRef, relPath: String) = runCatching<String> {
-        when {
-            zipRef.isAssets -> {
-                zipRef.subRef(relPath).loadTextAsset(context).getOrThrow()
-            }
-            zipRef.isCache || zipRef.isInternal -> {
-                val flexHandle = FsFile(zipRef.absolutePath(context))
-                check(flexHandle.isFile) { "Given ref $zipRef is not a file!" }
-                var fileContents: String? = null
-                ZipFile(flexHandle).use { flexFile ->
-                    flexFile.getEntry(relPath)?.let { flexEntry ->
-                        fileContents = flexFile.getInputStream(flexEntry).bufferedReader().use { it.readText() }
-                    }
-                }
-                fileContents ?: error("Failed to load requested file $relPath")
-            }
-            else -> error("Unsupported source!")
-        }
-    }
 
     fun zip(context: Context, srcRef: FlorisRef, dstRef: FlorisRef) =
         zip(context, FsDir(srcRef.absolutePath(context)), dstRef)

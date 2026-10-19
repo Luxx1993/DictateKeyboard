@@ -3,7 +3,6 @@
     <string name="app_name">diktat</string>
     <!-- Settings UI strings -->
     <string name="settings__title" comment="Title of Settings">Podešavanja</string>
-    <string name="settings__home__title" comment="Title of the Home screen">Dobrodošli u {app_name}</string>
     <string name="settings__theme__title" comment="Title of the Theme screen">Tema</string>
     <!-- About UI strings -->
     <string name="about__title" comment="Title of About activity">Informacije o...</string>

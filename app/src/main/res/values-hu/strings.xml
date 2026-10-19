@@ -4,13 +4,10 @@
     <!-- Emoji strings -->
     <string name="emoji__history__pinned">Kitűzött</string>
     <!-- Quick action strings -->
-    <string name="quick_action__voice_input" comment="Please mind the limited available space for the quick action strings">Hangbevitel</string>
-    <string name="quick_action__voice_input__tooltip" comment="IME stands for Input Method Editor and is indirectly equivalent to 'keyboard'.">Hangbevitel szolgáltatójának megnyitása</string>
     <string name="quick_action__noop" comment="Noop=no operation; this action is only used as a placeholder in the actions editor drag and drop screen">Semmi</string>
     <!-- Settings UI strings -->
     <string name="settings__title" comment="Title of Settings">Beállítások</string>
     <string name="settings__system_default" comment="General string which is used when a preference has the system default value set">Rendszer alapértelmezése</string>
-    <string name="settings__home__title" comment="Title of the Home screen">Üdvözli a {app_name}</string>
     <string name="dictate__settings_unreadable_card">A beállításaidat nem sikerült beolvasni, ezért a diktat az alapértékekkel indult. Koppints ide a visszaállításukhoz.</string>
     <string name="dictate__settings_unreadable_title">Visszaállítás?</string>
     <string name="dictate__settings_unreadable_message">Induláskor a diktat nem tudta beolvasni a beállításfájlját. Érintetlenül megőrizte, és az alapértékekkel indult. A „Helyreállítás” visszahozza a szolgáltatóidat, kulcsaidat, utasításaidat és beállításaidat úgy, ahogy voltak. A „Törlés” eltávolítja a régi fájlt.</string>
@@ -30,10 +27,8 @@
     <string name="pref__glide__enabled__label" comment="Preference title">Csúsztatott gépelés engedélyezése</string>
     <string name="settings__other__title" comment="Title of Other settings">Egyéb</string>
     <string name="pref__other__settings_theme__label" comment="Label of Settings theme preference in Other">Beállítások témája</string>
-    <string name="pref__other__settings_theme__auto_amoled" comment="Possible value of Settings theme preference in Other">Rendszer alapértelmezett (AMOLED)</string>
     <string name="pref__other__settings_theme__light" comment="Possible value of Settings theme preference in Other">Világos</string>
     <string name="pref__other__settings_theme__dark" comment="Possible value of Settings theme preference in Other">Sötét</string>
-    <string name="pref__other__settings_theme__amoled_dark" comment="Possible value of Settings theme preference in Other">AMOLED sötét</string>
     <string name="pref__other__settings_accent_color__label" comment="Label of accent color preference in Other">        Beállítások kiemelőszíne
     </string>
     <string name="pref__other__settings_language__label" comment="Label of Settings language preference in Other">Beállítások nyelve</string>
@@ -54,8 +49,6 @@
     <string name="about__changelog__summary" comment="Preference summary">Újdonságok</string>
     <string name="about__repository__title" comment="Preference title">Tároló (GitHub)</string>
     <string name="about__repository__summary" comment="Preference summary">Forráskód, megbeszélések, hibák és információ</string>
-    <string name="about__privacy_policy__title" comment="Preference title">Adatvédelmi irányelvek</string>
-    <string name="about__privacy_policy__summary" comment="Preference summary">A projekt adatvédelmi irányelvei</string>
     <string name="about__project_license__title" comment="Preference title">Projekt licence</string>
     <string name="about__project_license__summary" comment="Preference summary">A {app_name} {license_name} licenc alatt érhető el</string>
     <string name="about__project_license__error_license_text_failed" comment="Error text for license text loading failure">Hiba: A licenc szövegének betöltése sikertelen.\n-&gt; Ok: {error_message}</string>
@@ -64,7 +57,6 @@
     <!-- Setup UI strings -->
     <string name="setup__title" comment="Title of Setup">Üdvözöljük!</string>
     <string name="setup__intro_message" comment="Short intro message welcoming new users">Köszönjük, hogy a {app_name}ot használja. Ez a gyors beállítás végigvezeti a {app_name} eszközön való használatához szükséges lépéseken.</string>
-    <string name="setup__footer__privacy_policy" comment="Privacy policy label for URL">Adatvédelmi irányelvek</string>
     <string name="setup__footer__repository" comment="Repository label for URL">Tároló</string>
     <string name="setup__grant_notification_permission__title">Összeomlási jelentések értesítéseinek engedélyezése</string>
     <string name="setup__grant_notification_permission__description">Az Android 13+ rendszertől kezdve az alkalmazásoknak engedélyt kell kérniük az
@@ -146,10 +138,6 @@
     <string name="state__no_file_selected">Nincs fájl kiválasztva</string>
     <!-- Dictate strings -->
     <string name="quick_action__dictate_live_prompt">Élő utasítás</string>
-    <string name="about__feedback__title">Visszajelzés és támogatás</string>
-    <string name="about__feedback__summary">Küldjön e-mailt kérdésekkel, hibákkal vagy ötletekkel</string>
-    <string name="about__feedback__email">contact@devemperor.net</string>
-    <string name="about__feedback__subject">diktat Feedback</string>
     <string name="setup__provider__title">Válassza ki, hogyan írjon át a diktat</string>
     <string name="setup__provider__choose_intro">A diktat egy MI-szolgáltatás segítségével alakítja a beszédet szöveggé. A legtöbbeknek megfelel a két fenti mód valamelyike — ha pedig egyáltalán nem szeretne felhőszolgáltatást használni, alább van még kettő.</string>
     <string name="setup__provider__choice_own_title">Saját MI-szolgáltató használata</string>
@@ -246,7 +234,6 @@
     <string name="dictate__floating_button_snap_title">Illesztés a szélhez</string>
     <string name="dictate__transcription_stopped">Leállítva, felvétel megőrizve</string>
     <string name="dictate__transcription_stopped_in_history">Leállítva, felvétel az Előzményekben</string>
-    <string name="dictate__providers_summary_both">Átírás: {transcription} · Átfogalmazás: {rewording}</string>
     <string name="dictate__remember_last_dictation_summary">Megőrzi az utolsó diktálást, hogy a lebegő gomb visszavonhassa, a klasszikus elrendezés pedig újra beszúrhassa.</string>
     <string name="dictate__remember_last_dictation_title">Utolsó diktálás megjegyzése</string>
     <string name="setup__floating_button__btn">Lebegő gomb beállítása</string>
@@ -257,7 +244,6 @@
     <string name="setup__floating_button__accessibility_note">Ehhez a(z) {app_name} az Android kisegítő lehetőségek beállításait használja — így jelenhet meg a buborék más alkalmazások fölött, és illesztheti be helyetted az átírt szöveget. A következő képernyő végigvezet a bekapcsoláson.</string>
     <string name="setup__floating_button__optional_note">Ez teljesen opcionális — hagyd ki, ha a(z) {app_name} alkalmazást csak teljes billentyűzetként szeretnéd használni. Bármikor beállíthatod később a beállításokban.</string>
     <string name="setup__floating_button__skip_btn">Kihagyás — a billentyűzetet használom</string>
-    <string name="dictate__floating_button_badge_new">Új</string>
     <string name="dictate__prompts_layout_title">Utasítások elrendezése</string>
     <string name="dictate__status_transcribing">Átírás…</string>
     <string name="dictate__status_transcribing_local">Átírás az eszközön…</string>
@@ -301,11 +287,8 @@
     <string name="dictate__base_url_placeholder">https://your-server/v1/</string>
     <string name="dictate__value_not_set">Nincs beállítva</string>
     <string name="dictate__providers_title">MI-szolgáltatók</string>
-    <string name="dictate__providers_summary">Aktív: {provider}</string>
-    <string name="dictate__providers_active_group">Aktív szolgáltatók</string>
     <string name="dictate__providers_active_transcription">Átírás</string>
     <string name="dictate__providers_active_rewording">Átfogalmazás</string>
-    <string name="dictate__providers_manage_group">Szolgáltatók beállítása</string>
     <string name="dictate__providers_status_key_set">Kulcs beállítva</string>
     <string name="dictate__providers_status_no_key">Nincs kulcs</string>
     <string name="dictate__providers_status_unconfigured">Nincs beállítva</string>
@@ -431,13 +414,9 @@
     <string name="dictate__resend_button_summary">Ha az átírás sikertelen, gomb megjelenítése az azonos felvétellel való újrapróbálkozáshoz</string>
     <string name="dictate__formatting_title">Formázás &amp; szókincs</string>
     <string name="dictate__formatting_menu_summary">Stílusutasítás, egyéni szavak, cserék</string>
-    <string name="dictate__recording_menu_summary">Valós idejű, hangforrás, azonnali felvétel</string>
     <string name="dictate__output_menu_summary">Automatikus Enter, gépelési sebesség, újraküldés</string>
-    <string name="dictate__layout_title">Diktálási elrendezés</string>
     <string name="dictate__languages_title">Átírási nyelvek</string>
-    <string name="dictate__languages_summary">Válassza ki a nyelveket, amelyeken diktál. Gyorsan válthat közöttük a felvételi sávból.</string>
     <string name="dictate__language_detect">Automatikus felismerés</string>
-    <string name="dictate__languages_selected_title">Kiválasztott nyelvek</string>
     <string name="dictate__languages_active_title">Aktív nyelv</string>
     <string name="dictate__languages_follow_keyboard">A billentyűzet nyelvének követése</string>
     <string name="dictate__prompt_selection_none">Nincs</string>
@@ -445,7 +424,6 @@
     <string name="dictate__prompt_selection_custom">Egyéni</string>
     <string name="dictate__style_prompt_title">Központozás és stílus</string>
     <string name="dictate__style_prompt_custom_placeholder">pl. Jó napot. Nagyon köszönöm.</string>
-    <string name="dictate__style_prompt_info_title">Alapértelmezett példa megtekintése</string>
     <string name="dictate__style_prompt_info_description">Ezt a példamondatot minden átírással elküldjük, hogy a modellt a helyes nagybetűk és írásjelek felé terelje. Automatikusan alkalmazkodik ahhoz a nyelvhez, amelyen diktál.</string>
     <string name="dictate__style_prompt_info_none">Ehhez a nyelvhez még nincs mintamondat, ezért nem kerül elküldésre. Az átirat továbbra is a kiválasztott nyelvet követi.</string>
     <string name="dictate__custom_words_title">Egyéni szavak</string>
@@ -480,13 +458,11 @@
     <string name="dictate__command_word_off">Ki</string>
     <string name="dictate__command_word_summary">A „{word}” szóval kezdődő diktálások élő utasításként futnak</string>
     <string name="dictate__command_word_placeholder">Jarvis</string>
-    <string name="dictate__command_word_info_title">A parancsszóról</string>
     <string name="dictate__command_word_info_description">A diktat alapesetben leírja, amit mond. Ha be van állítva egy parancsszó, az azzal kezdődő diktálás utasítássá válik: a szó lekerül, a többi pedig az MI-hez megy, a kijelölt szöveggel együtt, ha van ilyen.\n\nA „Jarvis, fogalmazd ezt hivatalosabban” átírja a kijelölést. A „Jarvis, mi Japán fővárosa” a választ írja a mezőbe. Ez az élő utasítás gomb, csak a nevét mondja ki ahelyett, hogy megérintené.\n\nA szó csak a diktálás legelején és csak egész szóként számít — olyat válasszon, amivel ritkán kezd mondatot.</string>
     <string name="dictate__auto_formatting_title">Automatikus formázás</string>
     <string name="dictate__auto_formatting_summary">A kimondott formázási utasítások Markdownná alakítása (címsorok, listák, …)</string>
     <string name="dictate__system_prompt_title">Átfogalmazási utasítás</string>
     <string name="dictate__system_prompt_custom_placeholder">Minden átfogalmazási kéréshez hozzáadott útmutatás</string>
-    <string name="dictate__system_prompt_info_title">Alapértelmezett utasítás megtekintése</string>
     <string name="dictate__system_prompt_info_description">Ezt az utasítást minden átfogalmazási kéréshez hozzáadjuk, így az MI csak a kért eredményt adja vissza — előtte vagy utána lévő extra szöveg nélkül.</string>
     <string name="dictate__prompts_title">Utasítások</string>
     <string name="dictate__prompts_empty">Még nincsenek utasítások. Koppintson az alábbi gombra egy hozzáadásához.</string>
@@ -527,7 +503,6 @@
     <string name="dictate__prompt_library_empty">Nincs a keresésnek megfelelő utasítás.</string>
     <string name="dictate__prompt_library_error">Nem sikerült betölteni a közösségi könyvtárat. Ellenőrizd a kapcsolatot, és próbáld újra.</string>
     <string name="dictate__prompt_library_retry">Újra</string>
-    <string name="dictate__prompt_library_close">Bezárás</string>
     <string name="dictate__prompt_library_author">{author} által</string>
     <string name="dictate__prompt_share_title">Megosztás a közösséggel</string>
     <string name="dictate__prompt_share_message">Ez megnyitja a GitHubot a böngésződben az utasításoddal előre kitöltve, beküldésként. Jelentkezz be, és erősítsd meg egy pull request megnyitásához, amely hozzáadja a közösségi könyvtárhoz. Ingyenes GitHub-fiók szükséges; semmi nem töltődik fel, amíg meg nem erősíted a GitHubon.</string>
@@ -541,7 +516,6 @@
     <string name="dictate__import_share_label">Átírás</string>
     <string name="dictate__import_title">Fájl átírása</string>
     <string name="dictate__import_menu">Fájl átírása</string>
-    <string name="dictate__import_menu_summary">Válassz egy hang- vagy videofájlt, és olvasd el, mi hangzik el benne</string>
     <string name="dictate__import_step_copy">Fájl fogadása</string>
     <string name="dictate__import_step_extract">Hang kinyerése a videóból</string>
     <string name="dictate__import_step_prepare">Hang előkészítése</string>
@@ -616,7 +590,6 @@
     <string name="dictate__mappings_field_from_placeholder">pl. github</string>
     <string name="dictate__mappings_field_to">Cseréld</string>
     <string name="dictate__mappings_field_to_placeholder">pl. GitHub</string>
-    <string name="dictate__mappings_group">Cserélési szabályok</string>
     <string name="dictate__mappings_matchcase_summary">Csak akkor cserél, ha a kis- és nagybetűk pontosan egyeznek.</string>
     <string name="dictate__mappings_import">Szabályok importálása</string>
     <string name="dictate__mappings_export">Szabályok exportálása</string>
@@ -655,7 +628,6 @@
     <string name="dictate__history_title">Előzmények</string>
     <string name="dictate__history_original">Eredeti</string>
     <string name="dictate__history_result">Eredmény</string>
-    <string name="dictate__history_menu_summary">Korábbi diktálások lejátszása, újbóli beillesztése és kezelése</string>
     <string name="dictate__history_empty">Még nincs diktálás — a legutóbbi diktálásai itt fognak megjelenni.</string>
     <string name="dictate__history_enable_title">Előzmények megtartása</string>
     <string name="dictate__history_enable_summary">Diktálások naplózása későbbi újbóli beillesztéshez vagy áttekintéshez.</string>
@@ -684,7 +656,6 @@
     <string name="dictate__history_export_folder_unset">Nincs beállítva</string>
     <string name="dictate__history_export_folder_unavailable">A mappa nem érhető el — válaszd ki újra</string>
     <string name="dictate__history_export_choose">Mappa kiválasztása</string>
-    <string name="dictate__history_export_change">Módosítás</string>
     <string name="dictate__history_export_disconnect">Leválasztás</string>
     <string name="dictate__history_export_audio_title">A felvétel exportálása is</string>
     <string name="dictate__history_export_audio_summary">A hangot az átirat mellé menti.</string>
@@ -735,6 +706,5 @@
     <string name="dictate__audio_source_voice_communication_summary">Legmagasabb mikrofon-prioritás — akkor is működik, ha másik alkalmazás használja a mikrofont, de csökkentheti a pontosságot.</string>
 
     <string name="dictate__legacy_action_copy">Másolás</string>
-    <string name="about__website__title">Weboldal</string>
 
 </resources>

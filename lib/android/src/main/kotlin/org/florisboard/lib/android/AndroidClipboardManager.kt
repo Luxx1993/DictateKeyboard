@@ -28,10 +28,3 @@ fun AndroidClipboardManager.clearPrimaryClipAnyApi() {
     }
 }
 
-fun AndroidClipboardManager.setOrClearPrimaryClip(clip: android.content.ClipData?) {
-    if (clip != null) {
-        this.setPrimaryClip(clip)
-    } else {
-        this.clearPrimaryClipAnyApi()
-    }
-}

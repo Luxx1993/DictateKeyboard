@@ -51,29 +51,6 @@ object Devtools {
         }
     }
 
-    fun generateDebugLogForGithub(context: Context, prefs: FlorisPreferenceModel? = null, includeLogcat: Boolean = false): String {
-        return buildString {
-            appendLine("<details>")
-            appendLine("<summary>Detailed info (Debug log header)</summary>")
-            appendLine()
-            appendLine("```")
-            append(generateDebugLogHeader(context, prefs))
-            appendLine()
-            appendLine("```")
-            appendLine("</details>")
-            if (includeLogcat) {
-                appendLine()
-                appendLine("<details>")
-                appendLine("<summary>Debug log content</summary>")
-                appendLine()
-                appendLine("```")
-                append(generateLogcatDump())
-                appendLine()
-                appendLine("```")
-                appendLine("</details>")
-            }
-        }
-    }
 
     fun generateSystemInfoLog(context: Context, withTitle: Boolean = true): String {
         return buildString {

@@ -4,13 +4,10 @@
     <!-- Emoji strings -->
     <string name="emoji__history__pinned">Vastgemaakt</string>
     <!-- Quick action strings -->
-    <string name="quick_action__voice_input" comment="Please mind the limited available space for the quick action strings">Spraakinvoer</string>
-    <string name="quick_action__voice_input__tooltip" comment="IME stands for Input Method Editor and is indirectly equivalent to 'keyboard'.">Spraakinvoerprovider openen</string>
     <string name="quick_action__noop" comment="Noop=no operation; this action is only used as a placeholder in the actions editor drag and drop screen">Geen</string>
     <!-- Settings UI strings -->
     <string name="settings__title" comment="Title of Settings">Instellingen</string>
     <string name="settings__system_default" comment="General string which is used when a preference has the system default value set">Systeemstandaard</string>
-    <string name="settings__home__title" comment="Title of the Home screen">Welkom bij {app_name}</string>
     <string name="dictate__settings_unreadable_card">Je instellingen konden niet worden gelezen, dus diktat is gestart met de standaardwaarden. Tik hier om ze terug te halen.</string>
     <string name="dictate__settings_unreadable_title">Herstellen?</string>
     <string name="dictate__settings_unreadable_message">Bij het starten kon diktat zijn instellingenbestand niet lezen. Het heeft het onaangeroerd bewaard en is gestart met de standaardwaarden. ‘Herstellen’ haalt je aanbieders, sleutels, prompts en instellingen terug zoals ze waren. ‘Verwijderen’ wist het oude bestand.</string>
@@ -30,10 +27,8 @@
     <string name="pref__glide__enabled__label" comment="Preference title">Glijdend typen inschakelen</string>
     <string name="settings__other__title" comment="Title of Other settings">Overige</string>
     <string name="pref__other__settings_theme__label" comment="Label of Settings theme preference in Other">Thema-instellingen</string>
-    <string name="pref__other__settings_theme__auto_amoled" comment="Possible value of Settings theme preference in Other">Systeemstandaard (AMOLED)</string>
     <string name="pref__other__settings_theme__light" comment="Possible value of Settings theme preference in Other">Licht</string>
     <string name="pref__other__settings_theme__dark" comment="Possible value of Settings theme preference in Other">Donker</string>
-    <string name="pref__other__settings_theme__amoled_dark" comment="Possible value of Settings theme preference in Other">AMOLED Donker</string>
     <string name="pref__other__settings_accent_color__label" comment="Label of accent color preference in Other">        Instellingen accentkleur
     </string>
     <string name="pref__other__settings_language__label" comment="Label of Settings language preference in Other">Instellingen taal</string>
@@ -54,8 +49,6 @@
     <string name="about__changelog__summary" comment="Preference summary">Wat is er nieuw</string>
     <string name="about__repository__title" comment="Preference title">Opslagplaats (GitHub)</string>
     <string name="about__repository__summary" comment="Preference summary">Broncode, discussies, problemen en info</string>
-    <string name="about__privacy_policy__title" comment="Preference title">Privacybeleid</string>
-    <string name="about__privacy_policy__summary" comment="Preference summary">Het privacybeleid voor dit project</string>
     <string name="about__project_license__title" comment="Preference title">Projectlicentie</string>
     <string name="about__project_license__summary" comment="Preference summary">{app_name} heeft een licentie onder {license_name}</string>
     <string name="about__project_license__error_license_text_failed" comment="Error text for license text loading failure">Fout: kan licentietekst niet laden.\n-&gt; Reden: {error_message}</string>
@@ -64,7 +57,6 @@
     <!-- Setup UI strings -->
     <string name="setup__title" comment="Title of Setup">Welkom!</string>
     <string name="setup__intro_message" comment="Short intro message welcoming new users">Bedankt voor het gebruik van {app_name}! Deze snelle installatie leidt u door de vereiste stappen om {app_name} op uw apparaat te gebruiken.</string>
-    <string name="setup__footer__privacy_policy" comment="Privacy policy label for URL">Privacybeleid</string>
     <string name="setup__footer__repository" comment="Repository label for URL">Opslagplaats</string>
     <string name="setup__grant_notification_permission__title">Meldingen van crashrapporten toestaan</string>
     <string name="setup__grant_notification_permission__description">Vanaf Android 13+ moeten apps toestemming vragen om meldingen te verzenden. In diktat wordt dit alleen gebruikt om bij een crash een crashrapportage te openen.
@@ -143,10 +135,6 @@ Deze toestemming kan op elk moment worden gewijzigd in de systeeminstellingen.  
     <string name="state__no_file_selected">Geen bestand geselecteerd</string>
     <!-- Dictate strings -->
     <string name="quick_action__dictate_live_prompt">Live-instructie</string>
-    <string name="about__feedback__title">Feedback en ondersteuning</string>
-    <string name="about__feedback__summary">Stuur een e-mail met vragen, bugs of ideeën</string>
-    <string name="about__feedback__email">contact@devemperor.net</string>
-    <string name="about__feedback__subject">diktat Feedback</string>
     <string name="setup__provider__title">Kies hoe diktat transcribeert</string>
     <string name="setup__provider__choose_intro">diktat zet je spraak om in tekst met een AI-dienst. Voor de meeste mensen voldoet een van deze twee manieren — en wil je helemaal geen clouddienst gebruiken, dan staan er hieronder nog twee.</string>
     <string name="setup__provider__choice_own_title">Je eigen AI-aanbieder gebruiken</string>
@@ -243,7 +231,6 @@ Deze toestemming kan op elk moment worden gewijzigd in de systeeminstellingen.  
     <string name="dictate__floating_button_snap_title">Aan rand vastklikken</string>
     <string name="dictate__transcription_stopped">Gestopt, opname bewaard</string>
     <string name="dictate__transcription_stopped_in_history">Gestopt, opname staat in Geschiedenis</string>
-    <string name="dictate__providers_summary_both">Transcriptie: {transcription} · Herformulering: {rewording}</string>
     <string name="dictate__remember_last_dictation_summary">Bewaart je laatste dictaat zodat de zwevende knop het ongedaan kan maken en de klassieke lay-out het opnieuw kan invoegen.</string>
     <string name="dictate__remember_last_dictation_title">Laatste dictaat onthouden</string>
     <string name="setup__floating_button__btn">Zwevende knop instellen</string>
@@ -254,7 +241,6 @@ Deze toestemming kan op elk moment worden gewijzigd in de systeeminstellingen.  
     <string name="setup__floating_button__accessibility_note">Hiervoor gebruikt {app_name} de toegankelijkheidsinstellingen van Android — zo kan de bel over andere apps verschijnen en de getranscribeerde tekst voor je invoegen. Het volgende scherm helpt je bij het inschakelen.</string>
     <string name="setup__floating_button__optional_note">Dit is volledig optioneel — sla het over als je {app_name} gewoon als volledig toetsenbord wilt gebruiken. Je kunt het later altijd instellen in de instellingen.</string>
     <string name="setup__floating_button__skip_btn">Overslaan — ik gebruik het toetsenbord</string>
-    <string name="dictate__floating_button_badge_new">Nieuw</string>
     <string name="dictate__prompts_layout_title">Prompt-lay-out</string>
     <string name="dictate__status_transcribing">Transcriberen…</string>
     <string name="dictate__status_transcribing_local">Transcriberen op apparaat…</string>
@@ -298,11 +284,8 @@ Deze toestemming kan op elk moment worden gewijzigd in de systeeminstellingen.  
     <string name="dictate__base_url_placeholder">https://jouw-server/v1/</string>
     <string name="dictate__value_not_set">Niet ingesteld</string>
     <string name="dictate__providers_title">AI-aanbieders</string>
-    <string name="dictate__providers_summary">Actief: {provider}</string>
-    <string name="dictate__providers_active_group">Actieve aanbieders</string>
     <string name="dictate__providers_active_transcription">Transcriptie</string>
     <string name="dictate__providers_active_rewording">Herformulering</string>
-    <string name="dictate__providers_manage_group">Aanbieders configureren</string>
     <string name="dictate__providers_status_key_set">Sleutel ingesteld</string>
     <string name="dictate__providers_status_no_key">Geen sleutel</string>
     <string name="dictate__providers_status_unconfigured">Niet geconfigureerd</string>
@@ -428,13 +411,9 @@ Deze toestemming kan op elk moment worden gewijzigd in de systeeminstellingen.  
     <string name="dictate__resend_button_summary">Als de transcriptie mislukt, een knop tonen om het opnieuw te proberen met dezelfde opname</string>
     <string name="dictate__formatting_title">Opmaak &amp; woordenschat</string>
     <string name="dictate__formatting_menu_summary">Stijlprompt, aangepaste woorden, vervangingen</string>
-    <string name="dictate__recording_menu_summary">Realtime, audiobron, direct opnemen</string>
     <string name="dictate__output_menu_summary">Auto-enter, typesnelheid, opnieuw verzenden</string>
-    <string name="dictate__layout_title">Dicteerindeling</string>
     <string name="dictate__languages_title">Transcriptietalen</string>
-    <string name="dictate__languages_summary">Kies de talen waarin je dicteert. Wissel er snel tussen via de opnamebalk.</string>
     <string name="dictate__language_detect">Automatisch detecteren</string>
-    <string name="dictate__languages_selected_title">Geselecteerde talen</string>
     <string name="dictate__languages_active_title">Actieve taal</string>
     <string name="dictate__languages_follow_keyboard">Toetsenbordtaal volgen</string>
     <string name="dictate__prompt_selection_none">Geen</string>
@@ -442,7 +421,6 @@ Deze toestemming kan op elk moment worden gewijzigd in de systeeminstellingen.  
     <string name="dictate__prompt_selection_custom">Aangepast</string>
     <string name="dictate__style_prompt_title">Interpunctie en stijl</string>
     <string name="dictate__style_prompt_custom_placeholder">bijv. Hallo. Hartelijk dank.</string>
-    <string name="dictate__style_prompt_info_title">Standaardvoorbeeld bekijken</string>
     <string name="dictate__style_prompt_info_description">Deze voorbeeldzin wordt met elke transcriptie meegestuurd om het model richting correct hoofdlettergebruik en interpunctie te sturen. Hij past zich automatisch aan de taal aan waarin je dicteert.</string>
     <string name="dictate__style_prompt_info_none">Deze taal heeft nog geen voorbeeldzin, dus er wordt er geen meegestuurd. De transcriptie volgt nog steeds de taal die je hebt gekozen.</string>
     <string name="dictate__custom_words_title">Aangepaste woorden</string>
@@ -477,13 +455,11 @@ Deze toestemming kan op elk moment worden gewijzigd in de systeeminstellingen.  
     <string name="dictate__command_word_off">Uit</string>
     <string name="dictate__command_word_summary">Dictaten die met “{word}” beginnen, worden als live-instructie uitgevoerd</string>
     <string name="dictate__command_word_placeholder">Jarvis</string>
-    <string name="dictate__command_word_info_title">Over het commandowoord</string>
     <string name="dictate__command_word_info_description">Normaal schrijft diktat op wat je zegt. Met een ingesteld commandowoord wordt een dictaat dat ermee begint in plaats daarvan een instructie: het woord wordt verwijderd en de rest gaat naar de AI, samen met de geselecteerde tekst als die er is.\n\n“Jarvis, maak dit formeler” herschrijft de selectie. “Jarvis, wat is de hoofdstad van Japan” schrijft het antwoord in het veld. Het is de knop Live-instructie, bereikt door zijn naam te zeggen in plaats van erop te tikken.\n\nHet woord telt alleen helemaal aan het begin van een dictaat en alleen als heel woord — kies dus iets waarmee je zelden een zin begint.</string>
     <string name="dictate__auto_formatting_title">Automatische opmaak</string>
     <string name="dictate__auto_formatting_summary">Gesproken opmaakaanwijzingen omzetten naar Markdown (koppen, lijsten, …)</string>
     <string name="dictate__system_prompt_title">Herformuleringsinstructie</string>
     <string name="dictate__system_prompt_custom_placeholder">Aanwijzing die aan elk herformuleringsverzoek wordt toegevoegd</string>
-    <string name="dictate__system_prompt_info_title">Standaardinstructie bekijken</string>
     <string name="dictate__system_prompt_info_description">Deze instructie wordt aan elk herformuleringsverzoek toegevoegd zodat de AI alleen het gevraagde resultaat teruggeeft, zonder extra tekst ervoor of erna.</string>
     <string name="dictate__prompts_title">Prompts</string>
     <string name="dictate__prompts_empty">Nog geen prompts. Tik op de knop hieronder om er een toe te voegen.</string>
@@ -524,7 +500,6 @@ Deze toestemming kan op elk moment worden gewijzigd in de systeeminstellingen.  
     <string name="dictate__prompt_library_empty">Geen prompts komen overeen met je zoekopdracht.</string>
     <string name="dictate__prompt_library_error">Kan de communitybibliotheek niet laden. Controleer je verbinding en probeer het opnieuw.</string>
     <string name="dictate__prompt_library_retry">Opnieuw proberen</string>
-    <string name="dictate__prompt_library_close">Sluiten</string>
     <string name="dictate__prompt_library_author">door {author}</string>
     <string name="dictate__prompt_share_title">Delen met de community</string>
     <string name="dictate__prompt_share_message">Hiermee wordt GitHub in je browser geopend met je prompt al ingevuld als inzending. Meld je aan en bevestig om een pull request te openen die deze aan de communitybibliotheek toevoegt. Een gratis GitHub-account is vereist; er wordt niets geüpload totdat je op GitHub bevestigt.</string>
@@ -538,7 +513,6 @@ Deze toestemming kan op elk moment worden gewijzigd in de systeeminstellingen.  
     <string name="dictate__import_share_label">Transcriberen</string>
     <string name="dictate__import_title">Bestand transcriberen</string>
     <string name="dictate__import_menu">Een bestand transcriberen</string>
-    <string name="dictate__import_menu_summary">Kies een audio- of videobestand en lees wat erin gezegd wordt</string>
     <string name="dictate__import_step_copy">Bestand ontvangen</string>
     <string name="dictate__import_step_extract">Audio uitpakken</string>
     <string name="dictate__import_step_prepare">Audio voorbereiden</string>
@@ -613,7 +587,6 @@ Deze toestemming kan op elk moment worden gewijzigd in de systeeminstellingen.  
     <string name="dictate__mappings_field_from_placeholder">bijv. github</string>
     <string name="dictate__mappings_field_to">Door</string>
     <string name="dictate__mappings_field_to_placeholder">bijv. GitHub</string>
-    <string name="dictate__mappings_group">Vervangregels</string>
     <string name="dictate__mappings_matchcase_summary">Alleen vervangen wanneer de hoofdletters exact overeenkomen.</string>
     <string name="dictate__mappings_import">Regels importeren</string>
     <string name="dictate__mappings_export">Regels exporteren</string>
@@ -652,7 +625,6 @@ Deze toestemming kan op elk moment worden gewijzigd in de systeeminstellingen.  
     <string name="dictate__history_title">Geschiedenis</string>
     <string name="dictate__history_original">Origineel</string>
     <string name="dictate__history_result">Resultaat</string>
-    <string name="dictate__history_menu_summary">Vorige dictaten afspelen, opnieuw invoegen en beheren</string>
     <string name="dictate__history_empty">Nog geen dictaten — je recente dictaten verschijnen hier.</string>
     <string name="dictate__history_enable_title">Geschiedenis bijhouden</string>
     <string name="dictate__history_enable_summary">Dictaten vastleggen om ze later opnieuw in te voegen of te bekijken.</string>
@@ -681,7 +653,6 @@ Deze toestemming kan op elk moment worden gewijzigd in de systeeminstellingen.  
     <string name="dictate__history_export_folder_unset">Niet ingesteld</string>
     <string name="dictate__history_export_folder_unavailable">Map niet beschikbaar — kies hem opnieuw</string>
     <string name="dictate__history_export_choose">Map kiezen</string>
-    <string name="dictate__history_export_change">Wijzigen</string>
     <string name="dictate__history_export_disconnect">Loskoppelen</string>
     <string name="dictate__history_export_audio_title">Ook de opname exporteren</string>
     <string name="dictate__history_export_audio_summary">Bewaart de audio naast de transcriptie.</string>
@@ -732,6 +703,5 @@ Deze toestemming kan op elk moment worden gewijzigd in de systeeminstellingen.  
     <string name="dictate__audio_source_voice_communication_summary">Hoogste microfoonprioriteit — werkt als een andere app de microfoon gebruikt, maar kan de nauwkeurigheid verlagen.</string>
 
     <string name="dictate__legacy_action_copy">Kopiëren</string>
-    <string name="about__website__title">Website</string>
 
 </resources>

@@ -4,13 +4,10 @@
     <!-- Emoji strings -->
     <string name="emoji__history__pinned">Закреплено</string>
     <!-- Quick action strings -->
-    <string name="quick_action__voice_input" comment="Please mind the limited available space for the quick action strings">Голос. ввод</string>
-    <string name="quick_action__voice_input__tooltip" comment="IME stands for Input Method Editor and is indirectly equivalent to 'keyboard'.">Открытый провайдер голосового ввода</string>
     <string name="quick_action__noop" comment="Noop=no operation; this action is only used as a placeholder in the actions editor drag and drop screen">Отсутствует</string>
     <!-- Settings UI strings -->
     <string name="settings__title" comment="Title of Settings">Настройки</string>
     <string name="settings__system_default" comment="General string which is used when a preference has the system default value set">Как в системе</string>
-    <string name="settings__home__title" comment="Title of the Home screen">Приветствуем в {app_name}</string>
     <string name="dictate__settings_unreadable_card">Не удалось прочитать ваши настройки, поэтому diktat запустился со значениями по умолчанию. Нажмите здесь, чтобы вернуть их.</string>
     <string name="dictate__settings_unreadable_title">Восстановить?</string>
     <string name="dictate__settings_unreadable_message">При запуске diktat не смог прочитать свой файл настроек. Он сохранил файл нетронутым и запустился со значениями по умолчанию. «Восстановление» вернёт ваших поставщиков, ключи, промпты и настройки в прежнем виде. «Удалить» сотрёт старый файл.</string>
@@ -30,10 +27,8 @@
     <string name="pref__glide__enabled__label" comment="Preference title">Включить непрерывный ввод</string>
     <string name="settings__other__title" comment="Title of Other settings">Прочее</string>
     <string name="pref__other__settings_theme__label" comment="Label of Settings theme preference in Other">Настройки темы</string>
-    <string name="pref__other__settings_theme__auto_amoled" comment="Possible value of Settings theme preference in Other">Как в системе (AMOLED)</string>
     <string name="pref__other__settings_theme__light" comment="Possible value of Settings theme preference in Other">Светлая</string>
     <string name="pref__other__settings_theme__dark" comment="Possible value of Settings theme preference in Other">Темная</string>
-    <string name="pref__other__settings_theme__amoled_dark" comment="Possible value of Settings theme preference in Other">Темная AMOLED</string>
     <string name="pref__other__settings_accent_color__label" comment="Label of accent color preference in Other">        Настройки цвета акцента
     </string>
     <string name="pref__other__settings_language__label" comment="Label of Settings language preference in Other">Настройки языка</string>
@@ -54,8 +49,6 @@
     <string name="about__changelog__summary" comment="Preference summary">Что нового</string>
     <string name="about__repository__title" comment="Preference title">Репозиторий (GitHub)</string>
     <string name="about__repository__summary" comment="Preference summary">Исходный код, обсуждения, проблемы и информация</string>
-    <string name="about__privacy_policy__title" comment="Preference title">Конфиденциальность</string>
-    <string name="about__privacy_policy__summary" comment="Preference summary">Политика конфиденциальности этого проекта</string>
     <string name="about__project_license__title" comment="Preference title">Лицензия проекта</string>
     <string name="about__project_license__summary" comment="Preference summary">{app_name} выпускается под лицензией {license_name}</string>
     <string name="about__project_license__error_license_text_failed" comment="Error text for license text loading failure">Ошибка: невозможно загрузить текст лицензии.\n-&gt; Причина: {error_message}</string>
@@ -64,7 +57,6 @@
     <!-- Setup UI strings -->
     <string name="setup__title" comment="Title of Setup">Добро пожаловать!</string>
     <string name="setup__intro_message" comment="Short intro message welcoming new users">Спасибо за установку {app_name}! Это краткое руководство проведёт вас через необходимые шаги для использования {app_name} на вашем устройстве.</string>
-    <string name="setup__footer__privacy_policy" comment="Privacy policy label for URL">Конфиденциальность</string>
     <string name="setup__footer__repository" comment="Repository label for URL">Исходный код</string>
     <string name="setup__grant_notification_permission__title">Разрешить уведомления об ошибках</string>
     <string name="setup__grant_notification_permission__description">Начиная с Android 13, приложения должны
@@ -145,10 +137,6 @@
     <string name="state__no_file_selected">Файл не выбран</string>
     <!-- Dictate strings -->
     <string name="quick_action__dictate_live_prompt">Голосовая инструкция</string>
-    <string name="about__feedback__title">Отзывы и поддержка</string>
-    <string name="about__feedback__summary">Отправьте письмо с вопросами, ошибками или идеями</string>
-    <string name="about__feedback__email">contact@devemperor.net</string>
-    <string name="about__feedback__subject">diktat Feedback</string>
     <string name="setup__provider__title">Выберите, как diktat распознаёт речь</string>
     <string name="setup__provider__choose_intro">diktat превращает вашу речь в текст с помощью сервиса ИИ. Большинству подойдёт один из двух способов выше — а если вы вообще не хотите пользоваться облачным сервисом, ниже есть ещё два.</string>
     <string name="setup__provider__choice_own_title">Использовать своего провайдера ИИ</string>
@@ -245,7 +233,6 @@
     <string name="dictate__floating_button_snap_title">Прилипать к краю</string>
     <string name="dictate__transcription_stopped">Остановлено, запись сохранена</string>
     <string name="dictate__transcription_stopped_in_history">Остановлено, запись в Истории</string>
-    <string name="dictate__providers_summary_both">Расшифровка: {transcription} · Переформулирование: {rewording}</string>
     <string name="dictate__remember_last_dictation_summary">Сохраняет последнюю диктовку, чтобы плавающая кнопка могла её отменить, а классическая раскладка — вставить снова.</string>
     <string name="dictate__remember_last_dictation_title">Запоминать последнюю диктовку</string>
     <string name="setup__floating_button__btn">Настроить плавающую кнопку</string>
@@ -256,7 +243,6 @@
     <string name="setup__floating_button__accessibility_note">Для этого {app_name} использует настройки специальных возможностей Android — так пузырёк может отображаться поверх других приложений и вставлять расшифрованный текст за вас. Следующий экран поможет включить эту функцию.</string>
     <string name="setup__floating_button__optional_note">Это полностью необязательно — пропустите, если хотите использовать {app_name} просто как полноценную клавиатуру. Вы всегда можете настроить это позже в настройках.</string>
     <string name="setup__floating_button__skip_btn">Пропустить — буду использовать клавиатуру</string>
-    <string name="dictate__floating_button_badge_new">Новое</string>
     <string name="dictate__prompts_layout_title">Раскладка промптов</string>
     <string name="dictate__status_transcribing">Транскрибирование…</string>
     <string name="dictate__status_transcribing_local">Транскрибирование на устройстве…</string>
@@ -300,11 +286,8 @@
     <string name="dictate__base_url_placeholder">https://ваш-сервер/v1/</string>
     <string name="dictate__value_not_set">Не задано</string>
     <string name="dictate__providers_title">Поставщики ИИ</string>
-    <string name="dictate__providers_summary">Активный: {provider}</string>
-    <string name="dictate__providers_active_group">Активные поставщики</string>
     <string name="dictate__providers_active_transcription">Транскрибирование</string>
     <string name="dictate__providers_active_rewording">Переформулирование</string>
-    <string name="dictate__providers_manage_group">Настроить поставщиков</string>
     <string name="dictate__providers_status_key_set">Ключ задан</string>
     <string name="dictate__providers_status_no_key">Нет ключа</string>
     <string name="dictate__providers_status_unconfigured">Не настроен</string>
@@ -430,13 +413,9 @@
     <string name="dictate__resend_button_summary">Если транскрибирование не удалось, показывать кнопку для повтора с той же записью</string>
     <string name="dictate__formatting_title">Форматирование &amp; словарь</string>
     <string name="dictate__formatting_menu_summary">Промпт стиля, свои слова, замены</string>
-    <string name="dictate__recording_menu_summary">В реальном времени, источник звука, мгновенная запись</string>
     <string name="dictate__output_menu_summary">Авто-Enter, скорость печати, повторная отправка</string>
-    <string name="dictate__layout_title">Раскладка диктовки</string>
     <string name="dictate__languages_title">Языки транскрибирования</string>
-    <string name="dictate__languages_summary">Выберите языки, на которых вы диктуете. Быстро переключайтесь между ними на панели записи.</string>
     <string name="dictate__language_detect">Определять автоматически</string>
-    <string name="dictate__languages_selected_title">Выбранные языки</string>
     <string name="dictate__languages_active_title">Активный язык</string>
     <string name="dictate__languages_follow_keyboard">Следовать языку клавиатуры</string>
     <string name="dictate__prompt_selection_none">Нет</string>
@@ -444,7 +423,6 @@
     <string name="dictate__prompt_selection_custom">Пользовательский</string>
     <string name="dictate__style_prompt_title">Пунктуация и стиль</string>
     <string name="dictate__style_prompt_custom_placeholder">напр. Здравствуйте. Большое спасибо.</string>
-    <string name="dictate__style_prompt_info_title">Показать пример по умолчанию</string>
     <string name="dictate__style_prompt_info_description">Это образцовое предложение отправляется с каждой транскрипцией, чтобы направить модель к правильному использованию заглавных букв и пунктуации. Оно автоматически подстраивается под язык, на котором вы диктуете.</string>
     <string name="dictate__style_prompt_info_none">Для этого языка пока нет примера предложения, поэтому он не отправляется. Расшифровка по-прежнему следует выбранному вами языку.</string>
     <string name="dictate__custom_words_title">Пользовательские слова</string>
@@ -479,13 +457,11 @@
     <string name="dictate__command_word_off">Выкл.</string>
     <string name="dictate__command_word_summary">Диктовки, начинающиеся с «{word}», выполняются как голосовая инструкция</string>
     <string name="dictate__command_word_placeholder">Джарвис</string>
-    <string name="dictate__command_word_info_title">О командном слове</string>
     <string name="dictate__command_word_info_description">Обычно diktat записывает то, что вы говорите. Если задано командное слово, диктовка, начинающаяся с него, становится инструкцией: слово убирается, а остальное отправляется ИИ вместе с выделенным текстом, если он есть.\n\n«Джарвис, сделай это официальнее» перепишет выделение. «Джарвис, какая столица Японии» впишет ответ в поле. Это та же кнопка голосовой инструкции, только вызванная словом, а не нажатием.\n\nСлово считается только в самом начале диктовки и только как целое слово — выберите то, с чего вы редко начинаете фразу.</string>
     <string name="dictate__auto_formatting_title">Автоформатирование</string>
     <string name="dictate__auto_formatting_summary">Преобразовывать произнесённые указания по форматированию в Markdown (заголовки, списки, …)</string>
     <string name="dictate__system_prompt_title">Инструкция переформулирования</string>
     <string name="dictate__system_prompt_custom_placeholder">Указание, добавляемое к каждому запросу переформулирования</string>
-    <string name="dictate__system_prompt_info_title">Показать инструкцию по умолчанию</string>
     <string name="dictate__system_prompt_info_description">Эта инструкция добавляется к каждому запросу переформулирования, чтобы ИИ возвращал только нужный результат — без лишнего текста до или после.</string>
     <string name="dictate__prompts_title">Промпты</string>
     <string name="dictate__prompts_empty">Промптов пока нет. Нажмите кнопку ниже, чтобы добавить.</string>
@@ -526,7 +502,6 @@
     <string name="dictate__prompt_library_empty">Нет промптов, соответствующих вашему запросу.</string>
     <string name="dictate__prompt_library_error">Не удалось загрузить библиотеку сообщества. Проверьте подключение и повторите попытку.</string>
     <string name="dictate__prompt_library_retry">Повторить</string>
-    <string name="dictate__prompt_library_close">Закрыть</string>
     <string name="dictate__prompt_library_author">от {author}</string>
     <string name="dictate__prompt_share_title">Поделиться с сообществом</string>
     <string name="dictate__prompt_share_message">Откроется GitHub в вашем браузере, где ваш промпт уже подставлен как заявка. Войдите и подтвердите, чтобы открыть пул-реквест, добавляющий его в библиотеку сообщества. Требуется бесплатный аккаунт GitHub; ничего не загружается, пока вы не подтвердите на GitHub.</string>
@@ -540,7 +515,6 @@
     <string name="dictate__import_share_label">Расшифровать</string>
     <string name="dictate__import_title">Расшифровать файл</string>
     <string name="dictate__import_menu">Расшифровать файл</string>
-    <string name="dictate__import_menu_summary">Выберите аудио- или видеофайл и прочитайте, что в нём сказано</string>
     <string name="dictate__import_step_copy">Получение файла</string>
     <string name="dictate__import_step_extract">Извлечение звука</string>
     <string name="dictate__import_step_prepare">Подготовка звука</string>
@@ -617,7 +591,6 @@
     <string name="dictate__mappings_field_from_placeholder">напр. github</string>
     <string name="dictate__mappings_field_to">На</string>
     <string name="dictate__mappings_field_to_placeholder">напр. GitHub</string>
-    <string name="dictate__mappings_group">Правила замены</string>
     <string name="dictate__mappings_matchcase_summary">Заменять только при точном совпадении регистра.</string>
     <string name="dictate__mappings_import">Импортировать правила</string>
     <string name="dictate__mappings_export">Экспортировать правила</string>
@@ -656,7 +629,6 @@
     <string name="dictate__history_title">История</string>
     <string name="dictate__history_original">Оригинал</string>
     <string name="dictate__history_result">Результат</string>
-    <string name="dictate__history_menu_summary">Воспроизведение, повторная вставка и управление прошлыми диктовками</string>
     <string name="dictate__history_empty">Пока нет диктовок — здесь появятся ваши недавние диктовки.</string>
     <string name="dictate__history_enable_title">Вести историю</string>
     <string name="dictate__history_enable_summary">Записывать диктовки, чтобы позже вставить снова или просмотреть.</string>
@@ -685,7 +657,6 @@
     <string name="dictate__history_export_folder_unset">Не выбрана</string>
     <string name="dictate__history_export_folder_unavailable">Папка недоступна — выберите её заново</string>
     <string name="dictate__history_export_choose">Выбрать папку</string>
-    <string name="dictate__history_export_change">Изменить</string>
     <string name="dictate__history_export_disconnect">Отключить</string>
     <string name="dictate__history_export_audio_title">Экспортировать и запись</string>
     <string name="dictate__history_export_audio_summary">Сохраняет аудио рядом с расшифровкой.</string>
@@ -736,6 +707,5 @@
     <string name="dictate__audio_source_voice_communication_summary">Высший приоритет микрофона — работает, когда микрофон занят другим приложением, но точность может снизиться.</string>
 
     <string name="dictate__legacy_action_copy">Копировать</string>
-    <string name="about__website__title">Веб-сайт</string>
 
 </resources>

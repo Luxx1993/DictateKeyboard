@@ -44,9 +44,6 @@ abstract class AndroidSettingsHelper(
         }
     }
 
-    fun getAllKeys(): Sequence<Pair<String, String>> {
-        return reflectionGetAllStaticFields(kClass)
-    }
 
     fun observe(context: Context, key: String, observer: SystemSettingsObserver) {
         getUriFor(key)?.let { uri ->
@@ -60,34 +57,3 @@ abstract class AndroidSettingsHelper(
     }
 }
 
-object AndroidSettings {
-    val Global = object : AndroidSettingsHelper(Settings.Global::class, "global") {
-        override fun getString(context: Context, key: String): String? {
-            return tryOrNull { Settings.Global.getString(context.contentResolver, key) }
-        }
-
-        override fun getUriFor(key: String): Uri? {
-            return tryOrNull { Settings.Global.getUriFor(key) }
-        }
-    }
-
-    val Secure = object : AndroidSettingsHelper(Settings.Secure::class, "secure") {
-        override fun getString(context: Context, key: String): String? {
-            return tryOrNull { Settings.Secure.getString(context.contentResolver, key) }
-        }
-
-        override fun getUriFor(key: String): Uri? {
-            return tryOrNull { Settings.Secure.getUriFor(key) }
-        }
-    }
-
-    val System = object : AndroidSettingsHelper(Settings.System::class, "system") {
-        override fun getString(context: Context, key: String): String? {
-            return tryOrNull { Settings.System.getString(context.contentResolver, key) }
-        }
-
-        override fun getUriFor(key: String): Uri? {
-            return tryOrNull { Settings.System.getUriFor(key) }
-        }
-    }
-}

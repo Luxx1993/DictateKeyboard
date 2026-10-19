@@ -50,12 +50,6 @@ val DpSizeSaver = Saver<Dp, Float>(
     restore = { it.dp },
 )
 
-context(density: Density)
-fun IntRect.toDpRect(): DpRect {
-    return with(density) {
-        DpRect(left.toDp(), top.toDp(), right.toDp(), bottom.toDp())
-    }
-}
 
 context(density: Density)
 fun Offset.toDp(): DpOffset {
@@ -64,14 +58,3 @@ fun Offset.toDp(): DpOffset {
     }
 }
 
-object DpSizeSerializer : KSerializer<Dp> {
-    override val descriptor = PrimitiveSerialDescriptor("DpSize", PrimitiveKind.FLOAT)
-
-    override fun serialize(encoder: Encoder, value: Dp) {
-        encoder.encodeFloat(value.value)
-    }
-
-    override fun deserialize(decoder: Decoder): Dp {
-        return decoder.decodeFloat().dp
-    }
-}

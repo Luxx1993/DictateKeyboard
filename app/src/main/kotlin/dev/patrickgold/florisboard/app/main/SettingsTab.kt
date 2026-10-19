@@ -10,20 +10,23 @@
 
 package dev.patrickgold.florisboard.app.main
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.collectAsState as collectFlowAsState
+import dev.patrickgold.florisboard.app.PreferenceRecovery
+import org.florisboard.lib.android.showLongToast
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
 import android.view.inputmethod.InputMethodManager
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -37,13 +40,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
@@ -59,11 +57,6 @@ import dev.patrickgold.florisboard.app.settings.dictate.isOverlayServiceEnabled
 import dev.patrickgold.florisboard.dictate.DictateLanguages
 import dev.patrickgold.florisboard.dictate.DictateRecordMode
 import dev.patrickgold.florisboard.dictate.importer.TranscribeShareActivity
-import dev.patrickgold.florisboard.dictate.ui.AudioReactiveCloudOrbView
-import dev.patrickgold.florisboard.dictate.ui.CloudColors
-import dev.patrickgold.florisboard.dictate.ui.CloudPalette
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.viewinterop.AndroidView
 import dev.patrickgold.florisboard.dictate.provider.ProviderListing
 import dev.patrickgold.jetpref.datastore.model.collectAsState
 import kotlinx.coroutines.launch
@@ -83,6 +76,64 @@ internal fun SettingsTab() {
     val scope = rememberCoroutineScope()
 
     Text(stringRes(R.string.main__tab_settings), style = Unisono.PageTitle, color = c.textPrimary)
+
+    // The search, as the pill it is on the other pages.
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(44.dp)
+            .clip(Unisono.Pill)
+            .background(c.sunken)
+            .clickable { navController.navigate(Routes.Settings.Search) }
+            .padding(horizontal = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Icon(UnisonoIcons.Search, contentDescription = null, tint = c.textTertiary, modifier = Modifier.size(18.dp))
+        Text(stringRes(R.string.settings__search__placeholder), style = Unisono.Body, color = c.textTertiary)
+    }
+
+    // Settings that could not be read at start were kept instead of written over (#383). This is the way
+    // back to them, offered until they are restored or discarded.
+    val settingsUnreadable by PreferenceRecovery.pending.collectFlowAsState()
+    var showRecoveryDialog by remember { mutableStateOf(false) }
+    if (settingsUnreadable) {
+        UCard {
+            UNavRow(
+                title = stringRes(R.string.dictate__settings_unreadable_card),
+                onClick = { showRecoveryDialog = true },
+            )
+        }
+    }
+    if (showRecoveryDialog) {
+        UDialog(
+            title = stringRes(R.string.dictate__settings_unreadable_title),
+            description = stringRes(R.string.dictate__settings_unreadable_message),
+            doneLabel = stringRes(R.string.action__cancel),
+            onDismiss = { showRecoveryDialog = false },
+        ) {
+            UNavRow(
+                title = stringRes(R.string.action__restore),
+                onClick = {
+                    showRecoveryDialog = false
+                    scope.launch {
+                        PreferenceRecovery.restore(context).onFailure {
+                            context.showLongToast(R.string.dictate__settings_restore_failed)
+                        }
+                    }
+                },
+            )
+            UDivider()
+            // Delete, not Discard: several translations of Discard read the same as Cancel beside it.
+            UNavRow(
+                title = stringRes(R.string.action__delete),
+                onClick = {
+                    showRecoveryDialog = false
+                    PreferenceRecovery.discard(context)
+                },
+            )
+        }
+    }
 
     // System state the user changes in Android's own settings, read again whenever the app comes back.
     var serviceEnabled by remember { mutableStateOf(isOverlayServiceEnabled(context)) }
@@ -179,22 +230,52 @@ internal fun SettingsTab() {
             icon = UnisonoIcons.Wave,
             onClick = { navController.navigate(Routes.Settings.DictateRecording) },
         )
+        UDivider()
+        UNavRow(
+            title = stringRes(R.string.dictate__formatting_title),
+            subtitle = stringRes(R.string.dictate__formatting_menu_summary),
+            icon = UnisonoIcons.Book,
+            onClick = { navController.navigate(Routes.Settings.DictateFormatting) },
+        )
+        UDivider()
+        UNavRow(
+            title = stringRes(R.string.dictate__rewording_title),
+            subtitle = stringRes(
+                if (rewordingEnabled) R.string.dictate__rewording_summary_on
+                else R.string.dictate__rewording_summary_off,
+            ),
+            icon = UnisonoIcons.Sparkle,
+            onClick = { navController.navigate(Routes.Settings.DictateRewording) },
+        )
+        UDivider()
+        UNavRow(
+            title = stringRes(R.string.dictate__output_group),
+            subtitle = stringRes(R.string.dictate__output_menu_summary),
+            icon = UnisonoIcons.Keyboard,
+            onClick = { navController.navigate(Routes.Settings.DictateOutput) },
+        )
     }
 
     UGroupLabel(stringRes(R.string.main__settings_group_more))
     var showVoiceInput by remember { mutableStateOf(false) }
-    var showBackup by remember { mutableStateOf(false) }
     UCard {
         UNavRow(
-            title = stringRes(R.string.main__settings_transcribe),
-            icon = UnisonoIcons.AudioFile,
-            onClick = { context.startActivity(TranscribeShareActivity.pickIntent(context)) },
+            title = stringRes(R.string.dictate__stats_title),
+            subtitle = stringRes(R.string.dictate__stats_menu_summary),
+            icon = UnisonoIcons.Wave,
+            onClick = { navController.navigate(Routes.Settings.DictateStats) },
         )
         UDivider()
         UNavRow(
             title = stringRes(R.string.main__settings_history),
             icon = UnisonoIcons.Clock,
             onClick = { navController.navigate(Routes.Settings.DictateHistory) },
+        )
+        UDivider()
+        UNavRow(
+            title = stringRes(R.string.main__settings_transcribe),
+            icon = UnisonoIcons.AudioFile,
+            onClick = { context.startActivity(TranscribeShareActivity.pickIntent(context)) },
         )
         UDivider()
         UNavRow(
@@ -205,6 +286,16 @@ internal fun SettingsTab() {
             icon = UnisonoIcons.Keyboard,
             onClick = { showVoiceInput = true },
         )
+    }
+
+    UGroupLabel(stringRes(R.string.main__settings_group_app))
+    var showBackup by remember { mutableStateOf(false) }
+    UCard {
+        UNavRow(
+            title = stringRes(R.string.settings__other__title),
+            icon = UnisonoIcons.Gear,
+            onClick = { navController.navigate(Routes.Settings.Other) },
+        )
         UDivider()
         UNavRow(
             title = stringRes(R.string.main__settings_backup),
@@ -213,9 +304,9 @@ internal fun SettingsTab() {
         )
         UDivider()
         UNavRow(
-            title = stringRes(R.string.main__settings_all),
-            icon = UnisonoIcons.Gear,
-            onClick = { navController.navigate(Routes.Settings.Home) },
+            title = stringRes(R.string.about__title),
+            icon = UnisonoIcons.Book,
+            onClick = { navController.navigate(Routes.Settings.About) },
         )
     }
 

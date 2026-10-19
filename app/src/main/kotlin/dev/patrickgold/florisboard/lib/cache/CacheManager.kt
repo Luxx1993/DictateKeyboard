@@ -31,9 +31,7 @@ import kotlinx.coroutines.sync.withLock
 import org.florisboard.lib.kotlin.io.FsDir
 import org.florisboard.lib.kotlin.io.FsFile
 import org.florisboard.lib.kotlin.io.subDir
-import org.florisboard.lib.kotlin.io.subFile
 import java.io.Closeable
-import java.io.File
 import java.util.UUID
 
 class CacheManager(context: Context) {
@@ -74,7 +72,6 @@ class CacheManager(context: Context) {
             }
         }
 
-        fun getWorkspaceByUuid(uuid: String) = runBlocking { getWorkspaceByUuidAsync(uuid).await() }
 
         fun getWorkspaceByUuidAsync(uuid: String): Deferred<T?> = scope.async {
             workspacesGuard.withLock {
@@ -90,9 +87,7 @@ class CacheManager(context: Context) {
             dir.mkdirs()
         }
 
-        fun isOpen() = dir.exists()
 
-        fun isClosed() = !dir.exists()
 
         override fun close() {
             dir.deleteRecursively()

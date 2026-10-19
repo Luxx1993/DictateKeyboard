@@ -87,11 +87,6 @@ fun ProvideLocalizedResources(
     }
 }
 
-@Composable
-fun ProvideActualLayoutDirection(content: @Composable () -> Unit) {
-    val actualLayoutDirection = LocalActualLayoutDirection.current
-    CompositionLocalProvider(LocalLayoutDirection provides actualLayoutDirection, content)
-}
 
 @Composable
 fun stringRes(
@@ -125,7 +120,3 @@ private fun formatString(
     )
 }
 
-@Composable
-fun drawableRes(@DrawableRes resId: Int): ImageVector {
-    return ImageVector.vectorResource(resId)
-}

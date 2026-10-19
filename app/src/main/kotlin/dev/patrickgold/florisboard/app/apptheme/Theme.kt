@@ -23,14 +23,13 @@ import androidx.compose.material3.Shapes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import dev.patrickgold.florisboard.app.AppTheme
 
 /**
  * The app's theme: the Unisono tokens of Entwurf 3 (see [Unisono]) in light or dark, mapped onto Material
- * so that every screen sits on paper and ink. The AMOLED variants keep the dark tokens on true black.
+ * so that every screen sits on paper and ink. The two AMOLED values are gone from the choices; a stored one counts as plain dark (or system default).
  */
 @Composable
 fun FlorisAppTheme(
@@ -43,12 +42,7 @@ fun FlorisAppTheme(
         AppTheme.DARK, AppTheme.AMOLED_DARK -> true
         AppTheme.LIGHT -> false
     }
-    val amoled = theme == AppTheme.AMOLED_DARK || (theme == AppTheme.AUTO_AMOLED && systemDark)
-    val tokens = when {
-        amoled -> Unisono.Dark.copy(canvas = Color.Black)
-        darkTheme -> Unisono.Dark
-        else -> Unisono.Light
-    }
+    val tokens = if (darkTheme) Unisono.Dark else Unisono.Light
 
     val view = LocalView.current
     if (!view.isInEditMode) {

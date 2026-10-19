@@ -24,13 +24,6 @@ import kotlinx.coroutines.async
 
 typealias DeferredResult<T> = Deferred<Result<T>>
 
-inline fun <T> CoroutineScope.runCatchingAsync(
-    crossinline block: suspend CoroutineScope.() -> T,
-): DeferredResult<T> {
-    return this.async {
-        runCatching { block() }
-    }
-}
 
 inline fun resultOk(): Result<Unit> {
     return Result.success(Unit)

@@ -77,52 +77,7 @@ class MimeTypeFilter {
         return matchMimeTypeAgainstFilters(mimeType)
     }
 
-    // TODO: document and test
-    fun matchesAll(mimeTypes: List<String?>?): Boolean {
-        if (mimeTypes.isNullOrEmpty()) {
-            return false
-        }
-        for (mimeType in mimeTypes) {
-            if (!matches(mimeType)) {
-                return false
-            }
-        }
-        return true
-    }
 
-    // TODO: document and test
-    fun matchesAny(mimeTypes: List<String?>?): Boolean {
-        if (mimeTypes.isNullOrEmpty()) {
-            return false
-        }
-        for (mimeType in mimeTypes) {
-            if (matches(mimeType)) {
-                return true
-            }
-        }
-        return false
-    }
 
-    // TODO: document and test
-    fun matchesOne(mimeTypes: List<String?>?): Boolean {
-        if (mimeTypes.isNullOrEmpty()) {
-            return false
-        }
-        var numMatches = 0
-        for (mimeType in mimeTypes) {
-            if (matches(mimeType)) {
-                if (++numMatches > 1) {
-                    return false
-                }
-            }
-        }
-        return numMatches == 1
-    }
 }
 
-/**
- * Creates a new [MimeTypeFilter] with given [filterTypes].
- */
-fun mimeTypeFilterOf(vararg filterTypes: String): MimeTypeFilter {
-    return MimeTypeFilter(filterTypes.toList())
-}

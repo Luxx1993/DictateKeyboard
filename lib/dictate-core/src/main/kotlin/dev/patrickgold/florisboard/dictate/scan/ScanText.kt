@@ -41,17 +41,8 @@ data class ScanLine(
     /** Whether [x]/[y] (normalised image coordinates) fall inside this line's bounding box. */
     fun contains(x: Float, y: Float): Boolean = x in left..right && y in top..bottom
 
-    /** Distance from [x]/[y] to the bounding box, 0 inside it. Used to forgive a near miss. */
-    fun distanceTo(x: Float, y: Float): Float {
-        val dx = maxOf(left - x, 0f, x - right)
-        val dy = maxOf(top - y, 0f, y - bottom)
-        return kotlin.math.sqrt(dx * dx + dy * dy)
-    }
 
     companion object {
-        /** Convenience for tests and for the axis-aligned case. */
-        fun ofRect(text: String, blockIndex: Int, left: Float, top: Float, right: Float, bottom: Float) =
-            ScanLine(text, blockIndex, listOf(left, top, right, top, right, bottom, left, bottom))
     }
 }
 

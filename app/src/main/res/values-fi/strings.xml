@@ -4,7 +4,6 @@
     <!-- Settings UI strings -->
     <string name="settings__title" comment="Title of Settings">Asetukset</string>
     <string name="settings__system_default" comment="General string which is used when a preference has the system default value set">Järjestelmän oletus</string>
-    <string name="settings__home__title" comment="Title of the Home screen">Tervetuloa {app_name}iin</string>
     <string name="settings__theme__title" comment="Title of the Theme screen">Teema</string>
     <!-- Typing strings -->
     <string name="settings__typing__title" comment="Title of Typing screen">Syöttäminen</string>
@@ -18,8 +17,6 @@
     <string name="about__changelog__summary" comment="Preference summary">Mitä uutta</string>
     <string name="about__repository__title" comment="Preference title">Tietovarasto (GitHub)</string>
     <string name="about__repository__summary" comment="Preference summary">Lähdekoodi, keskustelut, virheraportit sekä tietoa</string>
-    <string name="about__privacy_policy__title" comment="Preference title">Tietosuojakäytäntö</string>
-    <string name="about__privacy_policy__summary" comment="Preference summary">Projektin tietosuojakäytäntö</string>
     <string name="about__project_license__title" comment="Preference title">Projektin lisenssi</string>
     <string name="about__project_license__summary" comment="Preference summary">{app_name}in on lisensoitu lisenssillä {license_name}</string>
     <string name="about__project_license__error_license_text_failed" comment="Error text for license text loading failure">Virhe: Lisenssitekstin lataus epäonnistui.\n-&gt; Syy: {error_message}</string>
@@ -28,7 +25,6 @@
     <!-- Setup UI strings -->
     <string name="setup__title" comment="Title of Setup">Tervetuloa!</string>
     <string name="setup__intro_message" comment="Short intro message welcoming new users">Kiitos kun käytät sovellusta {app_name}! Tämä pika-asennus ohjaa sinut ottamaan sovelluksen {app_name} käyttöön laitteellasi.</string>
-    <string name="setup__footer__privacy_policy" comment="Privacy policy label for URL">Tietosuojakäytäntö</string>
     <string name="setup__footer__repository" comment="Repository label for URL">Tietovarasto</string>
     <!-- Crash Dialog strings -->
     <string name="crash_dialog__title" comment="Title of crash dialog">Dictatein virheraportti</string>

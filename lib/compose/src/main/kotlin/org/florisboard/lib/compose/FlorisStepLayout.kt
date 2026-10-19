@@ -186,7 +186,6 @@ class FlorisStepState private constructor(
 
     fun getCurrentAuto(): State<Int> = currentAuto
 
-    fun getCurrentManual(): State<Int> = currentManual
 
     fun setCurrentAuto(value: Int) {
         currentAuto.value = value
@@ -286,7 +285,7 @@ fun FlorisStepLayout(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
-                        .florisVerticalScroll(scrollState),
+                        .florisVerticalScroll(scrollState, showScrollbar = false),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     // Centred while the page fits, top-anchored once it has to scroll. A short step
                     // otherwise clings to the top and leaves the lower half empty.
