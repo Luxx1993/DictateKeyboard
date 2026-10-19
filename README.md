@@ -37,8 +37,8 @@
 
 Transkription und Aufräumen sind getrennt wählbar, jeweils mit eigenem Schlüssel:
 
-OpenAI · ElevenLabs Scribe · Anthropic (Claude) · Groq · Google Gemini · Mistral · Deepgram · AssemblyAI · Soniox ·
-Azure Speech · OpenRouter · DeepInfra · Together AI · xAI (Grok) · DeepSeek · SiliconFlow · Scaleway · OVHcloud ·
+OpenAI · ElevenLabs Scribe · Anthropic (Claude) · Groq · Google Gemini · Mistral · Deepgram · AssemblyAI (asynchron und Sync) · Gladia · Soniox ·
+Azure Speech · OpenRouter · DeepInfra · Together AI · xAI (Grok) · DeepSeek · Cerebras · SiliconFlow · Scaleway · OVHcloud ·
 Ollama · eigener OpenAI-kompatibler Server · On-device (offline)
 
 ## Oberfläche

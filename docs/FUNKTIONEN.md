@@ -66,6 +66,9 @@ Die Einstellungsseite zeigt nur eingerichtete Anbieter, weitere hinter „Anbiet
 | Mistral AI (Voxtral) | ja | ja | – |
 | Deepgram (Nova-3) | ja | – | ja |
 | AssemblyAI (Universal-3 Pro, asynchron) | ja | – | ja |
+| AssemblyAI Sync (`universal-3-5-pro`, eine Anfrage, Regionen Global/US/EU) | ja | – | – |
+| Gladia (`solaria-1`, `solaria-3`) | ja | – | – |
+| Cerebras (`gpt-oss-120b`, `qwen-3.8-27b`) | – | ja | – |
 | Soniox | ja | – | ja |
 | Azure Speech | ja | – | – |
 | xAI (Grok) | ja | ja | ja |
@@ -78,7 +81,7 @@ Die Einstellungsseite zeigt nur eingerichtete Anbieter, weitere hinter „Anbiet
 Hinweise:
 - Luxx1993 nutzt heute **ElevenLabs Scribe** + **Claude Haiku 5.5**. Das Modell wird im Konto des Anbieters eingetragen (nicht der Code-Standard).
 - **Dictate Cloud** (Guthaben-Angebot des Originals) ist **entfernt** (Abschnitt 13). Luxx1993 nutzt eigene Keys.
-- Weitere Wünsche: **Gladia**, **Cerebras** (als Voreinstellung zum Aufräumen), **AssemblyAI Sync API** – **geplant**, noch nicht im Code.
+- Seit Oktober 2026 eingebaut: **Gladia**, **Cerebras** (zum Aufräumen) und **AssemblyAI Sync API** (eigener Anbieter neben dem asynchronen, gleicher Key). Mit echten Keys noch nicht getestet; Modell-IDs und Endpunkte stammen aus den Doku-Seiten der Anbieter (19.10.2026).
 - Proxy-Einstellung (HTTP/SOCKS mit Login) vorhanden: `app/settings/dictate/DictateProxyScreen.kt`.
 - Offline-Modelle werden heruntergeladen und verwaltet: `dictate/provider/LocalModelManager.kt`, `ModelDownloadService.kt`.
 
@@ -213,7 +216,7 @@ Reihenfolge und Details: `CLAUDE.md` und `docs/design/diktat-design.md` Abschnit
 1. App-Icon „Welle um die Welt“: Icon, Themen-Icon, Umschalter weiß/schwarz, Splash-Animation A und In-App-Animation D (in „Datei transkribieren“) **vorhanden**
 2. Neue Oberfläche „Entwurf 3“ (Start, Wörterbuch, Stile, Einstellungen): **vorhanden** (`app/main/`), Startbildschirm der App; die alte Einstellungsliste ist „Alle Einstellungen“. Auf dem S24 noch nicht angesehen.
 3. Wolken-Shader an den Prototyp angleichen: **vorhanden**, auf dem S24 noch nicht angesehen
-4. Anbieter Gladia, Preset Cerebras, AssemblyAI Sync API
+4. Anbieter Gladia, Preset Cerebras, AssemblyAI Sync API: **vorhanden**, mit echten Keys ungetestet
 
 ## 15. Noch offen (Entscheidung von Luxx1993)
 

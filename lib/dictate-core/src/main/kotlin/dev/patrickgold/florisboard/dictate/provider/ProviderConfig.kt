@@ -134,6 +134,21 @@ enum class TranscriptionApi {
     ASSEMBLYAI_ASYNC,
 
     /**
+     * AssemblyAI Sync API: one `multipart/form-data` POST to `{baseUrl}v1/transcribe` (an `audio` part)
+     * answers with the transcript in the same response, no upload/poll steps. The raw key goes in
+     * `Authorization` and the model in the `X-AAI-Model` header (required on every request). Meant for
+     * dictation-sized clips, which is why it is its own provider next to the asynchronous one.
+     */
+    ASSEMBLYAI_SYNC,
+
+    /**
+     * Gladia v2: upload (`POST v2/upload`, multipart `audio`) → create (`POST v2/pre-recorded`, JSON with
+     * `audio_url`, `model`, `language_config`) → poll `GET v2/pre-recorded/{id}` until `status == done`.
+     * Key in the `x-gladia-key` header; the transcript is `result.transcription.full_transcript`.
+     */
+    GLADIA_ASYNC,
+
+    /**
      * Azure Speech, Fast Transcription with MAI-Transcribe (issue #349): one `multipart/form-data` POST
      * to `speechtotext/transcriptions:transcribe?api-version=…` carrying an `audio` file part and a
      * `definition` part holding the options as JSON, authenticated with `Ocp-Apim-Subscription-Key`.
