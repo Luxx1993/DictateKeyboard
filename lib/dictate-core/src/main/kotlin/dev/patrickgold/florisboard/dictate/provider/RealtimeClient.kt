@@ -428,11 +428,15 @@ private class AssemblyAiRealtimeSession(
 
     private companion object {
         const val URL = "wss://streaming.assemblyai.com/v3/ws?sample_rate=16000&encoding=pcm_s16le"
+
+        /** The `speech_model` values the streaming docs list (2026-10-19); anything else (an older stored id) is left to the default. */
+        val MODELS = setOf("universal-3-6-pro", "universal-3-5-pro", "universal-streaming-english", "universal-streaming-multilingual")
     }
 
     fun connect() {
         // Universal Streaming is selected by the /v3/ws endpoint itself; the raw key goes in Authorization.
-        val request = Request.Builder().url(URL).header("Authorization", apiKey).build()
+        val url = if (model in MODELS) "$URL&speech_model=$model" else URL
+        val request = Request.Builder().url(url).header("Authorization", apiKey).build()
         ws = client.newWebSocket(request, listener)
     }
 

@@ -68,6 +68,7 @@ Die Einstellungsseite zeigt nur eingerichtete Anbieter, weitere hinter „Anbiet
 | AssemblyAI (Universal-3 Pro, asynchron) | ja | – | ja |
 | AssemblyAI Sync (`universal-3-5-pro`, eine Anfrage, Regionen Global/US/EU) | ja | – | – |
 | Gladia (`solaria-1`, `solaria-3`) | ja | – | – |
+| Together AI (Spracherkennung `openai/whisper-large-v3`, `nvidia/parakeet-tdt-0.6b-v3`) | ja | ja | – |
 | Cerebras (`gpt-oss-120b`, `qwen-3.8-27b`) | – | ja | – |
 | Soniox | ja | – | ja |
 | Azure Speech | ja | – | – |

@@ -357,13 +357,13 @@ object ProviderRegistry {
         // live picker merges any newer ones on top.
         // The whole 2.5 generation is retired; the live picker merges any newer ones on top.
         curatedChatModels = listOf(
-            "gemini-3.6-flash", "gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite",
+            "gemini-3.6-flash", "gemini-3.8-flash", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite",
         ),
         // The dedicated STT model first, then the multimodal chat models that double as transcription
         // models — they travel a different endpoint, so both belong here.
         curatedTranscriptionModels = listOf(
             "gemini-3.5-transcribe",
-            "gemini-3.6-flash", "gemini-3.5-flash", "gemini-3.5-flash-lite",
+            "gemini-3.6-flash", "gemini-3.8-flash", "gemini-3.5-flash-lite",
         ),
         // Read 2026-09-04 from Google's audio docs: wav, mp3, aiff, aac, ogg, flac, mpeg, m4a, l16,
         // opus, alaw, mulaw, webm. The voice note in #322 was never a format Gemini refuses — the app
@@ -402,9 +402,9 @@ object ProviderRegistry {
         supportsDynamicModels = true,
         // The console moved hosts: console.anthropic.com/settings/keys 301s to this one (2026-09-21).
         apiKeyUrl = "https://platform.claude.com/settings/keys",
-        defaultChatModel = "claude-haiku-4-5-20251001",
+        defaultChatModel = "claude-haiku-5-5",
         curatedChatModels = listOf(
-            "claude-haiku-4-5-20251001", "claude-sonnet-5", "claude-opus-5",
+            "claude-haiku-5-5", "claude-sonnet-5-5", "claude-opus-5-5",
         ),
     )
 
@@ -412,9 +412,13 @@ object ProviderRegistry {
         id = "together",
         displayName = "Together AI",
         baseUrl = "https://api.together.xyz/v1/",
-        capabilities = CHAT_ONLY,
+        capabilities = CHAT_AND_STT,
         supportsDynamicModels = true,
         apiKeyUrl = "https://api.together.ai/settings/api-keys",
+        // Speech-to-text models from the serverless model list (docs.together.ai, 2026-10-19), on the
+        // OpenAI-style audio/transcriptions path.
+        defaultTranscriptionModel = "openai/whisper-large-v3",
+        curatedTranscriptionModels = listOf("openai/whisper-large-v3", "nvidia/parakeet-tdt-0.6b-v3"),
     )
 
     val DEEPINFRA = ProviderPreset(
@@ -568,8 +572,10 @@ object ProviderRegistry {
         // verified when the session is built (billed by connection-open duration).
         supportsRealtime = true,
         realtimeApi = RealtimeApi.ASSEMBLYAI,
-        defaultRealtimeModel = "universal-streaming",
-        curatedRealtimeModels = listOf("universal-streaming"),
+        defaultRealtimeModel = "universal-3-6-pro",
+        curatedRealtimeModels = listOf(
+            "universal-3-6-pro", "universal-3-5-pro", "universal-streaming-english", "universal-streaming-multilingual",
+        ),
     )
 
     /**
@@ -755,6 +761,8 @@ object ProviderRegistry {
         capabilities = CHAT_ONLY,
         supportsDynamicModels = true,
         apiKeyUrl = "https://platform.deepseek.com/api_keys",
+        // Suggestions from DeepSeek's pricing page (2026-10-19); no default, the live catalog decides.
+        curatedChatModels = listOf("deepseek-flash", "deepseek-v4-pro"),
     )
 
     /**
@@ -910,7 +918,7 @@ object ProviderRegistry {
         // list offers them unvouched. OVHcloud's ids are capitalised, unlike Scaleway's for the same models.
         defaultChatModel = "Mistral-Small-3.2-24B-Instruct-2506",
         curatedChatModels = listOf(
-            "Mistral-Small-3.2-24B-Instruct-2506", "Meta-Llama-3_3-70B-Instruct",
+            "Mistral-Small-3.2-24B-Instruct-2506", "Meta-Llama-3_3-70B-Instruct", "gpt-oss-120b", "gpt-oss-20b", "Qwen3.8-27B",
         ),
         // whisper-large-v3 rather than the turbo as the default because the turbo is the one that got words
         // wrong: on the same German sample it wrote "Sprachkennung" in five containers out of five, where
