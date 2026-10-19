@@ -10,6 +10,9 @@
 
 package dev.patrickgold.florisboard.app.settings.dictate
 
+import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
+import dev.patrickgold.florisboard.app.apptheme.Unisono
+import dev.patrickgold.florisboard.app.main.UDialog
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -43,21 +46,21 @@ internal fun LocalModelFamilyDialog(
     actions: LocalModelActions,
     onDismiss: () -> Unit,
 ) {
-    JetPrefAlertDialog(
-        scrollModifier = florisDialogScroll(),
+    val c = LocalUnisono.current
+    UDialog(
         title = entry.family.displayName,
-        dismissLabel = stringRes(R.string.action__back),
+        doneLabel = stringRes(R.string.action__back),
         onDismiss = onDismiss,
     ) {
-        Column {
-            // The live models' one condition — the real-time switch — belongs here, where the choice is
+        Column(Modifier.padding(horizontal = 6.dp)) {
+            // The live models' one condition, the real-time switch, belongs here, where the choice is
             // actually made, rather than above a list where it was the only thing anyone read first.
             if (entry.isStreaming) {
                 Text(
                     text = stringRes(R.string.dictate__local_models_live_summary),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 8.dp),
+                    style = Unisono.Label,
+                    color = c.textSecondary,
+                    modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 8.dp),
                 )
             }
             LocalModelCatalog.visibleMembers(entry, state.installed).forEach { spec ->
