@@ -936,6 +936,7 @@
     <string name="main__settings_providers">AI providers</string>
     <string name="main__settings_recording">Recording</string>
     <string name="main__settings_group_more">More</string>
+    <string name="main__settings_group_app">App</string>
     <string name="main__settings_transcribe">Transcribe a file</string>
     <string name="main__settings_history">History</string>
     <string name="main__settings_voice_input">Voice input</string>

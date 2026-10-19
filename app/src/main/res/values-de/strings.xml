@@ -835,6 +835,7 @@
     <string name="main__settings_providers">KI-Anbieter</string>
     <string name="main__settings_recording">Aufnahme</string>
     <string name="main__settings_group_more">Mehr</string>
+    <string name="main__settings_group_app">App</string>
     <string name="main__settings_transcribe">Datei transkribieren</string>
     <string name="main__settings_history">Verlauf</string>
     <string name="main__settings_voice_input">Spracheingabe</string>

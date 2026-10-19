@@ -43,9 +43,6 @@ object SettingsSearchIndex {
         SettingsSearchEntry(R.string.backup_and_restore__restore__title, R.string.backup_and_restore__restore__title, Routes.Settings.Restore, parentRes = R.string.settings__other__title),
         SettingsSearchEntry(R.string.dictate__floating_button_title, R.string.dictate__floating_button_title, Routes.Settings.DictateFloatingButton, parentRes = R.string.dictate__title),
         SettingsSearchEntry(R.string.dictate__history_title, R.string.dictate__history_title, Routes.Settings.DictateHistory, parentRes = R.string.dictate__title),
-        // Hand-added: the generator only sees rows that navigate to a route, and this one opens the
-        // system file picker instead (issue #301).
-        SettingsSearchEntry(R.string.dictate__import_menu, R.string.dictate__title, Routes.Settings.Dictate, anchor = "dictate__import_menu"),
         SettingsSearchEntry(R.string.dictate__languages_title, R.string.dictate__languages_title, Routes.Settings.DictateLanguages, parentRes = R.string.dictate__title),
         // Hand-added: the languages screen is built from plain list items, not jetpref rows, so the
         // generator cannot see this switch (issue #431).
@@ -55,7 +52,6 @@ object SettingsSearchIndex {
         SettingsSearchEntry(R.string.dictate__providers_title, R.string.dictate__providers_title, Routes.Settings.DictateProviders, parentRes = R.string.dictate__title),
         SettingsSearchEntry(R.string.dictate__proxy_title, R.string.dictate__proxy_title, Routes.Settings.DictateProxy, parentRes = R.string.dictate__title),
         SettingsSearchEntry(R.string.dictate__rewording_title, R.string.dictate__rewording_title, Routes.Settings.DictateRewording, parentRes = R.string.dictate__title),
-        SettingsSearchEntry(R.string.dictate__title, R.string.dictate__title, Routes.Settings.Dictate),
         SettingsSearchEntry(R.string.dictate__formatting_title, R.string.dictate__formatting_title, Routes.Settings.DictateFormatting, parentRes = R.string.dictate__title),
         SettingsSearchEntry(R.string.dictate__recording_group, R.string.dictate__recording_group, Routes.Settings.DictateRecording, parentRes = R.string.dictate__title),
         SettingsSearchEntry(R.string.dictate__output_group, R.string.dictate__output_group, Routes.Settings.DictateOutput, parentRes = R.string.dictate__title),
@@ -142,16 +138,6 @@ object SettingsSearchIndex {
         SettingsSearchEntry(R.string.dictate__auto_formatting_title, R.string.dictate__rewording_title, Routes.Settings.DictateRewording, parentRes = R.string.dictate__title, anchor = "dictate__auto_formatting_title"),
         SettingsSearchEntry(R.string.dictate__reasoning_effort_title, R.string.dictate__rewording_title, Routes.Settings.DictateRewording, parentRes = R.string.dictate__title, anchor = "dictate__reasoning_effort_title"),
         SettingsSearchEntry(R.string.dictate__system_prompt_title, R.string.dictate__rewording_title, Routes.Settings.DictateRewording, parentRes = R.string.dictate__title),
-        SettingsSearchEntry(R.string.dictate__stats_title, R.string.dictate__title, Routes.Settings.Dictate, anchor = "dictate__stats_title"),
-        SettingsSearchEntry(R.string.dictate__history_title, R.string.dictate__title, Routes.Settings.Dictate, anchor = "dictate__history_title"),
-        SettingsSearchEntry(R.string.dictate__layout_title, R.string.dictate__title, Routes.Settings.Dictate, anchor = "dictate__layout_title"),
-        SettingsSearchEntry(R.string.dictate__providers_title, R.string.dictate__title, Routes.Settings.Dictate, anchor = "dictate__providers_title"),
-        SettingsSearchEntry(R.string.dictate__languages_title, R.string.dictate__title, Routes.Settings.Dictate, anchor = "dictate__languages_title"),
-        SettingsSearchEntry(R.string.dictate__formatting_title, R.string.dictate__title, Routes.Settings.Dictate, anchor = "dictate__formatting_title"),
-        SettingsSearchEntry(R.string.dictate__rewording_title, R.string.dictate__title, Routes.Settings.Dictate, anchor = "dictate__rewording_title"),
-        SettingsSearchEntry(R.string.dictate__recording_group, R.string.dictate__title, Routes.Settings.Dictate, anchor = "dictate__recording_group"),
-        SettingsSearchEntry(R.string.dictate__output_group, R.string.dictate__title, Routes.Settings.Dictate, anchor = "dictate__output_group"),
-        SettingsSearchEntry(R.string.dictate__floating_button_enable_title, R.string.dictate__title, Routes.Settings.Dictate, anchor = "dictate__floating_button_enable_title"),
         SettingsSearchEntry(R.string.dictate__style_prompt_title, R.string.dictate__formatting_title, Routes.Settings.DictateFormatting, parentRes = R.string.dictate__title),
         SettingsSearchEntry(R.string.dictate__custom_words_title, R.string.dictate__formatting_title, Routes.Settings.DictateFormatting, parentRes = R.string.dictate__title),
         // Hand-added (issue #389); the generator is lossy, so a rerun of it must be diffed before keeping.
