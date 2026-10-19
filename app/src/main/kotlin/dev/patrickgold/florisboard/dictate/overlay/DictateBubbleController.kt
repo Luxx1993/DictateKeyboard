@@ -2957,7 +2957,7 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
         override val sideButtonForeground: Int? get() = ink
 
         override fun applyState(state: DictateController.UiState) {
-            orb.setFlash(null)
+            orb.showMark(null)
             when (state) {
                 is DictateController.UiState.Recording -> {
                     orb.setPaused(state.paused)
@@ -2978,9 +2978,7 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
         override fun showFlash(kind: FlashKind) {
             orb.setPaused(false)
             orb.setMode(DictateWaveOrbView.Mode.IDLE)
-            orb.setFlash(
-                color(if (kind == FlashKind.ERROR) R.color.dictate_overlay_error else R.color.dictate_overlay_success),
-            )
+            orb.showMark(if (kind == FlashKind.ERROR) DictateWaveOrbView.Mark.ERROR else DictateWaveOrbView.Mark.SUCCESS)
         }
 
         override fun onRecordingTick(level: Float, elapsedMs: Long) = orb.pushLevel(level)

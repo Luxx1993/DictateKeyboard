@@ -183,13 +183,13 @@ fun DictateFloatingButtonScreen() = UnisonoPage(title = stringRes(R.string.main_
             UChoiceRow(
                 title = stringRes(R.string.dictate__floating_button_design_title),
                 choices = listOf(
+                    designChoice(DictateFloatingButtonDesign.WAVE, R.string.dictate__floating_button_design_wave, R.string.dictate__floating_button_design_wave_summary),
                     designChoice(DictateFloatingButtonDesign.CLOUD, R.string.dictate__floating_button_design_cloud, R.string.dictate__floating_button_design_cloud_summary),
                     designChoice(DictateFloatingButtonDesign.PILL, R.string.dictate__floating_button_design_pill, R.string.dictate__floating_button_design_pill_summary),
                     designChoice(DictateFloatingButtonDesign.RING, R.string.dictate__floating_button_design_ring, R.string.dictate__floating_button_design_ring_summary),
                     designChoice(DictateFloatingButtonDesign.ORB, R.string.dictate__floating_button_design_orb, R.string.dictate__floating_button_design_orb_summary),
                     designChoice(DictateFloatingButtonDesign.AURORA, R.string.dictate__floating_button_design_aurora, R.string.dictate__floating_button_design_aurora_summary),
                     designChoice(DictateFloatingButtonDesign.LATTICE, R.string.dictate__floating_button_design_lattice, R.string.dictate__floating_button_design_lattice_summary),
-                    designChoice(DictateFloatingButtonDesign.WAVE, R.string.dictate__floating_button_design_wave, R.string.dictate__floating_button_design_wave_summary),
                 ),
                 selected = design,
                 onSelect = { scope.launch { prefs.dictate.floatingButtonDesign.set(it) } },

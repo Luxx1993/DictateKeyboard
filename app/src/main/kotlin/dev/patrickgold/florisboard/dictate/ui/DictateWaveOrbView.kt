@@ -23,7 +23,8 @@ import kotlin.math.sin
 
 /**
  * The floating button "Welle": the app icon (a wave around a globe, see [DiktatGlobeGeometry]) as a line drawing in
- * one ink colour, black or white to suit whatever is behind it.
+ * one ink colour, black or white to suit whatever is behind it. It never takes on another colour: a finished dictation is
+told by a soft pulse, a failed one by a short shake.
  *
  * At rest it stands still, exactly as the launcher icon. While recording the wave turns (animation D) and the
  * whole globe breathes, larger and smaller, a little more with the voice. While the transcript is on its way
@@ -32,6 +33,9 @@ import kotlin.math.sin
 class DictateWaveOrbView(context: Context) : View(context) {
 
     enum class Mode { IDLE, RECORDING, WORKING }
+
+    /** How a finished dictation is told, without any colour: one soft pulse for done, a short shake for failed. */
+    enum class Mark { SUCCESS, ERROR }
 
     /** Diameter of the globe's ring in px; the view itself is larger so the breathing has room. */
     var bodyDiameter: Float = 0f
@@ -51,7 +55,8 @@ class DictateWaveOrbView(context: Context) : View(context) {
 
     private var inkColor = Color.BLACK
     private var baseInk = Color.BLACK
-    private var flashInk: Int? = null
+    private var mark: Mark? = null
+    private var markStartNs = 0L
     private var inkAnimator: ValueAnimator? = null
 
     private var mode = Mode.IDLE
@@ -91,14 +96,14 @@ class DictateWaveOrbView(context: Context) : View(context) {
         val target = if (light) Color.BLACK else Color.WHITE
         if (target == baseInk) return
         baseInk = target
-        if (flashInk == null) fadeInkTo(target)
+        fadeInkTo(target)
     }
 
-    /** A one-off colour for the error and success marks; null goes back to the ink. */
-    fun setFlash(color: Int?) {
-        if (flashInk == color) return
-        flashInk = color
-        fadeInkTo(color ?: baseInk)
+    /** Tells success or failure by motion alone, in the ink; null clears it. */
+    fun showMark(value: Mark?) {
+        mark = value
+        markStartNs = System.nanoTime()
+        if (value != null) kick()
     }
 
     fun stop() {
@@ -155,8 +160,25 @@ class DictateWaveOrbView(context: Context) : View(context) {
 
         val d = if (bodyDiameter > 0f) bodyDiameter else minOf(width, height) * 0.75f
         val breath = 1f + breathing * (BREATH_DEPTH + LEVEL_DEPTH * level) * sin(2f * PI.toFloat() * breathPhase)
-        val unit = d / (2f * DiktatGlobeGeometry.R) * breath
-        val cx = width / 2f
+        val markAge = (now - markStartNs) / 1e9f
+        var shiftX = 0f
+        var pulse = 1f
+        var markActive = false
+        if (motionAllowed) {
+            when (mark) {
+                Mark.ERROR -> if (markAge < SHAKE_S) {
+                    markActive = true
+                    shiftX = sin(2f * PI.toFloat() * SHAKE_CYCLES * markAge / SHAKE_S) * (1f - markAge / SHAKE_S) * SHAKE_REACH * d
+                }
+                Mark.SUCCESS -> if (markAge < PULSE_S) {
+                    markActive = true
+                    pulse = 1f + PULSE_DEPTH * sin(PI.toFloat() * markAge / PULSE_S)
+                }
+                null -> Unit
+            }
+        }
+        val unit = d / (2f * DiktatGlobeGeometry.R) * breath * pulse
+        val cx = width / 2f + shiftX
         val cy = height / 2f
         val origin = DiktatGlobeGeometry.C
 
@@ -188,7 +210,7 @@ class DictateWaveOrbView(context: Context) : View(context) {
 
         val moving = !paused && (mode != Mode.IDLE || turning > 0f || breathing > 0f)
         val easing = turning != turnTarget || breathing != breathTarget || level > 0.01f
-        if (motionAllowed && (moving || easing)) postInvalidateOnAnimation()
+        if (motionAllowed && (moving || easing || markActive)) postInvalidateOnAnimation()
     }
 
     /** The wave between the still icon and animation D, [turning] being the blend. */
@@ -223,5 +245,12 @@ class DictateWaveOrbView(context: Context) : View(context) {
         const val STROKE = 0.86f
         const val HALO_ALPHA = 70
         const val HALO_EXTRA = 1.1f
+
+        /** Done: one swell and back. Failed: three quick sideways wobbles that die away. */
+        const val PULSE_S = 0.6f
+        const val PULSE_DEPTH = 0.1f
+        const val SHAKE_S = 0.45f
+        const val SHAKE_CYCLES = 3f
+        const val SHAKE_REACH = 0.06f
     }
 }
