@@ -11,6 +11,8 @@
 package dev.patrickgold.florisboard.app.main
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.alpha
@@ -386,6 +388,7 @@ fun UTextField(
     singleLine: Boolean = true,
     minHeight: Dp = 110.dp,
     isError: Boolean = false,
+    keyboardType: KeyboardType = KeyboardType.Text,
 ) {
     val c = LocalUnisono.current
     val shape = if (singleLine) Unisono.Pill else Unisono.RadiusMd
@@ -410,6 +413,7 @@ fun UTextField(
                 onValueChange = onValueChange,
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = singleLine,
+                keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
                 textStyle = Unisono.Body.copy(color = c.textPrimary),
                 cursorBrush = SolidColor(c.textPrimary),
             )
