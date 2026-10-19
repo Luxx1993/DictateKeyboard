@@ -41,7 +41,9 @@ fun providerIcon(providerId: String): ImageVector {
         "mistral" -> R.drawable.ic_provider_mistral
         "elevenlabs" -> R.drawable.ic_provider_elevenlabs
         "deepgram" -> R.drawable.ic_provider_deepgram
-        "assemblyai" -> R.drawable.ic_provider_assemblyai
+        "assemblyai", "assemblyai_sync" -> R.drawable.ic_provider_assemblyai
+        "gladia" -> R.drawable.ic_provider_gladia
+        "cerebras" -> R.drawable.ic_provider_cerebras
         "azure" -> R.drawable.ic_provider_azure
         "soniox" -> R.drawable.ic_provider_soniox
         "xai" -> R.drawable.ic_provider_xai

@@ -1,0 +1,13 @@
+<!-- Brand mark of the provider this row configures, shown so the list can be scanned by logo.
+     Monochrome outline only; the trademark belongs to its owner. See the attributions screen.
+     Source: the official Gladia n8n package (@gladiaio/n8n-nodes-gladia). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="1080"
+    android:viewportHeight="1080">
+    <path
+        android:fillColor="#FF000000"
+        android:fillType="evenOdd"
+        android:pathData="M 557.83 699.88 c 68.85 0 134.89 27.36 183.59 76.07 l 188.67 219.28 h -109.92 c -28.48 0 -55.6 -12.27 -74.42 -33.69 l -156.27 -177.97 v 296.43 h -104.71 v -290.03 l -150.63 171.53 c -18.78 21.38 -45.9 33.67 -74.42 33.67 h -110 l 188.8 -219.28 c 48.71 -48.7 114.75 -76.07 183.59 -76.07 h 35.71 v .05 Z M 304.08 338.61 c 48.7 48.7 76.07 114.74 76.07 183.58 v 35.7 c 0 68.84 -27.36 134.88 -76.07 183.58 l -219.31 188.66 v -109.91 l -.04 -.04 c 0 -28.48 12.3 -55.6 33.72 -74.42 l 177.99 -156.26 H 0 v -104.71 h 290.05 l -171.55 -150.61 c -21.42 -18.78 -33.72 -45.89 -33.72 -74.41 v -110 l 219.31 188.83 Z M 995.18 259.68 c 0 28.48 -12.26 55.6 -33.69 74.42 l -177.99 156.26 h 296.5 v 104.71 h -290.05 l 171.54 150.6 c 21.38 18.78 33.69 45.9 33.69 74.42 v 110 l -219.3 -188.79 c -48.71 -48.7 -76.08 -114.74 -76.08 -183.58 v -35.7 c 0 -68.84 27.37 -134.88 76.08 -183.58 l 219.3 -188.66 v 109.91 Z M 595.1 289.94 l 150.62 -171.53 c 18.78 -21.38 45.9 -33.67 74.42 -33.67 h 110 l -188.79 219.29 c -48.71 48.7 -114.76 76.06 -183.61 76.06 h -35.7 l -.04 .04 c -68.85 0 -134.89 -27.36 -183.59 -76.07 L 149.73 84.77 h 109.92 c 28.48 0 55.6 12.3 74.42 33.72 l 156.31 177.92 V 0 h 104.72 v 289.94 Z" />
+</vector>
