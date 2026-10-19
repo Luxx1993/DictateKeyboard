@@ -37,6 +37,11 @@ Kernablauf: sprechen → KI räumt den Text auf → Text wird eingefügt. Luxx19
 ```
 APK unter `app/build/outputs/apk/debug/`. Debug-Builds sind mit einem Debug-Schlüssel signiert.
 
+**APK veröffentlichen:** `scripts/publish-apk.sh` baut und legt die APK auf den Zweig `apk`. Der feste Link in der README
+(`…/raw/apk/Dictate-Diktat-arm64.apk`) zeigt dann auf die neue Version. Nach jeder abgeschlossenen Änderung, die Lukas
+auf dem S24 testen soll, ausführen und den Link nennen. Dieselbe Debug-Signatur wie bisher nutzen, sonst gibt es kein
+Update über die alte App.
+
 ## Wichtige Orte im Code
 
 - `app/src/main/kotlin/dev/patrickgold/florisboard/dictate/` – Diktat-Logik (Anbieter, Aufnahme, Overlay)

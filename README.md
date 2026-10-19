@@ -61,9 +61,22 @@ Lagune, Periwinkle, Salbei, Abendrot und Tinte.
   <img src="docs/design/entwurf-3/png/SchwebenderButton.png" width="420" alt="Schwebender Button">
 </p>
 
+## Installieren
+
+**[⬇ diktat-APK herunterladen](https://github.com/Luxx1993/unisono-diktat/raw/apk/Dictate-Diktat-arm64.apk)**
+(Android, 64-Bit-Handys wie das Galaxy S24, etwa 75 MB)
+
+1. Den Link auf dem Handy öffnen, die Datei herunterladen und antippen.
+2. Beim ersten Mal erlaubt Android die Installation aus dieser Quelle (Einstellungen › „Diese Quelle zulassen“),
+   danach „Installieren“. Eine ältere diktat-Version wird dabei aktualisiert, Einstellungen bleiben erhalten.
+3. App öffnen und weiter bei „Einrichten“.
+
+Die Datei liegt auf dem Zweig [`apk`](https://github.com/Luxx1993/unisono-diktat/tree/apk), dort stehen auch Commit
+und Prüfsumme der aktuellen Version. Selbst bauen: siehe [Bauen](#bauen).
+
 ## Einrichten
 
-1. APK installieren (siehe [Bauen](#bauen)) und öffnen.
+1. diktat öffnen.
 2. Anbieter wählen und API-Key eintragen, für die Transkription und für das Aufräumen, gern bei verschiedenen
    Anbietern. Oder ein Offline-Modell laden.
 3. **Wolke**: Unter Einstellungen › Schwebender Button einschalten und in Android die Bedienungshilfe „diktat
@@ -79,6 +92,8 @@ Lagune, Periwinkle, Salbei, Abendrot und Tinte.
 
 Die APK liegt unter `app/build/outputs/apk/debug/`. Debug-Builds haben das Paket `net.devemperor.dictate.debug` und
 sind mit einem Debug-Schlüssel signiert.
+
+Die fertige APK für den festen Download-Link stellt `scripts/publish-apk.sh` auf den Zweig `apk` (baut, kopiert, pusht).
 
 ## Dokumentation
 
