@@ -11,6 +11,7 @@
 package dev.patrickgold.florisboard.app.main
 
 import androidx.compose.foundation.background
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.alpha
 import androidx.compose.foundation.layout.height
@@ -328,6 +329,7 @@ fun UDialog(
     title: String,
     onDismiss: () -> Unit,
     description: String? = null,
+    doneLabel: String = stringRes(R.string.main__done),
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val c = LocalUnisono.current
@@ -358,7 +360,7 @@ fun UDialog(
             Column(Modifier.padding(top = 10.dp)) { content() }
             Row(Modifier.fillMaxWidth().padding(horizontal = 10.dp), horizontalArrangement = Arrangement.End) {
                 Text(
-                    stringRes(R.string.main__done),
+                    doneLabel,
                     modifier = Modifier
                         .clip(Unisono.Pill)
                         .clickable(onClick = onDismiss)
@@ -371,35 +373,65 @@ fun UDialog(
     }
 }
 
-/** A labelled single-line text field on a sunken pill, for use inside a [UDialog]. */
+/**
+ * A labelled text field on a sunken pill, for use inside a [UDialog]. With [singleLine] off it becomes a
+ * taller box of at least [minHeight] that grows with its text.
+ */
 @Composable
-fun UTextField(label: String, placeholder: String, value: String, onValueChange: (String) -> Unit) {
+fun UTextField(
+    label: String,
+    placeholder: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    singleLine: Boolean = true,
+    minHeight: Dp = 110.dp,
+    isError: Boolean = false,
+) {
     val c = LocalUnisono.current
+    val shape = if (singleLine) Unisono.Pill else Unisono.RadiusMd
     Column(
         Modifier.padding(horizontal = 18.dp, vertical = 6.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        Text(label, style = Unisono.Mono, color = c.textTertiary)
+        Text(label, style = Unisono.Mono, color = if (isError) Color(0xFFB3443A) else c.textTertiary)
         Box(
             Modifier
                 .fillMaxWidth()
-                .height(44.dp)
-                .clip(Unisono.Pill)
+                .then(if (singleLine) Modifier.height(44.dp) else Modifier.heightIn(min = minHeight))
+                .clip(shape)
                 .background(c.sunken)
-                .padding(horizontal = 14.dp),
-            contentAlignment = Alignment.CenterStart,
+                .then(if (isError) Modifier.border(1.dp, Color(0xFFB3443A), shape) else Modifier)
+                .padding(horizontal = 14.dp, vertical = if (singleLine) 0.dp else 12.dp),
+            contentAlignment = if (singleLine) Alignment.CenterStart else Alignment.TopStart,
         ) {
             if (value.isEmpty()) Text(placeholder, style = Unisono.Body, color = c.textTertiary)
             BasicTextField(
                 value = value,
                 onValueChange = onValueChange,
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
+                singleLine = singleLine,
                 textStyle = Unisono.Body.copy(color = c.textPrimary),
                 cursorBrush = SolidColor(c.textPrimary),
             )
         }
     }
+}
+
+/** A pill chip; the [selected] one is filled with the action colour. */
+@Composable
+fun UChip(label: String, selected: Boolean, onClick: () -> Unit) {
+    val c = LocalUnisono.current
+    Text(
+        label,
+        modifier = Modifier
+            .clip(Unisono.Pill)
+            .background(if (selected) c.action else c.raised)
+            .border(0.5.dp, if (selected) c.action else c.borderSubtle, Unisono.Pill)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 14.dp, vertical = 8.dp),
+        style = Unisono.Caption,
+        color = if (selected) c.onAction else c.textPrimary,
+    )
 }
 
 /** A pill button: [primary] is filled with the action colour, otherwise outlined. */

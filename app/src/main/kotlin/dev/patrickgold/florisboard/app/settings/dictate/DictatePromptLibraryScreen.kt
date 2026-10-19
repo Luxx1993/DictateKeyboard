@@ -20,6 +20,7 @@ import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
 import dev.patrickgold.florisboard.app.apptheme.Unisono
 import dev.patrickgold.florisboard.app.main.UButton
 import dev.patrickgold.florisboard.app.main.UCard
+import dev.patrickgold.florisboard.app.main.UChip
 import dev.patrickgold.florisboard.app.main.UDialog
 import dev.patrickgold.florisboard.app.main.UDivider
 import dev.patrickgold.florisboard.app.main.UNavRow
@@ -230,9 +231,9 @@ fun DictatePromptLibraryScreen() = UnisonoPage(title = stringRes(R.string.dictat
             modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            LibraryChip(stringRes(R.string.dictate__prompt_library_all), activeCategory == null) { activeCategory = null }
+            UChip(stringRes(R.string.dictate__prompt_library_all), activeCategory == null) { activeCategory = null }
             categories.forEach { category ->
-                LibraryChip(category, activeCategory == category) {
+                UChip(category, activeCategory == category) {
                     activeCategory = if (activeCategory == category) null else category
                 }
             }
@@ -301,22 +302,6 @@ fun DictatePromptLibraryScreen() = UnisonoPage(title = stringRes(R.string.dictat
             },
         )
     }
-}
-
-@Composable
-private fun LibraryChip(label: String, selected: Boolean, onClick: () -> Unit) {
-    val c = LocalUnisono.current
-    Text(
-        label,
-        modifier = Modifier
-            .clip(Unisono.Pill)
-            .background(if (selected) c.action else c.raised)
-            .border(0.5.dp, if (selected) c.action else c.borderSubtle, Unisono.Pill)
-            .clickable(onClick = onClick)
-            .padding(horizontal = 14.dp, vertical = 8.dp),
-        style = Unisono.Caption,
-        color = if (selected) c.onAction else c.textPrimary,
-    )
 }
 
 @Composable
