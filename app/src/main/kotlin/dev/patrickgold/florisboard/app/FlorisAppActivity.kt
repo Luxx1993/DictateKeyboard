@@ -61,9 +61,11 @@ import org.florisboard.lib.kotlin.collectIn
 
 enum class AppTheme(val id: String) {
     AUTO("auto"),
+    /** No longer offered; a stored value is treated as [AUTO]. */
     AUTO_AMOLED("auto_amoled"),
     LIGHT("light"),
     DARK("dark"),
+    /** No longer offered; a stored value is treated as [DARK]. */
     AMOLED_DARK("amoled_dark");
 }
 

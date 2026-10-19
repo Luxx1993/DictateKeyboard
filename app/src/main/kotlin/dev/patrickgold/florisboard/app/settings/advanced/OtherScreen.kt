@@ -101,18 +101,16 @@ fun OtherScreen() = UnisonoPage(title = stringRes(R.string.settings__other__titl
         UChoiceRow(
             title = stringRes(R.string.pref__other__settings_theme__label),
             choices = themeEntries.map { UChoice(it.key, it.label) },
-            selected = theme,
+            // The AMOLED values are no longer offered; a stored one shows as the plain variant.
+            selected = when (theme) {
+                AppTheme.AUTO_AMOLED -> AppTheme.AUTO
+                AppTheme.AMOLED_DARK -> AppTheme.DARK
+                else -> theme
+            },
             onSelect = { v -> scope.launch { prefs.other.settingsTheme.set(v) } },
             open = openDialog == "theme",
             onOpenChange = { openDialog = if (it) "theme" else null },
             modifier = Modifier.settingsSearchAnchor("pref__other__settings_theme__label"),
-        )
-        UDivider()
-        UNavRow(
-            title = stringRes(R.string.pref__other__settings_accent_color__label),
-            onClick = { openDialog = "accent" },
-            modifier = Modifier.settingsSearchAnchor("pref__other__settings_accent_color__label"),
-            trailing = { Box(Modifier.size(20.dp).clip(CircleShape).background(accent)) },
         )
         UDivider()
         val systemDefault = stringRes(R.string.settings__system_default)
@@ -205,30 +203,6 @@ fun OtherScreen() = UnisonoPage(title = stringRes(R.string.settings__other__titl
     }
 
     when (openDialog) {
-        "accent" -> UDialog(
-            title = stringRes(R.string.pref__other__settings_accent_color__label),
-            onDismiss = { openDialog = null },
-        ) {
-            FlowRow(
-                modifier = Modifier.padding(horizontal = 14.dp),
-                horizontalArrangement = Arrangement.spacedBy(6.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
-            ) {
-                for (swatch in ColorMappings.colors.distinct()) {
-                    val chosen = swatch.toArgb() == accent.toArgb()
-                    Box(
-                        Modifier
-                            .size(44.dp)
-                            .clip(CircleShape)
-                            .clickable { scope.launch { prefs.other.accentColor.set(swatch) } },
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Box(Modifier.size(if (chosen) 30.dp else 34.dp).clip(CircleShape).background(swatch))
-                        if (chosen) Box(Modifier.size(38.dp).border(1.5.dp, c.action, CircleShape))
-                    }
-                }
-            }
-        }
         "name" -> {
             var draft by remember { mutableStateOf(userName) }
             UDialog(

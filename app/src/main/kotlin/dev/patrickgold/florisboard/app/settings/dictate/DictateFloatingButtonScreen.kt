@@ -210,14 +210,6 @@ fun DictateFloatingButtonScreen() = UnisonoPage(title = stringRes(R.string.main_
             UDivider()
             Box(Modifier.settingsSearchAnchor("dictate__floating_button_color_title")) { PaletteRow() }
             UDivider()
-            val color by prefs.dictate.floatingButtonColor.collectAsState()
-            UNavRow(
-                title = stringRes(R.string.main__fb_more_colors),
-                subtitle = stringRes(R.string.main__fb_more_colors_summary),
-                onClick = { openDialog = "color" },
-                trailing = { Box(Modifier.size(22.dp).clip(CircleShape).background(color)) },
-            )
-            UDivider()
             val size by prefs.dictate.floatingButtonSize.collectAsState()
             UChoiceRow(
                 title = stringRes(R.string.dictate__floating_button_size_title),
@@ -232,41 +224,6 @@ fun DictateFloatingButtonScreen() = UnisonoPage(title = stringRes(R.string.main_
                 onOpenChange = { openDialog = if (it) "size" else null },
                 modifier = Modifier.settingsSearchAnchor("dictate__floating_button_size_title"),
             )
-        }
-
-        if (openDialog == "color") {
-            val color by prefs.dictate.floatingButtonColor.collectAsState()
-            UDialog(
-                title = stringRes(R.string.main__fb_more_colors),
-                description = stringRes(R.string.main__fb_more_colors_summary),
-                onDismiss = { openDialog = null },
-            ) {
-                FlowRow(
-                    modifier = Modifier.padding(horizontal = 14.dp),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    val swatches = CloudPalette.entries.map { Color(it.main) } + ColorMappings.colors
-                    for (swatch in swatches.distinct()) {
-                        val chosen = swatch.toArgb() == color.toArgb()
-                        Box(
-                            Modifier
-                                .size(44.dp)
-                                .clip(CircleShape)
-                                .clickable { scope.launch { prefs.dictate.floatingButtonColor.set(swatch) } },
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Box(
-                                Modifier
-                                    .size(if (chosen) 30.dp else 34.dp)
-                                    .clip(CircleShape)
-                                    .background(swatch),
-                            )
-                            if (chosen) Box(Modifier.size(38.dp).border(1.5.dp, c.action, CircleShape))
-                        }
-                    }
-                }
-            }
         }
 
         UGroupLabel(stringRes(R.string.main__fb_group_behaviour))
