@@ -894,6 +894,18 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
     private fun applyBackdrop(light: Boolean) {
         backdropLight = light
         skin?.onBackdropChanged(light)
+        refreshSideButtons()
+    }
+
+    /** The "Welle" changes tone with the backdrop; the cancel and undo buttons beside it follow. */
+    private fun refreshSideButtons() {
+        if (currentDesign != DictateFloatingButtonDesign.WAVE) return
+        val current = skin ?: return
+        for (host in listOf(cancelView, undoView)) {
+            val icon = (host as? FrameLayout)?.getChildAt(0) as? ImageView ?: continue
+            current.sideButtonBackground()?.let { icon.background = it }
+            current.sideButtonForeground?.let { icon.imageTintList = ColorStateList.valueOf(it) }
+        }
     }
 
     /** Reads the screen around the bubble, a moment from now: after a drag or an app switch has settled. */
@@ -2926,7 +2938,23 @@ class DictateBubbleController(private val service: DictateAccessibilityService) 
             addView(orb, FrameLayout.LayoutParams(viewSize, viewSize))
         }
 
-        override fun onBackdropChanged(light: Boolean) = orb.setBackdropLight(light)
+        /** The same black or white as the orb's ink, so the cancel and undo buttons read as part of it. */
+        private var ink: Int = if (systemLooksLight()) Color.BLACK else Color.WHITE
+
+        override fun onBackdropChanged(light: Boolean) {
+            ink = if (light) Color.BLACK else Color.WHITE
+            orb.setBackdropLight(light)
+        }
+
+        /** A ring in the ink over a soft disc of the opposite tone: no colour of its own beside the "Welle". */
+        override fun sideButtonBackground(): GradientDrawable = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            val opposite = if (ink == Color.BLACK) Color.WHITE else Color.BLACK
+            setColor(Color.argb(0x73, Color.red(opposite), Color.green(opposite), Color.blue(opposite)))
+            setStroke(sdp(2), ink)
+        }
+
+        override val sideButtonForeground: Int? get() = ink
 
         override fun applyState(state: DictateController.UiState) {
             orb.setFlash(null)
