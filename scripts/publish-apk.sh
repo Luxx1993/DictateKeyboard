@@ -5,6 +5,8 @@
 #
 # Aufruf im Hauptordner:  scripts/publish-apk.sh
 # Voraussetzung: Android-SDK, wie fürs Bauen, und Schreibrecht auf origin.
+# Der Zweig `apk` behält immer nur die neueste APK (ein einziger Commit, per Force-Push ersetzt), damit das
+# Repository nicht mit jeder Version um etwa 75 MB wächst. Ältere APKs sind dort bewusst nicht aufgehoben.
 # Wichtig: Dieselbe Debug-Signatur wie bei der vorherigen APK verwenden (~/.android/debug.keystore dieses
 # Rechners), sonst lässt sich die neue Version nicht über die alte installieren.
 set -euo pipefail
@@ -27,8 +29,9 @@ cp "$src" "$tmp/Dictate-Diktat-arm64.apk"
 sed -i -E "s/gebaut aus dem Zweig \`[^\`]+\` \(Commit [0-9a-f]+[^)]*\)/gebaut aus dem Zweig \`$branch\` (Commit $commit)/" "$tmp/README.md"
 sed -i -E "s/^- SHA-256: .*/- SHA-256: \`$sha\`/" "$tmp/README.md"
 
+git -C "$tmp" checkout -q --orphan apk-neu
 git -C "$tmp" add Dictate-Diktat-arm64.apk README.md
 git -C "$tmp" -c user.name="${GIT_AUTHOR_NAME:-$(git config user.name)}" -c user.email="${GIT_AUTHOR_EMAIL:-$(git config user.email)}" \
   commit -q -m "diktat als arm64-Debug-APK (Commit $commit)"
-git -C "$tmp" push -q origin HEAD:refs/heads/apk
+git -C "$tmp" push -q --force origin apk-neu:refs/heads/apk
 echo "Fertig: https://github.com/Luxx1993/unisono-diktat/raw/apk/Dictate-Diktat-arm64.apk (SHA-256 $sha)"
