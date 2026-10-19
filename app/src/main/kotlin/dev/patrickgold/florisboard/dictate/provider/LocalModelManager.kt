@@ -55,13 +55,6 @@ object LocalModelManager {
         return dir.deleteRecursively()
     }
 
-    /** On-disk size of an installed model in bytes (0 if not installed). */
-    fun installedSizeBytes(context: Context, modelId: String): Long {
-        val dir = LocalTranscriptionProvider.modelDir(context, modelId)
-        if (!dir.exists()) return 0L
-        return dir.walkTopDown().filter { it.isFile }.sumOf { it.length() }
-    }
-
     /**
      * Downloads and installs [spec]. [onProgress] is invoked with `(downloadedBytes, totalBytes)` as the
      * download proceeds (frequently — throttle on the UI side). Suspends until done; throws on any

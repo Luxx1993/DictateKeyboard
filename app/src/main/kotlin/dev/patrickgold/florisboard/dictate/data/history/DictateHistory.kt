@@ -372,10 +372,6 @@ object DictateHistoryStore {
         }
     }
 
-    /** Total bytes currently used by retained audio (for the settings-screen disk-usage readout). */
-    suspend fun totalAudioBytes(context: Context): Long =
-        db(context).dao().getAllNewestFirst().sumOf { it.audioBytes }
-
     /**
      * Enforces the three caps, newest-first: drop entries beyond [historyMaxEntries] or older than
      * [historyMaxAgeDays] entirely (row + audio), then walk the survivors and drop the *audio only* of the

@@ -110,12 +110,6 @@ class TranscribeShareActivity : ComponentActivity() {
 
         val MIME_TYPES = arrayOf("audio/*", "video/*")
 
-        /** Launches the screen for a file the user picked inside the app. */
-        fun intentFor(context: Context, uri: Uri): Intent =
-            Intent(context, TranscribeShareActivity::class.java)
-                .putExtra(EXTRA_PICKED_URI, uri)
-                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-
         /**
          * Launches the screen with no file yet, for a caller that cannot run a picker of its own: the
          * floating button lives in an accessibility service, which has no activity to take a result
