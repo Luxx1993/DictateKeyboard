@@ -315,6 +315,26 @@ val verifySherpaOnnxLibs by tasks.registering {
 }
 tasks.named("preBuild").configure { dependsOn(verifySherpaOnnxLibs) }
 
+fun getGitCommitCount(): Provider<String> {
+    if (!File(".git").exists()) {
+        return providers.provider { "0" }
+    }
+    return providers.exec { commandLine("git", "rev-list", "--count", "HEAD") }
+        .standardOutput.asText.map { it.trim() }
+}
+
+// Debug builds are installed over each other with the same package id, and the system and the launchers
+// cache an app's icon per package and version code. A constant code (the project's) left the old icon
+// showing after the icon had changed, so a debug build's code now grows with every commit.
+androidComponents {
+    onVariants(selector().withBuildType("debug")) { variant ->
+        val commits = getGitCommitCount().map { it.toIntOrNull() ?: 0 }
+        variant.outputs.forEach { output ->
+            output.versionCode.set(commits.map { projectVersionCode.toInt() + it })
+        }
+    }
+}
+
 fun getGitCommitHash(short: Boolean = false): Provider<String> {
     if (!File(".git").exists()) {
         return providers.provider { "null" }
