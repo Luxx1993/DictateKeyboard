@@ -16,13 +16,25 @@
 
 package dev.patrickgold.florisboard.app.settings
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.draw.clip
+import dev.patrickgold.florisboard.app.FlorisPreferenceStore
+import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
+import dev.patrickgold.florisboard.app.apptheme.Unisono
+import dev.patrickgold.florisboard.app.main.UCard
+import dev.patrickgold.florisboard.app.main.UDialog
+import dev.patrickgold.florisboard.app.main.UDivider
+import dev.patrickgold.florisboard.app.main.UNavRow
+import dev.patrickgold.florisboard.app.main.UnisonoIcons
+import dev.patrickgold.florisboard.app.main.UnisonoPage
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.outlined.Assignment
@@ -80,41 +92,38 @@ import org.florisboard.lib.compose.FlorisWarningCard
 import org.florisboard.lib.compose.stringRes
 
 @Composable
-fun HomeScreen() = FlorisScreen {
+fun HomeScreen() = UnisonoPage(
     // Reached from Einstellungen › Alle Einstellungen since the tabs of Entwurf 3 became the start screen.
-    title = stringRes(R.string.main__settings_all)
-
+    title = stringRes(R.string.main__settings_all),
+) {
+    val prefs by FlorisPreferenceStore
     val navController = LocalNavController.current
     val context = LocalContext.current
+    val c = LocalUnisono.current
 
-    actions {
-        FlorisIconButton(
-            onClick = { navController.navigate(Routes.Settings.Search) },
-            icon = Icons.Default.Search,
-        )
-    }
-
-    content {
-        val isCollapsed by prefs.internal.homeIsBetaToolboxCollapsed.collectAsState()
-
-        // Settings that could not be read at start were kept instead of written over (#383). This is the
-        // way back to them, offered until they are restored or discarded.
-        val settingsUnreadable by PreferenceRecovery.pending.collectAsState()
-        var showRecoveryDialog by remember { mutableStateOf(false) }
-        val recoveryScope = rememberCoroutineScope()
-        if (settingsUnreadable) {
-            FlorisErrorCard(
-                modifier = Modifier.padding(8.dp),
-                showIcon = false,
-                text = stringRes(R.string.dictate__settings_unreadable_card),
+    // Settings that could not be read at start were kept instead of written over (#383). This is the way
+    // back to them, offered until they are restored or discarded.
+    val settingsUnreadable by PreferenceRecovery.pending.collectAsState()
+    var showRecoveryDialog by remember { mutableStateOf(false) }
+    val recoveryScope = rememberCoroutineScope()
+    if (settingsUnreadable) {
+        UCard {
+            UNavRow(
+                title = stringRes(R.string.dictate__settings_unreadable_card),
                 onClick = { showRecoveryDialog = true },
             )
         }
-        if (showRecoveryDialog) {
-            JetPrefAlertDialog(
-                title = stringRes(R.string.dictate__settings_unreadable_title),
-                confirmLabel = stringRes(R.string.action__restore),
-                onConfirm = {
+    }
+    if (showRecoveryDialog) {
+        UDialog(
+            title = stringRes(R.string.dictate__settings_unreadable_title),
+            description = stringRes(R.string.dictate__settings_unreadable_message),
+            doneLabel = stringRes(R.string.action__cancel),
+            onDismiss = { showRecoveryDialog = false },
+        ) {
+            UNavRow(
+                title = stringRes(R.string.action__restore),
+                onClick = {
                     showRecoveryDialog = false
                     recoveryScope.launch {
                         PreferenceRecovery.restore(context).onFailure {
@@ -122,129 +131,86 @@ fun HomeScreen() = FlorisScreen {
                         }
                     }
                 },
-                // Delete, not Discard: several translations of Discard read the same as Cancel beside it.
-                neutralLabel = stringRes(R.string.action__delete),
-                onNeutral = {
+            )
+            UDivider()
+            // Delete, not Discard: several translations of Discard read the same as Cancel beside it.
+            UNavRow(
+                title = stringRes(R.string.action__delete),
+                onClick = {
                     showRecoveryDialog = false
                     PreferenceRecovery.discard(context)
                 },
-                dismissLabel = stringRes(R.string.action__cancel),
-                onDismiss = { showRecoveryDialog = false },
-            ) {
-                Text(stringRes(R.string.dictate__settings_unreadable_message))
-            }
+            )
         }
+    }
 
-        // Passive dictation-stats summary (issue #142): appears once the user has dictated, taps through
-        // to the full statistics screen. No interruption — just a glanceable "time saved".
-        val statDictations by prefs.dictate.statsDictations.collectAsState()
-        val statWords by prefs.dictate.statsWords.collectAsState()
-        val statSpoken by prefs.dictate.statsSpokenSeconds.collectAsState()
-        if (statDictations > 0L) {
-            val saved = DictateStats.savedSeconds(statWords, statSpoken)
-            Card(
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-                    .clickable { navController.navigate(Routes.Settings.DictateStats) },
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                ),
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    Icon(Icons.Default.Schedule, contentDescription = null, modifier = Modifier.size(24.dp))
-                    Column(modifier = Modifier.weight(1f)) {
-                        // Small "saved" label so it's clear the figure is time saved, not usage time.
-                        Text(
-                            stringRes(R.string.dictate__stats_time_saved),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f),
-                        )
-                        // Emphasized time + count on one line.
-                        Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text(
-                                homeDuration(saved.toLong()),
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold,
-                            )
-                            Text(
-                                "· ${NumberFormat.getIntegerInstance().format(statDictations)} ${stringRes(R.string.dictate__stats_dictations)}",
-                                style = MaterialTheme.typography.bodySmall,
-                                modifier = Modifier.padding(bottom = 2.dp),
-                            )
-                        }
-                    }
-                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
-                }
-            }
+    // The search, as the pill it is on the other pages.
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(44.dp)
+            .clip(Unisono.Pill)
+            .background(c.sunken)
+            .clickable { navController.navigate(Routes.Settings.Search) }
+            .padding(horizontal = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        Icon(UnisonoIcons.Search, contentDescription = null, tint = c.textTertiary, modifier = Modifier.size(18.dp))
+        Text(stringRes(R.string.settings__search__placeholder), style = Unisono.Body, color = c.textTertiary)
+    }
+
+    // Passive dictation-stats summary (issue #142): appears once the user has dictated, taps through to the
+    // full statistics screen. No interruption, just a glanceable "time saved".
+    val statDictations by prefs.dictate.statsDictations.collectAsState()
+    val statWords by prefs.dictate.statsWords.collectAsState()
+    val statSpoken by prefs.dictate.statsSpokenSeconds.collectAsState()
+    if (statDictations > 0L) {
+        val saved = DictateStats.savedSeconds(statWords, statSpoken)
+        UCard {
+            UNavRow(
+                title = homeDuration(saved.toLong()),
+                subtitle = "${stringRes(R.string.dictate__stats_time_saved)} \u00b7 " +
+                    "${NumberFormat.getIntegerInstance().format(statDictations)} ${stringRes(R.string.dictate__stats_dictations)}",
+                icon = UnisonoIcons.Clock,
+                onClick = { navController.navigate(Routes.Settings.DictateStats) },
+            )
         }
+    }
 
-
-        /*Card(modifier = Modifier.padding(8.dp)) {
-            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "Welcome to the 0.4 alpha series!",
-                        style = MaterialTheme.typography.subtitle1,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    Spacer(modifier = Modifier.weight(1.0f))
-                    IconButton(onClick = { this@content.prefs.internal.homeIsBetaToolboxCollapsed.set(!isCollapsed) }) {
-                        Icon(
-                            painter = painterResource(if (isCollapsed) {
-                                R.drawable.ic_keyboard_arrow_down
-                            } else {
-                                R.drawable.ic_keyboard_arrow_up
-                            }),
-                            contentDescription = null,
-                        )
-                    }
-                }
-                if (!isCollapsed) {
-                    Text("0.4 will be quite a big release and finally work on adding support for word suggestion and inline autocorrect within the keyboard UI, at first for Latin-based languages. Additionally general improvements and bug fixes will also be made.\n")
-                    Text("Currently the alpha releases are preparations for the suggestions implementation and general improvements and bug fixes.\n")
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text("Note that this release does not contain support for word suggestions (will show the current word plus numbers as a placeholder).", color = Color.Red)
-                    Text("Please DO NOT file an issue for this. It is already more than known and a major goal for implementation in 0.4.0. Thank you!\n")
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-            }
-        }*/
-        // "Transcribe a file" (issue #301) reachable in one tap from the top, without going through
-        // the Dictate screen first. The labelled row stays there as well: this icon is what the
-        // settings search cannot find and what nobody discovers who does not already know about it.
-        val dictateContext = LocalContext.current
-        val transcribePicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-            if (uri != null) {
-                dictateContext.startActivity(TranscribeShareActivity.intentFor(dictateContext, uri))
-            }
+    // "Transcribe a file" (issue #301) reachable in one tap from the top, without going through the Dictate
+    // screen first. The labelled row stays there as well: this icon is what the settings search cannot find
+    // and what nobody discovers who does not already know about it.
+    val transcribePicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) {
+            context.startActivity(TranscribeShareActivity.intentFor(context, uri))
         }
-        Preference(
-            icon = Icons.Default.Mic,
+    }
+    UCard {
+        UNavRow(
             title = stringRes(R.string.dictate__title),
+            icon = UnisonoIcons.Mic,
             onClick = { navController.navigate(Routes.Settings.Dictate) },
             trailing = {
                 IconButton(onClick = { transcribePicker.launch(TranscribeShareActivity.MIME_TYPES) }) {
                     Icon(
-                        imageVector = Icons.Default.AudioFile,
+                        imageVector = UnisonoIcons.AudioFile,
                         contentDescription = stringRes(R.string.dictate__import_menu),
+                        tint = c.textSecondary,
                     )
                 }
             },
         )
-        Preference(
-            icon = Icons.Outlined.Build,
+        UDivider()
+        UNavRow(
             title = stringRes(R.string.settings__other__title),
+            icon = UnisonoIcons.Gear,
             onClick = { navController.navigate(Routes.Settings.Other) },
         )
-        Preference(
-            icon = Icons.Outlined.Info,
+        UDivider()
+        UNavRow(
             title = stringRes(R.string.about__title),
+            icon = UnisonoIcons.Book,
             onClick = { navController.navigate(Routes.Settings.About) },
         )
     }
