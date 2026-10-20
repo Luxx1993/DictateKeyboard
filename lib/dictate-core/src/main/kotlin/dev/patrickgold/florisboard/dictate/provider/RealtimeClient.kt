@@ -24,12 +24,17 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonObject
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okio.ByteString.Companion.toByteString
+import java.io.IOException
 import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
 
@@ -102,6 +107,9 @@ object RealtimeClient {
                 .also { it.connect() }
         RealtimeApi.MISTRAL_VOXTRAL -> MistralRealtimeSession(wsClient, apiKey, model, language, callbacks).also { it.connect() }
         RealtimeApi.XAI -> XaiRealtimeSession(wsClient, apiKey, model, language, callbacks).also { it.connect() }
+        RealtimeApi.GLADIA ->
+            GladiaRealtimeSession(wsClient, apiKey, model, language, callbacks, expectedLanguages)
+                .also { it.connect() }
     }
 }
 
@@ -861,6 +869,8 @@ internal class MistralRealtimeSession(
             android.util.Log.w("DictateRT", "mistral realtime WS failed (http=${response?.code}): ${t.message}")
             emitError(t)
         }
+        // A close from the server without a transcription.done before it still ends the session.
+        override fun onClosing(webSocket: WebSocket, code: Int, reason: String) = finalizeAndClose(webSocket)
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) = finalizeAndClose(webSocket)
     }
 
@@ -917,6 +927,162 @@ internal class MistralRealtimeSession(
         done = true
         audioGate.close()
         if (transcript.isNotEmpty()) callbacks.onFinalSegment(transcript.toString())
+        runCatching { (webSocket ?: ws)?.close(1000, null) }
+        callbacks.onClosed()
+    }
+}
+
+/**
+ * Gladia live transcription (Solaria 1, the only live model). Two steps: `POST /v2/live?region=eu-west` with the
+ * key (`x-gladia-key`) and the audio format answers with a WebSocket address that already carries a session
+ * token; the socket then takes the audio as binary frames (16 kHz mono PCM16, as announced in the first call)
+ * and ends with `{"type":"stop_recording"}`, after which the server processes what is left and closes with 1000.
+ * `transcript` messages carry `data.is_final` and `data.utterance.text`; with `receive_partial_transcripts` the
+ * not yet final ones arrive too, and a newer event of the same utterance replaces the one before it.
+ *
+ * The EU region is Gladia's default; it is named in the request so it stays that way. A language is pinned when
+ * the user pinned one, and the languages the user dictates in are offered otherwise ([expectedLanguages]).
+ * Custom vocabulary is not sent here: a realtime session has no channel for it yet.
+ *
+ * Audio spoken while the first call is still on its way waits in [RealtimeAudioGate]; a failed first call is an
+ * error like any other, and the engine falls back to batch transcription.
+ */
+internal class GladiaRealtimeSession(
+    private val client: OkHttpClient,
+    private val apiKey: String,
+    @Suppress("unused") private val model: String,
+    private val language: String?,
+    private val callbacks: RealtimeCallbacks,
+    private val expectedLanguages: List<String> = emptyList(),
+    /** The address of the session call — Gladia's own, except in tests. */
+    private val initUrl: String = INIT_URL,
+) : RealtimeSession {
+
+    private val json = Json { ignoreUnknownKeys = true; isLenient = true }
+    @Volatile private var ws: WebSocket? = null
+    private val audioGate = RealtimeAudioGate()
+    /** The latest provisional text, kept so a close before its final does not lose it. */
+    @Volatile private var pending = ""
+    @Volatile private var done = false
+
+    private companion object { const val INIT_URL = "https://api.gladia.io/v2/live?region=eu-west" }
+
+    /** The body of the session call: PCM16 mono 16 kHz, partial transcripts, and the language(s). */
+    internal fun initBody(): String = buildJsonObject {
+        put("encoding", "wav/pcm")
+        put("bit_depth", 16)
+        put("sample_rate", 16_000)
+        put("channels", 1)
+        put("model", "solaria-1")
+        putJsonObject("language_config") {
+            val pinned = language?.takeIf { it.isNotBlank() && it != "detect" }?.substringBefore('-')
+            put("languages", buildJsonArray {
+                if (pinned != null) add(pinned)
+                else expectedLanguages.map { it.substringBefore('-') }.distinct().forEach { add(it) }
+            })
+            put("code_switching", false)
+        }
+        putJsonObject("messages_config") {
+            put("receive_partial_transcripts", true)
+            put("receive_final_transcripts", true)
+        }
+    }.toString()
+
+    fun connect() {
+        val request = Request.Builder()
+            .url(initUrl)
+            .header("x-gladia-key", apiKey)
+            .post(initBody().toRequestBody("application/json".toMediaType()))
+            .build()
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) = emitError(e)
+
+            override fun onResponse(call: Call, response: Response) {
+                response.use {
+                    val text = it.body?.string().orEmpty()
+                    val url = runCatching { json.parseToJsonElement(text).jsonObject["url"]?.jsonPrimitive?.content }.getOrNull()
+                    if (!it.isSuccessful || url.isNullOrBlank()) {
+                        emitError(IOException("Gladia live: HTTP ${it.code} ${text.take(200)}"))
+                        return
+                    }
+                    if (done) return   // cancelled while the call was on its way
+                    ws = client.newWebSocket(Request.Builder().url(url).build(), listener)
+                }
+            }
+        })
+    }
+
+    private val listener = object : WebSocketListener() {
+        // No acknowledgement is documented: the audio may flow as soon as the socket is open.
+        override fun onOpen(webSocket: WebSocket, response: Response) {
+            audioGate.markReady(
+                send = { pcm16, len -> runCatching { webSocket.send(pcm16.toByteString(0, len)) } },
+                finish = { sendStop(webSocket) },
+            )
+        }
+
+        override fun onMessage(webSocket: WebSocket, text: String) {
+            val obj = runCatching { json.parseToJsonElement(text).jsonObject }.getOrNull() ?: return
+            when (obj["type"]?.jsonPrimitive?.content) {
+                "transcript" -> {
+                    val data = obj["data"]?.jsonObject ?: return
+                    val utterance = data["utterance"]?.jsonObject?.get("text")?.jsonPrimitive?.content.orEmpty()
+                    if (utterance.isBlank()) return
+                    if (data["is_final"]?.jsonPrimitive?.booleanOrNull == true) {
+                        pending = ""
+                        callbacks.onFinalSegment(utterance)
+                    } else {
+                        pending = utterance
+                        callbacks.onPartial(utterance)
+                    }
+                }
+                "error" -> emitError(IOException("Gladia live: $text".take(300)))
+            }
+        }
+
+        override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+            android.util.Log.w("DictateRT", "gladia realtime WS failed (http=${response?.code}): ${t.message}")
+            emitError(t)
+        }
+        // After stop_recording Gladia closes the socket itself: answering completes the close handshake.
+        override fun onClosing(webSocket: WebSocket, code: Int, reason: String) = finishClosed(webSocket)
+        override fun onClosed(webSocket: WebSocket, code: Int, reason: String) = finishClosed(webSocket)
+    }
+
+    private fun sendStop(socket: WebSocket) {
+        runCatching { socket.send("""{"type":"stop_recording"}""") }
+    }
+
+    override fun sendAudio(pcm16: ByteArray, len: Int) {
+        audioGate.sendAudio(pcm16, len) { audio, length -> ws?.send(audio.toByteString(0, length)) }
+    }
+
+    override fun finish() {
+        audioGate.finish { ws?.let { sendStop(it) } }
+    }
+
+    override fun cancel() {
+        audioGate.close()
+        done = true
+        runCatching { ws?.close(1000, null) }
+        callbacks.onClosed()
+    }
+
+    private fun emitError(t: Throwable) {
+        if (done) return
+        done = true
+        audioGate.close()
+        runCatching { ws?.cancel() }
+        callbacks.onError(t)
+        callbacks.onClosed()
+    }
+
+    private fun finishClosed(webSocket: WebSocket?) {
+        if (done) return
+        done = true
+        audioGate.close()
+        pending.takeIf { it.isNotEmpty() }?.let { callbacks.onFinalSegment(it) }
+        pending = ""
         runCatching { (webSocket ?: ws)?.close(1000, null) }
         callbacks.onClosed()
     }
