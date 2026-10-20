@@ -27,6 +27,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -334,9 +336,15 @@ fun DictateFloatingButtonScreen() = UnisonoPage(title = stringRes(R.string.main_
 
     if (showDisclosure) {
         AlertDialog(
-            onDismissRequest = { showDisclosure = false },
+            onDismissRequest = { showDisclosure = false },   // back or a tap outside counts as declining, never as consent
             title = { Text(stringRes(R.string.dictate__floating_button_disclosure_title)) },
-            text = { Text(stringRes(R.string.dictate__floating_button_disclosure_message)) },
+            // The disclosure is long; it scrolls instead of being cut off on small screens.
+            text = {
+                Text(
+                    text = stringRes(R.string.dictate__floating_button_disclosure_message),
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                )
+            },
             confirmButton = {
                 TextButton(onClick = {
                     showDisclosure = false
@@ -347,7 +355,7 @@ fun DictateFloatingButtonScreen() = UnisonoPage(title = stringRes(R.string.main_
             },
             dismissButton = {
                 TextButton(onClick = { showDisclosure = false }) {
-                    Text(stringRes(android.R.string.cancel))
+                    Text(stringRes(R.string.dictate__floating_button_disclosure_decline))
                 }
             },
         )
