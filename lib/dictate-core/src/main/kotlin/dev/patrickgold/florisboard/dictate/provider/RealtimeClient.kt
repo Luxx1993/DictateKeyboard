@@ -787,49 +787,73 @@ private class GeminiRealtimeSession(
 }
 
 /**
- * Mistral Voxtral realtime (`voxtral-mini-transcribe-realtime-2602`). EXPERIMENTAL/UNVERIFIED: Mistral
- * only documents this via its SDK, so the raw WebSocket path, handshake and event field names here are a
- * best-effort reconstruction and may not match the live wire format — a mismatch simply closes the socket
- * and the engine falls back to batch transcription. Assumes `Authorization: Bearer` auth, a JSON config
- * with the audio format, binary PCM frames, and `*TextDelta`/`*Done`-style events carrying `text`.
+ * Mistral Voxtral realtime over `wss://api.mistral.ai/v1/audio/transcriptions/realtime?model=…`, with the key
+ * as `Authorization: Bearer`. The messages are the ones Mistral's own Python SDK (`mistralai.extra.realtime`)
+ * sends and reads, so nothing here is guessed:
+ *  - server → `session.created`; the client answers with `session.update` carrying the audio format
+ *    (`pcm_s16le`, 16 kHz) and only then sends audio, which is why the first frames wait in [RealtimeAudioGate];
+ *  - audio goes up as `{"type":"input_audio.append","audio":"<base64>"}`;
+ *  - the server streams `transcription.text.delta` (`text`, appended token by token) and ends with
+ *    `transcription.done` (`text` is the whole transcript), or `error`;
+ *  - the client ends the dictation with `input_audio.flush` and then `input_audio.end`.
+ * The model query parameter is required — without it the handshake is refused, which is what the 403 in
+ * issue #128 was. The language is not sent: the realtime model detects it. Diarization does not work in
+ * realtime (Mistral's docs), and none is asked for.
  */
-private class MistralRealtimeSession(
+internal class MistralRealtimeSession(
     private val client: OkHttpClient,
     private val apiKey: String,
     private val model: String,
-    private val language: String?,
+    @Suppress("unused") private val language: String?,
     private val callbacks: RealtimeCallbacks,
+    /** The socket address without its query — Mistral's own, except in tests. */
+    private val endpoint: String = URL,
 ) : RealtimeSession {
 
     private val json = Json { ignoreUnknownKeys = true; isLenient = true }
     private var ws: WebSocket? = null
+    private val audioGate = RealtimeAudioGate()
     private val transcript = StringBuilder()
     @Volatile private var done = false
 
     private companion object { const val URL = "wss://api.mistral.ai/v1/audio/transcriptions/realtime" }
 
+    internal fun url(): String = "$endpoint?model=" + URLEncoder.encode(model, "UTF-8")
+
     fun connect() {
-        val request = Request.Builder().url(URL).header("Authorization", "Bearer $apiKey").build()
+        val request = Request.Builder().url(url()).header("Authorization", "Bearer $apiKey").build()
         ws = client.newWebSocket(request, listener)
     }
 
     private val listener = object : WebSocketListener() {
-        override fun onOpen(webSocket: WebSocket, response: Response) {
-            webSocket.send(config())
-        }
-
         override fun onMessage(webSocket: WebSocket, text: String) {
             val obj = runCatching { json.parseToJsonElement(text).jsonObject }.getOrNull() ?: return
-            val type = obj["type"]?.jsonPrimitive?.content.orEmpty()
-            when {
-                type.contains("TextDelta", ignoreCase = true) || type.contains("delta", ignoreCase = true) -> {
-                    val chunk = obj["text"]?.jsonPrimitive?.content
-                        ?: obj["delta"]?.jsonPrimitive?.content ?: return
+            when (obj["type"]?.jsonPrimitive?.content) {
+                "session.created" -> {
+                    runCatching { webSocket.send(sessionUpdate()) }
+                    audioGate.markReady(
+                        send = { pcm16, len -> sendAudioFrame(webSocket, pcm16, len) },
+                        finish = { sendEnd(webSocket) },
+                    )
+                }
+                "transcription.text.delta" -> {
+                    val chunk = obj["text"]?.jsonPrimitive?.content ?: return
                     transcript.append(chunk)
                     callbacks.onPartial(transcript.toString())
                 }
-                type.contains("Done", ignoreCase = true) || type.contains("completed", ignoreCase = true) ->
+                "transcription.done" -> {
+                    obj["text"]?.jsonPrimitive?.content?.takeIf { it.isNotBlank() }?.let {
+                        transcript.setLength(0)
+                        transcript.append(it)
+                    }
                     finalizeAndClose(webSocket)
+                }
+                "error" -> {
+                    val detail = obj["error"]?.let { e ->
+                        runCatching { e.jsonObject["message"]?.jsonPrimitive?.content }.getOrNull() ?: e.toString()
+                    } ?: "unknown error"
+                    emitError(java.io.IOException("Mistral realtime: $detail"))
+                }
             }
         }
 
@@ -840,24 +864,40 @@ private class MistralRealtimeSession(
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) = finalizeAndClose(webSocket)
     }
 
-    private fun config(): String = buildJsonObject {
-        put("type", "transcription_session.update")
-        put("model", model)
-        put("encoding", "pcm_s16le")
-        put("sample_rate", 16_000)
-        if (!language.isNullOrBlank() && language != "detect") put("language", language)
+    internal fun sessionUpdate(): String = buildJsonObject {
+        put("type", "session.update")
+        put("session", buildJsonObject {
+            put("audio_format", buildJsonObject {
+                put("encoding", "pcm_s16le")
+                put("sample_rate", 16_000)
+            })
+        })
     }.toString()
 
+    private fun sendAudioFrame(socket: WebSocket, pcm16: ByteArray, len: Int) {
+        val msg = buildJsonObject {
+            put("type", "input_audio.append")
+            put("audio", java.util.Base64.getEncoder().encodeToString(pcm16.copyOfRange(0, len)))
+        }.toString()
+        runCatching { socket.send(msg) }
+    }
+
+    private fun sendEnd(socket: WebSocket) {
+        runCatching { socket.send("""{"type":"input_audio.flush"}""") }
+        runCatching { socket.send("""{"type":"input_audio.end"}""") }
+    }
+
     override fun sendAudio(pcm16: ByteArray, len: Int) {
-        runCatching { ws?.send(pcm16.toByteString(0, len)) }
+        audioGate.sendAudio(pcm16, len) { audio, length -> ws?.let { sendAudioFrame(it, audio, length) } }
     }
 
     override fun finish() {
         val socket = ws ?: return finalizeAndClose(null)
-        runCatching { socket.send("""{"type":"transcription_session.close"}""") }
+        audioGate.finish { sendEnd(socket) }
     }
 
     override fun cancel() {
+        audioGate.close()
         done = true
         runCatching { ws?.close(1000, null) }
         callbacks.onClosed()
@@ -866,6 +906,7 @@ private class MistralRealtimeSession(
     private fun emitError(t: Throwable) {
         if (done) return
         done = true
+        audioGate.close()
         runCatching { ws?.cancel() }
         callbacks.onError(t)
         callbacks.onClosed()
@@ -874,6 +915,7 @@ private class MistralRealtimeSession(
     private fun finalizeAndClose(webSocket: WebSocket?) {
         if (done) return
         done = true
+        audioGate.close()
         if (transcript.isNotEmpty()) callbacks.onFinalSegment(transcript.toString())
         runCatching { (webSocket ?: ws)?.close(1000, null) }
         callbacks.onClosed()

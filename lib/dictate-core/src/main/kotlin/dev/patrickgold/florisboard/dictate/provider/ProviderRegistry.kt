@@ -439,14 +439,16 @@ object ProviderRegistry {
         supportsDynamicModels = true,
         apiKeyUrl = "https://console.mistral.ai/api-keys",
         defaultTranscriptionModel = "voxtral-mini-latest",
-        curatedTranscriptionModels = listOf("voxtral-mini-latest"),
-        // Realtime (#128): Voxtral realtime (/v1/realtime, vLLM-style). Model id verified when built.
-        // Realtime disabled: Mistral's raw WS returns 403 and the protocol is SDK-only/unverified (#128).
-        // Keep the wiring (RealtimeApi + session) so it can be re-enabled once the protocol is confirmed.
-        supportsRealtime = false,
+        // Voxtral 3 (mistral.ai/news/voxtral-3, 2026-10): Small is the most accurate, Mini the cheaper one. The ids are the ones
+        // on Mistral's model pages; "-latest" stays the default until the 3.0 ids are tried against a real key.
+        curatedTranscriptionModels = listOf("voxtral-mini-latest", "voxtral-small-transcribe-3-0", "voxtral-mini-transcribe-3-0"),
+        // Realtime (#128): the raw WebSocket needs ?model=… (without it the handshake is refused with 403) and
+        // speaks the messages of Mistral's Python SDK, see MistralRealtimeSession. -3-0 is the Voxtral 3 model of
+        // mistral.ai/news/voxtral-3; 2602 stays the default until 3-0 has been tried against a real key.
+        supportsRealtime = true,
         realtimeApi = RealtimeApi.MISTRAL_VOXTRAL,
         defaultRealtimeModel = "voxtral-mini-transcribe-realtime-2602",
-        curatedRealtimeModels = listOf("voxtral-mini-transcribe-realtime-2602"),
+        curatedRealtimeModels = listOf("voxtral-mini-transcribe-realtime-2602", "voxtral-mini-transcribe-realtime-3-0"),
         // "By default, your data is hosted in the European Union" (Mistral help centre, updated
         // 2026-08-12). The same page names a separate US endpoint, which this base URL is not, and
         // subprocessors outside the EU for some features.

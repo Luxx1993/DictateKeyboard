@@ -132,7 +132,8 @@ class ProviderListingTest {
         val euTranscribingLive = ProviderRegistry.presets
             .filter { ProviderListing.matches(it, "", setOf(Filter.EU, Filter.REALTIME)) }
             .map { it.id }
-        assertEquals(listOf("soniox"), euTranscribingLive)
+        // Mistral joined with its realtime model (Voxtral Realtime, over the protocol of its own SDK).
+        assertEquals(setOf("mistral", "soniox"), euTranscribingLive.toSet())
 
         assertTrue(ProviderListing.matches(ProviderRegistry.ANTHROPIC, "claude", emptySet()))
         assertTrue(ProviderListing.matches(ProviderRegistry.OVHCLOUD, " ovh ", emptySet()))
