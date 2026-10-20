@@ -42,6 +42,8 @@ APK unter `app/build/outputs/apk/debug/`. Debug-Builds sind mit einem Debug-Schl
 auf dem S24 testen soll, ausführen und den Link nennen. Dieselbe Debug-Signatur wie bisher nutzen, sonst gibt es kein
 Update über die alte App.
 
+**Google Play:** Vorbereitet in `docs/play-store/` (Anleitung, Datenschutzerklärung, Store-Texte und Formular-Antworten). `scripts/make-upload-key.sh` legt den Upload-Schlüssel an, `scripts/build-play-bundle.sh` baut das signierte `.aab`. Die Debug-APK (Zweig `apk`) und die Play-Version haben verschiedene Signaturen und lassen sich nicht überinstallieren.
+
 ## Wichtige Orte im Code
 
 - `app/src/main/kotlin/dev/patrickgold/florisboard/dictate/` – Diktat-Logik (Anbieter, Aufnahme, Overlay)
