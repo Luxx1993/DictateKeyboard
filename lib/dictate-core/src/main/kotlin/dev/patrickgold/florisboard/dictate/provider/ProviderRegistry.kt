@@ -439,7 +439,9 @@ object ProviderRegistry {
         supportsDynamicModels = true,
         apiKeyUrl = "https://console.mistral.ai/api-keys",
         defaultTranscriptionModel = "voxtral-mini-latest",
-        curatedTranscriptionModels = listOf("voxtral-mini-latest"),
+        // Voxtral 3 (mistral.ai/news/voxtral-3, 2026-10): Small is the most accurate, Mini the cheaper one. The ids are the ones
+        // on Mistral's model pages; "-latest" stays the default until the 3.0 ids are tried against a real key.
+        curatedTranscriptionModels = listOf("voxtral-mini-latest", "voxtral-small-transcribe-3-0", "voxtral-mini-transcribe-3-0"),
         // Realtime (#128): Voxtral realtime (/v1/realtime, vLLM-style). Model id verified when built.
         // Realtime disabled: Mistral's raw WS returns 403 and the protocol is SDK-only/unverified (#128).
         // Keep the wiring (RealtimeApi + session) so it can be re-enabled once the protocol is confirmed.
