@@ -621,6 +621,12 @@ object ProviderRegistry {
         apiKeyUrl = "https://app.gladia.io/apikeys",
         defaultTranscriptionModel = "solaria-1",
         curatedTranscriptionModels = listOf("solaria-1", "solaria-3"),
+        // Live: POST /v2/live?region=eu-west answers with a socket address, see GladiaRealtimeSession. Solaria 1 is
+        // the only live model; solaria-3 is batch only.
+        supportsRealtime = true,
+        realtimeApi = RealtimeApi.GLADIA,
+        defaultRealtimeModel = "solaria-1",
+        curatedRealtimeModels = listOf("solaria-1"),
     )
 
     /**

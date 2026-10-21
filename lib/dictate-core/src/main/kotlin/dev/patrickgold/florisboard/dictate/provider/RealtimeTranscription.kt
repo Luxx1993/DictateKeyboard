@@ -25,6 +25,7 @@ enum class RealtimeApi {
     GEMINI,
     MISTRAL_VOXTRAL,
     XAI,
+    GLADIA,
 }
 
 
