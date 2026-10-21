@@ -191,4 +191,4 @@ farbige oder zweifarbige Logos; Pille um den aktiven Navigationseintrag; einger�
   Ruhe ohne Mikro-Symbol, mit 20 Bildern/s. Zuhören folgt dem echten Mikrofonpegel statt der festen Stimm-Keyframes.
   Die Farbwahl speichert den Hauptton (o1) der Palette; Dictates altes Hellblau gilt als Lagune.
 - [ ] Wolke auf dem S24 ansehen (Ruhe, Zuhören, Verarbeiten, Fertig, Fehler; Akkuverbrauch in Ruhe)
-- [x] Anbieter Gladia, Preset Cerebras, AssemblyAI Sync API (Oktober 2026; mit echten Keys noch ungetestet)
+- [x] Anbieter Gladia, Preset Cerebras, AssemblyAI Sync API als Modell von AssemblyAI (Oktober 2026; mit echten Keys noch ungetestet)

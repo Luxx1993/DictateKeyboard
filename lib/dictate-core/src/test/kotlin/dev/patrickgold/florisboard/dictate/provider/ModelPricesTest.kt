@@ -1,0 +1,45 @@
+/*
+ * Copyright (C) 2026 Luxx1993
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
+
+package dev.patrickgold.florisboard.dictate.provider
+
+import io.kotest.core.spec.style.FunSpec
+import io.kotest.matchers.shouldBe
+import java.util.Locale
+
+class ModelPricesTest : FunSpec({
+
+    test("Solaria-3 shows its price, written the German way") {
+        ModelPrices.format(ModelPrices.batchPrice("gladia", "solaria-3"), Locale.GERMANY) shouldBe "0,16 €/h"
+    }
+
+    test("a calculated price is marked and an unknown model shows nothing") {
+        ModelPrices.format(ModelPrices.batchPrice("assemblyai", "universal-3-5-pro-sync"), Locale.GERMANY) shouldBe "ca. 0,40 €/h"
+        ModelPrices.format(ModelPrices.batchPrice("groq", "no-such-model")) shouldBe null
+    }
+
+    test("live and file prices are separate") {
+        ModelPrices.realtimePrice("gladia", "solaria-1")?.eurPerHour shouldBe 0.68
+        ModelPrices.batchPrice("gladia", "solaria-1")?.eurPerHour shouldBe 0.27
+    }
+
+    test("every curated transcription model of the paid providers has a price except the known gaps") {
+        val gaps = setOf(
+            "assemblyai|universal-3-pro", "openrouter|openai/gpt-transcribe", "openrouter|mistralai/voxtral-mini-transcribe",
+            "openrouter|deepgram/nova-3", "deepgram|nova-2", "siliconflow|funaudiollm/sensevoicesmall",
+            "siliconflow|teleai/telespeechasr", "local|whisper-base", "local|whisper-tiny", "openai|gpt-transcribe-diarize",
+        )
+        val missing = ProviderRegistry.presets.flatMap { preset ->
+            preset.curatedTranscriptionModels.filter { ModelPrices.batchPrice(preset.id, it) == null }
+                .map { "${preset.id}|${it.lowercase()}" }
+        }.filterNot { it in gaps }
+        missing shouldBe emptyList()
+    }
+})

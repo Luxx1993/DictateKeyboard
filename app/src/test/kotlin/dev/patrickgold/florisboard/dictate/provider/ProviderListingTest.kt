@@ -122,7 +122,7 @@ class ProviderListingTest {
     fun `the EU filter finds the EU-hosted providers and the EU regions`() {
         val eu = ProviderRegistry.presets.filter { ProviderListing.matches(it, "", setOf(Filter.EU)) }.map { it.id }
         assertEquals(
-            setOf("openrouter", "mistral", "soniox", "assemblyai_sync", "scaleway", "ovhcloud"),
+            setOf("openrouter", "mistral", "soniox", "assemblyai", "scaleway", "ovhcloud"),
             eu.toSet(),
         )
     }
@@ -133,7 +133,7 @@ class ProviderListingTest {
             .filter { ProviderListing.matches(it, "", setOf(Filter.EU, Filter.REALTIME)) }
             .map { it.id }
         // Mistral joined with its realtime model (Voxtral Realtime, over the protocol of its own SDK).
-        assertEquals(setOf("mistral", "soniox"), euTranscribingLive.toSet())
+        assertEquals(setOf("mistral", "soniox", "assemblyai"), euTranscribingLive.toSet())
 
         assertTrue(ProviderListing.matches(ProviderRegistry.ANTHROPIC, "claude", emptySet()))
         assertTrue(ProviderListing.matches(ProviderRegistry.OVHCLOUD, " ovh ", emptySet()))

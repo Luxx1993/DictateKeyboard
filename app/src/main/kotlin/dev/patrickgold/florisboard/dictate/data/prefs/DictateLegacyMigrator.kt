@@ -19,7 +19,9 @@ import dev.patrickgold.florisboard.app.FlorisPreferenceStore
 import dev.patrickgold.florisboard.dictate.DictateLanguages
 import dev.patrickgold.florisboard.dictate.provider.DictateProxyType
 import dev.patrickgold.florisboard.dictate.provider.ProviderAccount
+import dev.patrickgold.florisboard.dictate.provider.LEGACY_ASSEMBLY_SYNC_ID
 import dev.patrickgold.florisboard.dictate.provider.ProviderAccounts
+import dev.patrickgold.florisboard.dictate.provider.ProviderRegistry
 import dev.patrickgold.florisboard.dictate.provider.ProxyConfig
 import java.net.Proxy
 import java.util.Locale
@@ -265,6 +267,20 @@ object DictateLegacyMigrator {
 
         prefs.dictate.providerAccounts.set(keyring)
         prefs.dictate.providerAccountsMigrated.set(true)
+    }
+
+    /**
+     * Merges the former separate "AssemblyAI Sync" entry into AssemblyAI (October 2026): the key moves to the
+     * AssemblyAI account, and if the sync entry was the dictation provider, AssemblyAI is now selected with
+     * its `-sync` model. Runs on every start but only acts while an `assemblyai_sync` account or pointer exists.
+     */
+    suspend fun mergeAssemblySyncIfNeeded() {
+        val prefs by FlorisPreferenceStore
+        val active = prefs.dictate.transcriptionProviderId.get() == LEGACY_ASSEMBLY_SYNC_ID
+        val keyring = prefs.dictate.providerAccounts.get()
+        if (!active && keyring[LEGACY_ASSEMBLY_SYNC_ID] == null) return
+        prefs.dictate.providerAccounts.set(keyring.foldAssemblySync(syncWasActive = active))
+        if (active) prefs.dictate.transcriptionProviderId.set(ProviderRegistry.ASSEMBLYAI.id)
     }
 
     /**
