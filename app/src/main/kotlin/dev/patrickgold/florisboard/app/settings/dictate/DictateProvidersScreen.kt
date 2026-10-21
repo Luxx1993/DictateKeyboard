@@ -89,6 +89,7 @@ import dev.patrickgold.florisboard.dictate.provider.ConnectionCheckScope
 import dev.patrickgold.florisboard.dictate.provider.DictateApiException
 import dev.patrickgold.florisboard.dictate.provider.LocalModelCatalog
 import dev.patrickgold.florisboard.dictate.provider.LocalModelManager
+import dev.patrickgold.florisboard.dictate.provider.ModelPrices
 import dev.patrickgold.florisboard.dictate.provider.OpenAiCompatibleClient
 import dev.patrickgold.florisboard.dictate.provider.ProviderAccount
 import dev.patrickgold.florisboard.dictate.provider.ProviderAccounts
@@ -963,6 +964,7 @@ internal fun ProviderEditorDialog(
 
     if (showRealtimePicker && preset != null) {
         RealtimeModelPickerDialog(
+            providerId = preset.id,
             models = preset.curatedRealtimeModels,
             default = preset.defaultRealtimeModel,
             current = realtimeModel,
@@ -982,6 +984,7 @@ internal fun ProviderEditorDialog(
  */
 @Composable
 private fun RealtimeModelPickerDialog(
+    providerId: String,
     models: List<String>,
     default: String?,
     current: String,
@@ -995,9 +998,11 @@ private fun RealtimeModelPickerDialog(
     ) {
         models.forEach { model ->
             val isDefault = model == default
+            val price = ModelPrices.format(ModelPrices.realtimePrice(providerId, model))
             UChoiceOption(
                 title = model,
-                subtitle = if (isDefault) stringRes(R.string.dictate__providers_realtime_model_default) else null,
+                subtitle = listOfNotNull(if (isDefault) stringRes(R.string.dictate__providers_realtime_model_default) else null, price)
+                    .joinToString(" · ").ifEmpty { null },
                 selected = current == model || (current.isBlank() && isDefault),
                 onClick = { onPick(model); onDismiss() },
             )

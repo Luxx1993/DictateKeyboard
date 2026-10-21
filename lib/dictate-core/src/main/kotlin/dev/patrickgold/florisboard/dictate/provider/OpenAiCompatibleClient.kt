@@ -249,8 +249,10 @@ class OpenAiCompatibleClient(
         TranscriptionApi.GEMINI_GENERATE_CONTENT -> transcribeGeminiGenerateContent(request, onRetry)
         TranscriptionApi.ELEVENLABS_MULTIPART -> transcribeElevenLabs(request, onRetry)
         TranscriptionApi.DEEPGRAM -> transcribeDeepgram(request, onRetry)
-        TranscriptionApi.ASSEMBLYAI_ASYNC -> transcribeAssemblyAi(request, onRetry)
-        TranscriptionApi.ASSEMBLYAI_SYNC -> transcribeAssemblySync(request, onRetry)
+        // One AssemblyAI entry, two ways in: a model with the sync suffix goes over the Sync API.
+        TranscriptionApi.ASSEMBLYAI_ASYNC ->
+            if (request.model.endsWith(ProviderRegistry.ASSEMBLYAI_SYNC_SUFFIX)) transcribeAssemblySync(request, onRetry)
+            else transcribeAssemblyAi(request, onRetry)
         TranscriptionApi.GLADIA_ASYNC -> transcribeGladia(request, onRetry)
         TranscriptionApi.AZURE_FAST_TRANSCRIPTION -> transcribeAzure(request, onRetry)
         TranscriptionApi.XAI_STT -> transcribeXai(request, onRetry)
@@ -740,9 +742,9 @@ class OpenAiCompatibleClient(
             }
             .build()
         val httpRequest = Request.Builder()
-            .url(config.normalizedBaseUrl + "v1/transcribe")
+            .url(ProviderRegistry.assemblySyncBaseUrl(config.normalizedBaseUrl) + "v1/transcribe")
             .header("Authorization", config.apiKey)
-            .header("X-AAI-Model", request.model)
+            .header("X-AAI-Model", request.model.removeSuffix(ProviderRegistry.ASSEMBLYAI_SYNC_SUFFIX))
             .post(multipart)
             .build()
         val body = executeForBody(httpRequest, onRetry = onRetry)
@@ -1299,18 +1301,7 @@ class OpenAiCompatibleClient(
                 executeForBody(request, maxRetries = 1)
                 return ConnectionCheck(scope)
             }
-            // The Sync API has no cheap authenticated GET of its own (`v1/warm` is documented without a
-            // URL), so the key is proven by the one thing that can: the account's async list page.
-            // Gladia likewise lists the account's jobs, capped at one entry.
-            TranscriptionApi.ASSEMBLYAI_SYNC -> {
-                val request = Request.Builder()
-                    .url("https://api.assemblyai.com/v2/transcript?limit=1")
-                    .header("authorization", config.apiKey)
-                    .get()
-                    .build()
-                executeForBody(request, maxRetries = 1)
-                return ConnectionCheck(scope)
-            }
+            // Gladia lists the account's jobs, capped at one entry.
             TranscriptionApi.GLADIA_ASYNC -> {
                 val request = Request.Builder()
                     .url(config.normalizedBaseUrl + "v2/pre-recorded?limit=1")
@@ -2127,7 +2118,6 @@ class OpenAiCompatibleClient(
         private val NO_MODELS_CATALOG_APIS = setOf(
             TranscriptionApi.ELEVENLABS_MULTIPART,
             TranscriptionApi.ASSEMBLYAI_ASYNC,
-            TranscriptionApi.ASSEMBLYAI_SYNC,
             TranscriptionApi.GLADIA_ASYNC,
             // Azure has a models endpoint the resource key opens, but it lists the wrong namespace —
             // per-locale custom-speech base models, none of which `enhancedMode.model` accepts. See

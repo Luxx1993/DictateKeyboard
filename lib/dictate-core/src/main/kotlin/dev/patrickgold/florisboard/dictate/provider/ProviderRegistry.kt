@@ -569,7 +569,19 @@ object ProviderRegistry {
         // names this URL (support.assemblyai.com, read 2026-09-21).
         apiKeyUrl = "https://www.assemblyai.com/dashboard/api-keys",
         defaultTranscriptionModel = "universal-3-pro",
-        curatedTranscriptionModels = listOf("universal-3-pro", "universal-2"),
+        // `-sync` is not a model of AssemblyAI's but this app's name for the Sync API with that model: one request
+        // instead of upload-create-poll, which is what a short dictation wants (see [ASSEMBLYAI_SYNC_SUFFIX]).
+        // The two ways in share one account and one key, so they are one entry here.
+        curatedTranscriptionModels = listOf(
+            "universal-3-pro", "universal-3-5-pro", "universal-2", "universal-3-5-pro$ASSEMBLYAI_SYNC_SUFFIX",
+        ),
+        // The EU region (Dublin) keeps audio and transcript in the EU. The Sync API sits on the same region
+        // under `sync.` instead of `api.` (see [assemblySyncBaseUrl]), so one choice covers both.
+        allowsCustomBaseUrl = true,
+        regions = listOf(
+            ProviderRegion("global", "https://api.assemblyai.com/"),
+            ProviderRegion("eu", "https://api.eu.assemblyai.com/"),
+        ),
         // Realtime (#128): Universal-Streaming wss streaming.assemblyai.com/v3/ws (~300ms). Model ids
         // verified when the session is built (billed by connection-open duration).
         supportsRealtime = true,
@@ -577,31 +589,6 @@ object ProviderRegistry {
         defaultRealtimeModel = "universal-3-6-pro",
         curatedRealtimeModels = listOf(
             "universal-3-6-pro", "universal-3-5-pro", "universal-streaming-english", "universal-streaming-multilingual",
-        ),
-    )
-
-    /**
-     * AssemblyAI Sync API: the same account and key as [ASSEMBLYAI], but one request instead of
-     * upload-create-poll, which is what a dictation wants (see [TranscriptionApi.ASSEMBLYAI_SYNC]).
-     * Clips up to 20 minutes / 256 MB over HTTP; a request past the server's 30-second deadline answers
-     * 504. Endpoints (global, US and EU data residency) and the model id `universal-3-5-pro` read from
-     * AssemblyAI's sync-stt docs on 2026-10-19; the docs name no other model.
-     */
-    val ASSEMBLYAI_SYNC = ProviderPreset(
-        id = "assemblyai_sync",
-        displayName = "AssemblyAI Sync",
-        baseUrl = "https://sync.assemblyai.com/",
-        capabilities = STT_ONLY,
-        transcriptionApi = TranscriptionApi.ASSEMBLYAI_SYNC,
-        supportsDynamicModels = false,
-        apiKeyUrl = "https://www.assemblyai.com/dashboard/api-keys",
-        defaultTranscriptionModel = "universal-3-5-pro",
-        curatedTranscriptionModels = listOf("universal-3-5-pro"),
-        allowsCustomBaseUrl = true,
-        regions = listOf(
-            ProviderRegion("global", "https://sync.assemblyai.com/"),
-            ProviderRegion("us", "https://sync.us.assemblyai.com/"),
-            ProviderRegion("eu", "https://sync.eu.assemblyai.com/"),
         ),
     )
 
@@ -986,10 +973,20 @@ object ProviderRegistry {
         curatedTranscriptionModels = listOf("whisper-base", "whisper-tiny"),
     )
 
+    /**
+     * The suffix that turns an AssemblyAI model id into "the same model over the Sync API": `universal-3-5-pro-sync`
+     * is `universal-3-5-pro` sent as one request to `sync.assemblyai.com`. Short clips only (256 MB, 20 minutes) and
+     * no speaker labels, in exchange for the answer coming straight back.
+     */
+    const val ASSEMBLYAI_SYNC_SUFFIX = "-sync"
+
+    /** The Sync API's address for an AssemblyAI base URL: the same region, `sync.` in place of `api.`. */
+    fun assemblySyncBaseUrl(baseUrl: String): String = baseUrl.replace("://api.", "://sync.")
+
     /** All built-in presets in display order. The custom option is added by the UI on top of these. */
     val presets: List<ProviderPreset> = listOf(
         OPENAI, GROQ, OPENROUTER, GEMINI, ANTHROPIC, TOGETHER, DEEPINFRA, MISTRAL, SONIOX,
-        ELEVENLABS, DEEPGRAM, ASSEMBLYAI, ASSEMBLYAI_SYNC, GLADIA, AZURE, XAI, DEEPSEEK, CEREBRAS,
+        ELEVENLABS, DEEPGRAM, ASSEMBLYAI, GLADIA, AZURE, XAI, DEEPSEEK, CEREBRAS,
         SILICONFLOW, SCALEWAY, OVHCLOUD, OLLAMA, LOCAL,
     )
 
@@ -1070,7 +1067,6 @@ object ProviderRegistry {
         "elevenlabs" -> 3L * 1024 * 1024 * 1024
         "deepgram", "ovhcloud" -> 2L * 1024 * 1024 * 1024
         "assemblyai" -> 2252L * 1024 * 1024
-        "assemblyai_sync" -> 256L * 1024 * 1024
         else -> 0L
     }
 

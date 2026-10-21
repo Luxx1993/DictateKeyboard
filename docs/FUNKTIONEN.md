@@ -66,7 +66,7 @@ Die Einstellungsseite zeigt nur eingerichtete Anbieter, weitere hinter „Anbiet
 | Mistral AI (Voxtral) | ja | ja | – |
 | Deepgram (Nova-3) | ja | – | ja |
 | AssemblyAI (Universal-3 Pro, asynchron) | ja | – | ja |
-| AssemblyAI Sync (`universal-3-5-pro`, eine Anfrage, Regionen Global/US/EU) | ja | – | – |
+| AssemblyAI, Modell `universal-3-5-pro-sync` (eine Anfrage, 256 MB / 20 Min.) | ja | – | – |
 | Gladia (`solaria-1`, `solaria-3`) | ja | – | – |
 | Together AI (Spracherkennung `openai/whisper-large-v3`, `nvidia/parakeet-tdt-0.6b-v3`) | ja | ja | – |
 | Cerebras (`gpt-oss-120b`, `qwen-3.8-27b`) | – | ja | – |
@@ -82,7 +82,7 @@ Die Einstellungsseite zeigt nur eingerichtete Anbieter, weitere hinter „Anbiet
 Hinweise:
 - Luxx1993 nutzt heute **ElevenLabs Scribe** + **Claude Haiku 5.5**. Das Modell wird im Konto des Anbieters eingetragen (nicht der Code-Standard).
 - **Dictate Cloud** (Guthaben-Angebot des Originals) ist **entfernt** (Abschnitt 13). Luxx1993 nutzt eigene Keys.
-- Seit Oktober 2026 eingebaut: **Gladia**, **Cerebras** (zum Aufräumen) und **AssemblyAI Sync API** (eigener Anbieter neben dem asynchronen, gleicher Key). Mit echten Keys noch nicht getestet; Modell-IDs und Endpunkte stammen aus den Doku-Seiten der Anbieter (19.10.2026).
+- Seit Oktober 2026 eingebaut: **Gladia**, **Cerebras** (zum Aufräumen) und **AssemblyAI Sync API** (seit 21.10.2026 kein eigener Eintrag mehr, sondern das Modell `universal-3-5-pro-sync` bei AssemblyAI; ein Key, Regionen Global/EU; ein früherer Sync-Eintrag wird beim Start übernommen). Mit echten Keys noch nicht getestet; Modell-IDs und Endpunkte stammen aus den Doku-Seiten der Anbieter (19.10.2026).
 - Proxy-Einstellung (HTTP/SOCKS mit Login) vorhanden: `app/settings/dictate/DictateProxyScreen.kt`.
 - Offline-Modelle werden heruntergeladen und verwaltet: `dictate/provider/LocalModelManager.kt`, `ModelDownloadService.kt`.
 

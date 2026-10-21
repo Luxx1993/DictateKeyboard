@@ -18,6 +18,7 @@ import dev.patrickgold.florisboard.app.main.UNavRow
 import dev.patrickgold.florisboard.app.main.UTextField
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -42,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import dev.patrickgold.florisboard.R
 import dev.patrickgold.florisboard.app.FlorisPreferenceStore
 import dev.patrickgold.florisboard.dictate.provider.DictateApiException
+import dev.patrickgold.florisboard.dictate.provider.ModelPrices
 import dev.patrickgold.florisboard.dictate.provider.OpenAiCompatibleClient
 import dev.patrickgold.florisboard.dictate.provider.ProviderPreset
 import kotlinx.coroutines.launch
@@ -198,6 +200,7 @@ fun ModelPickerDialog(
             items(candidates) { model ->
                 ModelRow(
                     label = model,
+                    price = if (kind == ModelKind.TRANSCRIPTION) ModelPrices.format(ModelPrices.batchPrice(preset.id, model)) else null,
                     selected = model.equals(current, ignoreCase = true),
                     onClick = { onPick(model); onDismiss() },
                 )
@@ -207,7 +210,7 @@ fun ModelPickerDialog(
 }
 
 @Composable
-private fun ModelRow(label: String, selected: Boolean, onClick: () -> Unit) {
+private fun ModelRow(label: String, selected: Boolean, onClick: () -> Unit, price: String? = null) {
     val c = LocalUnisono.current
     Row(
         modifier = Modifier
@@ -218,10 +221,20 @@ private fun ModelRow(label: String, selected: Boolean, onClick: () -> Unit) {
     ) {
         Text(
             text = label,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f, fill = false),
             style = if (selected) Unisono.BodyStrong else Unisono.Body,
             color = c.textPrimary,
         )
+        // The price sits right behind the name, in the small mono type of the search field.
+        if (price != null) {
+            Text(
+                text = price,
+                modifier = Modifier.padding(start = 10.dp),
+                style = Unisono.Mono,
+                color = c.textSecondary,
+            )
+        }
+        Spacer(Modifier.weight(1f))
         // No capability badge here any more. A 🎤 used to mark what the catalog called audio-capable, and it
         // was wrong often enough to send people away from models that work (#313). The modality data still
         // decides which ids *appear* in the transcription list, where being wrong only ever adds an entry.

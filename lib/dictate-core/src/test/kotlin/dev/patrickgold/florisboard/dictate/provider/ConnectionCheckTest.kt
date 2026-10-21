@@ -204,13 +204,13 @@ class ConnectionCheckTest : FunSpec({
 
     // --- AssemblyAI Sync and Gladia: the wire formats added 2026-10-19 ---------------------------
 
-    test("AssemblyAI Sync answers in one POST with the model header and the raw key") {
+    test("AssemblyAI sync model answers in one POST with the model header and the raw key") {
         val sample = createTempFile(suffix = ".wav").toFile().apply { writeBytes("RIFF-sample".encodeToByteArray()) }
         try {
             MockWebServer().use { server ->
                 server.enqueue(MockResponse().setResponseCode(200).setBody("""{"text":" Hallo Welt. ","words":[]}"""))
-                val check = clientFor(ProviderRegistry.ASSEMBLYAI_SYNC, server.url("/").toString(), "aai-key")
-                    .checkTranscription(sample, model = "universal-3-5-pro", language = "de")
+                val check = clientFor(ProviderRegistry.ASSEMBLYAI, server.url("/").toString(), "aai-key")
+                    .checkTranscription(sample, model = "universal-3-5-pro-sync", language = "de")
 
                 val recorded = server.takeRequest()
                 recorded.method shouldBe "POST"

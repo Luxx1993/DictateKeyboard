@@ -109,6 +109,7 @@ class FlorisApplication : Application() {
             DictateLegacyMigrator.seedDeviceLanguageIfNeeded()
             DictateLegacyMigrator.migrateProviderKeyringIfNeeded()
             DictateLegacyMigrator.migrateTrustUserCertsToAccountsIfNeeded()
+            DictateLegacyMigrator.mergeAssemblySyncIfNeeded()
             DictateLegacyMigrator.seedStylesIfNeeded(this@FlorisApplication)
             preferenceStoreLoaded.value = true
         }

@@ -271,6 +271,25 @@ data class ProviderAccounts(
     fun edit(providerId: String, block: (ProviderAccount) -> ProviderAccount): ProviderAccounts =
         put(block(getOrEmpty(providerId)))
 
+    /**
+     * Folds the former "AssemblyAI Sync" entry (`assemblyai_sync`) into the single AssemblyAI account: the
+     * key and a custom address move over unless AssemblyAI has its own, the entry disappears. When the
+     * sync entry was the active transcription provider ([syncWasActive]), AssemblyAI takes over its model
+     * as the `-sync` variant so dictation keeps using the one-request endpoint. No-op without such an entry.
+     */
+    fun foldAssemblySync(syncWasActive: Boolean): ProviderAccounts {
+        val sync = accounts[LEGACY_ASSEMBLY_SYNC_ID] ?: return this
+        val target = getOrEmpty(ProviderRegistry.ASSEMBLYAI.id)
+        val syncModel = sync.transcriptionModel.ifBlank { "universal-3-5-pro" }
+            .removeSuffix(ProviderRegistry.ASSEMBLYAI_SYNC_SUFFIX) + ProviderRegistry.ASSEMBLYAI_SYNC_SUFFIX
+        val merged = target.copy(
+            apiKey = target.apiKey.ifBlank { sync.apiKey },
+            customBaseUrl = target.customBaseUrl.ifBlank { sync.customBaseUrl.replace("://sync.", "://api.") },
+            transcriptionModel = if (syncWasActive) syncModel else target.transcriptionModel,
+        )
+        return remove(LEGACY_ASSEMBLY_SYNC_ID).put(merged)
+    }
+
     object Serializer : PreferenceSerializer<ProviderAccounts> {
         private val json = Json { ignoreUnknownKeys = true; encodeDefaults = true }
 
@@ -301,3 +320,6 @@ data class ProviderAccounts(
         val Empty = ProviderAccounts(emptyMap())
     }
 }
+
+/** Id of the removed separate AssemblyAI Sync entry (merged into AssemblyAI in October 2026). */
+const val LEGACY_ASSEMBLY_SYNC_ID = "assemblyai_sync"

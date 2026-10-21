@@ -73,7 +73,7 @@ Alle Design-Entscheidungen stehen in **`docs/design/diktat-design.md`**. Das ist
 1. App-Icon ist fertig (Icon, Themen-Icon, Umschalter, Animation A im Splash, Animation D als `DiktatGlobe` in „Datei transkribieren“).
 2. Entwurf 3 ist umgesetzt (`app/main/`: Start, Wörterbuch, Stile, Einstellungen); auf dem S24 ansehen und nachziehen.
 3. Wolken-Shader ist an den Prototyp angeglichen (`dictate/ui/`: Shader, `CloudMotion`, `CloudPalette`); auf dem S24 ansehen.
-4. Anbieter Gladia, Cerebras (Aufräumen) und AssemblyAI Sync sind eingebaut (`ProviderRegistry`); mit echten Keys auf dem S24 testen.
+4. Anbieter Gladia, Cerebras (Aufräumen) und das AssemblyAI-Sync-Modell (ein Eintrag „AssemblyAI“, Modell `universal-3-5-pro-sync`) sind eingebaut (`ProviderRegistry`); mit echten Keys auf dem S24 testen.
 5. Langdiktat ist am Button angebunden (automatisch an Pausen, nur beim Antippen); Halten/Antippen ist wählbar (Einstellungen › Aufnahme). Auf dem S24 testen.
 
 Details und Reihenfolge: Abschnitt 5 und 7 in `docs/design/diktat-design.md`.
