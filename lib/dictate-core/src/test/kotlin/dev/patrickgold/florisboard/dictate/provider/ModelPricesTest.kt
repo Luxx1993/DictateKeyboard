@@ -17,16 +17,19 @@ import java.util.Locale
 class ModelPricesTest : FunSpec({
 
     test("Solaria-3 shows its price, written the German way") {
-        ModelPrices.format(ModelPrices.batchPrice("gladia", "solaria-3"), Locale.GERMANY) shouldBe "0,160 €/h"
+        ModelPrices.format(ModelPrices.batchPrice("gladia", "solaria-3"), Locale.GERMANY) shouldBe "0,16 €/h"
     }
 
     test("a calculated price is marked and an unknown model shows nothing") {
-        ModelPrices.format(ModelPrices.batchPrice("assemblyai", "universal-3-5-pro-sync"), Locale.GERMANY) shouldBe "ca. 0,400 €/h"
+        ModelPrices.format(ModelPrices.batchPrice("assemblyai", "universal-3-5-pro-sync"), Locale.GERMANY) shouldBe "ca. 0,4012 €/h"
         ModelPrices.format(ModelPrices.batchPrice("groq", "no-such-model")) shouldBe null
     }
 
-    test("cheap models get four decimals, dear ones two") {
-        ModelPrices.format(ModelPrices.batchPrice("groq", "whisper-large-v3-turbo"), Locale.GERMANY) shouldBe "0,0400 €/h"
+    test("the exact figure shows with 2 to 4 decimals and no trailing zeros") {
+        ModelPrices.format(ModelPrices.batchPrice("groq", "whisper-large-v3-turbo"), Locale.GERMANY) shouldBe "0,0357 €/h"
+        ModelPrices.format(ModelPrices.batchPrice("openrouter", "openai/whisper-large-v3-turbo"), Locale.GERMANY) shouldBe "0,0096 €/h"
+        ModelPrices.format(ModelPrices.Price(0.10), Locale.GERMANY) shouldBe "0,10 €/h"
+        ModelPrices.format(ModelPrices.Price(0.015), Locale.GERMANY) shouldBe "0,015 €/h"
         ModelPrices.format(ModelPrices.Price(1.5), Locale.GERMANY) shouldBe "1,50 €/h"
     }
 
@@ -37,8 +40,7 @@ class ModelPricesTest : FunSpec({
 
     test("every curated transcription model of the paid providers has a price except the known gaps") {
         val gaps = setOf(
-            "assemblyai|universal-3-pro", "openrouter|openai/gpt-transcribe", "openrouter|mistralai/voxtral-mini-transcribe",
-            "openrouter|deepgram/nova-3", "deepgram|nova-2", "siliconflow|funaudiollm/sensevoicesmall",
+            "assemblyai|universal-3-pro", "openrouter|google/gemini-3.5-transcribe", "deepgram|nova-2", "siliconflow|funaudiollm/sensevoicesmall",
             "siliconflow|teleai/telespeechasr", "local|whisper-base", "local|whisper-tiny", "openai|gpt-transcribe-diarize",
         )
         val missing = ProviderRegistry.presets.flatMap { preset ->
