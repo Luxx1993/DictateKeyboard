@@ -17,12 +17,17 @@ import java.util.Locale
 class ModelPricesTest : FunSpec({
 
     test("Solaria-3 shows its price, written the German way") {
-        ModelPrices.format(ModelPrices.batchPrice("gladia", "solaria-3"), Locale.GERMANY) shouldBe "0,16 €/h"
+        ModelPrices.format(ModelPrices.batchPrice("gladia", "solaria-3"), Locale.GERMANY) shouldBe "0,160 €/h"
     }
 
     test("a calculated price is marked and an unknown model shows nothing") {
-        ModelPrices.format(ModelPrices.batchPrice("assemblyai", "universal-3-5-pro-sync"), Locale.GERMANY) shouldBe "ca. 0,40 €/h"
+        ModelPrices.format(ModelPrices.batchPrice("assemblyai", "universal-3-5-pro-sync"), Locale.GERMANY) shouldBe "ca. 0,400 €/h"
         ModelPrices.format(ModelPrices.batchPrice("groq", "no-such-model")) shouldBe null
+    }
+
+    test("cheap models get four decimals, dear ones two") {
+        ModelPrices.format(ModelPrices.batchPrice("groq", "whisper-large-v3-turbo"), Locale.GERMANY) shouldBe "0,0400 €/h"
+        ModelPrices.format(ModelPrices.Price(1.5), Locale.GERMANY) shouldBe "1,50 €/h"
     }
 
     test("live and file prices are separate") {

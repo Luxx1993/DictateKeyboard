@@ -85,10 +85,16 @@ object ModelPrices {
 
     fun realtimePrice(providerId: String, model: String): Price? = realtime[key(providerId, model)]
 
-    /** `0,16 €/h`, or `ca. 0,40 €/h` for a calculated figure; null when nothing is known. */
+    /** `0,160 €/h` (2 to 4 decimals by amount), or `ca. 0,400 €/h` for a calculated figure; null when nothing is known. */
     fun format(price: Price?, locale: Locale = Locale.getDefault()): String? {
         price ?: return null
-        val number = String.format(locale, "%.2f", price.eurPerHour)
+        // Small amounts get more decimals so the cheap models stay tellable apart.
+        val decimals = when {
+            price.eurPerHour >= 1.0 -> 2
+            price.eurPerHour >= 0.1 -> 3
+            else -> 4
+        }
+        val number = String.format(locale, "%.${decimals}f", price.eurPerHour)
         return (if (price.approx) "ca. " else "") + "$number €/h"
     }
 

@@ -18,6 +18,7 @@ import dev.patrickgold.florisboard.app.main.UNavRow
 import dev.patrickgold.florisboard.app.main.UTextField
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -220,18 +221,20 @@ private fun ModelRow(label: String, selected: Boolean, onClick: () -> Unit, pric
     ) {
         Text(
             text = label,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f, fill = false),
             style = if (selected) Unisono.BodyStrong else Unisono.Body,
             color = c.textPrimary,
         )
+        // The price sits right behind the name, in the small mono type of the search field.
         if (price != null) {
             Text(
                 text = price,
-                modifier = Modifier.padding(start = 8.dp),
-                style = Unisono.Label,
+                modifier = Modifier.padding(start = 10.dp),
+                style = Unisono.Mono,
                 color = c.textSecondary,
             )
         }
+        Spacer(Modifier.weight(1f))
         // No capability badge here any more. A 🎤 used to mark what the catalog called audio-capable, and it
         // was wrong often enough to send people away from models that work (#313). The modality data still
         // decides which ids *appear* in the transcription list, where being wrong only ever adds an entry.
