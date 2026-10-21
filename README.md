@@ -27,6 +27,10 @@
 - **Wörterbuch**: Eigene Wörter (Namen, Fachbegriffe), die das Sprachmodell richtig schreiben soll, und Ersetzungen,
   die nach dem Diktat automatisch getauscht werden.
 - **Datei transkribieren**: Audio- und Videodateien teilen oder mit diktat öffnen.
+- **Live mitschreiben (Echtzeit)**: Der Text erscheint schon beim Sprechen, mit ElevenLabs, Deepgram, Mistral, Gladia,
+  AssemblyAI, Soniox, OpenAI, Gemini, xAI oder einem Offline-Modell auf dem Gerät.
+- **Preise sichtbar**: Die Modellauswahl zeigt neben jedem Modell den Listenpreis in € pro Stunde Audio, auch bei den
+  Echtzeit-Modellen ([`docs/PREISE.md`](docs/PREISE.md)).
 - **Verlauf und Statistik**: Letzte Diktate zum Kopieren, Wörter gesamt, diesen Monat, Tage in Folge.
 - **Offline-Erkennung** auf dem Gerät, ganz ohne Netz und Anbieter.
 - **Sichern und Wiederherstellen** aller Einstellungen, auf Wunsch mit API-Keys.
@@ -37,15 +41,18 @@
 
 Transkription und Aufräumen sind getrennt wählbar, jeweils mit eigenem Schlüssel:
 
-OpenAI · ElevenLabs Scribe · Anthropic (Claude) · Groq · Google Gemini · Mistral · Deepgram · AssemblyAI (asynchron und Sync) · Gladia · Soniox ·
+OpenAI · ElevenLabs Scribe · Anthropic (Claude) · Groq · Google Gemini · Mistral · Deepgram · AssemblyAI (mit Sync-Modell) · Gladia · Soniox ·
 Azure Speech · OpenRouter · DeepInfra · Together AI · xAI (Grok) · DeepSeek · Cerebras · SiliconFlow · Scaleway · OVHcloud ·
 Ollama · eigener OpenAI-kompatibler Server · On-device (offline)
+
+AssemblyAI gibt es als einen Eintrag: die normalen Modelle laufen asynchron (Hochladen, Warten), das Modell
+`universal-3-5-pro-sync` beantwortet kurze Aufnahmen in einer einzigen Anfrage. Ein Key, Region Global oder EU.
 
 ## Oberfläche
 
 Warmer, ruhiger Look („Entwurf 3“): Papier und Tinte, Manrope und IBM Plex Mono, vier Tabs, hell und dunkel. Die
-Bilder sind die Design-Referenzen aus [`docs/design/entwurf-3/`](docs/design/entwurf-3/), nach denen die App gebaut ist;
-Namen, Anbieter und Texte darin sind Beispiele.
+Bilder sind die Design-Referenzen aus [`docs/design/entwurf-3/`](docs/design/entwurf-3/), nach denen die App gebaut ist, keine
+Bildschirmfotos der fertigen App; Namen, Anbieter und Texte darin sind Beispiele.
 
 <p align="center">
   <img src="docs/design/entwurf-3/png/Main.png" width="200" alt="Start">
@@ -70,6 +77,10 @@ Lagune, Periwinkle, Salbei, Abendrot und Tinte.
 2. Beim ersten Mal erlaubt Android die Installation aus dieser Quelle (Einstellungen › „Diese Quelle zulassen“),
    danach „Installieren“. Eine ältere diktat-Version wird dabei aktualisiert, Einstellungen bleiben erhalten.
 3. App öffnen und weiter bei „Einrichten“.
+
+Für Google Play gibt es eine eigene Signatur und ein App-Bundle (`scripts/build-play-bundle.sh`); die Schritte stehen in
+[`docs/play-store/ANLEITUNG.md`](docs/play-store/ANLEITUNG.md). Die Debug-APK und die Play-Version lassen sich nicht
+übereinander installieren.
 
 Die Datei liegt auf dem Zweig [`apk`](https://github.com/Luxx1993/unisono-diktat/tree/apk), dort stehen auch Commit
 und Prüfsumme der aktuellen Version. Selbst bauen: siehe [Bauen](#bauen).
@@ -98,6 +109,8 @@ Die fertige APK für den festen Download-Link stellt `scripts/publish-apk.sh` au
 ## Dokumentation
 
 - [`docs/FUNKTIONEN.md`](docs/FUNKTIONEN.md): Was die App können soll und heute kann
+- [`docs/PREISE.md`](docs/PREISE.md): Preise der Spracherkennung je Modell in € pro Stunde
+- [`docs/play-store/`](docs/play-store/): Veröffentlichung bei Google Play (Anleitung, Datenschutzerklärung, Store-Texte)
 - [`docs/design/diktat-design.md`](docs/design/diktat-design.md): Design-Entscheidungen (Oberfläche, Wolke, Icon)
 - [`CLAUDE.md`](CLAUDE.md): Arbeitsstand und nächste Aufgaben
 

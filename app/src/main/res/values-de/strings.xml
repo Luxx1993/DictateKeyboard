@@ -367,6 +367,7 @@
     <string name="dictate__model_picker_title">Modell auswählen</string>
     <string name="dictate__model_picker_search">Modell-ID suchen oder eingeben</string>
     <string name="dictate__model_picker_loading">Modelle werden geladen…</string>
+    <string name="dictate__model_picker_chat_price_hint" comment="Explains the price next to each text model">Preis: Eingabe / Ausgabe in € je 1 Mio. Token</string>
     <string name="dictate__model_picker_count">{count} Modelle</string>
     <string name="dictate__model_picker_refresh">Aktualisieren</string>
     <string name="dictate__model_picker_use_custom">„{model}\" verwenden</string>

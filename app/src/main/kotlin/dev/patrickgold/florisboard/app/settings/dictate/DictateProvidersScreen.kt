@@ -24,6 +24,7 @@ import dev.patrickgold.florisboard.app.main.UNavRow
 import dev.patrickgold.florisboard.app.main.USwitchRow
 import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
 import dev.patrickgold.florisboard.app.apptheme.Unisono
+import dev.patrickgold.florisboard.app.apptheme.providerDot
 import dev.patrickgold.florisboard.app.main.UCard
 import dev.patrickgold.florisboard.app.main.UCheckRow
 import dev.patrickgold.florisboard.app.main.UChevron
@@ -202,7 +203,7 @@ fun DictateProvidersScreen() = UnisonoPage(
                 icon = UnisonoIcons.Mic,
                 label = stringRes(R.string.dictate__providers_active_transcription),
                 value = transcriptionEntries.firstOrNull { it.first == activeTranscriptionId }?.second ?: activeTranscriptionId,
-                dot = c.providerElevenLabs,
+                dot = c.providerDot(activeTranscriptionId),
                 onClick = { openDialog = "transcription" },
             )
         }
@@ -212,7 +213,7 @@ fun DictateProvidersScreen() = UnisonoPage(
                 icon = UnisonoIcons.Sparkle,
                 label = stringRes(R.string.dictate__providers_active_rewording),
                 value = rewordingEntries.firstOrNull { it.first == activeRewordingId }?.second ?: activeRewordingId,
-                dot = c.providerClaude,
+                dot = c.providerDot(activeRewordingId),
                 note = if (singleCall) stringRes(R.string.dictate__providers_rewording_single_call_note) else null,
                 onClick = { openDialog = "rewording" },
             )

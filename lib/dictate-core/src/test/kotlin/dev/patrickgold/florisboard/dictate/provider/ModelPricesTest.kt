@@ -33,6 +33,31 @@ class ModelPricesTest : FunSpec({
         ModelPrices.format(ModelPrices.Price(1.5), Locale.GERMANY) shouldBe "1,50 €/h"
     }
 
+    test("text models show input and output per million tokens") {
+        ModelPrices.formatChat(ModelPrices.chatPrice("anthropic", "claude-haiku-5-5"), Locale.GERMANY) shouldBe "0,0892 / 0,4458 €/M"
+        ModelPrices.formatChat(ModelPrices.chatPrice("scaleway", "gpt-oss-120b"), Locale.GERMANY) shouldBe "0,15 / 0,60 €/M"
+        ModelPrices.formatChat(ModelPrices.chatPrice("openrouter", "minimax/minimax-m3.1-flash:free"), Locale.GERMANY) shouldBe "0 / 0 €/M"
+        ModelPrices.formatChat(ModelPrices.chatPrice("groq", "no-such-model")) shouldBe null
+    }
+
+    test("every curated text model of the paid providers has a price except the known gaps") {
+        val gaps = setOf(
+            "groq|qwen/qwen3.8-27b", "cerebras|qwen-3.8-27b", "ollama", "siliconflow|deepseek-ai/deepseek-v3.2",
+            "siliconflow|deepseek-ai/deepseek-v3.1", "siliconflow|deepseek-ai/deepseek-v3",
+        )
+        val missing = ProviderRegistry.presets.flatMap { preset ->
+            preset.curatedChatModels.filter { ModelPrices.chatPrice(preset.id, it) == null }.map { "${preset.id}|${it.lowercase()}" }
+        }.filterNot { it in gaps }
+        missing shouldBe emptyList()
+    }
+
+    test("a router adds its surcharge behind the price") {
+        ModelPrices.chatText("openrouter", "anthropic/claude-haiku-5.5", Locale.GERMANY) shouldBe "0,0892 / 0,4458 €/M +5,5 %"
+        ModelPrices.batchText("openrouter", "openai/whisper-large-v3-turbo", Locale.GERMANY) shouldBe "0,0096 €/h +5,5 %"
+        ModelPrices.chatText("groq", "openai/gpt-oss-120b", Locale.GERMANY) shouldBe "0,1337 / 0,535 €/M"
+        ModelPrices.chatText("openrouter", "no-such-model") shouldBe null
+    }
+
     test("live and file prices are separate") {
         ModelPrices.realtimePrice("gladia", "solaria-1")?.eurPerHour shouldBe 0.68
         ModelPrices.batchPrice("gladia", "solaria-1")?.eurPerHour shouldBe 0.27

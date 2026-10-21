@@ -63,11 +63,11 @@ Die Einstellungsseite zeigt nur eingerichtete Anbieter, weitere hinter „Anbiet
 | OpenAI | ja | ja | ja |
 | Groq | ja | ja | – |
 | Google Gemini | ja | ja | ja |
-| Mistral AI (Voxtral) | ja | ja | – |
+| Mistral AI (Voxtral) | ja | ja | ja |
 | Deepgram (Nova-3) | ja | – | ja |
 | AssemblyAI (Universal-3 Pro, asynchron) | ja | – | ja |
 | AssemblyAI, Modell `universal-3-5-pro-sync` (eine Anfrage, 256 MB / 20 Min.) | ja | – | – |
-| Gladia (`solaria-1`, `solaria-3`) | ja | – | – |
+| Gladia (`solaria-1`, `solaria-3`; EU-West) | ja | – | ja |
 | Together AI (Spracherkennung `openai/whisper-large-v3`, `nvidia/parakeet-tdt-0.6b-v3`) | ja | ja | – |
 | Cerebras (`gpt-oss-120b`, `qwen-3.8-27b`) | – | ja | – |
 | Soniox | ja | – | ja |

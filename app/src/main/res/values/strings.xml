@@ -447,6 +447,7 @@
     <string name="dictate__model_picker_title" comment="Title of the model picker dialog">Choose a model</string>
     <string name="dictate__model_picker_search" comment="Hint for the model search / free-text field">Search or type a model id</string>
     <string name="dictate__model_picker_loading" comment="Status while fetching the model catalog">Loading models…</string>
+    <string name="dictate__model_picker_chat_price_hint" comment="Explains the price next to each text model">Price: input / output in € per 1 million tokens</string>
     <string name="dictate__model_picker_count" comment="Status showing how many models match. {count} is a number.">{count} models</string>
     <string name="dictate__model_picker_refresh" comment="Button that fetches the live model catalog from the provider">Refresh</string>
     <string name="dictate__model_picker_use_custom" comment="Option to use the typed text as a model id. {model} is the typed text.">Use “{model}”</string>
