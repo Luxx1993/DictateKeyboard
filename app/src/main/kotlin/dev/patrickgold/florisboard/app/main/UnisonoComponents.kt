@@ -14,6 +14,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -214,11 +215,14 @@ fun USwitch(
 /** The 7 dp dot that marks a provider by its colour. */
 @Composable
 fun UDot(color: Color) {
+    // A near-white dot (ElevenLabs) gets a hairline on paper; on the dark theme it needs none.
+    val ring = color.luminance() > 0.85f && !LocalUnisono.current.isDark
     Box(
         Modifier
             .size(7.dp)
             .clip(CircleShape)
-            .background(color),
+            .background(color)
+            .then(if (ring) Modifier.border(1.dp, LocalUnisono.current.borderStrong, CircleShape) else Modifier),
     )
 }
 

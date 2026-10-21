@@ -182,6 +182,14 @@ fun ModelPickerDialog(
             style = Unisono.Label,
             color = c.textSecondary,
         )
+        if (kind == ModelKind.CHAT) {
+            Text(
+                text = stringRes(R.string.dictate__model_picker_chat_price_hint),
+                modifier = Modifier.padding(horizontal = 18.dp, vertical = 2.dp),
+                style = Unisono.Label,
+                color = c.textSecondary,
+            )
+        }
         UNavRow(
             title = stringRes(R.string.dictate__model_picker_refresh),
             onClick = { if (!loading) scope.launch { loadModels() } },
@@ -200,7 +208,10 @@ fun ModelPickerDialog(
             items(candidates) { model ->
                 ModelRow(
                     label = model,
-                    price = if (kind == ModelKind.TRANSCRIPTION) ModelPrices.format(ModelPrices.batchPrice(preset.id, model)) else null,
+                    price = when (kind) {
+                        ModelKind.TRANSCRIPTION -> ModelPrices.format(ModelPrices.batchPrice(preset.id, model))
+                        ModelKind.CHAT -> ModelPrices.formatChat(ModelPrices.chatPrice(preset.id, model))
+                    },
                     selected = model.equals(current, ignoreCase = true),
                     onClick = { onPick(model); onDismiss() },
                 )

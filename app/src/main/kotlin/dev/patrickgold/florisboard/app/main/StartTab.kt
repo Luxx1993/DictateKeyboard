@@ -62,6 +62,7 @@ import dev.patrickgold.florisboard.app.LocalNavController
 import dev.patrickgold.florisboard.app.Routes
 import dev.patrickgold.florisboard.app.apptheme.LocalUnisono
 import dev.patrickgold.florisboard.app.apptheme.Unisono
+import dev.patrickgold.florisboard.app.apptheme.providerDot
 import dev.patrickgold.florisboard.dictate.data.history.DictateHistoryEntry
 import dev.patrickgold.florisboard.dictate.data.history.DictateHistoryStore
 import dev.patrickgold.florisboard.dictate.data.stats.DictateStats
@@ -154,7 +155,7 @@ internal fun StartTab() {
             icon = UnisonoIcons.Mic,
             label = stringRes(R.string.main__provider_transcription),
             value = ProviderListing.displayNameOf(transcriptionId, accounts),
-            dot = c.providerElevenLabs,
+            dot = c.providerDot(transcriptionId),
             onClick = { navController.navigate(Routes.Settings.DictateProviders) },
         )
         UDivider()
@@ -166,7 +167,7 @@ internal fun StartTab() {
             } else {
                 stringRes(R.string.main__provider_off)
             },
-            dot = if (rewordingEnabled) c.providerClaude else c.textTertiary,
+            dot = if (rewordingEnabled) c.providerDot(rewordingId) else c.textTertiary,
             onClick = { navController.navigate(Routes.Settings.DictateProviders) },
         )
     }

@@ -44,8 +44,6 @@ data class UnisonoColors(
     val borderStrong: Color,
     val action: Color,
     val onAction: Color,
-    val providerElevenLabs: Color,
-    val providerClaude: Color,
     val success: Color,
     val isDark: Boolean,
 )
@@ -62,8 +60,6 @@ object Unisono {
         borderStrong = Color(0x291F1C1A),
         action = Color(0xFF1F1C1A),
         onAction = Color(0xFFF4F1EC),
-        providerElevenLabs = Color(0xFFD69A4E),
-        providerClaude = Color(0xFFC07A7A),
         success = Color(0xFF357A5B),
         isDark = false,
     )
@@ -79,8 +75,6 @@ object Unisono {
         borderStrong = Color(0x29F2EEE8),
         action = Color(0xFFF2EEE8),
         onAction = Color(0xFF121110),
-        providerElevenLabs = Color(0xFFD69A4E),
-        providerClaude = Color(0xFFC07A7A),
         success = Color(0xFF5FA884),
         isDark = true,
     )
