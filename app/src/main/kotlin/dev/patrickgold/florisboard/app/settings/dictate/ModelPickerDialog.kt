@@ -209,8 +209,8 @@ fun ModelPickerDialog(
                 ModelRow(
                     label = model,
                     price = when (kind) {
-                        ModelKind.TRANSCRIPTION -> ModelPrices.format(ModelPrices.batchPrice(preset.id, model))
-                        ModelKind.CHAT -> ModelPrices.formatChat(ModelPrices.chatPrice(preset.id, model))
+                        ModelKind.TRANSCRIPTION -> ModelPrices.batchText(preset.id, model)
+                        ModelKind.CHAT -> ModelPrices.chatText(preset.id, model)
                     },
                     selected = model.equals(current, ignoreCase = true),
                     onClick = { onPick(model); onDismiss() },

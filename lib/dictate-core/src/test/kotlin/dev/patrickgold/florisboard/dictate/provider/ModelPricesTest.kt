@@ -51,6 +51,13 @@ class ModelPricesTest : FunSpec({
         missing shouldBe emptyList()
     }
 
+    test("a router adds its surcharge behind the price") {
+        ModelPrices.chatText("openrouter", "anthropic/claude-haiku-5.5", Locale.GERMANY) shouldBe "0,0892 / 0,4458 €/M +5,5 %"
+        ModelPrices.batchText("openrouter", "openai/whisper-large-v3-turbo", Locale.GERMANY) shouldBe "0,0096 €/h +5,5 %"
+        ModelPrices.chatText("groq", "openai/gpt-oss-120b", Locale.GERMANY) shouldBe "0,1337 / 0,535 €/M"
+        ModelPrices.chatText("openrouter", "no-such-model") shouldBe null
+    }
+
     test("live and file prices are separate") {
         ModelPrices.realtimePrice("gladia", "solaria-1")?.eurPerHour shouldBe 0.68
         ModelPrices.batchPrice("gladia", "solaria-1")?.eurPerHour shouldBe 0.27

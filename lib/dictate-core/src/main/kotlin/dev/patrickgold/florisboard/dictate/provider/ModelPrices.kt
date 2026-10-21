@@ -252,6 +252,25 @@ object ModelPrices {
 
     fun chatPrice(providerId: String, model: String): ChatPrice? = chat[key(providerId, model)]
 
+    /**
+     * What a router adds on top of the provider's price: OpenRouter passes prices through and takes 5.5 % when the
+     * balance is topped up. Null for providers that bill their listed price.
+     */
+    fun surcharge(providerId: String): String? = SURCHARGES[providerId]
+
+    private val SURCHARGES = mapOf("openrouter" to "+5,5 %")
+
+    /** The file price of a model as the picker shows it, with the router surcharge behind it; null without a price. */
+    fun batchText(providerId: String, model: String, locale: Locale = Locale.getDefault()): String? =
+        withSurcharge(providerId, format(batchPrice(providerId, model), locale))
+
+    /** The text model price as the picker shows it, with the router surcharge behind it; null without a price. */
+    fun chatText(providerId: String, model: String, locale: Locale = Locale.getDefault()): String? =
+        withSurcharge(providerId, formatChat(chatPrice(providerId, model), locale))
+
+    private fun withSurcharge(providerId: String, text: String?): String? =
+        if (text == null) null else surcharge(providerId)?.let { "$text $it" } ?: text
+
     fun batchPrice(providerId: String, model: String): Price? = batch[key(providerId, model)]
 
     fun realtimePrice(providerId: String, model: String): Price? = realtime[key(providerId, model)]
